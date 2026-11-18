@@ -41,7 +41,10 @@ const mi=()=>(8+S.turn)%12;
 const yr=()=>1+Math.floor((8+S.turn)/12);
 const cap=()=>S.racks*10;
 // Catatan disimpan sebagai kunci + parameter supaya ikut berganti bahasa.
-function log(m,p,k){S.log.unshift({w:S.turn,m,p:p||{},k:k||'info'});if(S.log.length>150)S.log.length=150}
+// Catatan breeder maksimal LOG_MAX entri: entri baru masuk di atas, yang paling lama terhapus.
+const LOG_MAX=50;
+function trimLog(){if(!Array.isArray(S.log))S.log=[];if(S.log.length>LOG_MAX)S.log.length=LOG_MAX}
+function log(m,p,k){S.log.unshift({w:S.turn,m,p:p||{},k:k||'info'});trimLog()}
 
 /* ========= GENETIKA ========= */
 const emptyGeno=()=>Object.fromEntries(LOCI.map(l=>[l.k,[0,0]]));
@@ -238,6 +241,7 @@ const ACTIONS={
  buy(a){const lid=toId(a.lid);const L=S.market.find(x=>x.lid===lid);if(!L)fail('listing_gone');if(S.money<L.price)fail('not_enough_money');
   S.money-=L.price;const s=addSnake(L.s);S.market=S.market.filter(x=>x!==L);const nw=dexAdd(traitsOf(s.g));
   log('l_buy',{c:code(s),n:fullName(s),h:hetText(s),v:money(L.price)});if(nw)log('l_newmorph',{n:nameOf(traitsOf(s.g))},'star');return{}},
+ clearlog(){S.log=[];return{toast:'t_logcleared'}},
  rack(){if(S.money<250)fail('not_enough_money');S.money-=250;S.racks++;log('l_rack',{cap:cap()});return{}},
  fulfill(a){const o=S.orders.find(x=>x.oid===toId(a.oid));if(!o)fail('order_gone');const s=mustSnake(a.sid);
   if(!matches(o).includes(s))fail('order_mismatch');
@@ -247,7 +251,7 @@ const ACTIONS={
 // Jalankan satu aksi pada state (state diubah langsung). Melempar Error(kode) kalau tidak sah.
 function applyAction(state,a){
  if(!a||typeof a!=='object'||typeof a.type!=='string'||!Object.prototype.hasOwnProperty.call(ACTIONS,a.type))fail('bad_action');
- S=state;syncDex();
+ S=state;syncDex();trimLog();
  return ACTIONS[a.type](a)||{};
 }
 function isState(x){return !!(x&&typeof x==='object'&&Array.isArray(x.snakes)&&typeof x.turn==='number'&&typeof x.money==='number')}

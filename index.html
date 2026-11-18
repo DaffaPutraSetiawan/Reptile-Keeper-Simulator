@@ -67,6 +67,7 @@ img.mini{width:110px;aspect-ratio:320/148;border-radius:7px;display:block;backgr
 aside .panel{position:sticky;top:96px;max-height:calc(100vh - 120px);overflow:auto}
 .log{list-style:none;margin:0;padding:0}
 .log li{padding:7px 0;border-bottom:1px dashed var(--line);font-size:12.5px}
+.logh{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}.logh h3{margin:0}
 .log li .d{color:var(--mut);font-size:11px;display:block}
 .log li.good{color:#cfe6bd}.log li.bad{color:#f0b3ab}.log li.star{color:#f5d38c}
 #modal{position:fixed;inset:0;background:rgba(8,7,5,.7);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
@@ -136,7 +137,7 @@ button.danger{background:var(--bad);border-color:var(--bad);color:#1b0a07;font-w
 <body>
 <header><h1 class="brand"><img src="assets/logo.png" alt="Morph Lab — Reptile Breeder Sim" width="243" height="56"></h1><div id="hdr"></div></header>
 <nav id="tabs"></nav>
-<main><section id="view"></section><aside><div class="panel"><h3 style="margin-top:0" id="logh"></h3><ul class="log" id="log"></ul></div></aside></main>
+<main><section id="view"></section><aside><div class="panel"><div class="logh"><h3 id="logh"></h3><button class="ghost sm" id="logclr" data-act="clearlog"></button></div><ul class="log" id="log"></ul></div></aside></main>
 <div id="modal" class="hidden"></div>
 <div id="toast"></div>
 <script src="config.js"></script>
@@ -199,7 +200,7 @@ id:{
  // header & tab
  hdr_date:'Turn dimainkan',hdr_bal:'Saldo',hdr_tubs:'Tub terpakai',hdr_season:'Musim',season_on:'Kawin 🌙',season_off:'Istirahat',advance:'Lanjut bulan ▶',
  tab_koleksi:'Koleksi',tab_breeding:'Kawinkan',tab_inkubator:'Inkubator',tab_pasar:'Pasar',tab_pesanan:'Pesanan',tab_dex:'Morph Dex',tab_panduan:'Panduan genetika',
- log_title:'Catatan breeder',
+ log_title:'Catatan breeder',log_clear:'🗑️ Hapus',log_empty:'Catatan masih kosong.',log_clear_h:'Hapus catatan breeder?',log_clear_q:'Semua catatan akan dihapus permanen. Koleksi, uang, dan progres game tidak berubah.',log_clear_yes:'Ya, hapus catatan',t_logcleared:'Catatan breeder dihapus.',
  // tag kartu
  tag_gravid:p=>`Bunting · bertelur ±${p.n} bln`,tag_pairedw:p=>`Dikawinkan dgn ${p.c}`,tag_pairs:p=>`${p.n} pasangan bln ini`,tag_listed:'Diiklankan',tag_ready:'Siap kawin',tag_hatch:'Hatchling',
  // koleksi
@@ -363,7 +364,7 @@ en:{
  h_born:p=>`${p.n} hatched`,h_new:p=>'New morph: '+p.n,h_laid:p=>`${p.c} laid ${p.n} fertile eggs`,h_gravid:p=>`${p.c} is gravid`,h_sold:p=>`${p.c} sold for ${p.v}`,h_quiet:' — a quiet month.',
  hdr_date:'Turns played',hdr_bal:'Balance',hdr_tubs:'Tubs used',hdr_season:'Season',season_on:'Breeding 🌙',season_off:'Off-season',advance:'Next month ▶',
  tab_koleksi:'Collection',tab_breeding:'Breeding',tab_inkubator:'Incubator',tab_pasar:'Market',tab_pesanan:'Orders',tab_dex:'Morph Dex',tab_panduan:'Genetics guide',
- log_title:'Breeder log',
+ log_title:'Breeder log',log_clear:'🗑️ Clear',log_empty:'No log entries yet.',log_clear_h:'Clear breeder log?',log_clear_q:'All log entries will be permanently deleted. Your collection, money and game progress stay the same.',log_clear_yes:'Yes, clear log',t_logcleared:'Breeder log cleared.',
  tag_gravid:p=>`Gravid · eggs in ~${p.n} mo`,tag_pairedw:p=>`Paired with ${p.c}`,tag_pairs:p=>`${p.n} ${p.n===1?'pairing':'pairings'} this month`,tag_listed:'Listed',tag_ready:'Ready to breed',tag_hatch:'Hatchling',
  col_sub:p=>`${p.n} ${p.n===1?'snake':'snakes'} · collection value ${p.v} · click a snake to see details, sell it or list it.`,
  f_all:'All',f_M:'♂ Males',f_F:'♀ Females',f_ready:'Ready to breed',f_listed:'Listed',
@@ -592,7 +593,8 @@ function render(){
  renderTabs();
  $('view').innerHTML=({koleksi:vKoleksi,breeding:vBreeding,inkubator:vInkubator,pasar:vPasar,pesanan:vPesanan,dex:vDex,teman:vTeman,panduan:vPanduan})[TAB]();
  $('logh').textContent=t('log_title');
- $('log').innerHTML=S.log.slice(0,60).map(logLine).join('');
+ $('logclr').textContent=t('log_clear');$('logclr').style.display=S.log.length?'':'none';
+ $('log').innerHTML=S.log.length?S.log.slice(0,50).map(logLine).join(''):`<li class="info" style="border:0">${esc(t('log_empty'))}</li>`;
  afterRender();
 }
 /* ========= HALAMAN MASUK (wajib login) ========= */
@@ -710,6 +712,8 @@ function act(a,id,el){
   case 'close':closeModal();return;
   case 'tobreed':{const s=byId(id);if(s.sex==='M')SEL.m=id;else SEL.f=id;TAB='breeding';closeModal();break}
   case 'reset':modal(`<h2>${t('reset_h')}</h2><p class="sub">${t('reset_cloud')}</p><div class="actions"><button class="pri" data-act="resetyes">${t('reset_yes')}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`);return;
+  case 'clearlog':modal(`<h2>${t('log_clear_h')}</h2><p class="sub">${t('log_clear_q')}</p><div class="actions"><button class="danger" data-act="clearlogyes">${t('log_clear_yes')}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`);return;
+  case 'clearlogyes':closeModal();game({type:'clearlog'});return;
   case 'resetyes':closeModal(true);TAB='koleksi';game({type:'reset'});return;
   // aksi game (divalidasi ulang oleh core / server)
   case 'advance':game({type:'advance'});return;
