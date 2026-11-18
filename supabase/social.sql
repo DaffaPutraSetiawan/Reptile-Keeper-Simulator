@@ -490,7 +490,7 @@ begin
        where (e ->> 'id')::int = any (p.showcase)), '[]'::jsonb));
 end $$;
 
--- Ubah bio (maks. 160 karakter) & showcase (maks. 5 ular milik sendiri, urutan dipertahankan).
+-- Ubah bio (maks. 160 karakter) & showcase (maks. 6 ular milik sendiri, urutan dipertahankan).
 create or replace function public.update_profile(p_bio text, p_showcase integer[])
 returns jsonb language plpgsql security definer set search_path = '' as $$
 declare me uuid := public._me(); v_bio text; v_ids integer[]; v_owned integer[]; v_name text;
@@ -501,7 +501,7 @@ begin
   select coalesce(array_agg(x order by o), '{}') into v_ids
     from (select x, min(o) as o from unnest(coalesce(p_showcase, '{}'::integer[])) with ordinality u(x, o)
            where x is not null group by x) q;
-  if cardinality(v_ids) > 5 then raise exception 'showcase_too_many'; end if;
+  if cardinality(v_ids) > 6 then raise exception 'showcase_too_many'; end if;
   select coalesce(array_agg((e ->> 'id')::int), '{}') into v_owned
     from public.saves s, jsonb_array_elements(coalesce(s.data -> 'snakes', '[]'::jsonb)) e where s.user_id = me;
   if not (v_ids <@ v_owned) then raise exception 'snake_not_found'; end if;
