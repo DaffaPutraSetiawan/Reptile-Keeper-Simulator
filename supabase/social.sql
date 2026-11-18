@@ -454,6 +454,48 @@ begin
 end $$;
 
 -- ---------------------------------------------------------------------
+-- GLOBAL CHAT: semua pemain yang login bisa membaca & menulis; hanya 50 pesan terakhir disimpan
+-- ---------------------------------------------------------------------
+create table if not exists public.global_messages (
+  id         bigint generated always as identity primary key,
+  sender     uuid not null references auth.users (id) on delete cascade,
+  username   text not null,                      -- disalin saat kirim supaya realtime langsung bisa menampilkan nama
+  body       text not null check (char_length(body) between 1 and 300),
+  created_at timestamptz not null default now()
+);
+create index if not exists global_messages_sender_idx on public.global_messages (sender, created_at desc);
+alter table public.global_messages enable row level security;
+drop policy if exists "global: pemain login boleh baca" on public.global_messages;
+create policy "global: pemain login boleh baca" on public.global_messages for select to authenticated using (true);
+revoke insert, update, delete on public.global_messages from anon, authenticated;
+
+create or replace function public.send_global_message(p_body text)
+returns public.global_messages language plpgsql security definer set search_path = '' as $$
+declare me uuid := public._me(); v_name text; m public.global_messages; v_cut bigint;
+begin
+  select username into v_name from public.profiles where id = me;
+  if v_name is null then raise exception 'no_profile'; end if;
+  p_body := btrim(regexp_replace(coalesce(p_body, ''), '[\x01-\x1f\x7f]+', ' ', 'g'));
+  if char_length(p_body) = 0 then raise exception 'empty_message'; end if;
+  if char_length(p_body) > 300 then raise exception 'message_too_long'; end if;
+  if (select count(*) from public.global_messages where sender = me and created_at > now() - interval '1 minute') >= 10 then
+    raise exception 'rate_limited';
+  end if;
+  insert into public.global_messages (sender, username, body) values (me, v_name, p_body) returning * into m;
+  -- simpan hanya 50 pesan terakhir: yang lebih lama dihapus
+  select id into v_cut from public.global_messages order by id desc offset 50 limit 1;
+  if v_cut is not null then delete from public.global_messages where id <= v_cut; end if;
+  return m;
+end $$;
+
+-- 50 pesan terakhir, urut dari yang paling lama
+create or replace function public.get_global_messages()
+returns jsonb language sql stable security invoker set search_path = '' as $$
+  select coalesce(jsonb_agg(to_jsonb(g) order by g.id), '[]'::jsonb)
+    from (select * from public.global_messages order by id desc limit 50) g;
+$$;
+
+-- ---------------------------------------------------------------------
 -- PROFIL: lihat profil sendiri / orang lain, edit bio & showcase
 -- ---------------------------------------------------------------------
 -- Profil publik pemain (berdasarkan username). Showcase memakai versi publik ular
@@ -714,7 +756,8 @@ begin
     'get_social()', 'get_friend_collection(uuid)',
     'create_trade(uuid, integer[], integer, integer[], integer, text, bigint)',
     'accept_trade(bigint, bigint)', 'decline_trade(bigint)', 'cancel_trade(bigint)', 'claim_deliveries(bigint)', 'delete_my_account(text)',
-    'get_profile(text)', 'update_profile(text, integer[])'] loop
+    'get_profile(text)', 'update_profile(text, integer[])',
+    'send_global_message(text)', 'get_global_messages()'] loop
     execute format('revoke all on function public.%s from public, anon', f);
     execute format('grant execute on function public.%s to authenticated', f);
   end loop;
@@ -727,7 +770,7 @@ do $$
 declare tb text;
 begin
   if exists (select 1 from pg_publication where pubname = 'supabase_realtime') then
-    foreach tb in array array['messages', 'friendships', 'trades', 'deliveries'] loop
+    foreach tb in array array['messages', 'friendships', 'trades', 'deliveries', 'global_messages'] loop
       if not exists (select 1 from pg_publication_tables
                       where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = tb) then
         execute format('alter publication supabase_realtime add table public.%I', tb);

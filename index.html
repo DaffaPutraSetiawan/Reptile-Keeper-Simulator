@@ -130,6 +130,7 @@ button.sm{padding:4px 10px;font-size:12.5px}
 @media(max-width:560px){.gate-morphs{grid-template-columns:repeat(2,1fr)}}
 .gate-morphs figure{margin:0}.gate-morphs figcaption{font-size:12.5px;color:var(--mut);margin-top:4px;text-align:center}
 .gate-f{list-style:none;padding:0;margin:0 0 6px;display:grid;gap:6px;color:#dcd4c0}
+.gchat .chatlog{max-height:460px;min-height:300px}.bub .gname{font-size:11.5px;font-weight:700;color:var(--acc);margin-bottom:2px}.bub.me .gname{color:var(--mut)}
 .origin{font-size:11.5px;color:#c9b98f;margin-top:2px}.origin .linkbtn{color:inherit}
 .linkbtn{background:none;border:0;padding:0;color:inherit;font:inherit;font-weight:inherit;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}.linkbtn:hover{color:var(--acc)}
 .prof .profhead{display:flex;gap:14px;align-items:center}.prof h2{margin:0 0 2px}
@@ -289,7 +290,7 @@ id:{
  t_uname:p=>`Username <b>${p.u}</b> tersimpan.`,t_pw:'Password baru tersimpan.',t_cloudload:p=>`☁️ Save dari akunmu dimuat: <b>${p.d}</b>`,t_logout:'Kamu sudah keluar. Progresmu aman tersimpan di server.',
  nolib_h:'Cloud save tidak tersedia',nolib_b:'Library Supabase gagal dimuat (koneksi internet atau pemblokir iklan). Game tetap jalan dan progres tersimpan di browser ini. Muat ulang halaman untuk mencoba lagi.',
  fg_need:'Isi email dulu, lalu klik "Lupa password?" lagi.',fg_sent:p=>`Link reset password dikirim ke <b>${p.e}</b>.`,
- tab_teman:'Teman',busy:'Tunggu sebentar, sedang memproses…',
+ tab_teman:'Teman',tab_global:'Global chat',gc_sub:p=>`Ngobrol dengan semua pemain Morph Lab. Hanya ${p.n} pesan terakhir yang disimpan; pesan yang lebih lama terhapus otomatis.`,gc_ph:'Tulis pesan untuk semua pemain…',gc_empty:'Belum ada pesan. Jadilah yang pertama menyapa!',e_empty_message:'Pesan masih kosong.',e_message_too_long:'Pesan terlalu panjang.',busy:'Tunggu sebentar, sedang memproses…',
  so_login:'Masuk ke akun untuk menambah teman, chat, dan trading.',so_login_btn:'☁️ Masuk / Daftar',
  so_offline:'Fitur teman butuh koneksi ke server. Periksa koneksi internet lalu muat ulang halaman.',
  so_needname:'Pilih username dulu supaya teman bisa menemukanmu.',
@@ -462,7 +463,7 @@ en:{
  t_uname:p=>`Username <b>${p.u}</b> saved.`,t_pw:'New password saved.',t_cloudload:p=>`☁️ Loaded the save from your account: <b>${p.d}</b>`,t_logout:'You’re logged out. Your progress is safe on the server.',
  nolib_h:'Cloud save unavailable',nolib_b:'The Supabase library failed to load (internet connection or an ad blocker). The game still works and progress is saved in this browser. Reload the page to try again.',
  fg_need:'Enter your email first, then click "Forgot password?" again.',fg_sent:p=>`A password reset link was sent to <b>${p.e}</b>.`,
- tab_teman:'Friends',busy:'One moment, still working…',
+ tab_teman:'Friends',tab_global:'Global chat',gc_sub:p=>`Chat with every Morph Lab player. Only the last ${p.n} messages are kept; older ones are deleted automatically.`,gc_ph:'Write a message to everyone…',gc_empty:'No messages yet. Be the first to say hi!',e_empty_message:'The message is empty.',e_message_too_long:'The message is too long.',busy:'One moment, still working…',
  so_login:'Log in to add friends, chat and trade.',so_login_btn:'☁️ Log in / Sign up',
  so_offline:'Friends need a connection to the server. Check your internet connection and reload the page.',
  so_needname:'Choose a username first so friends can find you.',
@@ -641,7 +642,7 @@ function render(){
  <span id="acct"></span><button class="pri" data-act="advance">${t('advance')}</button>`;
  renderAcct();
  renderTabs();
- $('view').innerHTML=({koleksi:vKoleksi,breeding:vBreeding,inkubator:vInkubator,pasar:vPasar,pesanan:vPesanan,dex:vDex,teman:vTeman,panduan:vPanduan})[TAB]();
+ $('view').innerHTML=({koleksi:vKoleksi,breeding:vBreeding,inkubator:vInkubator,pasar:vPasar,pesanan:vPesanan,dex:vDex,teman:vTeman,global:vGlobal,panduan:vPanduan})[TAB]();
  $('logh').textContent=t('log_title');
  $('logclr').textContent=t('log_clear');$('logclr').style.display=S.log.length?'':'none';
  $('log').innerHTML=S.log.length?S.log.slice(0,50).map(logLine).join(''):`<li class="info" style="border:0">${esc(t('log_empty'))}</li>`;
@@ -757,7 +758,7 @@ function act(a,id,el){
  if(cloudAct(a,el))return;
  if(a==='tab'&&el.dataset.tab==='teman'&&Social.ch)Social.refresh();
  switch(a){
-  case 'tab':TAB=el.dataset.tab;break;
+  case 'tab':TAB=el.dataset.tab;if(TAB==='global'){Global.unread=0;Global.focus=false;if(!Global.loaded)Global.load()}break;
   case 'lang':setLang(el.dataset.v);break;
   case 'filter':FILTER=el.dataset.v;break;
   case 'close':closeModal();return;
@@ -1019,6 +1020,34 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const tradeBlock=s=>s.gravid?'tb_r_gravid':s.listed?'tb_r_listed':(s.pairedWith||s.pairs)?'tb_r_paired':(s.tradeable===false?'tb_r_locked':'');
 const errText=e=>{const m=String((e&&e.message)||e||'');const k=(m.match(/[a-z_]+/g)||[]).find(x=>I18N.id['e_'+x]);return k?t('e_'+k):t('e_generic',{e:esc(m)})};
 const hm=iso=>{try{return new Date(iso).toLocaleTimeString(LANG==='id'?'id-ID':'en-GB',{hour:'2-digit',minute:'2-digit'})}catch(e){return ''}};
+/* ========= GLOBAL CHAT ========= */
+const GLOBAL_MAX=50,GMSG_MAX=300;
+var Global={msgs:[],unread:0,loaded:false,draft:'',focus:false,
+ reset(){this.msgs=[];this.unread=0;this.loaded=false;this.draft=''},
+ async load(){if(!Cloud.user||!Cloud.sb)return;const{data,error}=await Cloud.sb.rpc('get_global_messages');
+  if(error){console.warn('global',error);return}
+  const known=new Set(this.msgs.map(m=>m.id));(data||[]).forEach(m=>{if(!known.has(m.id))this.msgs.push(m)});this.trim();this.loaded=true;this.paint()},
+ trim(){this.msgs.sort((a,b)=>a.id-b.id);if(this.msgs.length>GLOBAL_MAX)this.msgs=this.msgs.slice(-GLOBAL_MAX)},
+ onNew(m){if(!m||this.msgs.some(x=>x.id===m.id))return;this.msgs.push(m);this.trim();
+  if(TAB!=='global'&&this.loaded&&Cloud.user&&m.sender!==Cloud.user.id)this.unread++;this.paint()},
+ html(){if(!this.loaded)return `<p class="kbd" style="text-align:center;margin:30px 0">${t('so_loading')}</p>`;
+  if(!this.msgs.length)return `<p class="kbd" style="text-align:center;margin:30px 0">${t('gc_empty')}</p>`;
+  const me=Cloud.user&&Cloud.user.id;
+  return this.msgs.map(m=>{const mine=m.sender===me;return `<div class="bub ${mine?'me':''}"><div class="gname">${mine?t('so_you'):profLink(m.username)}</div><div>${esc(m.body)}</div><span>${hm(m.created_at)}</span></div>`}).join('')},
+ paint(){const el=$('glog');if(TAB==='global'&&el){const near=el.scrollHeight-el.scrollTop-el.clientHeight<80;el.innerHTML=this.html();if(near||this.focus)el.scrollTop=el.scrollHeight}else renderTabs()},
+ async send(f){const i=f.querySelector('[name=body]'),body=i.value.trim();if(!body)return;
+  if(!Cloud.profile){toast(t('e_no_profile'));return}
+  i.value='';this.draft='';this.focus=true;
+  const{data,error}=await Cloud.sb.rpc('send_global_message',{p_body:body});
+  if(error){i.value=body;this.draft=body;toast(errText(error));return}
+  this.onNew(data)}
+};
+function vGlobal(){
+ let h=`<h2>🌐 ${t('tab_global')}</h2><p class="sub">${t('gc_sub',{n:GLOBAL_MAX})}</p>`;
+ return h+`<div class="panel gchat"><div class="chatlog" id="glog">${Global.html()}</div>
+ ${Cloud.profile?`<form data-form="gchat" class="row chatin" novalidate><input id="gchatin" name="body" maxlength="${GMSG_MAX}" autocomplete="off" placeholder="${t('gc_ph')}" value="${esc(Global.draft)}"><button class="pri" type="submit">${t('so_send')}</button></form>`
+  :`<div class="empty" style="border:none">${t('so_needname')}<div class="actions" style="justify-content:center"><button class="pri" data-act="pickname">${t('ac_pick')}</button></div></div>`}</div>`}
+
 var Social={data:null,open:null,msgs:[],draft:'',chatFocus:false,ch:null,timer:null,claiming:false,seen:null,
  started(){return !!this.ch},
  start(){
@@ -1030,11 +1059,13 @@ var Social={data:null,open:null,msgs:[],draft:'',chatFocus:false,ch:null,timer:n
    .on('postgres_changes',{event:'*',schema:'public',table:'friendships'},()=>this.refresh())
    .on('postgres_changes',{event:'*',schema:'public',table:'trades'},()=>this.refresh())
    .on('postgres_changes',{event:'INSERT',schema:'public',table:'deliveries',filter:'user_id=eq.'+uid},()=>this.claim())
+   .on('postgres_changes',{event:'INSERT',schema:'public',table:'global_messages'},p=>Global.onNew(p.new))
    .subscribe();
-  this.timer=setInterval(()=>this.refresh(),45000);   // cadangan kalau realtime terputus
+  Global.load();
+  this.timer=setInterval(()=>{this.refresh();if(TAB==='global')Global.load()},45000);   // cadangan kalau realtime terputus
   this.refresh();
  },
- stop(){if(this.ch&&Cloud.sb)try{Cloud.sb.removeChannel(this.ch)}catch(e){}this.ch=null;clearInterval(this.timer);this.data=null;this.open=null;this.msgs=[];this.seen=null},
+ stop(){if(this.ch&&Cloud.sb)try{Cloud.sb.removeChannel(this.ch)}catch(e){}this.ch=null;Global.reset();clearInterval(this.timer);this.data=null;this.open=null;this.msgs=[];this.seen=null},
  badge(){const d=this.data;if(!d)return 0;return d.friends.reduce((a,f)=>a+(f.unread||0),0)+d.incoming.length+d.trades.filter(x=>x.dir==='in'&&x.status==='pending').length},
  friend(id){return this.data&&this.data.friends.find(f=>f.id===id)},
  async refresh(){
@@ -1077,7 +1108,7 @@ var Social={data:null,open:null,msgs:[],draft:'',chatFocus:false,ch:null,timer:n
  }
 };
 function renderTabs(){if(!S||!Cloud.user||!$('tabs'))return;
- const T=[['koleksi',S.snakes.length],['breeding'],['inkubator',S.clutches.length+S.snakes.filter(s=>s.gravid).length],['pasar'],['pesanan',S.orders.length],['dex',Object.keys(S.dex).length],['teman',Social.badge()||null,true],['panduan']];
+ const T=[['koleksi',S.snakes.length],['breeding'],['inkubator',S.clutches.length+S.snakes.filter(s=>s.gravid).length],['pasar'],['pesanan',S.orders.length],['dex',Object.keys(S.dex).length],['teman',Social.badge()||null,true],['global',Global.unread||null,true],['panduan']];
  $('tabs').innerHTML=T.map(([k,c,hot])=>`<button class="${TAB===k?'on':''}" data-act="tab" data-tab="${k}">${t('tab_'+k)}${c!=null?`<span class="cnt${hot?' hot':''}">${c}</span>`:''}</button>`).join('')}
 
 function miniList(arr,money_,owner){const items=(arr||[]).map(s=>{const tr=traitsOf(s.g);return `<div class="mini-row"><img class="mini" src="${thumb(tr,s.seed)}" alt=""><div><div>${sexIcon(s.sex)} ${esc(nameOf(tr,s.g))}</div><div class="het">${esc(hetText(s))}</div><div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g · ${money(value(s))}</div>${owner===undefined?'':originLine(s,owner)}</div></div>`});
@@ -1117,6 +1148,7 @@ function vTeman(){
  ${hist.length?`<h3>${t('tr_hist_h')}</h3><div class="tgrid">${hist.map(tradeCard).join('')}</div>`:''}`;
  return h}
 function afterRender(){
+ if(TAB==='global'){const g=$('glog');if(g)g.scrollTop=g.scrollHeight;const gi=$('gchatin');if(gi&&Global.focus){gi.focus();gi.setSelectionRange(gi.value.length,gi.value.length)}return}
  if(TAB!=='teman')return;
  const log=$('chatlog');if(log)log.scrollTop=log.scrollHeight;
  const ci=$('chatin');if(ci&&Social.chatFocus){ci.focus();ci.setSelectionRange(ci.value.length,ci.value.length)}
@@ -1208,13 +1240,14 @@ function boot(){
   if(el.id==='selM'){SEL.m=+el.value;render()}else if(el.id==='selF'){SEL.f=+el.value;render()}else if(el.id==='sort'){SORT=el.value;render()}});
  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
  document.addEventListener('submit',e=>{const f=e.target.closest('form[data-form]');if(!f)return;e.preventDefault();
-  const k=f.dataset.form;if(k==='addfriend'||k==='chat')guarded(()=>socialForm(k,f));else if(k.startsWith('dz_'))dangerGo(k.slice(3),f);else if(k==='profile')saveProfile(f);else handleForm(k,f)});
+  const k=f.dataset.form;if(k==='gchat'){Global.send(f);return}if(k==='addfriend'||k==='chat')guarded(()=>socialForm(k,f));else if(k.startsWith('dz_'))dangerGo(k.slice(3),f);else if(k==='profile')saveProfile(f);else handleForm(k,f)});
  document.addEventListener('input',e=>{const el=e.target;
   if(el.form&&el.form.dataset.form==='profile'&&Profile.edit){
    if(el.name==='bio'){Profile.edit.bio=el.value;const c=$('biocnt');if(c)c.textContent=el.value.length+'/'+BIO_MAX}
    else if(el.dataset.sc){const id=+el.dataset.sc,sel=Profile.edit.sel;const i=sel.indexOf(id);if(el.checked&&i<0&&sel.length<SHOW_MAX)sel.push(id);else if(!el.checked&&i>=0)sel.splice(i,1);paintProfileEdit()}}
   else if(el.name==='confirm'&&el.form&&/^dz_/.test(el.form.dataset.form||'')){const d=DZ[el.form.dataset.form.slice(3)];el.form.querySelector('button[type=submit]').disabled=el.value.trim()!==d.w;el.form.querySelector('.msg').innerHTML=''}
   else if(el.id==='chatin'){Social.draft=el.value;Social.chatFocus=true}
+  else if(el.id==='gchatin'){Global.draft=el.value;Global.focus=true}
   else if(el.dataset&&el.dataset.tbf&&TB){TB[el.dataset.tbf]=el.dataset.tbf==='note'?el.value:Math.max(0,Math.floor(+el.value||0));
    const sm=$('tbsum');if(el.dataset.tbf!=='note'&&sm){const gv=S.snakes.filter(s=>TB.mine.has(s.id)).reduce((a,s)=>a+value(s),0)+TB.om,rv=TB.coll.filter(s=>TB.theirs.has(s.id)).reduce((a,s)=>a+value(s),0)+TB.rm;sm.innerHTML=t('tb_sum',{g:money(gv),r:money(rv)})+(!TB.theirs.size&&!TB.rm?' · '+t('tb_gift'):'')}}});
  document.addEventListener('focusout',e=>{if(e.target.id==='chatin')Social.chatFocus=false});
