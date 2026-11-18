@@ -105,7 +105,7 @@ dl{display:grid;grid-template-columns:130px 1fr;gap:4px 10px;margin:12px 0;font-
 .social{display:grid;grid-template-columns:300px minmax(0,1fr);gap:14px;align-items:start}
 @media(max-width:760px){.social{grid-template-columns:1fr}}
 .col-left{display:grid;gap:8px}.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--mut);margin:6px 0 4px}
-.addf .row{flex-wrap:wrap}.addf .row input{flex:1 1 150px;min-width:0}.addf .row button{flex:1 1 auto}.addf .msg{margin-top:6px}
+.addf .row{flex-wrap:wrap}.addf .row input{flex:1 1 150px;min-width:0}.addf .row button{flex:1 1 auto}.addf .row button[data-act=profile_lookup]{flex:0 0 auto;padding-left:14px;padding-right:14px}.addf .msg{margin-top:6px}
 .frow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--panel);width:100%;text-align:left}
 .fbtn.on{border-color:var(--acc);background:#2c261a}
 button.sm{padding:4px 10px;font-size:12.5px}
@@ -130,6 +130,15 @@ button.sm{padding:4px 10px;font-size:12.5px}
 @media(max-width:560px){.gate-morphs{grid-template-columns:repeat(2,1fr)}}
 .gate-morphs figure{margin:0}.gate-morphs figcaption{font-size:12.5px;color:var(--mut);margin-top:4px;text-align:center}
 .gate-f{list-style:none;padding:0;margin:0 0 6px;display:grid;gap:6px;color:#dcd4c0}
+.linkbtn{background:none;border:0;padding:0;color:inherit;font:inherit;font-weight:inherit;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}.linkbtn:hover{color:var(--acc)}
+.prof .profhead{display:flex;gap:14px;align-items:center}.prof h2{margin:0 0 2px}
+.avatar{width:64px;height:64px;border-radius:50%;overflow:hidden;flex:none;background:#2c2820;border:2px solid var(--acc);display:grid;place-items:center}.avatar img{width:150%;height:150%;object-fit:cover}.avatar span{font-size:28px;font-weight:700;color:var(--acc)}
+.prof .bio{white-space:pre-line;margin:12px 0;line-height:1.5}
+.pstats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:10px 0 4px}.pstats div{background:#221f19;border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}.pstats b{display:block;font-size:18px}.pstats span{font-size:11.5px;color:var(--mut)}
+.showcase{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}.sc-card{position:relative;background:#221f19;border:1px solid var(--line);border-radius:12px;padding:8px}.sc-card img{width:100%;border-radius:8px;display:block}.sc-name{font-weight:700;margin-top:6px;font-size:13.5px}.sc-card .meta,.sc-card .het{font-size:11.5px}.sc-val{font-weight:700;color:var(--acc);margin-top:4px;font-size:13px}.sc-rank{position:absolute;top:12px;left:12px;background:var(--acc);color:#1b1408;font-weight:800;font-size:11px;border-radius:6px;padding:1px 6px}
+.pick{max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:4px}.form label.pickrow{display:flex;gap:10px;color:var(--fg,inherit);font-size:13px}.pickrow{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:8px;cursor:pointer}.pickrow:hover{background:#25211a}.pickrow.on{background:#2f2815}.pickrow input{width:auto;margin:0}.pickrow .ord{width:16px;font-weight:800;color:var(--acc);text-align:center}.pickrow .pk{display:flex;flex-direction:column;font-size:13px}.pickrow .meta{font-size:11.5px}
+textarea{width:100%;box-sizing:border-box;resize:vertical;font:inherit;background:#15130f;color:inherit;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+@media (max-width:640px){.pstats{grid-template-columns:repeat(3,1fr)}}
 .dzone{margin-top:18px;padding-top:12px;border-top:1px solid #4a2b26}.dzone .lbl{color:var(--bad)}.dzrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0}.dzrow p{margin:2px 0 0;font-size:12.5px;color:var(--mut)}.dzrow button{flex:none}
 .warnbox{border:1px solid #7a3d34;background:#2a1714;border-radius:12px;padding:10px 14px;margin:10px 0}.warnbox p{margin:6px 0;font-size:13.5px}
 button.danger{background:var(--bad);border-color:var(--bad);color:#1b0a07;font-weight:700}button.danger:hover:not(:disabled){background:#ec7d71}
@@ -202,6 +211,14 @@ id:{
  // header & tab
  hdr_date:'Turn dimainkan',hdr_bal:'Saldo',hdr_tubs:'Tub terpakai',hdr_season:'Musim',season_on:'Kawin 🌙',season_off:'Istirahat',advance:'Lanjut bulan ▶',
  tab_koleksi:'Koleksi',tab_breeding:'Kawinkan',tab_inkubator:'Inkubator',tab_pasar:'Pasar',tab_pesanan:'Pesanan',tab_dex:'Morph Dex',tab_panduan:'Panduan genetika',
+ pf_title:'Profil',pf_mine:'Profil saya',pf_view:'Lihat profil',pf_loading:'Memuat profil…',pf_you:'kamu',pf_joined:p=>`Bergabung ${p.d}`,
+ pf_turn:'Turn',pf_snakes:'Ular',pf_morphs:'Morph ditemukan',pf_hatched:'Menetas',pf_friends:'Teman',
+ pf_showcase:'Showcase',pf_nobio:'Belum ada bio.',pf_nobio_self:'Belum ada bio. Klik “Edit profil” untuk memperkenalkan dirimu.',
+ pf_noshow:'Belum memilih reptil untuk showcase.',pf_noshow_self:'Pilih sampai 5 reptil terbaikmu untuk dipamerkan di profil lewat “Edit profil”.',
+ pf_edit:'Edit profil',pf_add:'Tambah teman',pf_sent:'Permintaan terkirim',pf_accept:'Terima permintaan teman',pf_isfriend:'Berteman',pf_chat:'Chat',
+ pf_bio:'Bio',pf_bio_ph:'Ceritakan sedikit tentang dirimu & koleksimu…',pf_auto:'Pilih 5 terbaik otomatis',pf_clear:'Kosongkan',
+ pf_pick_hint:'Centang sampai 5 reptil. Urutan centang = urutan tampil. Diurutkan dari nilai tertinggi.',pf_nosnakes:'Koleksimu masih kosong.',pf_save:'Simpan profil',
+ t_prof_saved:'Profil disimpan.',e_not_found:'Pemain tidak ditemukan.',e_bio_too_long:'Bio maksimal 160 karakter.',e_showcase_too_many:'Showcase maksimal 5 reptil.',e_no_profile:'Pilih username dulu.',
  dz_title:'Zona bahaya',dz_sure:'Apakah kamu yakin?',dz_yes:'Ya, saya yakin',
  dz_type:p=>`Untuk konfirmasi, ketik <b>${p.w}</b> (huruf kapital semua) di bawah ini.`,dz_type_lbl:p=>`Ketik ${p.w}`,dz_mismatch:p=>`Ketik persis "${p.w}" untuk melanjutkan.`,
  dzr_h:'Reset akun',dzr_btn:'Reset akun',dzr_short:'Mulai game dari awal. Username, teman, dan chat tetap.',dzr_go:'Reset akun sekarang',
@@ -373,6 +390,14 @@ en:{
  h_born:p=>`${p.n} hatched`,h_new:p=>'New morph: '+p.n,h_laid:p=>`${p.c} laid ${p.n} fertile eggs`,h_gravid:p=>`${p.c} is gravid`,h_sold:p=>`${p.c} sold for ${p.v}`,h_quiet:' — a quiet month.',
  hdr_date:'Turns played',hdr_bal:'Balance',hdr_tubs:'Tubs used',hdr_season:'Season',season_on:'Breeding 🌙',season_off:'Off-season',advance:'Next month ▶',
  tab_koleksi:'Collection',tab_breeding:'Breeding',tab_inkubator:'Incubator',tab_pasar:'Market',tab_pesanan:'Orders',tab_dex:'Morph Dex',tab_panduan:'Genetics guide',
+ pf_title:'Profile',pf_mine:'My profile',pf_view:'View profile',pf_loading:'Loading profile…',pf_you:'you',pf_joined:p=>`Joined ${p.d}`,
+ pf_turn:'Turns',pf_snakes:'Snakes',pf_morphs:'Morphs found',pf_hatched:'Hatched',pf_friends:'Friends',
+ pf_showcase:'Showcase',pf_nobio:'No bio yet.',pf_nobio_self:'No bio yet. Click “Edit profile” to introduce yourself.',
+ pf_noshow:'No reptiles in the showcase yet.',pf_noshow_self:'Pick up to 5 of your best reptiles to show off on your profile via “Edit profile”.',
+ pf_edit:'Edit profile',pf_add:'Add friend',pf_sent:'Request sent',pf_accept:'Accept friend request',pf_isfriend:'Friends',pf_chat:'Chat',
+ pf_bio:'Bio',pf_bio_ph:'Tell others a bit about yourself & your collection…',pf_auto:'Auto-pick best 5',pf_clear:'Clear',
+ pf_pick_hint:'Tick up to 5 reptiles. Tick order = display order. Sorted by highest value.',pf_nosnakes:'Your collection is empty.',pf_save:'Save profile',
+ t_prof_saved:'Profile saved.',e_not_found:'Player not found.',e_bio_too_long:'Bio can be at most 160 characters.',e_showcase_too_many:'The showcase can hold at most 5 reptiles.',e_no_profile:'Pick a username first.',
  dz_title:'Danger zone',dz_sure:'Are you sure?',dz_yes:'Yes, I’m sure',
  dz_type:p=>`To confirm, type <b>${p.w}</b> (all capital letters) below.`,dz_type_lbl:p=>`Type ${p.w}`,dz_mismatch:p=>`Type exactly "${p.w}" to continue.`,
  dzr_h:'Reset account',dzr_btn:'Reset account',dzr_short:'Start the game over. Username, friends and chats stay.',dzr_go:'Reset account now',
@@ -700,7 +725,7 @@ function openSnake(id){const s=byId(id);if(!s)return;const tr=traitsOf(s.g),r=re
  ${s.gravid?`<p class="kbd">${t('gravid_nosale')}</p>`:''}`)}
 
 const SOCIAL_ACTS=new Set(['openchat','fr_accept','fr_decline','fr_remove','fr_remove_yes','tr_new','tb_close','tr_send','tr_accept','tr_accept_yes','tr_decline','tr_cancel']);
-const FREE_ACTS=new Set(['tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
+const FREE_ACTS=new Set(['profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
 // Jalankan aksi game: dikirim ke server (Edge Function "game") yang menghitung hasilnya.
 async function game(a){
  if(!Cloud.user||!S)return null;
@@ -718,6 +743,7 @@ function act(a,id,el){
  if(a==='gate_reload'){location.reload();return}
  if(a==='gate_retry'){Cloud.onLogin();return}
  if((Cloud.rpcBusy||Online.busy)&&!FREE_ACTS.has(a)){toast(t('busy'));return}
+ if(PROFILE_ACTS.has(a)){profileAct(a,el);return}
  if(SOCIAL_ACTS.has(a)){guarded(()=>socialAct(a,el));return}
  if(cloudAct(a,el))return;
  if(a==='tab'&&el.dataset.tab==='teman'&&Social.ch)Social.refresh();
@@ -849,7 +875,7 @@ function showSetPassword(){modal(`<h2>${t('pw_h')}</h2><form data-form="setpw" c
 function showAccount(){const c=Cloud;const tm=c.lastSaved?new Date(c.lastSaved).toLocaleTimeString(LANG==='id'?'id-ID':'en-GB',{hour:'2-digit',minute:'2-digit'}):'';
  const st={sync:t('ac_syncing'),saved:t('ac_saved',{t:tm}),error:t('ac_error',{e:esc(errText(c.err))})}[c.status]||'';
  modal(`<h2>${t('ac_h')}</h2><dl><dt>Username</dt><dd>${c.profile?esc(c.profile.username):t('ac_notset')}</dd><dt>Email</dt><dd>${esc(c.user.email||'')}</dd><dt>${t('ac_status')}</dt><dd>${st}</dd><dt>${t('ac_mode')}</dt><dd>${t('mode_online_t')}</dd></dl>
- <div class="actions"><button class="pri" data-act="syncnow">${t('ac_syncnow')}</button>${c.profile?'':`<button data-act="pickname">${t('ac_pick')}</button>`}<button data-act="logout">${t('ac_logout')}</button><button class="ghost" data-act="close">${t('close')}</button></div>
+ <div class="actions">${c.profile?`<button class="pri" data-act="profile_me">👤 ${t('pf_mine')}</button>`:''}<button data-act="syncnow">${t('ac_syncnow')}</button>${c.profile?'':`<button data-act="pickname">${t('ac_pick')}</button>`}<button data-act="logout">${t('ac_logout')}</button><button class="ghost" data-act="close">${t('close')}</button></div>
  <div class="dzone"><div class="lbl">${t('dz_title')}</div>
   <div class="dzrow"><div><b>${t('dzr_h')}</b><p>${t('dzr_short')}</p></div><button class="danger sm" data-act="dz_open" data-k="reset">${t('dzr_btn')}</button></div>
   <div class="dzrow"><div><b>${t('dzd_h')}</b><p>${t('dzd_short')}</p></div><button class="danger sm" data-act="dz_open" data-k="delete">${t('dzd_btn')}</button></div></div>`)}
@@ -908,6 +934,65 @@ function cloudAct(a,el){
    m.innerHTML=error?'<span class="warn">'+AUTH_ERR(error.message)+'</span>':`<span class="ok">${t('fg_sent',{e:esc(email)})}</span>`}
  };
  if(!map[a])return false;map[a]();return true}
+
+/* ========= PROFIL ========= */
+const Profile={cur:null,edit:null};const BIO_MAX=160,SHOW_MAX=5;
+const longDate=d=>new Date(d).toLocaleDateString(LANG==='id'?'id-ID':'en-GB',{day:'numeric',month:'long',year:'numeric'});
+const profLink=u=>u?`<button type="button" class="linkbtn" data-act="profile" data-u="${esc(u)}">${esc(u)}</button>`:'';
+function profAvatar(p){const s=p.showcase[0];return s?`<img src="${thumb(traitsOf(s.g),s.seed)}" alt="">`:`<span>${esc(p.username.charAt(0).toUpperCase())}</span>`}
+function showcaseCard(s,i){const tr=traitsOf(s.g),nm=nameOf(tr,s.g),ht=hetText(s);
+ return `<div class="sc-card"><div class="sc-rank">#${i+1}</div><img src="${thumb(tr,s.seed)}" alt=""><div class="sc-name">${sexIcon(s.sex)} ${esc(s.nick||nm)}</div>${s.nick?`<div class="meta">${esc(nm)}</div>`:''}${ht?`<div class="het">${esc(ht)}</div>`:''}
+ <div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g${s.gen?' · Gen '+s.gen:''}</div><div class="sc-val">≈ ${money(value(s))}</div></div>`}
+async function openProfile(u){u=String(u||'').trim();if(!u)return;
+ modal(`<div class="empty" style="border:none">${t('pf_loading')}</div>`);
+ const{data,error}=await Cloud.sb.rpc('get_profile',{p_username:u});
+ if(error){modal(`<h2>${t('pf_title')}</h2><p class="warn">${errText(error)}</p><div class="actions"><button class="ghost" data-act="close">${t('close')}</button></div>`);return}
+ showProfile(data)}
+function showProfile(p){Profile.cur=p;const self=p.relation==='self',st=p.stats;
+ const tiles=[['pf_turn',st.turn],['pf_snakes',st.snakes],['pf_morphs',st.morphs],['pf_hatched',st.hatched],['pf_friends',st.friends]];
+ const U=esc(p.username);let btns='';
+ if(self)btns=`<button class="pri" data-act="prof_edit">✏️ ${t('pf_edit')}</button>`;
+ else if(p.relation==='none')btns=`<button class="pri" data-act="prof_add" data-u="${U}">➕ ${t('pf_add')}</button>`;
+ else if(p.relation==='pending_out')btns=`<button disabled>⏳ ${t('pf_sent')}</button>`;
+ else if(p.relation==='pending_in')btns=`<button class="pri" data-act="prof_add" data-u="${U}">👋 ${t('pf_accept')}</button>`;
+ else btns=`<span class="tag g">✓ ${t('pf_isfriend')}</span><button class="pri" data-act="prof_chat" data-uid="${p.id}">💬 ${t('pf_chat')}</button>`;
+ modal(`<div class="prof"><div class="profhead"><div class="avatar">${profAvatar(p)}</div><div><h2>${U}${self?` <span class="tag">${t('pf_you')}</span>`:''}</h2><div class="kbd">${t('pf_joined',{d:longDate(p.joined)})}</div></div></div>
+ <p class="bio ${p.bio?'':'kbd'}">${p.bio?esc(p.bio):t(self?'pf_nobio_self':'pf_nobio')}</p>
+ <div class="pstats">${tiles.map(([k,v])=>`<div><b>${fmt(v)}</b><span>${t(k)}</span></div>`).join('')}</div>
+ <h3>🏆 ${t('pf_showcase')}</h3>
+ ${p.showcase.length?`<div class="showcase">${p.showcase.map(showcaseCard).join('')}</div>`:`<p class="kbd">${t(self?'pf_noshow_self':'pf_noshow')}</p>`}
+ <div class="actions">${btns}<button class="ghost" data-act="close">${t('close')}</button></div></div>`)}
+function showProfileEdit(){const p=Profile.cur;Profile.edit={bio:p.bio||'',sel:p.showcase.map(s=>s.id).filter(id=>byId(id))};paintProfileEdit()}
+function paintProfileEdit(){const e=Profile.edit;const old=document.querySelector('#modal .pick');const top=old?old.scrollTop:0;
+ const list=S.snakes.slice().sort((a,b)=>value(b)-value(a));
+ modal(`<h2>✏️ ${t('pf_edit')}</h2><form data-form="profile" class="form" novalidate>
+ <label><span class="row" style="justify-content:space-between"><span>${t('pf_bio')}</span><span class="kbd" id="biocnt">${e.bio.length}/${BIO_MAX}</span></span>
+ <textarea name="bio" maxlength="${BIO_MAX}" rows="3" placeholder="${t('pf_bio_ph')}">${esc(e.bio)}</textarea></label>
+ <div class="row" style="justify-content:space-between;align-items:center;margin-top:6px"><div class="lbl" style="margin:0">🏆 ${t('pf_showcase')} (<span id="sccnt">${e.sel.length}</span>/${SHOW_MAX})</div><span class="row"><button type="button" class="sm" data-act="prof_auto">⭐ ${t('pf_auto')}</button><button type="button" class="sm ghost" data-act="prof_clear">${t('pf_clear')}</button></span></div>
+ <p class="kbd" style="margin:4px 0 8px">${t('pf_pick_hint')}</p>
+ <div class="pick">${list.length?list.map(s=>{const tr=traitsOf(s.g),i=e.sel.indexOf(s.id);return `<label class="pickrow ${i>=0?'on':''}"><input type="checkbox" data-sc="${s.id}" ${i>=0?'checked':''} ${i<0&&e.sel.length>=SHOW_MAX?'disabled':''}><span class="ord">${i>=0?i+1:''}</span><img class="mini" src="${thumb(tr,s.seed)}" alt=""><span class="pk"><b>${sexIcon(s.sex)} ${esc(s.nick||nameOf(tr,s.g))}</b><span class="meta">${code(s)} · ${ageTxt(s.age)} · ${money(value(s))}</span></span></label>`}).join(''):`<p class="kbd">${t('pf_nosnakes')}</p>`}</div>
+ <div class="msg"></div><div class="actions"><button class="pri" type="submit">${t('pf_save')}</button><button type="button" class="ghost" data-act="prof_back">${t('btn_cancel')}</button></div></form>`);
+ const pk=document.querySelector('#modal .pick');if(pk)pk.scrollTop=top}
+async function saveProfile(f){const e=Profile.edit;const m=f.querySelector('.msg'),btn=f.querySelector('button[type=submit]');
+ if(e.bio.length>BIO_MAX){m.innerHTML=`<span class="warn">${t('e_bio_too_long')}</span>`;return}
+ btn.disabled=true;const{data,error}=await Cloud.sb.rpc('update_profile',{p_bio:e.bio,p_showcase:e.sel});btn.disabled=false;
+ if(error){m.innerHTML=`<span class="warn">${errText(error)}</span>`;return}
+ Profile.edit=null;showProfile(data);toast(t('t_prof_saved'))}
+async function profileAct(a,el){
+ switch(a){
+  case 'profile':return openProfile(el.dataset.u);
+  case 'profile_me':return Cloud.profile&&openProfile(Cloud.profile.username);
+  case 'profile_lookup':{const i=el.closest('form').querySelector('[name=username]');const u=i.value.trim();if(!u){i.focus();return}return openProfile(u)}
+  case 'prof_edit':return showProfileEdit();
+  case 'prof_back':Profile.edit=null;return showProfile(Profile.cur);
+  case 'prof_auto':Profile.edit.sel=S.snakes.slice().sort((x,y)=>value(y)-value(x)).slice(0,SHOW_MAX).map(s=>s.id);return paintProfileEdit();
+  case 'prof_clear':Profile.edit.sel=[];return paintProfileEdit();
+  case 'prof_chat':closeModal();TAB='teman';render();return Social.openChat(el.dataset.uid);
+  case 'prof_add':{const u=el.dataset.u;el.disabled=true;const{data,error}=await Cloud.sb.rpc('send_friend_request',{p_username:u});
+   if(error){el.disabled=false;toast(errText(error));return}
+   toast(t('so_r_'+data,{u:esc(u)}));Social.refresh();return openProfile(u)}
+ }}
+const PROFILE_ACTS=new Set(['profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','prof_add']);
 
 /* ========= TEMAN, CHAT & TRADING ========= */
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -981,7 +1066,7 @@ function miniList(arr,money_){const items=(arr||[]).map(s=>{const tr=traitsOf(s.
 function tradeCard(x){
  const get=x.dir==='in'?[x.offer,x.offer_money]:[x.request,x.request_money],give=x.dir==='in'?[x.request,x.request_money]:[x.offer,x.offer_money];
  const pend=x.status==='pending';
- return `<div class="panel trade ${pend?'':'done'}"><div class="row" style="justify-content:space-between"><b>${(()=>{const u=x.username?esc(x.username):`<i class="gone">${t('tr_gone')}</i>`;return x.dir==='in'?t('tr_from',{u}):t('tr_to',{u})})()}</b><span class="tag ${x.status==='accepted'?'g':pend?'a':''}">${t('tr_st_'+x.status)}</span></div>
+ return `<div class="panel trade ${pend?'':'done'}"><div class="row" style="justify-content:space-between"><b>${(()=>{const u=x.username?profLink(x.username):`<i class="gone">${t('tr_gone')}</i>`;return x.dir==='in'?t('tr_from',{u}):t('tr_to',{u})})()}</b><span class="tag ${x.status==='accepted'?'g':pend?'a':''}">${t('tr_st_'+x.status)}</span></div>
  ${x.note?`<p class="note">“${esc(x.note)}”</p>`:''}
  <div class="grid2" style="margin-top:8px"><div><div class="lbl">${t('tr_get')}</div>${miniList(get[0],get[1])}</div><div><div class="lbl">${t('tr_give')}</div>${miniList(give[0],give[1])}</div></div>
  ${pend&&x.dir==='in'?`<div class="actions"><button class="pri" data-act="tr_accept" data-tid="${x.id}">${t('tr_accept')}</button><button data-act="tr_decline" data-tid="${x.id}">${t('tr_decline')}</button></div>`:''}
@@ -994,15 +1079,15 @@ function vTeman(){
  const d=Social.data;if(!d)return h+`<div class="empty">${t('so_loading')}</div>`;
  const fr=d.friends,cur=Social.open&&Social.friend(Social.open);
  h+=`<div class="social"><div class="col-left">
- <form data-form="addfriend" class="panel addf" novalidate><div class="lbl">${t('so_add_h')}</div><div class="row"><input name="username" maxlength="20" placeholder="${t('so_add_ph')}" autocomplete="off"><button class="pri" type="submit">${t('so_add_btn')}</button></div><div class="msg"></div></form>
- ${d.incoming.length?`<div class="lbl">${t('so_incoming_h')}</div>${d.incoming.map(r=>`<div class="frow"><span>👋 <b>${esc(r.username)}</b></span><span class="row"><button class="pri sm" data-act="fr_accept" data-fid="${r.fid}">${t('so_accept')}</button><button class="sm" data-act="fr_decline" data-fid="${r.fid}">${t('so_decline')}</button></span></div>`).join('')}`:''}
+ <form data-form="addfriend" class="panel addf" novalidate><div class="lbl">${t('so_add_h')}</div><div class="row"><input name="username" maxlength="20" placeholder="${t('so_add_ph')}" autocomplete="off"><button class="pri" type="submit">${t('so_add_btn')}</button><button type="button" data-act="profile_lookup" title="${t('pf_view')}" aria-label="${t('pf_view')}">👤</button></div><div class="msg"></div></form>
+ ${d.incoming.length?`<div class="lbl">${t('so_incoming_h')}</div>${d.incoming.map(r=>`<div class="frow"><span>👋 <b>${profLink(r.username)}</b></span><span class="row"><button class="pri sm" data-act="fr_accept" data-fid="${r.fid}">${t('so_accept')}</button><button class="sm" data-act="fr_decline" data-fid="${r.fid}">${t('so_decline')}</button></span></div>`).join('')}`:''}
  <div class="lbl">${t('so_friends_h')} (${fr.length})</div>
  ${fr.length?fr.map(f=>`<button class="frow fbtn ${Social.open===f.id?'on':''}" data-act="openchat" data-uid="${f.id}"><span>🦎 ${esc(f.username)}</span>${f.unread?`<span class="cnt hot">${f.unread}</span>`:''}</button>`).join(''):`<p class="kbd">${t('so_nofriends')}</p>`}
- ${d.outgoing.length?`<div class="lbl">${t('so_outgoing_h')}</div>${d.outgoing.map(r=>`<div class="frow"><span class="kbd">⏳ ${esc(r.username)}</span><button class="sm ghost" data-act="fr_remove" data-uid="${r.id}" data-u="${esc(r.username)}" data-quiet="1">${t('so_cancel_req')}</button></div>`).join('')}`:''}
+ ${d.outgoing.length?`<div class="lbl">${t('so_outgoing_h')}</div>${d.outgoing.map(r=>`<div class="frow"><span class="kbd">⏳ ${profLink(r.username)}</span><button class="sm ghost" data-act="fr_remove" data-uid="${r.id}" data-u="${esc(r.username)}" data-quiet="1">${t('so_cancel_req')}</button></div>`).join('')}`:''}
  </div><div class="col-right panel">`;
  if(!cur)h+=`<div class="empty" style="border:none">${t('so_chat_pick')}</div>`;
  else{
-  h+=`<div class="chathead"><b>🦎 ${esc(cur.username)}</b><span class="row"><button class="pri sm" data-act="tr_new" data-uid="${cur.id}">${t('so_trade_btn')}</button><button class="sm ghost" data-act="fr_remove" data-uid="${cur.id}" data-u="${esc(cur.username)}">${t('so_remove')}</button></span></div>
+  h+=`<div class="chathead"><b>🦎 ${esc(cur.username)}</b><span class="row"><button class="sm" data-act="profile" data-u="${esc(cur.username)}">👤 ${t('pf_view')}</button><button class="pri sm" data-act="tr_new" data-uid="${cur.id}">${t('so_trade_btn')}</button><button class="sm ghost" data-act="fr_remove" data-uid="${cur.id}" data-u="${esc(cur.username)}">${t('so_remove')}</button></span></div>
   <div class="chatlog" id="chatlog">${Social.msgs.length?Social.msgs.map(m=>{const mine=m.sender===Cloud.user.id;return `<div class="bub ${mine?'me':''}"><div>${esc(m.body)}</div><span>${mine?t('so_you'):esc(cur.username)} · ${hm(m.created_at)}</span></div>`}).join(''):`<p class="kbd" style="text-align:center;margin:30px 0">${t('so_chat_empty',{u:esc(cur.username)})}</p>`}</div>
   <form data-form="chat" class="row chatin" novalidate><input id="chatin" name="body" maxlength="1000" autocomplete="off" placeholder="${t('so_chat_ph')}" value="${esc(Social.draft)}"><button class="pri" type="submit">${t('so_send')}</button></form>`}
  h+=`</div></div>`;
@@ -1103,9 +1188,12 @@ function boot(){
   if(el.id==='selM'){SEL.m=+el.value;render()}else if(el.id==='selF'){SEL.f=+el.value;render()}else if(el.id==='sort'){SORT=el.value;render()}});
  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
  document.addEventListener('submit',e=>{const f=e.target.closest('form[data-form]');if(!f)return;e.preventDefault();
-  const k=f.dataset.form;if(k==='addfriend'||k==='chat')guarded(()=>socialForm(k,f));else if(k.startsWith('dz_'))dangerGo(k.slice(3),f);else handleForm(k,f)});
+  const k=f.dataset.form;if(k==='addfriend'||k==='chat')guarded(()=>socialForm(k,f));else if(k.startsWith('dz_'))dangerGo(k.slice(3),f);else if(k==='profile')saveProfile(f);else handleForm(k,f)});
  document.addEventListener('input',e=>{const el=e.target;
-  if(el.name==='confirm'&&el.form&&/^dz_/.test(el.form.dataset.form||'')){const d=DZ[el.form.dataset.form.slice(3)];el.form.querySelector('button[type=submit]').disabled=el.value.trim()!==d.w;el.form.querySelector('.msg').innerHTML=''}
+  if(el.form&&el.form.dataset.form==='profile'&&Profile.edit){
+   if(el.name==='bio'){Profile.edit.bio=el.value;const c=$('biocnt');if(c)c.textContent=el.value.length+'/'+BIO_MAX}
+   else if(el.dataset.sc){const id=+el.dataset.sc,sel=Profile.edit.sel;const i=sel.indexOf(id);if(el.checked&&i<0&&sel.length<SHOW_MAX)sel.push(id);else if(!el.checked&&i>=0)sel.splice(i,1);paintProfileEdit()}}
+  else if(el.name==='confirm'&&el.form&&/^dz_/.test(el.form.dataset.form||'')){const d=DZ[el.form.dataset.form.slice(3)];el.form.querySelector('button[type=submit]').disabled=el.value.trim()!==d.w;el.form.querySelector('.msg').innerHTML=''}
   else if(el.id==='chatin'){Social.draft=el.value;Social.chatFocus=true}
   else if(el.dataset&&el.dataset.tbf&&TB){TB[el.dataset.tbf]=el.dataset.tbf==='note'?el.value:Math.max(0,Math.floor(+el.value||0));
    const sm=$('tbsum');if(el.dataset.tbf!=='note'&&sm){const gv=S.snakes.filter(s=>TB.mine.has(s.id)).reduce((a,s)=>a+value(s),0)+TB.om,rv=TB.coll.filter(s=>TB.theirs.has(s.id)).reduce((a,s)=>a+value(s),0)+TB.rm;sm.innerHTML=t('tb_sum',{g:money(gv),r:money(rv)})+(!TB.theirs.size&&!TB.rm?' · '+t('tb_gift'):'')}}});

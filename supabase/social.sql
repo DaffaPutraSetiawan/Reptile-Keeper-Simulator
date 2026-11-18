@@ -424,6 +424,63 @@ begin
 end $$;
 
 -- ---------------------------------------------------------------------
+-- PROFIL: lihat profil sendiri / orang lain, edit bio & showcase
+-- ---------------------------------------------------------------------
+-- Profil publik pemain (berdasarkan username). Showcase memakai versi publik ular
+-- (gen het yang belum terbukti tidak dibocorkan) dan hanya ular yang masih dimiliki.
+create or replace function public.get_profile(p_username text)
+returns jsonb language plpgsql stable security definer set search_path = '' as $$
+declare me uuid := public._me(); p public.profiles; v_data jsonb; v_rel text; v_fid bigint; f public.friendships;
+begin
+  select * into p from public.profiles where lower(username) = lower(btrim(coalesce(p_username, '')));
+  if not found then raise exception 'not_found'; end if;
+  select data into v_data from public.saves where user_id = p.id;
+  v_data := coalesce(v_data, '{}'::jsonb);
+  if p.id = me then v_rel := 'self';
+  else
+    select * into f from public.friendships
+     where least(requester, addressee) = least(me, p.id) and greatest(requester, addressee) = greatest(me, p.id);
+    if not found then v_rel := 'none';
+    elsif f.status = 'accepted' then v_rel := 'friends'; v_fid := f.id;
+    elsif f.requester = me then v_rel := 'pending_out'; v_fid := f.id;
+    else v_rel := 'pending_in'; v_fid := f.id;
+    end if;
+  end if;
+  return jsonb_build_object(
+    'id', p.id, 'username', p.username, 'bio', p.bio, 'joined', p.created_at, 'relation', v_rel, 'fid', v_fid,
+    'stats', jsonb_build_object(
+      'turn', coalesce((v_data ->> 'turn')::int, 0),
+      'snakes', jsonb_array_length(coalesce(v_data -> 'snakes', '[]'::jsonb)),
+      'morphs', (select count(*) from jsonb_object_keys(coalesce(v_data -> 'dex', '{}'::jsonb))),
+      'hatched', coalesce((v_data -> 'stats' ->> 'hatched')::int, 0),
+      'friends', (select count(*) from public.friendships where status = 'accepted' and p.id in (requester, addressee))),
+    'showcase', coalesce((
+      select jsonb_agg(public._public_snake(e) order by array_position(p.showcase, (e ->> 'id')::int))
+        from jsonb_array_elements(coalesce(v_data -> 'snakes', '[]'::jsonb)) e
+       where (e ->> 'id')::int = any (p.showcase)), '[]'::jsonb));
+end $$;
+
+-- Ubah bio (maks. 160 karakter) & showcase (maks. 5 ular milik sendiri, urutan dipertahankan).
+create or replace function public.update_profile(p_bio text, p_showcase integer[])
+returns jsonb language plpgsql security definer set search_path = '' as $$
+declare me uuid := public._me(); v_bio text; v_ids integer[]; v_owned integer[]; v_name text;
+begin
+  -- buang karakter kontrol kecuali baris baru
+  v_bio := btrim(regexp_replace(coalesce(p_bio, ''), '[\x01-\x09\x0b-\x1f\x7f]', '', 'g'));
+  if char_length(v_bio) > 160 then raise exception 'bio_too_long'; end if;
+  select coalesce(array_agg(x order by o), '{}') into v_ids
+    from (select x, min(o) as o from unnest(coalesce(p_showcase, '{}'::integer[])) with ordinality u(x, o)
+           where x is not null group by x) q;
+  if cardinality(v_ids) > 5 then raise exception 'showcase_too_many'; end if;
+  select coalesce(array_agg((e ->> 'id')::int), '{}') into v_owned
+    from public.saves s, jsonb_array_elements(coalesce(s.data -> 'snakes', '[]'::jsonb)) e where s.user_id = me;
+  if not (v_ids <@ v_owned) then raise exception 'snake_not_found'; end if;
+  update public.profiles set bio = v_bio, showcase = v_ids where id = me returning username into v_name;
+  if v_name is null then raise exception 'no_profile'; end if;
+  return public.get_profile(v_name);
+end $$;
+
+-- ---------------------------------------------------------------------
 -- TRADING
 -- ---------------------------------------------------------------------
 -- Buat tawaran: ular & uang milik penawar langsung masuk escrow.
@@ -570,6 +627,8 @@ returns void language plpgsql security definer set search_path = '' as $$
 begin
   perform public._cancel_pending_trades(p_user, 'reset');
   delete from public.deliveries where user_id = p_user and claimed_at is null;
+  -- id ular dimulai lagi dari 1 setelah reset, jadi showcase lama tidak berlaku lagi
+  update public.profiles set showcase = '{}' where id = p_user;
 end $$;
 
 -- Pemain menghapus akunnya sendiri. Harus mengetik DELETE. Trigger di bawah ikut berjalan.
@@ -624,7 +683,8 @@ begin
     'send_message(uuid, text)', 'get_messages(uuid, bigint, integer)', 'mark_read(uuid)',
     'get_social()', 'get_friend_collection(uuid)',
     'create_trade(uuid, integer[], integer, integer[], integer, text, bigint)',
-    'accept_trade(bigint, bigint)', 'decline_trade(bigint)', 'cancel_trade(bigint)', 'claim_deliveries(bigint)', 'delete_my_account(text)'] loop
+    'accept_trade(bigint, bigint)', 'decline_trade(bigint)', 'cancel_trade(bigint)', 'claim_deliveries(bigint)', 'delete_my_account(text)',
+    'get_profile(text)', 'update_profile(text, integer[])'] loop
     execute format('revoke all on function public.%s from public, anon', f);
     execute format('grant execute on function public.%s to authenticated', f);
   end loop;

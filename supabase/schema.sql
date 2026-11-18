@@ -13,6 +13,11 @@ create table if not exists public.profiles (
   created_at timestamptz not null default now()
 );
 
+-- Profil publik: bio singkat & showcase (maks. 5 id ular dari save pemiliknya, urutan dipilih pemain).
+-- Diubah lewat fungsi update_profile (lihat social.sql), tidak langsung dari browser.
+alter table public.profiles add column if not exists bio text not null default '' check (char_length(bio) <= 160);
+alter table public.profiles add column if not exists showcase integer[] not null default '{}' check (cardinality(showcase) <= 5);
+
 alter table public.profiles enable row level security;
 
 drop policy if exists "profiles: semua pemain login boleh lihat" on public.profiles;
