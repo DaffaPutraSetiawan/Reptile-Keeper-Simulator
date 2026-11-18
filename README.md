@@ -25,6 +25,7 @@ Bisa juga dimainkan online lewat GitHub Pages: **Settings → Pages → Deploy f
 - **Ekonomi**: biaya pakan & rak, harga pasar yang naik turun dan bisa jenuh, iklan, event, pesanan pembeli
 - **Morph Dex** dengan 32 morph target (Bumblebee, Killer Bee, Lemon Blast, Spinner, Snow, dan lainnya)
 - **Gambar ular prosedural** yang dibuat dari genetika tiap ular
+- **Dua bahasa: Indonesia & Inggris**, bisa diganti kapan saja lewat tombol ID / EN di header. Bahasa awal mengikuti bahasa browser, lalu pilihan pemain diingat.
 
 ## Struktur
 
