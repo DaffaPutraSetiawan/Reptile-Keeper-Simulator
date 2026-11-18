@@ -147,11 +147,9 @@ function matches(o){return S.snakes.filter(s=>{const tr=traitsOf(s.g);return o.t
 /* ========= GAME BARU ========= */
 function newGame(){
  S={v:2,rev:0,turn:0,money:2000,racks:2,nextId:1,snakes:[],clutches:[],market:[],orders:[],dex:{},mm:{},log:[],event:null,stats:{hatched:0,sold:0,earned:0,clutches:0}};
- addSnake(newSnake({sex:'M',age:26,w:1080,g:G({pastel:[1,0]})}));
- addSnake(newSnake({sex:'M',age:14,w:690,g:G({albino:[1,1]}),hp:{albino:1}}));
- addSnake(newSnake({sex:'F',age:38,w:1880,g:G({albino:[1,0]}),hp:{albino:1}}));
- addSnake(newSnake({sex:'F',age:34,w:1690,g:G({spider:[1,0]})}));
- addSnake(newSnake({sex:'F',age:11,w:640,g:G({enchi:[1,0],clown:[R()<.5?1:0,0]}),hp:{clown:.5}}));
+ // Ular awal: sepasang yang sudah cukup umur untuk langsung dikawinkan
+ addSnake(newSnake({sex:'M',age:14,w:760,g:G({albino:[1,0]}),hp:{albino:1}}));   // jantan Normal het Albino
+ addSnake(newSnake({sex:'F',age:30,w:1750,g:G({albino:[1,1]}),hp:{albino:1}}));   // betina Albino
  S.snakes.forEach(s=>{s.src={t:'starter',turn:0};dexAdd(traitsOf(s.g))});
  refreshMarket();S.orders=[genOrder(),genOrder()];
  log('l_welcome',{v:money(2000)},'star');
