@@ -144,7 +144,7 @@ button.sm{padding:4px 10px;font-size:12.5px}
 'use strict';
 /* ========= LOGIKA INTI (core.js, sama dengan yang dipakai server) ========= */
 const Core=window.MorphCore;
-const {LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,inSeason,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches}=Core;
+const {LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches}=Core;
 
 /* ========= UTIL ========= */
 const lerp=(a,b,t)=>a.map((x,i)=>x+(b[i]-x)*t);
@@ -165,13 +165,13 @@ id:{
  r_gravid:'Sedang bunting',r_fage:'Umur belum cukup (min. 24 bulan)',r_fweight:'Berat belum cukup (min. 1.500 g)',r_recover:'Masih pemulihan setelah bertelur',r_listed:'Sedang diiklankan',
  r_mage:'Umur belum cukup (min. 10 bulan)',r_mweight:'Berat belum cukup (min. 650 g)',r_mpairs:'Sudah 4 pasangan bulan ini',r_paired:'Sudah dipasangkan bulan ini',
  // catatan
- l_welcome:p=>`Selamat datang di Morph Lab! Kamu mulai dengan 5 ekor ball python, ${p.v} dan 2 rak (20 tub). Musim kawin mulai bulan depan (Okt–Mar).`,
+ l_welcome:p=>`Selamat datang di Morph Lab! Kamu mulai dengan 5 ekor ball python, ${p.v} dan 2 rak (20 tub). Ular yang sudah cukup umur bisa langsung dikawinkan.`,
  l_hatch:p=>`🥚 Clutch ${p.dam} × ${p.sire} menetas: ${p.born} bayi${p.dead?`, ${p.dead} mati dalam telur`:''}.`,
  l_newmorph:p=>`✨ Morph baru tercatat di Morph Dex: ${p.n}!`,
  l_proven:p=>`🔬 ${p.c} terbukti het ${p.g} (keturunannya visual).`,
  l_laid:p=>`🥚 ${p.c} bertelur ${p.n} butir: ${p.good} subur, ${p.slug} slug. Masuk inkubator (±58 hari).`,
  l_ovul:p=>`💛 ${p.f} berovulasi setelah kawin dengan ${p.m}. Akan bertelur dalam ±2 bulan.`,
- l_noovul:p=>`${p.f} tidak berovulasi bulan ini. Coba pasangkan lagi selama masih musim.`,
+ l_noovul:p=>`${p.f} tidak berovulasi bulan ini. Coba pasangkan lagi.`,
  l_soldad:p=>`💰 ${p.c} ${p.n} laku lewat iklan: ${p.v}.`,
  l_costs:p=>`Biaya bulanan: pakan ${p.food}, listrik & rak ${p.util}${p.over?`, tub darurat ${p.over} (kapasitas penuh!)`:''}.`,
  l_orderexp:p=>`Pesanan ${buyerName(p)} (${p.n}) kedaluwarsa.`,
@@ -205,8 +205,8 @@ id:{
  f_all:'Semua',f_M:'♂ Jantan',f_F:'♀ Betina',f_ready:'Siap kawin',f_listed:'Diiklankan',
  sort_by:'Urutkan',sort_val:'Nilai',sort_age:'Umur',sort_new:'Terbaru',col_empty:'Tidak ada ular untuk filter ini.',
  // kawinkan
- br_sub:'Pilih pasangan, lihat peluang tiap morph keturunannya, lalu pasangkan saat musim kawin (Okt–Mar). Peluang ovulasi ±55% per bulan.',
- br_need:'Kamu butuh minimal 1 jantan dan 1 betina.',ready_ok:'✓ Siap kawin',pair_btn:'Pasangkan bulan ini',offseason:'Di luar musim kawin. Tunggu Oktober.',
+ br_sub:'Pilih pasangan, lihat peluang tiap morph keturunannya, lalu pasangkan kapan saja selama keduanya sudah cukup umur (jantan ≥10 bulan, betina ≥24 bulan). Peluang ovulasi ±55% per bulan.',
+ br_need:'Kamu butuh minimal 1 jantan dan 1 betina.',ready_ok:'✓ Siap kawin',pair_btn:'Pasangkan bulan ini',
  odds_h:'Peluang keturunan',
  odds_sub:p=>`Estimasi nilai rata-rata per bayi: <b>${p.v}</b>. Keturunan yang tampak normal untuk gen resesif: ${p.h||'tidak membawa het yang diketahui'}.`,
  th_morph:'Morph',th_chance:'Peluang',th_value:'Nilai bayi ♂',tag_new:'baru',odds_more:p=>`+${p.n} kombinasi lain dengan peluang lebih kecil.`,
@@ -301,13 +301,13 @@ id:{
  e_busy:'Tunggu sebentar, sedang memproses…',e_sync_timeout:'Sinkronisasi terlalu lama. Coba lagi.',e_sync_failed:'Gagal menyimpan ke cloud. Coba lagi.',
  t_online:'🌐 Game dimuat. Semua aksi dihitung dan disimpan di server.',t_reset:'Game online dimulai ulang dari awal.',t_reloaded:'Save dimuat ulang dari server.',
  mode_online_t:'Online · dihitung server',ac_mode:'Mode',
- e_not_season:'Di luar musim kawin (Okt–Mar).',e_not_ready:'Ular belum siap kawin.',e_already_paired:'Betina ini sudah dipasangkan bulan ini.',
+ e_not_ready:'Ular belum siap kawin.',e_already_paired:'Betina ini sudah dipasangkan bulan ini.',
  e_gravid_locked:'Betina bunting tidak bisa dijual atau diiklankan sampai bertelur.',e_listing_gone:'Ular di pasar ini sudah tidak tersedia.',
  e_order_gone:'Pesanan ini sudah tidak berlaku.',e_order_mismatch:'Ular ini tidak cocok dengan pesanan.',e_bad_action:'Aksi tidak valid.',
  e_busy_retry:'Server sedang sibuk. Coba lagi.',e_network:'Tidak bisa terhubung ke server. Periksa internet lalu coba lagi.',
  e_db_error:'Server gagal menyimpan. Coba lagi.',e_server_error:'Terjadi kesalahan di server. Coba lagi.',
  gate_title:'Selamat datang di Morph Lab',gate_sub:'Simulasi breeding ball python dengan genetika morph seperti dunia nyata. Masuk atau buat akun gratis untuk mulai main.',
- gate_f1:'🧬 12 gen asli: resesif, co-dominan, dominan, dan kompleks BEL',gate_f2:'🥚 Musim kawin, ovulasi, inkubasi, dan het yang harus dibuktikan',
+ gate_f1:'🧬 12 gen asli: resesif, co-dominan, dominan, dan kompleks BEL',gate_f2:'🥚 Kawinkan kapan saja, ovulasi, inkubasi, dan het yang harus dibuktikan',
  gate_f3:'🤝 Tambah teman, chat, dan trading ular dengan escrow',gate_f4:'🌐 Progres disimpan & dihitung di server, main dari perangkat mana pun',
  gate_login:'Masuk',gate_signup:'Daftar gratis',gate_loading:'Memuat game dari server…',gate_note:'Butuh email untuk mendaftar.',
  gate_down_h:'Server tidak bisa dihubungi',gate_down:'Game ini butuh koneksi ke server. Periksa internet atau matikan pemblokir iklan untuk situs ini, lalu muat ulang halaman.',
@@ -320,7 +320,7 @@ id:{
 <h3>3. BEL complex (Mojave & Lesser)</h3><p>Mojave dan Lesser adalah <b>alel di lokus yang sama</b>. Kombinasi dua alel apa pun (Super Mojave, Super Lesser, Mojave Lesser) menghasilkan <b>Blue-Eyed Leucistic</b>: putih bersih bermata biru. Karena satu lokus, ular BEL selalu menurunkan tepat satu alel Mojave/Lesser ke tiap bayinya.</p>
 <h3>4. Dominan: Spider, Pinstripe</h3><p>Satu salinan sudah terlihat penuh, dan dua salinan tampak sama. Catatan dunia nyata: Spider membawa masalah neurologis ("wobble"), dan banyak breeder memilih tidak memproduksinya lagi. Di game ini gen tersebut tetap ada untuk keperluan edukasi.</p>
 <h3>5. Kombinasi terkenal</h3><p>Pastel + Spider = <b>Bumblebee</b> · Super Pastel + Spider = <b>Killer Bee</b> · Pastel + Pinstripe = <b>Lemon Blast</b> · Spider + Pinstripe = <b>Spinner</b> · Albino + Axanthic = <b>Snow</b>.</p>
-<h3>6. Siklus breeding</h3><ul><li>Jantan siap kawin: umur ≥10 bulan dan berat ≥650 g. Bisa dipasangkan dengan maksimal 4 betina per bulan.</li><li>Betina siap kawin: umur ≥24 bulan dan berat ≥1.500 g, serta tidak bertelur dalam 8 bulan terakhir.</li><li>Musim kawin: Oktober–Maret. Peluang ovulasi ±55% per bulan, lalu bertelur ±2 bulan kemudian dan menetas ±2 bulan setelah itu.</li><li>Jumlah telur bergantung berat betina. ±12% telur adalah slug (tidak subur).</li><li>Betina turun ±28% berat setelah bertelur, jadi perlu waktu pulih.</li></ul>
+<h3>6. Siklus breeding</h3><ul><li>Tidak ada musim kawin: ular bisa dikawinkan kapan saja asal umurnya cukup.</li><li>Jantan siap kawin: umur ≥10 bulan. Bisa dipasangkan dengan maksimal 4 betina per bulan.</li><li>Betina siap kawin: umur ≥24 bulan, tidak sedang bunting, dan tidak bertelur dalam 8 bulan terakhir.</li><li>Peluang ovulasi ±55% per bulan, lalu bertelur ±2 bulan kemudian dan menetas ±2 bulan setelah itu.</li><li>Jumlah telur bergantung berat betina: makin berat, makin banyak telur. ±12% telur adalah slug (tidak subur).</li><li>Betina turun ±28% berat setelah bertelur.</li></ul>
 <h3>7. Ekonomi</h3><p>Harga tiap gen naik turun. Kalau kamu terus menjual morph yang sama, pasar jadi jenuh dan harganya turun. Betina lebih mahal, dan ular dewasa lebih mahal daripada hatchling. Jual cepat memberi 60% nilai langsung, sedangkan iklan memberi 100% nilai tapi butuh waktu.</p>`
 },
 en:{
@@ -330,13 +330,13 @@ en:{
  lang_label:'Language',
  r_gravid:'Currently gravid',r_fage:'Too young (min. 24 months)',r_fweight:'Underweight (min. 1,500 g)',r_recover:'Still recovering after laying',r_listed:'Listed for sale',
  r_mage:'Too young (min. 10 months)',r_mweight:'Underweight (min. 650 g)',r_mpairs:'Already paired with 4 females this month',r_paired:'Already paired this month',
- l_welcome:p=>`Welcome to Morph Lab! You start with 5 ball pythons, ${p.v} and 2 racks (20 tubs). Breeding season starts next month (Oct–Mar).`,
+ l_welcome:p=>`Welcome to Morph Lab! You start with 5 ball pythons, ${p.v} and 2 racks (20 tubs). Snakes that are old enough can be paired right away.`,
  l_hatch:p=>`🥚 Clutch ${p.dam} × ${p.sire} hatched: ${p.born} ${p.born===1?'baby':'babies'}${p.dead?`, ${p.dead} died in the egg`:''}.`,
  l_newmorph:p=>`✨ New morph added to the Morph Dex: ${p.n}!`,
  l_proven:p=>`🔬 ${p.c} is proven het ${p.g} (it produced a visual offspring).`,
  l_laid:p=>`🥚 ${p.c} laid ${p.n} eggs: ${p.good} fertile, ${p.slug} ${p.slug===1?'slug':'slugs'}. Moved to the incubator (~58 days).`,
  l_ovul:p=>`💛 ${p.f} ovulated after pairing with ${p.m}. Expect eggs in about 2 months.`,
- l_noovul:p=>`${p.f} didn’t ovulate this month. Try pairing again while the season lasts.`,
+ l_noovul:p=>`${p.f} didn’t ovulate this month. Try pairing again.`,
  l_soldad:p=>`💰 ${p.c} ${p.n} sold through your listing: ${p.v}.`,
  l_costs:p=>`Monthly costs: feeders ${p.food}, power & racks ${p.util}${p.over?`, emergency tubs ${p.over} (over capacity!)`:''}.`,
  l_orderexp:p=>`The order from ${buyerName(p)} (${p.n}) expired.`,
@@ -364,8 +364,8 @@ en:{
  col_sub:p=>`${p.n} ${p.n===1?'snake':'snakes'} · collection value ${p.v} · click a snake to see details, sell it or list it.`,
  f_all:'All',f_M:'♂ Males',f_F:'♀ Females',f_ready:'Ready to breed',f_listed:'Listed',
  sort_by:'Sort by',sort_val:'Value',sort_age:'Age',sort_new:'Newest',col_empty:'No snakes match this filter.',
- br_sub:'Pick a pair, check the odds for every possible offspring, then pair them during breeding season (Oct–Mar). Each month a paired female has a ~55% chance to ovulate.',
- br_need:'You need at least 1 male and 1 female.',ready_ok:'✓ Ready to breed',pair_btn:'Pair this month',offseason:'Out of breeding season. Wait until October.',
+ br_sub:'Pick a pair, check the odds for every possible offspring, then pair them any time once both are old enough (males ≥10 months, females ≥24 months). Each month a paired female has a ~55% chance to ovulate.',
+ br_need:'You need at least 1 male and 1 female.',ready_ok:'✓ Ready to breed',pair_btn:'Pair this month',
  odds_h:'Offspring odds',
  odds_sub:p=>`Estimated average value per hatchling: <b>${p.v}</b>. Normal-looking offspring for recessive genes: ${p.h||'carry no known hets'}.`,
  th_morph:'Morph',th_chance:'Chance',th_value:'♂ hatchling value',tag_new:'new',odds_more:p=>`+${p.n} more combinations with lower odds.`,
@@ -453,13 +453,13 @@ en:{
  e_busy:'One moment, still working…',e_sync_timeout:'Sync took too long. Try again.',e_sync_failed:'Couldn’t save to the cloud. Try again.',
  t_online:'🌐 Game loaded. Every action is calculated and saved on the server.',t_reset:'Your online game was restarted from scratch.',t_reloaded:'Save reloaded from the server.',
  mode_online_t:'Online · server-calculated',ac_mode:'Mode',
- e_not_season:'Out of breeding season (Oct–Mar).',e_not_ready:'This snake isn’t ready to breed.',e_already_paired:'This female is already paired this month.',
+ e_not_ready:'This snake isn’t ready to breed.',e_already_paired:'This female is already paired this month.',
  e_gravid_locked:'Gravid females can’t be sold or listed until they lay.',e_listing_gone:'That market listing is no longer available.',
  e_order_gone:'This order is no longer available.',e_order_mismatch:'This snake doesn’t match the order.',e_bad_action:'Invalid action.',
  e_busy_retry:'The server is busy. Try again.',e_network:'Can’t reach the server. Check your internet and try again.',
  e_db_error:'The server couldn’t save. Try again.',e_server_error:'Something went wrong on the server. Try again.',
  gate_title:'Welcome to Morph Lab',gate_sub:'A ball python breeding sim with real-world morph genetics. Log in or create a free account to start playing.',
- gate_f1:'🧬 12 real genes: recessive, co-dominant, dominant and the BEL complex',gate_f2:'🥚 Breeding season, ovulation, incubation, and hets you have to prove',
+ gate_f1:'🧬 12 real genes: recessive, co-dominant, dominant and the BEL complex',gate_f2:'🥚 Breed any time, ovulation, incubation, and hets you have to prove',
  gate_f3:'🤝 Add friends, chat, and trade snakes with escrow',gate_f4:'🌐 Progress is saved & calculated on the server, play from any device',
  gate_login:'Log in',gate_signup:'Sign up free',gate_loading:'Loading your game from the server…',gate_note:'An email address is required to sign up.',
  gate_down_h:'Can’t reach the server',gate_down:'This game needs a connection to the server. Check your internet or turn off ad blockers for this site, then reload the page.',
@@ -472,7 +472,7 @@ en:{
 <h3>3. BEL complex (Mojave & Lesser)</h3><p>Mojave and Lesser are <b>alleles at the same locus</b>. Any combination of two of them (Super Mojave, Super Lesser, Mojave Lesser) produces a <b>Blue-Eyed Leucistic</b>: solid white with blue eyes. Because it is one locus, a BEL always passes exactly one Mojave/Lesser allele to each baby.</p>
 <h3>4. Dominant: Spider, Pinstripe</h3><p>One copy shows fully, and two copies look the same. Real-world note: Spider is linked to a neurological problem ("wobble"), and many breeders have stopped producing it. It stays in this game for educational purposes.</p>
 <h3>5. Famous combos</h3><p>Pastel + Spider = <b>Bumblebee</b> · Super Pastel + Spider = <b>Killer Bee</b> · Pastel + Pinstripe = <b>Lemon Blast</b> · Spider + Pinstripe = <b>Spinner</b> · Albino + Axanthic = <b>Snow</b>.</p>
-<h3>6. Breeding cycle</h3><ul><li>Males are ready at ≥10 months and ≥650 g, and can be paired with up to 4 females per month.</li><li>Females are ready at ≥24 months and ≥1,500 g, as long as they haven’t laid in the last 8 months.</li><li>Breeding season: October–March. Each month a paired female has a ~55% chance to ovulate; she lays about 2 months later, and the eggs hatch about 2 months after that.</li><li>Clutch size depends on the female’s weight. About 12% of eggs are slugs (infertile).</li><li>Females lose about 28% of their weight after laying, so they need time to recover.</li></ul>
+<h3>6. Breeding cycle</h3><ul><li>There is no breeding season: snakes can be paired any time once they’re old enough.</li><li>Males are ready at ≥10 months and can be paired with up to 4 females per month.</li><li>Females are ready at ≥24 months, as long as they aren’t gravid and haven’t laid in the last 8 months.</li><li>Each month a paired female has a ~55% chance to ovulate; she lays about 2 months later, and the eggs hatch about 2 months after that.</li><li>Clutch size depends on the female’s weight: heavier females lay more eggs. About 12% of eggs are slugs (infertile).</li><li>Females lose about 28% of their weight after laying.</li></ul>
 <h3>7. Economy</h3><p>Prices for each gene rise and fall. If you keep selling the same morph, the market gets saturated and its price drops. Females are worth more, and adults are worth more than hatchlings. Quick selling pays 60% of the value right away; a listing pays 100% but takes time.</p>`
 }};
 let LANG=(()=>{try{const l=localStorage.getItem('morphlab_lang');if(l==='id'||l==='en')return l}catch(e){}
@@ -577,11 +577,9 @@ function logLine(l){const d=l.m?dateOf(l.w):l.d;const txt=l.m?t(l.m,l.p):l.t;ret
 function render(){
  if(!Cloud.user||!S){renderGate();return}
  document.body.classList.remove('gated');
- const sea=inSeason();
  $('hdr').innerHTML=` <div class="stat"><span>${t('hdr_date')}</span><b>${dateTxt()}</b></div>
  <div class="stat ${S.money<0?'neg':''}"><span>${t('hdr_bal')}</span><b>${money(S.money)}</b></div>
  <div class="stat"><span>${t('hdr_tubs')}</span><b style="color:${S.snakes.length>cap()?'var(--bad)':'inherit'}">${S.snakes.length}/${cap()}</b></div>
- <div class="stat ${sea?'season':''}"><span>${t('hdr_season')}</span><b>${sea?t('season_on'):t('season_off')}</b></div>
  <div class="langsw" role="group" aria-label="${t('lang_label')}">${['id','en'].map(l=>`<button data-act="lang" data-v="${l}" class="${LANG===l?'on':''}" aria-pressed="${LANG===l}" lang="${l}" title="${l==='id'?'Bahasa Indonesia':'English'}">${l.toUpperCase()}</button>`).join('')}</div>
  <span id="acct"></span><button class="pri" data-act="advance">${t('advance')}</button>`;
  renderAcct();
@@ -623,11 +621,11 @@ function vBreeding(){
  const m=byId(SEL.m),f=byId(SEL.f);
  let html=`<h2>${t('tab_breeding')}</h2><p class="sub">${t('br_sub')}</p>`;
  if(!m||!f)return html+`<div class="empty">${t('br_need')}</div>`;
- const rm=maleReady(m),rf=femaleReady(f),sea=inSeason();
- const can=sea&&!rm&&!rf&&!f.pairedWith;
+ const rm=maleReady(m),rf=femaleReady(f);
+ const can=!rm&&!rf&&!f.pairedWith;
  const box=(s,list,id,r)=>`<div class="panel"><select id="${id}">${list.map(snakeOpt).join('')}</select><img class="snk" style="margin-top:10px" src="${thumb(traitsOf(s.g),s.seed)}"><div class="nm">${sexIcon(s.sex)} ${esc(fullName(s))}</div><div class="het">${esc(hetText(s))}</div><div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g</div>${r?`<div class="warn">⏳ ${t(r)}</div>`:`<div class="ok">${t('ready_ok')}</div>`}</div>`;
  html+=`<div class="pair">${box(m,M,'selM',rm)}<div class="x">×</div>${box(f,F,'selF',rf||(f.pairedWith?'r_paired':''))}</div>
- <div class="toolbar" style="margin-top:12px"><button class="pri" data-act="pair" ${can?'':'disabled'}>${t('pair_btn')}</button>${!sea?`<span class="warn" style="margin:0">${t('offseason')}</span>`:''}</div>`;
+ <div class="toolbar" style="margin-top:12px"><button class="pri" data-act="pair" ${can?'':'disabled'}>${t('pair_btn')}</button></div>`;
  const od=odds(m,f);const hp=childHp(m,f);
  const ev=od.reduce((a,o)=>a+o.p*baseValue(o.tr),0)*1.175;
  const hn=LOCI.filter(l=>l.t==='rec'&&hp[l.k]>0.001&&hp[l.k]<.999).map(l=>Math.round(hp[l.k]*100)+'% pos het '+l.a).concat(LOCI.filter(l=>l.t==='rec'&&hp[l.k]>=.999&&!od.every(o=>o.tr.includes(l.k))).map(l=>'100% het '+l.a));
@@ -682,7 +680,10 @@ const FREE_ACTS=new Set(['tab','lang','filter','close','login','authmode','accou
 // Jalankan aksi game: dikirim ke server (Edge Function "game") yang menghitung hasilnya.
 async function game(a){
  if(!Cloud.user||!S)return null;
- let r;try{r=await Online.act(a)}catch(e){toast(errText(e));render();return null}
+ let r;try{r=await Online.act(a)}catch(e){toast(errText(e));
+  // aksi ditolak: tampilkan lagi data asli dari server (buang perubahan di layar yang tidak sah)
+  if(e.message!=='busy')try{await Cloud.reload()}catch(_){}
+  render();return null}
  render();
  if(a.type==='advance')toast(`<b>${dateTxt()}</b>${r.head&&r.head.length?' — '+esc(r.head.slice(0,3).map(h=>t(h[0],h[1])).join(' · ')):esc(t('h_quiet'))}`);
  else if(r.toast)toast(t(r.toast));

@@ -23,7 +23,7 @@ Bisa juga dimainkan online lewat GitHub Pages: **Settings → Pages → Deploy f
   - Kompleks BEL: Mojave + Lesser → Blue-Eyed Leucistic
 - **Sistem het & pos het**: bayi dari het × het tercatat 66% pos het, dan induk "terbukti het" setelah menghasilkan anak visual
 - **Tabel peluang keturunan** untuk setiap pasangan
-- **Siklus breeding bulanan**: musim kawin Okt–Mar, syarat umur & berat, ovulasi, jumlah telur, slug, inkubasi
+- **Siklus breeding bulanan**: kawin kapan saja asal cukup umur (jantan ≥10 bln, betina ≥24 bln), ovulasi, jumlah telur, slug, inkubasi, masa pemulihan betina
 - **Ekonomi**: biaya pakan & rak, harga pasar yang naik turun dan bisa jenuh, iklan, event, pesanan pembeli
 - **Morph Dex** dengan 32 morph target (Bumblebee, Killer Bee, Lemon Blast, Spinner, Snow, dan lainnya)
 - **Gambar ular prosedural** yang dibuat dari genetika tiap ular

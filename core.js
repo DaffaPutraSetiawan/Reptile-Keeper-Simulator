@@ -39,7 +39,6 @@ const fmt=n=>Math.round(n).toLocaleString('en-US');
 /* ========= STATE ========= */
 const mi=()=>(8+S.turn)%12;
 const yr=()=>1+Math.floor((8+S.turn)/12);
-const inSeason=()=>[9,10,11,0,1,2].includes(mi());
 const cap=()=>S.racks*10;
 // Catatan disimpan sebagai kunci + parameter supaya ikut berganti bahasa.
 function log(m,p,k){S.log.unshift({w:S.turn,m,p:p||{},k:k||'info'});if(S.log.length>150)S.log.length=150}
@@ -100,8 +99,9 @@ function value(s){const tr=traitsOf(s.g),vs=new Set(tr);let v=baseValue(tr);
 function newSnake(o){return Object.assign({id:null,sex:'M',age:0,w:70,g:emptyGeno(),hp:{},sire:null,dam:null,gen:0,seed:Math.floor(R()*1e9),lastLaid:-99,listed:false,pairedWith:null,pairs:0,gravid:null,nick:''},o)}
 function addSnake(s){s.id=S.nextId++;S.snakes.push(s);return s}
 const byId=id=>S.snakes.find(s=>s.id===id);
-function femaleReady(s){if(s.gravid)return 'r_gravid';if(s.age<24)return 'r_fage';if(s.w<1500)return 'r_fweight';if(S.turn-s.lastLaid<8)return 'r_recover';if(s.listed)return 'r_listed';return ''}
-function maleReady(s){if(s.age<10)return 'r_mage';if(s.w<650)return 'r_mweight';if(s.pairs>=4)return 'r_mpairs';if(s.listed)return 'r_listed';return ''}
+// Syarat kawin: cukup umur (tidak ada musim kawin & syarat berat).
+function femaleReady(s){if(s.gravid)return 'r_gravid';if(s.age<24)return 'r_fage';if(S.turn-s.lastLaid<8)return 'r_recover';if(s.listed)return 'r_listed';return ''}
+function maleReady(s){if(s.age<10)return 'r_mage';if(s.pairs>=4)return 'r_mpairs';if(s.listed)return 'r_listed';return ''}
 const readyMsg=s=>s.sex==='M'?maleReady(s):femaleReady(s);
 function snap(s){return{id:s.id,g:JSON.parse(JSON.stringify(s.g)),hp:{...s.hp},label:code(s)+' '+fullName(s),gen:s.gen}}
 function removeSnake(s){if(s.sex==='M')S.snakes.forEach(f=>{if(f.pairedWith===s.id)f.pairedWith=null});if(s.pairedWith){const m=byId(s.pairedWith);if(m)m.pairs=Math.max(0,m.pairs-1)}S.snakes=S.snakes.filter(x=>x!==s)}
@@ -208,8 +208,6 @@ function advance(){
   else if(r<.75){const g=pick(ALLT);S.mm[g]=mm(g)*1.25;S.event={e:'ev_trend',g:TL[g]}}
   else S.event={food:1.5,e:'ev_food'};
   log('l_event',{e:S.event.e,g:S.event.g},'star')}
- if(mi()===9)log('l_season',null,'star');
- if(mi()===3)log('l_seasonend',null,'info');
  if(S.money<0)log('l_debt',null,'bad');
  return head;
 }
@@ -224,7 +222,6 @@ const ACTIONS={
  advance(){return{head:advance()}},
  pair(a){const m=mustSnake(a.m),f=mustSnake(a.f);
   if(m.sex!=='M'||f.sex!=='F')fail('bad_action');
-  if(!inSeason())fail('not_season');
   if(maleReady(m)||femaleReady(f))fail('not_ready');
   if(f.pairedWith)fail('already_paired');
   f.pairedWith=m.id;m.pairs++;log('l_paired',{m:code(m),f:code(f)});return{toast:'t_paired'}},
@@ -259,7 +256,7 @@ root.MorphCore={
  LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,POOL,BUYER_COUNT,
  R,pick,clamp,money,fmt,
  use(s){S=s},state(){return S},
- mi,yr,inSeason,cap,log,
+ mi,yr,cap,log,
  emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,
  mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,matches,
  newGame,advance,applyAction,syncDex,isState,ACTION_TYPES:Object.keys(ACTIONS)
