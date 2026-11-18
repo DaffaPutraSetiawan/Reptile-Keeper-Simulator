@@ -5,6 +5,6 @@
 // JANGAN PERNAH menaruh secret key (sb_secret_...) atau service_role key di sini.
 // Kalau dibiarkan kosong, game tetap jalan dalam mode offline (save lokal saja).
 window.MORPHLAB_CONFIG = {
-  supabaseUrl: '',            // contoh: 'https://abcdefghijklm.supabase.co'
-  supabasePublishableKey: ''  // contoh: 'sb_publishable_xxxxxxxxxxxxxxxx'
+  supabaseUrl: 'https://cpmzgrxnxkznnkkdgbgs.supabase.co',
+  supabasePublishableKey: 'sb_publishable_Jox0f2l9PqEJGKT5naGZLQ_3keV8rmj'
 };
