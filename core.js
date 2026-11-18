@@ -158,6 +158,27 @@ function newGame(){
  return S;
 }
 
+/* ========= BIAYA BULANAN ========= */
+// Satu rumus untuk potongan saat "Lanjut bulan" dan untuk pratinjau saldo.
+// pakan: $2 + $1 per 250 g tiap ular (x1.5 saat harga pakan naik) · listrik & rak: $8/rak · tub darurat: $15/ular di atas kapasitas
+function monthlyCosts(snakes,racks,ev){
+ const food=Math.round(snakes.reduce((a,s)=>a+2+s.w/250,0)*((ev&&ev.food)||1));
+ const util=racks*8,over=Math.max(0,snakes.length-racks*10)*15;
+ return{food,util,over,total:food+util+over}}
+// Perkiraan biaya bulan depan: meniru urutan advance() dengan nilai rata-rata (tanpa acak).
+// Belum termasuk penjualan dari iklan & event baru (keduanya acak).
+function previewNext(){
+ const ev=S.event||{};let born=0,laying=0;
+ const list=S.snakes.map(s=>({w:s.w,sex:s.sex,gravid:s.gravid?{layIn:s.gravid.layIn}:null,pairs:s.pairs||0}));
+ for(const c of S.clutches)if(c.hatchIn<=1){const n=Math.round(c.eggs.length*0.96);born+=n;for(let i=0;i<n;i++)list.push({w:75,sex:'H',gravid:null,pairs:0})}
+ for(const s of list){if(s.gravid&&s.gravid.layIn<=1){s.w=Math.round(s.w*.72);s.gravid=null;laying++}}
+ for(const s of list){if(s.sex==='M'&&s.pairs)s.w=Math.round(s.w*(1-.015*s.pairs))}
+ for(const s of list){if(s.gravid){s.w=Math.round(s.w*0.99);continue}
+  const K=s.sex==='F'?2300:s.sex==='M'?1400:1850,r=s.sex==='F'?0.14:s.sex==='M'?0.18:0.16;s.w=Math.round(s.w+r*s.w*(1-s.w/K))}
+ const c=monthlyCosts(list,S.racks,ev);
+ return{...c,count:list.length,born,laying,racks:S.racks,cap:cap(),overN:Math.max(0,list.length-cap()),foodx:ev.food||1,
+  listed:S.snakes.filter(s=>s.listed).length,money:S.money,after:S.money-c.total}}
+
 /* ========= MAJU SATU BULAN ========= */
 function advance(){
  const ev=S.event||{};const head=[];
@@ -197,8 +218,8 @@ function advance(){
  // 5. iklan
  for(const s of S.snakes.slice()){if(!s.listed)continue;if(R()<(ev.expo?.7:.35)){const v=value(s);S.money+=v;S.stats.sold++;S.stats.earned+=v;traitsOf(s.g).forEach(t=>S.mm[t]=mm(t)*.97);log('l_soldad',{c:code(s),n:fullName(s),v:money(v)},'good');head.push(['h_sold',{c:code(s),v:money(v)}]);removeSnake(s)}}
  // 6. biaya
- const food=Math.round(S.snakes.reduce((a,s)=>a+2+s.w/250,0)*(ev.food||1));const util=S.racks*8;const over=Math.max(0,S.snakes.length-cap())*15;
- S.money-=food+util+over;
+ const{food,util,over,total}=monthlyCosts(S.snakes,S.racks,ev);
+ S.money-=total;
  log('l_costs',{food:money(food),util:money(util),over:over?money(over):''},over?'bad':'info');
  // 7. pesanan
  for(const o of S.orders.slice()){o.left--;if(o.left<=0){S.orders=S.orders.filter(x=>x!==o);log('l_orderexp',{bi:o.bi,b:o.buyer,n:nameOf(o.tr)},'bad')}}
@@ -265,6 +286,7 @@ root.MorphCore={
  mi,yr,cap,log,
  emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,
  mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,matches,
+ monthlyCosts,previewNext,
  newGame,advance,applyAction,syncDex,isState,ACTION_TYPES:Object.keys(ACTIONS)
 };
 })(typeof globalThis!=='undefined'?globalThis:this);

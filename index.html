@@ -16,7 +16,8 @@ header{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:12px
 .brand{margin:0 auto 0 0;line-height:0}.brand img{height:52px;width:auto;display:block}
 @media(max-width:640px){.brand img{height:40px}}
 .stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:5px 12px;min-width:84px}
-.stat b{display:block;font-size:15px}.stat span{font-size:10.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.07em}
+.stat b{display:block;font-size:15px}.statbtn{text-align:left;font:inherit;color:inherit;cursor:pointer}.statbtn:hover{border-color:var(--acc)}.stat small{display:block;font-size:10.5px;color:var(--mut);margin-top:1px}.stat small.bad{color:var(--bad)}
+table.pv{width:100%;border-collapse:collapse;margin-top:6px}table.pv td{padding:7px 4px;border-bottom:1px solid var(--line)}table.pv td.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}table.pv tr.neg td.num{color:#e9a397}table.pv tr.sum td{font-weight:700}table.pv tr.big td{font-weight:800;font-size:16px;border-bottom:0}table.pv tr.big.bad td.num{color:var(--bad)}.pvnotes{margin:8px 0 0;padding-left:18px;font-size:12.5px;color:var(--mut)}.pvnotes li{margin:3px 0}.stat span{font-size:10.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.07em}
 .stat.neg b{color:var(--bad)}
 .season{border-color:#4f6b3a}.season b{color:var(--good)}
 button{font:inherit;cursor:pointer;border-radius:9px;border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:7px 12px;transition:background .12s,border-color .12s}
@@ -160,7 +161,7 @@ button.danger{background:var(--bad);border-color:var(--bad);color:#1b0a07;font-w
 'use strict';
 /* ========= LOGIKA INTI (core.js, sama dengan yang dipakai server) ========= */
 const Core=window.MorphCore;
-const {LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches}=Core;
+const {previewNext,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches}=Core;
 
 /* ========= UTIL ========= */
 const lerp=(a,b,t)=>a.map((x,i)=>x+(b[i]-x)*t);
@@ -290,6 +291,7 @@ id:{
  t_uname:p=>`Username <b>${p.u}</b> tersimpan.`,t_pw:'Password baru tersimpan.',t_cloudload:p=>`☁️ Save dari akunmu dimuat: <b>${p.d}</b>`,t_logout:'Kamu sudah keluar. Progresmu aman tersimpan di server.',
  nolib_h:'Cloud save tidak tersedia',nolib_b:'Library Supabase gagal dimuat (koneksi internet atau pemblokir iklan). Game tetap jalan dan progres tersimpan di browser ini. Muat ulang halaman untuk mencoba lagi.',
  fg_need:'Isi email dulu, lalu klik "Lupa password?" lagi.',fg_sent:p=>`Link reset password dikirim ke <b>${p.e}</b>.`,
+ pv_open:'Lihat perkiraan saldo bulan depan',pv_h:'Perkiraan saldo bulan depan',pv_sub:'Biaya ini dipotong otomatis saat kamu menekan “Lanjut bulan”.',pv_now:'Saldo sekarang',pv_food:p=>`Pakan · ${p.n} ekor`,pv_util:p=>`Listrik & rak · ${p.r} rak × $8`,pv_over:p=>`Tub darurat · ${p.n} ekor di atas kapasitas (${p.c}) × $15`,pv_total:'Total pengeluaran',pv_after:'Perkiraan saldo',pv_formula:'Pakan per ekor: $2 + $1 per 250 g berat (dihitung dari berat setelah tumbuh bulan depan).',pv_debt:'⚠️ Saldo akan minus! Jual, iklankan, atau kirim ular ke pesanan dulu.',pv_n_born:p=>`Termasuk ${p.n} bayi yang akan menetas (bisa kurang kalau ada telur yang mati).`,pv_n_lay:p=>`${p.n} betina akan bertelur, beratnya turun ±28% sehingga pakannya lebih murah.`,pv_n_foodx:'Harga pakan sedang naik +50% (event bulan ini).',pv_n_listed:p=>`Belum termasuk uang dari ${p.n} ular yang diiklankan kalau terjual.`,pv_n_random:'Ini perkiraan: pertumbuhan & event baru bersifat acak.',
  tab_teman:'Teman',tab_global:'Global chat',gc_sub:p=>`Ngobrol dengan semua pemain Morph Lab. Hanya ${p.n} pesan terakhir yang disimpan; pesan yang lebih lama terhapus otomatis.`,gc_ph:'Tulis pesan untuk semua pemain…',gc_empty:'Belum ada pesan. Jadilah yang pertama menyapa!',e_empty_message:'Pesan masih kosong.',e_message_too_long:'Pesan terlalu panjang.',busy:'Tunggu sebentar, sedang memproses…',
  so_login:'Masuk ke akun untuk menambah teman, chat, dan trading.',so_login_btn:'☁️ Masuk / Daftar',
  so_offline:'Fitur teman butuh koneksi ke server. Periksa koneksi internet lalu muat ulang halaman.',
@@ -463,6 +465,7 @@ en:{
  t_uname:p=>`Username <b>${p.u}</b> saved.`,t_pw:'New password saved.',t_cloudload:p=>`☁️ Loaded the save from your account: <b>${p.d}</b>`,t_logout:'You’re logged out. Your progress is safe on the server.',
  nolib_h:'Cloud save unavailable',nolib_b:'The Supabase library failed to load (internet connection or an ad blocker). The game still works and progress is saved in this browser. Reload the page to try again.',
  fg_need:'Enter your email first, then click "Forgot password?" again.',fg_sent:p=>`A password reset link was sent to <b>${p.e}</b>.`,
+ pv_open:'See next month’s balance forecast',pv_h:'Next month’s balance forecast',pv_sub:'These costs are deducted automatically when you press “Next month”.',pv_now:'Current balance',pv_food:p=>`Feeders · ${p.n} ${p.n===1?'snake':'snakes'}`,pv_util:p=>`Power & racks · ${p.r} ${p.r===1?'rack':'racks'} × $8`,pv_over:p=>`Emergency tubs · ${p.n} over capacity (${p.c}) × $15`,pv_total:'Total costs',pv_after:'Expected balance',pv_formula:'Feeders per snake: $2 + $1 per 250 g of body weight (using next month’s weight after growth).',pv_debt:'⚠️ Your balance will go negative! Sell, list, or ship snakes to orders first.',pv_n_born:p=>`Includes ${p.n} ${p.n===1?'hatchling':'hatchlings'} due to hatch (could be fewer if an egg fails).`,pv_n_lay:p=>`${p.n} ${p.n===1?'female':'females'} will lay eggs and lose ~28% of their weight, so feeding them costs less.`,pv_n_foodx:'Feeder prices are up +50% (this month’s event).',pv_n_listed:p=>`Doesn’t include money from ${p.n} listed ${p.n===1?'snake':'snakes'} if they sell.`,pv_n_random:'This is an estimate: growth and new events are random.',
  tab_teman:'Friends',tab_global:'Global chat',gc_sub:p=>`Chat with every Morph Lab player. Only the last ${p.n} messages are kept; older ones are deleted automatically.`,gc_ph:'Write a message to everyone…',gc_empty:'No messages yet. Be the first to say hi!',e_empty_message:'The message is empty.',e_message_too_long:'The message is too long.',busy:'One moment, still working…',
  so_login:'Log in to add friends, chat and trade.',so_login_btn:'☁️ Log in / Sign up',
  so_offline:'Friends need a connection to the server. Check your internet connection and reload the page.',
@@ -636,7 +639,7 @@ function render(){
  if(!Cloud.user||!S){renderGate();return}
  document.body.classList.remove('gated');
  $('hdr').innerHTML=` <div class="stat"><span>${t('hdr_date')}</span><b>${S.turn}</b></div>
- <div class="stat ${S.money<0?'neg':''}"><span>${t('hdr_bal')}</span><b>${money(S.money)}</b></div>
+ ${(()=>{const pv=previewNext();return `<button class="stat statbtn ${S.money<0?'neg':''}" data-act="preview" title="${t('pv_open')}"><span>${t('hdr_bal')}</span><b>${money(S.money)}</b><small class="${pv.after<0?'bad':''}">→ ${money(pv.after)}</small></button>`})()}
  <div class="stat"><span>${t('hdr_tubs')}</span><b style="color:${S.snakes.length>cap()?'var(--bad)':'inherit'}">${S.snakes.length}/${cap()}</b></div>
  <div class="langsw" role="group" aria-label="${t('lang_label')}">${['id','en'].map(l=>`<button data-act="lang" data-v="${l}" class="${LANG===l?'on':''}" aria-pressed="${LANG===l}" lang="${l}" title="${l==='id'?'Bahasa Indonesia':'English'}">${l.toUpperCase()}</button>`).join('')}</div>
  <span id="acct"></span><button class="pri" data-act="advance">${t('advance')}</button>`;
@@ -648,6 +651,28 @@ function render(){
  $('log').innerHTML=S.log.length?S.log.slice(0,50).map(logLine).join(''):`<li class="info" style="border:0">${esc(t('log_empty'))}</li>`;
  afterRender();
 }
+/* ========= PRATINJAU SALDO BULAN DEPAN ========= */
+function showPreview(){const p=previewNext();const row=(ic,k,v,cls)=>`<tr class="${cls||''}"><td>${ic} ${k}</td><td class="num">${v}</td></tr>`;
+ const notes=[];
+ if(p.born)notes.push(t('pv_n_born',{n:p.born}));
+ if(p.laying)notes.push(t('pv_n_lay',{n:p.laying}));
+ if(p.foodx>1)notes.push(t('pv_n_foodx'));
+ if(p.listed)notes.push(t('pv_n_listed',{n:p.listed}));
+ notes.push(t('pv_n_random'));
+ modal(`<h2>📊 ${t('pv_h')}</h2><p class="sub">${t('pv_sub')}</p>
+ <table class="pv"><tbody>
+ ${row('💰',t('pv_now'),money(p.money))}
+ ${row('🐀',t('pv_food',{n:p.count})+(p.foodx>1?` <span class="tag a">×${p.foodx}</span>`:''),'− '+money(p.food),'neg')}
+ ${row('💡',t('pv_util',{r:p.racks}),'− '+money(p.util),'neg')}
+ ${p.over?row('📦',t('pv_over',{n:p.overN,c:p.cap}),'− '+money(p.over),'neg'):''}
+ ${row('🧾',t('pv_total'),'− '+money(p.total),'sum')}
+ ${row(p.after<0?'⚠️':'✅',t('pv_after'),money(p.after),'big '+(p.after<0?'bad':''))}
+ </tbody></table>
+ <p class="kbd" style="margin:6px 0 0">${t('pv_formula')}</p>
+ ${p.after<0?`<p class="warn">${t('pv_debt')}</p>`:''}
+ <ul class="pvnotes">${notes.map(n=>`<li>${n}</li>`).join('')}</ul>
+ <div class="actions"><button class="pri" data-act="preview_go">${t('advance')}</button><button class="ghost" data-act="close">${t('close')}</button></div>`)}
+
 /* ========= HALAMAN MASUK (wajib login) ========= */
 const GATE_MORPHS=[['pastel','spider'],['bel'],['albino'],['piebald'],['banana','clown'],['ivory']];
 function vGate(){
@@ -735,7 +760,7 @@ function openSnake(id){const s=byId(id);if(!s)return;const tr=traitsOf(s.g),r=re
  ${s.gravid?`<p class="kbd">${t('gravid_nosale')}</p>`:''}`)}
 
 const SOCIAL_ACTS=new Set(['openchat','fr_accept','fr_decline','fr_remove','fr_remove_yes','tr_new','tb_close','tr_send','tr_accept','tr_accept_yes','tr_decline','tr_cancel']);
-const FREE_ACTS=new Set(['profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
+const FREE_ACTS=new Set(['preview','profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
 // Jalankan aksi game: dikirim ke server (Edge Function "game") yang menghitung hasilnya.
 async function game(a){
  if(!Cloud.user||!S)return null;
@@ -768,6 +793,8 @@ function act(a,id,el){
   case 'clearlogyes':closeModal();game({type:'clearlog'});return;
   // aksi game (divalidasi ulang oleh core / server)
   case 'advance':game({type:'advance'});return;
+  case 'preview':showPreview();return;
+  case 'preview_go':closeModal();game({type:'advance'});return;
   case 'nick':{const name=$('nick').value;closeModal();game({type:'nick',id,name});return}
   case 'list':closeModal();game({type:'list',id});return;
   case 'quicksell':closeModal();game({type:'quicksell',id});return;
