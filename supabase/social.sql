@@ -265,7 +265,8 @@ returns void language plpgsql security definer set search_path = '' as $$
 declare v_snakes jsonb;
 begin
   select snakes into v_snakes from public.trade_escrow where trade_id = p_trade.id;
-  update public.trades set status = p_status, resolved_at = now() where id = p_trade.id;
+  -- p_status 'deleted' (akun penerima dihapus) dicatat sebagai 'cancelled'; alasannya ada di log
+  update public.trades set status = case when p_status = 'deleted' then 'cancelled' else p_status end, resolved_at = now() where id = p_trade.id;
   insert into public.deliveries (user_id, trade_id, snakes, money, log)
   values (p_trade.from_user, p_trade.id, coalesce(v_snakes, '[]'::jsonb), p_trade.offer_money,
           jsonb_build_object('m', 'l_trade_back', 'p', jsonb_build_object(
@@ -313,13 +314,16 @@ begin
   return case when found then 'declined' else 'not_found' end;
 end $$;
 
--- Hapus teman / batalkan permintaan. Trade yang masih pending di antara keduanya dibatalkan.
+-- Hapus teman / batalkan permintaan. Semua chat di antara keduanya dihapus permanen,
+-- dan trade yang masih pending dibatalkan (barang kembali ke penawar).
 create or replace function public.remove_friend(p_other uuid)
 returns void language plpgsql security definer set search_path = '' as $$
 declare me uuid := public._me(); t public.trades;
 begin
   delete from public.friendships
    where least(requester, addressee) = least(me, p_other) and greatest(requester, addressee) = greatest(me, p_other);
+  delete from public.messages
+   where least(sender, recipient) = least(me, p_other) and greatest(sender, recipient) = greatest(me, p_other);
   for t in select * from public.trades
             where status = 'pending' and ((from_user = me and to_user = p_other) or (from_user = p_other and to_user = me))
             for update loop
@@ -528,6 +532,28 @@ begin
   end loop;
   return public._write_save(me, v_data) || jsonb_build_object('count', n);
 end $$;
+
+-- ---------------------------------------------------------------------
+-- AKUN DIHAPUS (oleh admin / pemain): kembalikan barang penawar dulu
+-- ---------------------------------------------------------------------
+-- Tanpa ini, tawaran KE akun yang dihapus ikut terhapus (cascade) beserta
+-- escrow-nya, sehingga ular & uang penawar hilang. Trigger ini membatalkan
+-- tawaran tersebut dan mengirim isinya kembali ke penawar sebagai kiriman.
+-- Chat, pertemanan, profil, save, dan trade milik akun itu tetap ikut terhapus.
+create or replace function public._on_user_deleted()
+returns trigger language plpgsql security definer set search_path = '' as $$
+declare t public.trades;
+begin
+  for t in select * from public.trades where to_user = old.id and status = 'pending' for update loop
+    perform public._refund_trade(t, 'deleted', old.id);
+  end loop;
+  return old;
+end $$;
+
+drop trigger if exists morphlab_before_user_delete on auth.users;
+create trigger morphlab_before_user_delete
+  before delete on auth.users
+  for each row execute function public._on_user_deleted();
 
 -- ---------------------------------------------------------------------
 -- HAK AKSES FUNGSI

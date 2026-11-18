@@ -128,6 +128,8 @@ button.sm{padding:4px 10px;font-size:12.5px}
 @media(max-width:560px){.gate-morphs{grid-template-columns:repeat(2,1fr)}}
 .gate-morphs figure{margin:0}.gate-morphs figcaption{font-size:12.5px;color:var(--mut);margin-top:4px;text-align:center}
 .gate-f{list-style:none;padding:0;margin:0 0 6px;display:grid;gap:6px;color:#dcd4c0}
+.warnbox{border:1px solid #7a3d34;background:#2a1714;border-radius:12px;padding:10px 14px;margin:10px 0}.warnbox p{margin:6px 0;font-size:13.5px}
+button.danger{background:var(--bad);border-color:var(--bad);color:#1b0a07;font-weight:700}button.danger:hover:not(:disabled){background:#ec7d71}
 .empty{color:var(--mut);padding:30px;text-align:center;border:1px dashed var(--line);border-radius:14px}
 </style>
 </head>
@@ -268,8 +270,10 @@ id:{
  so_outgoing_h:'Menunggu jawaban',so_cancel_req:'Batalkan',
  so_chat_pick:'Pilih teman di sebelah kiri untuk mulai chat atau trading.',so_chat_empty:p=>`Belum ada pesan. Sapa ${p.u}!`,
  so_chat_ph:'Tulis pesan…',so_send:'Kirim',so_trade_btn:'🔁 Tawarkan trade',so_remove:'Hapus teman',
- so_remove_q:p=>`Hapus ${p.u} dari daftar teman? Trade yang masih menunggu di antara kalian akan dibatalkan dan barangnya dikembalikan.`,
- so_remove_yes:'Ya, hapus',so_you:'Kamu',so_loading:'Memuat…',
+ so_remove_q:p=>`Hapus ${p.u} dari daftar teman?`,so_rm_chat:p=>`Semua chat dengan ${p.u} akan <b>terhapus permanen</b>, untuk kamu dan ${p.u}.`,
+ so_rm_trades:p=>p.n?`<b>${p.n} trade</b> yang sedang berlangsung dengan ${p.u} akan <b>dibatalkan</b>. Ular dan uang di dalamnya dikembalikan ke penawarnya.`:`Tidak ada trade yang sedang berlangsung dengan ${p.u}.`,
+ so_rm_final:'Tindakan ini tidak bisa dibatalkan.',
+ so_remove_yes:'Ya, hapus teman & chat',so_you:'Kamu',so_loading:'Memuat…',
  tr_h:'Trading',tr_in_h:'Tawaran masuk',tr_out_h:'Tawaran kamu',tr_hist_h:'Riwayat trade',tr_none:'Belum ada tawaran.',
  tr_from:p=>`Dari ${p.u}`,tr_to:p=>`Ke ${p.u}`,tr_get:'Kamu dapat',tr_give:'Kamu berikan',tr_nothing:'Tidak ada',
  tr_accept:'Terima',tr_decline:'Tolak',tr_cancel:'Batalkan tawaran',
@@ -297,7 +301,7 @@ id:{
  t_removed:p=>`${p.u} dihapus dari daftar teman.`,
  l_trade_sent:p=>`🔁 Tawaran trade dikirim ke ${p.u}: ${p.n} ular${p.mo?` + ${money(p.mo)}`:''} dititipkan (escrow).`,
  l_trade_done:p=>`🤝 Trade dengan ${p.u} selesai! Kamu menerima ${p.n} ular${p.mo?` dan ${money(p.mo)}`:''}.`,
- l_trade_back:p=>`↩️ Tawaranmu ke ${p.u} ${p.why==='declined'?'ditolak':'dibatalkan'}; ${p.n} ular${p.mo?` dan ${money(p.mo)}`:''} kembali ke koleksimu.`,
+ l_trade_back:p=>`↩️ Tawaranmu ke ${p.u} ${p.why==='declined'?'ditolak':p.why==='deleted'?`dibatalkan karena akun ${p.u} dihapus`:'dibatalkan'}; ${p.n} ular${p.mo?` dan ${money(p.mo)}`:''} kembali ke koleksimu.`,
  e_busy:'Tunggu sebentar, sedang memproses…',e_sync_timeout:'Sinkronisasi terlalu lama. Coba lagi.',e_sync_failed:'Gagal menyimpan ke cloud. Coba lagi.',
  t_online:'🌐 Game dimuat. Semua aksi dihitung dan disimpan di server.',t_reset:'Game online dimulai ulang dari awal.',t_reloaded:'Save dimuat ulang dari server.',
  mode_online_t:'Online · dihitung server',ac_mode:'Mode',
@@ -420,8 +424,10 @@ en:{
  so_outgoing_h:'Waiting for reply',so_cancel_req:'Cancel',
  so_chat_pick:'Pick a friend on the left to chat or trade.',so_chat_empty:p=>`No messages yet. Say hi to ${p.u}!`,
  so_chat_ph:'Write a message…',so_send:'Send',so_trade_btn:'🔁 Offer a trade',so_remove:'Remove friend',
- so_remove_q:p=>`Remove ${p.u} from your friends? Any pending trades between you will be cancelled and the items returned.`,
- so_remove_yes:'Yes, remove',so_you:'You',so_loading:'Loading…',
+ so_remove_q:p=>`Remove ${p.u} from your friends?`,so_rm_chat:p=>`All chats with ${p.u} will be <b>permanently deleted</b>, for both you and ${p.u}.`,
+ so_rm_trades:p=>p.n?`<b>${p.n} ${p.n===1?'trade':'trades'}</b> in progress with ${p.u} will be <b>cancelled</b>. The snakes and money in them go back to whoever offered them.`:`There are no trades in progress with ${p.u}.`,
+ so_rm_final:'This can’t be undone.',
+ so_remove_yes:'Yes, remove friend & chat',so_you:'You',so_loading:'Loading…',
  tr_h:'Trading',tr_in_h:'Incoming offers',tr_out_h:'Your offers',tr_hist_h:'Trade history',tr_none:'No offers.',
  tr_from:p=>`From ${p.u}`,tr_to:p=>`To ${p.u}`,tr_get:'You get',tr_give:'You give',tr_nothing:'Nothing',
  tr_accept:'Accept',tr_decline:'Decline',tr_cancel:'Cancel offer',
@@ -449,7 +455,7 @@ en:{
  t_removed:p=>`${p.u} was removed from your friends.`,
  l_trade_sent:p=>`🔁 Trade offer sent to ${p.u}: ${p.n} ${p.n===1?'snake':'snakes'}${p.mo?` + ${money(p.mo)}`:''} held in escrow.`,
  l_trade_done:p=>`🤝 Trade with ${p.u} complete! You received ${p.n} ${p.n===1?'snake':'snakes'}${p.mo?` and ${money(p.mo)}`:''}.`,
- l_trade_back:p=>`↩️ Your offer to ${p.u} was ${p.why==='declined'?'declined':'cancelled'}; ${p.n} ${p.n===1?'snake':'snakes'}${p.mo?` and ${money(p.mo)}`:''} returned to your collection.`,
+ l_trade_back:p=>`↩️ Your offer to ${p.u} was ${p.why==='declined'?'declined':p.why==='deleted'?`cancelled because ${p.u}’s account was deleted`:'cancelled'}; ${p.n} ${p.n===1?'snake':'snakes'}${p.mo?` and ${money(p.mo)}`:''} returned to your collection.`,
  e_busy:'One moment, still working…',e_sync_timeout:'Sync took too long. Try again.',e_sync_failed:'Couldn’t save to the cloud. Try again.',
  t_online:'🌐 Game loaded. Every action is calculated and saved on the server.',t_reset:'Your online game was restarted from scratch.',t_reloaded:'Save reloaded from the server.',
  mode_online_t:'Online · server-calculated',ac_mode:'Mode',
@@ -1006,7 +1012,10 @@ async function socialAct(a,el){
   case 'fr_accept':case 'fr_decline':{const{error}=await Cloud.sb.rpc('respond_friend_request',{p_id:fid,p_accept:a==='fr_accept'});if(error)toast(errText(error));await Social.refresh();return true}
   case 'fr_remove':{const u=el.dataset.u;const go=async()=>{const{error}=await Cloud.sb.rpc('remove_friend',{p_other:uid});closeModal(true);if(error){toast(errText(error));return}if(Social.open===uid){Social.open=null;Social.msgs=[]}if(!el.dataset.quiet)toast(t('t_removed',{u:esc(u)}));await Social.refresh()};
    if(el.dataset.quiet){await go();return true}
-   Social._rm=go;modal(`<h2>${t('so_remove')}</h2><p class="sub">${t('so_remove_q',{u:esc(u)})}</p><div class="actions"><button class="pri" data-act="fr_remove_yes">${t('so_remove_yes')}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`);return true}
+   const nTr=(Social.data?Social.data.trades:[]).filter(x=>x.other===uid&&x.status==='pending').length;
+   Social._rm=go;modal(`<h2>${t('so_remove')}</h2><p class="sub">${t('so_remove_q',{u:esc(u)})}</p>
+    <div class="warnbox"><p>🗑️ ${t('so_rm_chat',{u:esc(u)})}</p><p>🔁 ${t('so_rm_trades',{u:esc(u),n:nTr})}</p><p><b>${t('so_rm_final')}</b></p></div>
+    <div class="actions"><button class="danger" data-act="fr_remove_yes">${t('so_remove_yes')}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`);return true}
   case 'fr_remove_yes':if(Social._rm)await Social._rm();Social._rm=null;return true;
   case 'tr_new':openTradeBuilder(uid);return true;
   case 'tb_close':TB=null;closeModal(true);return true;
