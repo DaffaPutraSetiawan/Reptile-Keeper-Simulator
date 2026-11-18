@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:11,date:'2026-11-19'};
+const VERSION={v:12,date:'2026-11-19'};
 const BUYER_COUNT=8;      // jumlah nama pembeli di kamus bahasa
 
 /* ========= DATA GENETIKA ========= */
@@ -42,6 +42,9 @@ const fmt=n=>Math.round(n).toLocaleString('en-US');
 const mi=()=>(8+S.turn)%12;
 const yr=()=>1+Math.floor((8+S.turn)/12);
 const cap=()=>S.racks*10;
+// Harga rak naik 2× setiap pembelian: rak ke-3 $250, ke-4 $500, ke-5 $1.000, dst. (2 rak pertama gratis dari awal)
+const RACK_BASE=250,START_RACKS=2;
+const rackPrice=()=>RACK_BASE*Math.pow(2,Math.max(0,S.racks-START_RACKS));
 // Catatan disimpan sebagai kunci + parameter supaya ikut berganti bahasa.
 // Catatan breeder maksimal LOG_MAX entri: entri baru masuk di atas, yang paling lama terhapus.
 const LOG_MAX=50;
@@ -290,7 +293,7 @@ const ACTIONS={
   if(!tempOpen(c))fail('temp_locked');
   const tp=Number(a.temp);if(!Number.isFinite(tp)||tp<TEMP_MIN||tp>TEMP_MAX||Math.round(tp/TEMP_STEP)*TEMP_STEP!==tp)fail('bad_temp');
   c.temp=tp;return{}},
- rack(){if(S.money<250)fail('not_enough_money');S.money-=250;S.racks++;log('l_rack',{cap:cap()});return{}},
+ rack(){const price=rackPrice();if(S.money<price)fail('not_enough_money');S.money-=price;S.racks++;log('l_rack',{cap:cap(),v:money(price)});return{}},
  fulfill(a){const o=S.orders.find(x=>x.oid===toId(a.oid));if(!o)fail('order_gone');const s=mustSnake(a.sid);
   if(!matches(o).includes(s))fail('order_mismatch');
   S.money+=o.reward;S.stats.sold++;S.stats.earned+=o.reward;log('l_fulfill',{c:code(s),n:fullName(s),bi:o.bi,b:o.buyer,r:money(o.reward)},'star');
@@ -308,7 +311,7 @@ root.MorphCore={
  VERSION,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,POOL,BUYER_COUNT,
  R,pick,clamp,money,fmt,
  use(s){S=s},state(){return S},
- mi,yr,cap,log,
+ mi,yr,cap,log,rackPrice,
  emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,
  mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,matches,
  monthlyCosts,previewNext,

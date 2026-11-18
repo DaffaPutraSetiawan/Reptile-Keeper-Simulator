@@ -176,7 +176,7 @@ button.danger{background:var(--bad);border-color:var(--bad);color:#1b0a07;font-w
 'use strict';
 /* ========= LOGIKA INTI (core.js, sama dengan yang dipakai server) ========= */
 const Core=window.MorphCore;
-const {marketOk,marketBase,marketPrice,marketLeft,listingTraits,BUY_MULT,previewNext,TEMP_MIN,TEMP_MAX,TEMP_STEP,TEMP_MID,femaleChance,tempOpen,tempMonthsLeft,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches}=Core;
+const {rackPrice,marketOk,marketBase,marketPrice,marketLeft,listingTraits,BUY_MULT,previewNext,TEMP_MIN,TEMP_MAX,TEMP_STEP,TEMP_MID,femaleChance,tempOpen,tempMonthsLeft,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches}=Core;
 
 /* ========= UTIL ========= */
 const lerp=(a,b,t)=>a.map((x,i)=>x+(b[i]-x)*t);
@@ -216,7 +216,7 @@ id:{
  l_quick:p=>`💰 ${p.c} ${p.n} dijual cepat: ${p.v}.`,
  l_paired:p=>`${p.m} dipasangkan dengan ${p.f}. Hasil ovulasi terlihat bulan depan.`,
  l_buy:p=>`🛒 Membeli ${p.c} ${p.n}${p.h?' '+p.h:''} seharga ${p.v}.`,
- l_rack:p=>`Membeli rak baru. Kapasitas sekarang ${p.cap} tub.`,
+ l_rack:p=>`Membeli rak baru${p.v?' seharga '+p.v:''}. Kapasitas sekarang ${p.cap} tub.`,
  l_fulfill:p=>`📦 ${p.c} ${p.n} dikirim ke ${buyerName(p)}. Hadiah ${p.r}!`,
  l_cloud:'☁️ Akun tersambung. Progres di perangkat ini sekarang tersimpan juga di cloud.',
  // event
@@ -271,7 +271,7 @@ id:{
  // pasar
  mk_sub:'Stok penjual berganti tiap bulan. Status het dari penjual selalu jujur, tapi "pos het" artinya belum pasti.',
  mk_sub2:'Pasar menjual 3 ular dengan gen tunggal (atau Normal) yang berbeda-beda. Beli sebanyak yang kamu mau: pilih jenis kelamin, lalu beli sebagai bayi (2× harga dasar) atau siap kawin (4× harga dasar).',mk_reset:p=>`Stok berganti dalam ${p.n} turn`,mk_base:p=>`harga dasar ${p.v}`,mk_kind_one:'Gen tunggal',mk_kind_rec:'Gen tunggal (resesif, visual)',mk_kind_normal:'Tanpa gen',mk_f:'Betina',mk_m:'Jantan',mk_baby:'Bayi',mk_baby_d:'1–3 bulan · 70–180 g',mk_adult:'Siap kawin',mk_adult_f:'2 th+ · ±1,5–1,9 kg · bisa langsung dikawinkan',mk_adult_m:'10 bln+ · ±550–900 g · bisa langsung dikawinkan',
- rack_btn:'Beli rak baru (+10 tub) · $250',rack_note:p=>`Kapasitas sekarang ${p.n} tub. Lewat kapasitas kena biaya tub darurat $15/ekor/bulan.`,buy:'Beli',
+ rack_btn:p=>`Beli rak baru (+10 tub) · ${p.v}`,rack_h:'Beli rak baru?',rack_q:p=>`Kamu akan membeli 1 rak seharga <b>${p.v}</b>. Kapasitas naik dari ${p.c} menjadi ${p.n} tub.`,rack_price:'Harga rak',rack_after:'Saldo setelah beli',rack_n_next:p=>`Harga rak naik 2× setiap pembelian: rak berikutnya ${p.v}.`,rack_n_util:'Setiap rak menambah biaya listrik $8/bulan.',rack_yes:p=>`Ya, beli · ${p.v}`,rack_note:p=>`Kapasitas sekarang ${p.n} tub. Lewat kapasitas kena biaya tub darurat $15/ekor/bulan.`,buy:'Beli',
  // pesanan
  ord_h:'Pesanan pembeli',ord_sub:'Pembeli bayar jauh di atas harga pasar untuk morph tertentu. Ular yang dikirim harus punya semua gen visual yang diminta (gen tambahan boleh).',
  ord_empty:'Belum ada pesanan. Pesanan baru muncul seiring waktu.',ord_left:p=>`sisa ${p.n} bulan`,ord_reward:p=>`Hadiah ${p.v}`,ord_ship:'Kirim ke pembeli',ord_nomatch:'Belum ada ular yang cocok di koleksimu.',
@@ -407,7 +407,7 @@ en:{
  l_quick:p=>`💰 ${p.c} ${p.n} quick-sold for ${p.v}.`,
  l_paired:p=>`${p.m} paired with ${p.f}. You’ll know next month whether she ovulated.`,
  l_buy:p=>`🛒 Bought ${p.c} ${p.n}${p.h?' '+p.h:''} for ${p.v}.`,
- l_rack:p=>`Bought a new rack. Capacity is now ${p.cap} tubs.`,
+ l_rack:p=>`Bought a new rack${p.v?' for '+p.v:''}. Capacity is now ${p.cap} tubs.`,
  l_fulfill:p=>`📦 ${p.c} ${p.n} shipped to ${buyerName(p)}. Reward ${p.r}!`,
  l_cloud:'☁️ Account connected. Progress on this device is now also saved to the cloud.',
  ev_expo:'Reptile Expo this month! Listings sell twice as fast.',
@@ -454,7 +454,7 @@ en:{
  th_dam:'Dam',th_sire:'Sire',th_fertile:'Fertile',th_slug:'Slugs',th_hatch:'Hatches in',mo:p=>`${p.n} mo`,inc_empty:'The incubator is empty.',
  mk_sub:'Sellers restock every month. Het claims from sellers are always honest, but "pos het" means it isn’t certain.',
  mk_sub2:'The market sells 3 snakes, each with a different single gene (or Normal). Buy as many as you like: pick a sex, then buy as a baby (2× base price) or breeding-ready (4× base price).',mk_reset:p=>`Restocks in ${p.n} ${p.n===1?'turn':'turns'}`,mk_base:p=>`base price ${p.v}`,mk_kind_one:'Single gene',mk_kind_rec:'Single gene (recessive, visual)',mk_kind_normal:'No genes',mk_f:'Female',mk_m:'Male',mk_baby:'Baby',mk_baby_d:'1–3 months · 70–180 g',mk_adult:'Breeding-ready',mk_adult_f:'2 yr+ · ~1.5–1.9 kg · can be paired right away',mk_adult_m:'10 mo+ · ~550–900 g · can be paired right away',
- rack_btn:'Buy a new rack (+10 tubs) · $250',rack_note:p=>`Current capacity: ${p.n} tubs. Going over capacity costs $15 per snake per month for emergency tubs.`,buy:'Buy',
+ rack_btn:p=>`Buy a new rack (+10 tubs) · ${p.v}`,rack_h:'Buy a new rack?',rack_q:p=>`You’re about to buy 1 rack for <b>${p.v}</b>. Capacity goes from ${p.c} to ${p.n} tubs.`,rack_price:'Rack price',rack_after:'Balance after buying',rack_n_next:p=>`Rack prices double with every purchase: the next one costs ${p.v}.`,rack_n_util:'Each rack adds $8/month in power costs.',rack_yes:p=>`Yes, buy · ${p.v}`,rack_note:p=>`Current capacity: ${p.n} tubs. Going over capacity costs $15 per snake per month for emergency tubs.`,buy:'Buy',
  ord_h:'Buyer orders',ord_sub:'Buyers pay well above market price for specific morphs. The snake you ship must show every requested visual gene (extra genes are fine).',
  ord_empty:'No orders yet. New orders appear over time.',ord_left:p=>`${p.n} ${p.n===1?'month':'months'} left`,ord_reward:p=>`Reward ${p.v}`,ord_ship:'Ship to buyer',ord_nomatch:'No matching snake in your collection yet.',
  dex_found:p=>'Found '+p.d,dex_notfound:'Not found yet',
@@ -760,7 +760,7 @@ function eventText(e){return e.e?t(e.e,e):(e.txt||'')}
 const MKSEX={};
 function vPasar(){
  let h=`<h2>${t('tab_pasar')}</h2><p class="sub">${t('mk_sub2')}${S.event?' <b>📢 '+esc(eventText(S.event))+'</b>':''}</p>
- <div class="toolbar"><span class="tag a">🔄 ${t('mk_reset',{n:marketLeft()})}</span><button data-act="rack" ${S.money<250?'disabled':''}>${t('rack_btn')}</button><span class="kbd">${t('rack_note',{n:cap()})}</span></div><div class="grid">`;
+ <div class="toolbar"><span class="tag a">🔄 ${t('mk_reset',{n:marketLeft()})}</span><button data-act="rack" ${S.money<rackPrice()?'disabled':''}>${t('rack_btn',{v:money(rackPrice())})}</button><span class="kbd">${t('rack_note',{n:cap()})}</span></div><div class="grid">`;
  if(!marketOk())return h+`</div><div class="empty">${t('so_loading')}</div>`;
  h+=S.market.map(L=>{const tr=listingTraits(L),sx=MKSEX[L.lid]||'F',base=marketBase(L),pb=marketPrice(L,'baby'),pa=marketPrice(L,'adult');
   const rec=tr.length&&['albino','piebald','clown','axanthic'].includes(tr[0]);
@@ -804,6 +804,7 @@ async function game(a){
  if(!Cloud.user||!S)return null;
  let r;try{r=await Online.act(a)}catch(e){toast(errText(e));
   // aksi ditolak: tampilkan lagi data asli dari server (buang perubahan di layar yang tidak sah)
+  if(e.message==='no_save'){try{await Online.act({type:'init'});toast(t('t_reset'));render();return null}catch(_){}}
   if(e.message!=='busy')try{await Cloud.reload()}catch(_){}
   render();return null}
  render();
@@ -840,7 +841,11 @@ function act(a,id,el){
   case 'unpair':game({type:'unpair',f:id});return;
   case 'buy':game({type:'buy',lid:id,age:el.dataset.age,sex:MKSEX[id]||'F'});return;
   case 'mk_sex':MKSEX[id]=el.dataset.v;break;
-  case 'rack':game({type:'rack'});return;
+  case 'rack':{const p=rackPrice();modal(`<h2>🗄️ ${t('rack_h')}</h2><p class="sub">${t('rack_q',{v:money(p),c:cap(),n:cap()+10})}</p>
+   <table class="pv"><tbody><tr><td>💰 ${t('pv_now')}</td><td class="num">${money(S.money)}</td></tr><tr class="neg"><td>🗄️ ${t('rack_price')}</td><td class="num">− ${money(p)}</td></tr><tr class="big"><td>${t('rack_after')}</td><td class="num">${money(S.money-p)}</td></tr></tbody></table>
+   <ul class="pvnotes"><li>${t('rack_n_next',{v:money(p*2)})}</li><li>${t('rack_n_util')}</li></ul>
+   <div class="actions"><button class="pri" data-act="rackyes">${t('rack_yes',{v:money(p)})}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`);return}
+  case 'rackyes':closeModal();game({type:'rack'});return;
   case 'fulfill':{const sel=$('ord-'+id);if(sel)game({type:'fulfill',oid:id,sid:+sel.value});return}
  }
  render()}
