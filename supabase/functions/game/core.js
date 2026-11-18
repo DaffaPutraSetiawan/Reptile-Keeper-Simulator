@@ -7,6 +7,8 @@
 (function(root){
 'use strict';
 let S=null;               // state game yang sedang diproses
+// Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
+const VERSION={v:11,date:'2026-11-19'};
 const BUYER_COUNT=8;      // jumlah nama pembeli di kamus bahasa
 
 /* ========= DATA GENETIKA ========= */
@@ -303,7 +305,7 @@ function applyAction(state,a){
 function isState(x){return !!(x&&typeof x==='object'&&Array.isArray(x.snakes)&&typeof x.turn==='number'&&typeof x.money==='number')}
 
 root.MorphCore={
- LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,POOL,BUYER_COUNT,
+ VERSION,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,POOL,BUYER_COUNT,
  R,pick,clamp,money,fmt,
  use(s){S=s},state(){return S},
  mi,yr,cap,log,

@@ -13,6 +13,11 @@ const MAX_RETRY = 4;
  * @returns {Promise<object>} { state, rev, head?, toast? }  (melempar Error(kode) kalau gagal)
  */
 export async function handle(body, uid, db) {
+  // Setiap balasan menyertakan versi server supaya browser bisa menampilkannya di Pengaturan.
+  return { ...(await run(body, uid, db)), server: C.VERSION };
+}
+
+async function run(body, uid, db) {
   const action = body && body.action;
   if (!action || typeof action !== 'object' || typeof action.type !== 'string') throw new Error('bad_action');
   if (action.type === 'reset') {
