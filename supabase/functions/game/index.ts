@@ -32,6 +32,10 @@ const db = {
     if (error) { if (error.code === '23505') return false; throw new Error('db_error'); }
     return true;
   },
+  async beforeReset(uid: string) {
+    const { error } = await admin.rpc('_reset_account', { p_user: uid });
+    if (error) throw new Error('db_error');
+  },
   async update(uid: string, state: Record<string, unknown>, oldRev: number) {
     const { data, error } = await admin.from('saves')
       .update({ data: state, game_turn: state.turn, rev: oldRev + 1 })

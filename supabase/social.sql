@@ -272,8 +272,8 @@ returns void language plpgsql security definer set search_path = '' as $$
 declare v_snakes jsonb;
 begin
   select snakes into v_snakes from public.trade_escrow where trade_id = p_trade.id;
-  -- p_status 'deleted' (akun penerima dihapus) dicatat sebagai 'cancelled'; alasannya ada di log
-  update public.trades set status = case when p_status = 'deleted' then 'cancelled' else p_status end, resolved_at = now() where id = p_trade.id;
+  -- p_status 'deleted' (akun dihapus) / 'reset' (akun di-reset) dicatat sebagai 'cancelled'; alasannya ada di log
+  update public.trades set status = case when p_status in ('deleted', 'reset') then 'cancelled' else p_status end, resolved_at = now() where id = p_trade.id;
   insert into public.deliveries (user_id, trade_id, snakes, money, log)
   values (p_trade.from_user, p_trade.id, coalesce(v_snakes, '[]'::jsonb), p_trade.offer_money,
           jsonb_build_object('m', 'l_trade_back', 'p', jsonb_build_object(
@@ -547,19 +547,45 @@ end $$;
 -- escrow-nya, sehingga ular & uang penawar hilang. Trigger ini membatalkan
 -- tawaran tersebut dan mengirim isinya kembali ke penawar sebagai kiriman.
 -- Chat, pertemanan, profil, dan save akun itu ikut terhapus. Riwayat trade pemain lain tetap ada.
-create or replace function public._on_user_deleted()
-returns trigger language plpgsql security definer set search_path = '' as $$
+-- Batalkan semua tawaran yang belum dijawab yang melibatkan p_user.
+--  * tawaran KE p_user: isinya dikembalikan ke penawar (alasan p_why: 'deleted' / 'reset')
+--  * tawaran DARI p_user: dibatalkan, isi escrow dibuang (akunnya dihapus atau dimulai ulang)
+create or replace function public._cancel_pending_trades(p_user uuid, p_why text)
+returns void language plpgsql security definer set search_path = '' as $$
 declare t public.trades;
 begin
-  -- 1) tawaran yang menunggu jawaban akun ini: batalkan, isinya kembali ke penawar
-  for t in select * from public.trades where to_user = old.id and status = 'pending' for update loop
-    perform public._refund_trade(t, 'deleted', old.id);
+  for t in select * from public.trades where to_user = p_user and status = 'pending' for update loop
+    perform public._refund_trade(t, p_why, p_user);
   end loop;
-  -- 2) tawaran yang dikirim akun ini dan belum dijawab: batalkan (isi escrow hilang bersama akunnya)
   delete from public.trade_escrow
-   where trade_id in (select id from public.trades where from_user = old.id and status = 'pending');
+   where trade_id in (select id from public.trades where from_user = p_user and status = 'pending');
   update public.trades set status = 'cancelled', resolved_at = now()
-   where from_user = old.id and status = 'pending';
+   where from_user = p_user and status = 'pending';
+end $$;
+
+-- Dipanggil Edge Function "game" (kunci server) sebelum save di-reset: tawaran yang belum dijawab
+-- dibatalkan dan kiriman yang belum diambil dibuang, supaya barang lama tidak masuk ke game baru.
+create or replace function public._reset_account(p_user uuid)
+returns void language plpgsql security definer set search_path = '' as $$
+begin
+  perform public._cancel_pending_trades(p_user, 'reset');
+  delete from public.deliveries where user_id = p_user and claimed_at is null;
+end $$;
+
+-- Pemain menghapus akunnya sendiri. Harus mengetik DELETE. Trigger di bawah ikut berjalan.
+create or replace function public.delete_my_account(p_confirm text)
+returns void language plpgsql security definer set search_path = '' as $$
+declare me uuid := public._me();
+begin
+  if p_confirm is distinct from 'DELETE' then raise exception 'confirm_mismatch'; end if;
+  delete from auth.users where id = me;
+end $$;
+
+create or replace function public._on_user_deleted()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  -- 1+2) batalkan semua tawaran yang belum dijawab (lihat _cancel_pending_trades)
+  perform public._cancel_pending_trades(old.id, 'deleted');
   -- 3) riwayat dengan pemain yang akunnya juga sudah dihapus: tidak ada lagi yang bisa melihatnya
   delete from public.trades
    where (from_user = old.id and to_user is null) or (to_user = old.id and from_user is null);
@@ -584,6 +610,8 @@ begin
     execute format('revoke all on function %s from public, anon, authenticated', f.sig);
   end loop;
 end $$;
+-- _reset_account hanya untuk Edge Function (kunci server)
+grant execute on function public._reset_account(uuid) to service_role;
 -- touch_updated_at (dari schema.sql) juga internal
 revoke all on function public.touch_updated_at() from public, anon, authenticated;
 
@@ -596,7 +624,7 @@ begin
     'send_message(uuid, text)', 'get_messages(uuid, bigint, integer)', 'mark_read(uuid)',
     'get_social()', 'get_friend_collection(uuid)',
     'create_trade(uuid, integer[], integer, integer[], integer, text, bigint)',
-    'accept_trade(bigint, bigint)', 'decline_trade(bigint)', 'cancel_trade(bigint)', 'claim_deliveries(bigint)'] loop
+    'accept_trade(bigint, bigint)', 'decline_trade(bigint)', 'cancel_trade(bigint)', 'claim_deliveries(bigint)', 'delete_my_account(text)'] loop
     execute format('revoke all on function public.%s from public, anon', f);
     execute format('grant execute on function public.%s to authenticated', f);
   end loop;

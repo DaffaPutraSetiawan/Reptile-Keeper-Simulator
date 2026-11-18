@@ -8,12 +8,19 @@ const MAX_RETRY = 4;
 /**
  * @param {object} body  isi request: { action: { type, ... } }
  * @param {string} uid   id pemain yang sudah diverifikasi
- * @param {object} db    { load(uid) -> {data, rev} | null, insert(uid, data) -> bool, update(uid, data, oldRev) -> bool }
+ * @param {object} db    { load(uid) -> {data, rev} | null, insert(uid, data) -> bool, update(uid, data, oldRev) -> bool,
+ *                         beforeReset(uid) -> void }
  * @returns {Promise<object>} { state, rev, head?, toast? }  (melempar Error(kode) kalau gagal)
  */
 export async function handle(body, uid, db) {
   const action = body && body.action;
   if (!action || typeof action !== 'object' || typeof action.type !== 'string') throw new Error('bad_action');
+  if (action.type === 'reset') {
+    // Mulai ulang akun hanya kalau pemain mengetik RESET.
+    if (action.confirm !== 'RESET') throw new Error('confirm_mismatch');
+    // Batalkan tawaran trade yang belum dijawab & buang kiriman lama supaya tidak masuk ke game baru.
+    if (db.beforeReset) await db.beforeReset(uid);
+  }
 
   for (let attempt = 0; attempt < MAX_RETRY; attempt++) {
     const row = await db.load(uid);

@@ -130,6 +130,7 @@ button.sm{padding:4px 10px;font-size:12.5px}
 @media(max-width:560px){.gate-morphs{grid-template-columns:repeat(2,1fr)}}
 .gate-morphs figure{margin:0}.gate-morphs figcaption{font-size:12.5px;color:var(--mut);margin-top:4px;text-align:center}
 .gate-f{list-style:none;padding:0;margin:0 0 6px;display:grid;gap:6px;color:#dcd4c0}
+.dzone{margin-top:18px;padding-top:12px;border-top:1px solid #4a2b26}.dzone .lbl{color:var(--bad)}.dzrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0}.dzrow p{margin:2px 0 0;font-size:12.5px;color:var(--mut)}.dzrow button{flex:none}
 .warnbox{border:1px solid #7a3d34;background:#2a1714;border-radius:12px;padding:10px 14px;margin:10px 0}.warnbox p{margin:6px 0;font-size:13.5px}
 button.danger{background:var(--bad);border-color:var(--bad);color:#1b0a07;font-weight:700}button.danger:hover:not(:disabled){background:#ec7d71}
 .empty{color:var(--mut);padding:30px;text-align:center;border:1px dashed var(--line);border-radius:14px}
@@ -201,6 +202,13 @@ id:{
  // header & tab
  hdr_date:'Turn dimainkan',hdr_bal:'Saldo',hdr_tubs:'Tub terpakai',hdr_season:'Musim',season_on:'Kawin 🌙',season_off:'Istirahat',advance:'Lanjut bulan ▶',
  tab_koleksi:'Koleksi',tab_breeding:'Kawinkan',tab_inkubator:'Inkubator',tab_pasar:'Pasar',tab_pesanan:'Pesanan',tab_dex:'Morph Dex',tab_panduan:'Panduan genetika',
+ dz_title:'Zona bahaya',dz_sure:'Apakah kamu yakin?',dz_yes:'Ya, saya yakin',
+ dz_type:p=>`Untuk konfirmasi, ketik <b>${p.w}</b> (huruf kapital semua) di bawah ini.`,dz_type_lbl:p=>`Ketik ${p.w}`,dz_mismatch:p=>`Ketik persis "${p.w}" untuk melanjutkan.`,
+ dzr_h:'Reset akun',dzr_btn:'Reset akun',dzr_short:'Mulai game dari awal. Username, teman, dan chat tetap.',dzr_go:'Reset akun sekarang',
+ dzr_list:'<p>🔄 Semua progres game diulang dari awal: ular, uang, turn, inkubator, pesanan, Morph Dex, dan catatan breeder.</p><p>🔁 Tawaran trade yang belum dijawab dibatalkan, dan kiriman yang belum diambil dibuang.</p><p>👥 Username, daftar teman, chat, dan riwayat trade tetap ada.</p><p><b>Tindakan ini tidak bisa dibatalkan.</b></p>',
+ dzd_h:'Hapus akun',dzd_btn:'Hapus akun',dzd_short:'Hapus akun dan semua datanya secara permanen.',dzd_go:'Hapus akun selamanya',dzd_working:'Menghapus akun…',
+ dzd_list:'<p>🗑️ Akun login, username, dan save game dihapus permanen.</p><p>👥 Semua pertemanan dan chat ikut terhapus.</p><p>🔁 Tawaran trade yang belum dijawab dibatalkan; barang milik pemain lain dikembalikan ke mereka.</p><p>📜 Di riwayat trade pemain lain, namamu tampil sebagai "(akun dihapus)".</p><p><b>Tindakan ini tidak bisa dibatalkan.</b></p>',
+ t_deleted:'Akunmu sudah dihapus. Terima kasih sudah bermain Morph Lab.',e_confirm_mismatch:'Kata konfirmasi tidak cocok.',
  log_title:'Catatan breeder',log_clear:'🗑️ Hapus',log_empty:'Catatan masih kosong.',log_clear_h:'Hapus catatan breeder?',log_clear_q:'Semua catatan akan dihapus permanen. Koleksi, uang, dan progres game tidak berubah.',log_clear_yes:'Ya, hapus catatan',t_logcleared:'Catatan breeder dihapus.',
  // tag kartu
  tag_gravid:p=>`Bunting · bertelur ±${p.n} bln`,tag_pairedw:p=>`Dikawinkan dgn ${p.c}`,tag_pairs:p=>`${p.n} pasangan bln ini`,tag_listed:'Diiklankan',tag_ready:'Siap kawin',tag_hatch:'Hatchling',
@@ -235,7 +243,7 @@ id:{
  d_code:'Kode',d_agew:'Umur · berat',d_sire:'Induk jantan',d_dam:'Induk betina',d_unknown:'tidak diketahui (dibeli)',d_gen:'Generasi',d_status:'Status kawin',d_value:'Nilai pasar',
  nick_ph:'Nama panggilan',save:'Simpan',unlist:'Batalkan iklan',list:p=>'Iklankan · '+p.v,quick:p=>'Jual cepat · '+p.v,plan:'Rencanakan kawin',close:'Tutup',gravid_nosale:'Betina bunting tidak bisa dijual sampai bertelur.',
  // mulai ulang
- reset_h:'Mulai game baru?',reset_local:'Semua progres di browser ini akan dihapus.',reset_cloud:'Game di akunmu akan diulang dari awal. Ini tidak bisa dibatalkan.',reset_yes:'Ya, mulai baru',btn_cancel:'Batal',
+ btn_cancel:'Batal',
  // akun & cloud
  acct_nolib:'⚠️ Cloud tidak tersedia',acct_nolib_t:'Library Supabase gagal dimuat',acct_login:'☁️ Masuk / Daftar',acct_default:'Akun',
  st_sync:'Menyimpan…',st_saved:'Tersimpan',st_error:'Gagal sync',st_conflict:'Perlu dipilih',
@@ -303,7 +311,7 @@ id:{
  t_removed:p=>`${p.u} dihapus dari daftar teman.`,
  l_trade_sent:p=>`🔁 Tawaran trade dikirim ke ${p.u}: ${p.n} ular${p.mo?` + ${money(p.mo)}`:''} dititipkan (escrow).`,
  l_trade_done:p=>`🤝 Trade dengan ${p.u} selesai! Kamu menerima ${p.n} ular${p.mo?` dan ${money(p.mo)}`:''}.`,
- l_trade_back:p=>`↩️ Tawaranmu ke ${p.u} ${p.why==='declined'?'ditolak':p.why==='deleted'?`dibatalkan karena akun ${p.u} dihapus`:'dibatalkan'}; ${p.n} ular${p.mo?` dan ${money(p.mo)}`:''} kembali ke koleksimu.`,
+ l_trade_back:p=>`↩️ Tawaranmu ke ${p.u} ${p.why==='declined'?'ditolak':p.why==='deleted'?`dibatalkan karena akun ${p.u} dihapus`:p.why==='reset'?`dibatalkan karena ${p.u} me-reset akunnya`:'dibatalkan'}; ${p.n} ular${p.mo?` dan ${money(p.mo)}`:''} kembali ke koleksimu.`,
  e_busy:'Tunggu sebentar, sedang memproses…',e_sync_timeout:'Sinkronisasi terlalu lama. Coba lagi.',e_sync_failed:'Gagal menyimpan ke cloud. Coba lagi.',
  t_online:'🌐 Game dimuat. Semua aksi dihitung dan disimpan di server.',t_reset:'Game online dimulai ulang dari awal.',t_reloaded:'Save dimuat ulang dari server.',
  mode_online_t:'Online · dihitung server',ac_mode:'Mode',
@@ -365,6 +373,13 @@ en:{
  h_born:p=>`${p.n} hatched`,h_new:p=>'New morph: '+p.n,h_laid:p=>`${p.c} laid ${p.n} fertile eggs`,h_gravid:p=>`${p.c} is gravid`,h_sold:p=>`${p.c} sold for ${p.v}`,h_quiet:' — a quiet month.',
  hdr_date:'Turns played',hdr_bal:'Balance',hdr_tubs:'Tubs used',hdr_season:'Season',season_on:'Breeding 🌙',season_off:'Off-season',advance:'Next month ▶',
  tab_koleksi:'Collection',tab_breeding:'Breeding',tab_inkubator:'Incubator',tab_pasar:'Market',tab_pesanan:'Orders',tab_dex:'Morph Dex',tab_panduan:'Genetics guide',
+ dz_title:'Danger zone',dz_sure:'Are you sure?',dz_yes:'Yes, I’m sure',
+ dz_type:p=>`To confirm, type <b>${p.w}</b> (all capital letters) below.`,dz_type_lbl:p=>`Type ${p.w}`,dz_mismatch:p=>`Type exactly "${p.w}" to continue.`,
+ dzr_h:'Reset account',dzr_btn:'Reset account',dzr_short:'Start the game over. Username, friends and chats stay.',dzr_go:'Reset account now',
+ dzr_list:'<p>🔄 All game progress starts over: snakes, money, turns, incubator, orders, Morph Dex and breeder log.</p><p>🔁 Unanswered trade offers are cancelled and unclaimed deliveries are discarded.</p><p>👥 Your username, friends list, chats and trade history stay.</p><p><b>This can’t be undone.</b></p>',
+ dzd_h:'Delete account',dzd_btn:'Delete account',dzd_short:'Permanently delete your account and all its data.',dzd_go:'Delete account forever',dzd_working:'Deleting account…',
+ dzd_list:'<p>🗑️ Your login, username and game save are permanently deleted.</p><p>👥 All friendships and chats are deleted too.</p><p>🔁 Unanswered trade offers are cancelled; other players’ items go back to them.</p><p>📜 In other players’ trade history you’ll appear as "(deleted account)".</p><p><b>This can’t be undone.</b></p>',
+ t_deleted:'Your account has been deleted. Thanks for playing Morph Lab.',e_confirm_mismatch:'The confirmation word doesn’t match.',
  log_title:'Breeder log',log_clear:'🗑️ Clear',log_empty:'No log entries yet.',log_clear_h:'Clear breeder log?',log_clear_q:'All log entries will be permanently deleted. Your collection, money and game progress stay the same.',log_clear_yes:'Yes, clear log',t_logcleared:'Breeder log cleared.',
  tag_gravid:p=>`Gravid · eggs in ~${p.n} mo`,tag_pairedw:p=>`Paired with ${p.c}`,tag_pairs:p=>`${p.n} ${p.n===1?'pairing':'pairings'} this month`,tag_listed:'Listed',tag_ready:'Ready to breed',tag_hatch:'Hatchling',
  col_sub:p=>`${p.n} ${p.n===1?'snake':'snakes'} · collection value ${p.v} · click a snake to see details, sell it or list it.`,
@@ -390,7 +405,7 @@ en:{
  save_cloud:'Progress is calculated and saved on the server, so it can’t be cheated and you can continue on any device.',save_local:'Offline mode: progress is saved in this browser only. Log in to play online (trading, server-calculated). Online and offline saves are separate.',
  d_code:'ID',d_agew:'Age · weight',d_sire:'Sire',d_dam:'Dam',d_unknown:'unknown (purchased)',d_gen:'Generation',d_status:'Breeding status',d_value:'Market value',
  nick_ph:'Nickname',save:'Save',unlist:'Cancel listing',list:p=>'List for sale · '+p.v,quick:p=>'Quick sell · '+p.v,plan:'Plan a pairing',close:'Close',gravid_nosale:'Gravid females can’t be sold until they lay.',
- reset_h:'Start a new game?',reset_local:'All progress in this browser will be erased.',reset_cloud:'The game in your account will restart from scratch. This can’t be undone.',reset_yes:'Yes, start over',btn_cancel:'Cancel',
+ btn_cancel:'Cancel',
  acct_nolib:'⚠️ Cloud unavailable',acct_nolib_t:'The Supabase library failed to load',acct_login:'☁️ Log in / Sign up',acct_default:'Account',
  st_sync:'Saving…',st_saved:'Saved',st_error:'Sync failed',st_conflict:'Needs your choice',
  summary:p=>`${p.d}<br>${p.v} · ${p.n} snakes · ${p.x} morphs in Dex`,
@@ -457,7 +472,7 @@ en:{
  t_removed:p=>`${p.u} was removed from your friends.`,
  l_trade_sent:p=>`🔁 Trade offer sent to ${p.u}: ${p.n} ${p.n===1?'snake':'snakes'}${p.mo?` + ${money(p.mo)}`:''} held in escrow.`,
  l_trade_done:p=>`🤝 Trade with ${p.u} complete! You received ${p.n} ${p.n===1?'snake':'snakes'}${p.mo?` and ${money(p.mo)}`:''}.`,
- l_trade_back:p=>`↩️ Your offer to ${p.u} was ${p.why==='declined'?'declined':p.why==='deleted'?`cancelled because ${p.u}’s account was deleted`:'cancelled'}; ${p.n} ${p.n===1?'snake':'snakes'}${p.mo?` and ${money(p.mo)}`:''} returned to your collection.`,
+ l_trade_back:p=>`↩️ Your offer to ${p.u} was ${p.why==='declined'?'declined':p.why==='deleted'?`cancelled because ${p.u}’s account was deleted`:p.why==='reset'?`cancelled because ${p.u} reset their account`:'cancelled'}; ${p.n} ${p.n===1?'snake':'snakes'}${p.mo?` and ${money(p.mo)}`:''} returned to your collection.`,
  e_busy:'One moment, still working…',e_sync_timeout:'Sync took too long. Try again.',e_sync_failed:'Couldn’t save to the cloud. Try again.',
  t_online:'🌐 Game loaded. Every action is calculated and saved on the server.',t_reset:'Your online game was restarted from scratch.',t_reloaded:'Save reloaded from the server.',
  mode_online_t:'Online · server-calculated',ac_mode:'Mode',
@@ -697,7 +712,7 @@ async function game(a){
  if(a.type==='advance')toast(`<b>${dateTxt()}</b>${r.head&&r.head.length?' — '+esc(r.head.slice(0,3).map(h=>t(h[0],h[1])).join(' · ')):esc(t('h_quiet'))}`);
  else if(r.toast)toast(t(r.toast));
  return r}
-const GATE_ACTS=new Set(['lang','login','signup','authmode','close','togglepw','forgot','acctinfo','gate_retry','gate_reload','logout','account','pickname']);
+const GATE_ACTS=new Set(['dz_open','dz_next','lang','login','signup','authmode','close','togglepw','forgot','acctinfo','gate_retry','gate_reload','logout','account','pickname']);
 function act(a,id,el){
  if(!S&&!GATE_ACTS.has(a))return;
  if(a==='gate_reload'){location.reload();return}
@@ -712,10 +727,9 @@ function act(a,id,el){
   case 'filter':FILTER=el.dataset.v;break;
   case 'close':closeModal();return;
   case 'tobreed':{const s=byId(id);if(s.sex==='M')SEL.m=id;else SEL.f=id;TAB='breeding';closeModal();break}
-  case 'reset':modal(`<h2>${t('reset_h')}</h2><p class="sub">${t('reset_cloud')}</p><div class="actions"><button class="pri" data-act="resetyes">${t('reset_yes')}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`);return;
+  case 'reset':dangerStep1('reset');return;
   case 'clearlog':modal(`<h2>${t('log_clear_h')}</h2><p class="sub">${t('log_clear_q')}</p><div class="actions"><button class="danger" data-act="clearlogyes">${t('log_clear_yes')}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`);return;
   case 'clearlogyes':closeModal();game({type:'clearlog'});return;
-  case 'resetyes':closeModal(true);TAB='koleksi';game({type:'reset'});return;
   // aksi game (divalidasi ulang oleh core / server)
   case 'advance':game({type:'advance'});return;
   case 'nick':{const name=$('nick').value;closeModal();game({type:'nick',id,name});return}
@@ -835,7 +849,26 @@ function showSetPassword(){modal(`<h2>${t('pw_h')}</h2><form data-form="setpw" c
 function showAccount(){const c=Cloud;const tm=c.lastSaved?new Date(c.lastSaved).toLocaleTimeString(LANG==='id'?'id-ID':'en-GB',{hour:'2-digit',minute:'2-digit'}):'';
  const st={sync:t('ac_syncing'),saved:t('ac_saved',{t:tm}),error:t('ac_error',{e:esc(errText(c.err))})}[c.status]||'';
  modal(`<h2>${t('ac_h')}</h2><dl><dt>Username</dt><dd>${c.profile?esc(c.profile.username):t('ac_notset')}</dd><dt>Email</dt><dd>${esc(c.user.email||'')}</dd><dt>${t('ac_status')}</dt><dd>${st}</dd><dt>${t('ac_mode')}</dt><dd>${t('mode_online_t')}</dd></dl>
- <div class="actions"><button class="pri" data-act="syncnow">${t('ac_syncnow')}</button>${c.profile?'':`<button data-act="pickname">${t('ac_pick')}</button>`}<button data-act="logout">${t('ac_logout')}</button><button class="ghost" data-act="close">${t('close')}</button></div>`)}
+ <div class="actions"><button class="pri" data-act="syncnow">${t('ac_syncnow')}</button>${c.profile?'':`<button data-act="pickname">${t('ac_pick')}</button>`}<button data-act="logout">${t('ac_logout')}</button><button class="ghost" data-act="close">${t('close')}</button></div>
+ <div class="dzone"><div class="lbl">${t('dz_title')}</div>
+  <div class="dzrow"><div><b>${t('dzr_h')}</b><p>${t('dzr_short')}</p></div><button class="danger sm" data-act="dz_open" data-k="reset">${t('dzr_btn')}</button></div>
+  <div class="dzrow"><div><b>${t('dzd_h')}</b><p>${t('dzd_short')}</p></div><button class="danger sm" data-act="dz_open" data-k="delete">${t('dzd_btn')}</button></div></div>`)}
+// Opsi berbahaya: verifikasi 2 langkah (1. yakin? 2. ketik RESET / DELETE)
+const DZ={reset:{w:'RESET',p:'dzr'},delete:{w:'DELETE',p:'dzd'}};
+function dangerStep1(k){const d=DZ[k];modal(`<h2>${t(d.p+'_h')}?</h2><div class="warnbox">${t(d.p+'_list')}</div>
+ <p><b>${t('dz_sure')}</b></p><div class="actions"><button class="danger" data-act="dz_next" data-k="${k}">${t('dz_yes')}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`)}
+function dangerStep2(k){const d=DZ[k];modal(`<h2>${t(d.p+'_h')}</h2><p class="sub">${t('dz_type',{w:d.w})}</p>
+ <form data-form="dz_${k}" class="form" novalidate><label>${t('dz_type_lbl',{w:d.w})}<input name="confirm" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="${d.w}"></label><div class="msg"></div>
+ <div class="actions"><button class="danger" type="submit" disabled>${t(d.p+'_go')}</button><button type="button" class="ghost" data-act="close">${t('btn_cancel')}</button></div></form>`);
+ const i=document.querySelector('#modal [name=confirm]');if(i)i.focus()}
+async function dangerGo(k,f){const d=DZ[k];const v=f.querySelector('[name=confirm]').value.trim();const m=f.querySelector('.msg');const btn=f.querySelector('button[type=submit]');
+ if(v!==d.w){m.innerHTML=`<span class="warn">${t('dz_mismatch',{w:d.w})}</span>`;return}
+ if(k==='reset'){closeModal(true);TAB='koleksi';const r=await game({type:'reset',confirm:'RESET'});if(r&&Social.ch)Social.refresh();return}
+ btn.disabled=true;m.innerHTML=`<span class="kbd">${t('dzd_working')}</span>`;
+ const{error}=await Cloud.sb.rpc('delete_my_account',{p_confirm:'DELETE'});
+ if(error){btn.disabled=false;m.innerHTML=`<span class="warn">${errText(error)}</span>`;return}
+ Social.stop();try{await Cloud.sb.auth.signOut({scope:'local'})}catch(e){}
+ Cloud.toGate();toast(t('t_deleted'))}
 const AUTH_ERR=m=>{m=String(m||'');if(/invalid login/i.test(m))return t('e_cred');if(/not confirmed/i.test(m))return t('e_unconf');if(/rate limit|too many/i.test(m))return t('e_rate');if(/already registered|already exists/i.test(m))return t('e_exists');if(/password/i.test(m)&&/6|short|weak/i.test(m))return t('e_weak');return esc(m)};
 async function handleForm(kind,f){
  const v=n=>{const i=f.querySelector(`[name="${n}"]`);return i?i.value.trim():''};const msg=h=>{f.querySelector('.msg').innerHTML=h};
@@ -867,6 +900,8 @@ function cloudAct(a,el){
   pickname:()=>showUsername(''),
   togglepw:()=>{const i=el.parentElement.querySelector('input');const show=i.type==='password';i.type=show?'text':'password';el.innerHTML=show?EYE_OFF:EYE;const tt=show?t('pw_hide'):t('pw_show');el.title=tt;el.setAttribute('aria-label',tt);el.setAttribute('aria-pressed',show);i.focus()},
   logout:()=>Cloud.logout(),
+  dz_open:()=>dangerStep1(el.dataset.k),
+  dz_next:()=>dangerStep2(el.dataset.k),
   forgot:async()=>{const f=el.closest('form');const email=f.querySelector('[name=email]').value.trim();const m=f.querySelector('.msg');
    if(!/^\S+@\S+\.\S+$/.test(email)){m.innerHTML=`<span class="warn">${t('fg_need')}</span>`;return}
    const{error}=await Cloud.sb.auth.resetPasswordForEmail(email,{redirectTo:URL_HERE()});
@@ -1068,9 +1103,10 @@ function boot(){
   if(el.id==='selM'){SEL.m=+el.value;render()}else if(el.id==='selF'){SEL.f=+el.value;render()}else if(el.id==='sort'){SORT=el.value;render()}});
  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
  document.addEventListener('submit',e=>{const f=e.target.closest('form[data-form]');if(!f)return;e.preventDefault();
-  const k=f.dataset.form;if(k==='addfriend'||k==='chat')guarded(()=>socialForm(k,f));else handleForm(k,f)});
+  const k=f.dataset.form;if(k==='addfriend'||k==='chat')guarded(()=>socialForm(k,f));else if(k.startsWith('dz_'))dangerGo(k.slice(3),f);else handleForm(k,f)});
  document.addEventListener('input',e=>{const el=e.target;
-  if(el.id==='chatin'){Social.draft=el.value;Social.chatFocus=true}
+  if(el.name==='confirm'&&el.form&&/^dz_/.test(el.form.dataset.form||'')){const d=DZ[el.form.dataset.form.slice(3)];el.form.querySelector('button[type=submit]').disabled=el.value.trim()!==d.w;el.form.querySelector('.msg').innerHTML=''}
+  else if(el.id==='chatin'){Social.draft=el.value;Social.chatFocus=true}
   else if(el.dataset&&el.dataset.tbf&&TB){TB[el.dataset.tbf]=el.dataset.tbf==='note'?el.value:Math.max(0,Math.floor(+el.value||0));
    const sm=$('tbsum');if(el.dataset.tbf!=='note'&&sm){const gv=S.snakes.filter(s=>TB.mine.has(s.id)).reduce((a,s)=>a+value(s),0)+TB.om,rv=TB.coll.filter(s=>TB.theirs.has(s.id)).reduce((a,s)=>a+value(s),0)+TB.rm;sm.innerHTML=t('tb_sum',{g:money(gv),r:money(rv)})+(!TB.theirs.size&&!TB.rm?' · '+t('tb_gift'):'')}}});
  document.addEventListener('focusout',e=>{if(e.target.id==='chatin')Social.chatFocus=false});
