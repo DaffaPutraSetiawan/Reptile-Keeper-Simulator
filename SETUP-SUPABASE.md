@@ -88,6 +88,6 @@ Game hanya bisa dimainkan setelah login. Pengunjung yang belum login melihat hal
 ## Catatan keamanan
 
 - **Save online hanya bisa diubah server**: Edge Function `game` dan fungsi trading di `social.sql`. Mengubah uang atau ular lewat DevTools hanya mengubah tampilan di layar sendiri, dan akan kembali ke angka server setelah aksi berikutnya.
-- Semua aksi divalidasi di server: umur - Semua aksi divalidasi di server: musim kawin, kesiapan ular, kesiapan ular, uang cukup, listing pasar masih ada, ular cocok dengan pesanan, dan seterusnya. Aksi karangan ditolak.
+- Semua aksi divalidasi di server: umur dan kesiapan ular, uang cukup, listing pasar masih ada, ular cocok dengan pesanan, dan seterusnya. Aksi karangan ditolak.
 - Pertemanan, pesan, dan trade hanya bisa diubah lewat fungsi server yang memeriksa siapa pemanggilnya. Chat dibatasi 30 pesan per menit.
 - Yang masih bisa dilakukan pemain hanyalah mengatur waktu klik, misalnya menekan "Lanjut bulan" berkali-kali. Itu memang bagian dari permainan.
