@@ -49,6 +49,25 @@ Publishable key memang dirancang untuk ditaruh di kode yang bisa dilihat publik,
 3. Mainkan satu bulan. Status di header akan berubah dari *Menyimpan…* ke *Tersimpan*.
 4. Buka game di perangkat atau browser lain dan masuk dengan akun yang sama. Progresnya akan ikut termuat.
 
+## 6. Aktifkan fitur teman, chat & trading
+
+1. Buka **SQL Editor → New query**.
+2. Salin seluruh isi [`supabase/social.sql`](supabase/social.sql), tempel, lalu klik **Run**. Jalankan **setelah** `schema.sql`.
+   Kalau muncul peringatan *destructive operation*, klik **Run this query**. Itu karena ada perintah `drop policy` untuk membuat ulang aturan.
+3. Cek di **Table Editor**: sekarang ada tabel `friendships`, `messages`, `trades`, `trade_escrow`, dan `deliveries`.
+4. Chat dan notifikasi memakai **Realtime**. Script di atas sudah mendaftarkan tabelnya ke publikasi `supabase_realtime`.
+   Untuk memastikan, buka **Database → Publications → supabase_realtime**. Tabel `messages`, `friendships`, `trades`, dan `deliveries` harus tercentang.
+   Kalau realtime mati, game tetap memperbarui data setiap 45 detik.
+
+### Cara kerja trading
+
+- Trading hanya bisa dilakukan antar teman.
+- Saat tawaran dikirim, ular dan uang yang ditawarkan langsung **dititipkan (escrow)** di server. Barang itu hilang dari koleksi penawar sampai tawaran dijawab, jadi tidak bisa dijual atau ditawarkan dua kali.
+- Saat diterima, server menukar barang kedua pihak dalam satu transaksi: semuanya berpindah, atau tidak ada yang berpindah sama sekali.
+- Kalau ditolak, dibatalkan, atau pertemanan dihapus, isi escrow dikembalikan utuh ke penawar.
+- Server hanya mengubah save milik pemain yang sedang beraksi. Barang untuk pihak lain dikirim sebagai *kiriman* (tabel `deliveries`), yang otomatis diklaim saat game pemiliknya terbuka.
+- Genotipe het tersembunyi tidak terlihat saat melihat koleksi atau tawaran teman. Genotipe aslinya baru ikut pindah setelah trade selesai.
+
 ## Cara kerja sync
 
 - Save tetap disimpan di browser dan juga dikirim ke cloud sekitar 1,5 detik setelah setiap aksi.
@@ -57,4 +76,6 @@ Publishable key memang dirancang untuk ditaruh di kode yang bisa dilihat publik,
 
 ## Catatan keamanan
 
-Logika game masih berjalan di browser, jadi pemain yang paham DevTools masih bisa mengubah save-nya sendiri. Untuk save pribadi ini tidak masalah. Sebelum fitur trading dibuka, aksi penting (breeding, jual-beli, trade) akan dipindah ke fungsi di server supaya ekonomi antar pemain tidak bisa dicurangi.
+- Pertemanan, pesan, dan trade hanya bisa diubah lewat fungsi server yang memeriksa siapa pemanggilnya. Pemain tidak bisa memalsukan pertemanan, membaca chat orang lain, menerima tawaran milik orang lain, mengubah isi tawaran, atau menggandakan barang.
+- Chat dibatasi 30 pesan per menit per pemain.
+- **Yang belum terlindungi:** logika game (breeding, pasar, uang dari penjualan) masih berjalan di browser. Pemain yang paham DevTools bisa mengedit save-nya sendiri, misalnya menambah uang atau membuat ular langka, lalu menukarnya ke teman. Server menolak data ular yang tidak masuk akal, tapi belum bisa membuktikan asal-usulnya. Karena trading hanya antar teman, dampaknya terbatas pada orang yang kamu kenal. Langkah berikutnya untuk menutup celah ini adalah memindahkan logika breeding dan ekonomi ke server.

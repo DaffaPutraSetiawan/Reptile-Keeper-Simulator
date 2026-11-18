@@ -25,6 +25,7 @@ Bisa juga dimainkan online lewat GitHub Pages: **Settings → Pages → Deploy f
 - **Ekonomi**: biaya pakan & rak, harga pasar yang naik turun dan bisa jenuh, iklan, event, pesanan pembeli
 - **Morph Dex** dengan 32 morph target (Bumblebee, Killer Bee, Lemon Blast, Spinner, Snow, dan lainnya)
 - **Gambar ular prosedural** yang dibuat dari genetika tiap ular
+- **Teman, chat & trading**: tambah teman lewat username, chat real-time, dan tukar ular/uang dengan sistem escrow yang dijalankan server (lihat SETUP-SUPABASE.md)
 - **Dua bahasa: Indonesia & Inggris**, bisa diganti kapan saja lewat tombol ID / EN di header. Bahasa awal mengikuti bahasa browser, lalu pilihan pemain diingat.
 
 ## Struktur
@@ -34,13 +35,15 @@ Bisa juga dimainkan online lewat GitHub Pages: **Settings → Pages → Deploy f
 | `index.html` | Seluruh game (HTML + CSS + JavaScript) |
 | `config.js` | URL & publishable key Supabase (kosong = mode offline) |
 | `supabase/schema.sql` | Tabel `profiles` & `saves` dengan Row Level Security |
+| `supabase/social.sql` | Teman, chat, trading (escrow) + fungsi server & realtime |
 | `assets/` | Logo, favicon, dan ikon aplikasi |
 | `SETUP-SUPABASE.md` | Panduan menyiapkan login & cloud save |
 
 ## Rencana
 
 - [x] Login & cloud save (Supabase)
-- [ ] Trading antar pemain (divalidasi di server)
+- [x] Teman, chat & trading antar teman (escrow, divalidasi server)
+- [ ] Pindahkan logika breeding & ekonomi ke server (anti-cheat penuh)
 
 - [ ] Spesies baru (leopard gecko, bearded dragon, corn snake)
 - [ ] Perawatan & kesehatan (suhu, kelembapan, shedding, mogok makan)
