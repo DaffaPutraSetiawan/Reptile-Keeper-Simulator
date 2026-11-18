@@ -1,0 +1,44 @@
+// Logika Edge Function "game": terima AKSI dari pemain, jalankan di server, simpan hasilnya.
+// Dipisah dari index.ts supaya bisa diuji tanpa Supabase (db disuntikkan).
+import './core.js';
+
+const C = globalThis.MorphCore;
+const MAX_RETRY = 4;
+
+/**
+ * @param {object} body  isi request: { action: { type, ... } }
+ * @param {string} uid   id pemain yang sudah diverifikasi
+ * @param {object} db    { load(uid) -> {data, rev} | null, insert(uid, data) -> bool, update(uid, data, oldRev) -> bool }
+ * @returns {Promise<object>} { state, rev, head?, toast? }  (melempar Error(kode) kalau gagal)
+ */
+export async function handle(body, uid, db) {
+  const action = body && body.action;
+  if (!action || typeof action !== 'object' || typeof action.type !== 'string') throw new Error('bad_action');
+
+  for (let attempt = 0; attempt < MAX_RETRY; attempt++) {
+    const row = await db.load(uid);
+    const valid = row && C.isState(row.data);
+
+    // Buat game baru kalau pemain belum punya save (atau minta mulai ulang).
+    if (action.type === 'init' || action.type === 'reset') {
+      if (action.type === 'init' && valid) return { state: row.data, rev: row.rev };
+      const fresh = C.newGame();
+      if (row) {
+        fresh.rev = row.rev + 1;
+        if (await db.update(uid, fresh, row.rev)) return { state: fresh, rev: fresh.rev, toast: action.type === 'reset' ? 't_reset' : null };
+      } else {
+        fresh.rev = 1;
+        if (await db.insert(uid, fresh)) return { state: fresh, rev: 1 };
+      }
+      continue; // ada perubahan bersamaan, ulangi
+    }
+
+    if (!valid) throw new Error('no_save');
+    const state = row.data;
+    const result = C.applyAction(state, action);   // melempar Error(kode) kalau aksi tidak sah
+    state.rev = row.rev + 1;
+    if (await db.update(uid, state, row.rev)) return { state, rev: state.rev, head: result.head || null, toast: result.toast || null };
+    // save berubah di tengah jalan (mis. trade diterima): baca ulang dan ulangi aksinya
+  }
+  throw new Error('busy_retry');
+}

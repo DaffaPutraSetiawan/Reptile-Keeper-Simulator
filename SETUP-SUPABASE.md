@@ -68,14 +68,26 @@ Publishable key memang dirancang untuk ditaruh di kode yang bisa dilihat publik,
 - Server hanya mengubah save milik pemain yang sedang beraksi. Barang untuk pihak lain dikirim sebagai *kiriman* (tabel `deliveries`), yang otomatis diklaim saat game pemiliknya terbuka.
 - Genotipe het tersembunyi tidak terlihat saat melihat koleksi atau tawaran teman. Genotipe aslinya baru ikut pindah setelah trade selesai.
 
-## Cara kerja sync
+## 7. Mode online: Edge Function `game`
 
-- Save tetap disimpan di browser dan juga dikirim ke cloud sekitar 1,5 detik setelah setiap aksi.
-- Setiap save di cloud punya nomor versi (`rev`). Kalau save di akun ternyata sudah diubah dari perangkat lain, game tidak akan menimpanya diam-diam. Pemain diminta memilih: pakai save akun atau save di perangkat ini.
-- Saat keluar dari akun, browser kembali ke game baru. Progres akun tetap aman di cloud.
+Saat pemain login, game berjalan dalam **mode online ("server-authoritative")**. Browser hanya mengirim *aksi* (lanjut bulan, kawinkan, beli, jual, dan seterusnya). Edge Function `game` yang menjalankannya: mengocok angka acak (telur, gen, ovulasi, pasar), menghitung uang, lalu menyimpan hasilnya. Browser **tidak punya izin menulis** ke tabel `saves`, hanya membaca miliknya sendiri.
+
+- Logika game ada di [`core.js`](core.js). File yang sama dipakai browser (mode offline) dan server (salinannya ada di `supabase/functions/game/core.js`).
+- Setiap kali `core.js` diubah, jalankan `./scripts/sync-core.sh`, lalu deploy ulang fungsinya:
+  ```bash
+  supabase functions deploy game --project-ref <project-ref>
+  ```
+  (Atau minta Claude men-deploy lewat konektor Supabase.)
+- Fungsi ini memakai kunci rahasia server yang otomatis tersedia di Supabase (`SUPABASE_SECRET_KEYS`). Kunci itu tidak pernah dikirim ke browser.
+- Setiap save punya nomor versi (`rev`). Kalau dua perubahan terjadi bersamaan (misalnya trade diterima saat kamu klik "Lanjut bulan"), server membaca ulang dan mengulang aksinya, jadi tidak ada yang saling menimpa.
+
+### Mode offline
+
+Tanpa login, game berjalan sepenuhnya di browser dengan save di `localStorage`. Save offline **tidak bisa** diunggah ke akun, karena kalau bisa, pemain tinggal mengedit save offline lalu mengunggahnya. Save online dan offline terpisah: keluar dari akun membawamu kembali ke save offline.
 
 ## Catatan keamanan
 
-- Pertemanan, pesan, dan trade hanya bisa diubah lewat fungsi server yang memeriksa siapa pemanggilnya. Pemain tidak bisa memalsukan pertemanan, membaca chat orang lain, menerima tawaran milik orang lain, mengubah isi tawaran, atau menggandakan barang.
-- Chat dibatasi 30 pesan per menit per pemain.
-- **Yang belum terlindungi:** logika game (breeding, pasar, uang dari penjualan) masih berjalan di browser. Pemain yang paham DevTools bisa mengedit save-nya sendiri, misalnya menambah uang atau membuat ular langka, lalu menukarnya ke teman. Server menolak data ular yang tidak masuk akal, tapi belum bisa membuktikan asal-usulnya. Karena trading hanya antar teman, dampaknya terbatas pada orang yang kamu kenal. Langkah berikutnya untuk menutup celah ini adalah memindahkan logika breeding dan ekonomi ke server.
+- **Save online hanya bisa diubah server**: Edge Function `game` dan fungsi trading di `social.sql`. Mengubah uang atau ular lewat DevTools hanya mengubah tampilan di layar sendiri, dan akan kembali ke angka server setelah aksi berikutnya.
+- Semua aksi divalidasi di server: musim kawin, kesiapan ular, uang cukup, listing pasar masih ada, ular cocok dengan pesanan, dan seterusnya. Aksi karangan ditolak.
+- Pertemanan, pesan, dan trade hanya bisa diubah lewat fungsi server yang memeriksa siapa pemanggilnya. Chat dibatasi 30 pesan per menit.
+- Yang masih bisa dilakukan pemain hanyalah mengatur waktu klik, misalnya menekan "Lanjut bulan" berkali-kali. Itu memang bagian dari permainan.

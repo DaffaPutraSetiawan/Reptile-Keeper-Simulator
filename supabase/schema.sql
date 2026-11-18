@@ -36,8 +36,8 @@ create unique index if not exists profiles_username_lower_idx
 
 
 -- ---------- SAVE GAME ----------
--- Satu baris per pemain. Kolom rev naik setiap kali save berhasil,
--- dipakai browser untuk mendeteksi save dari perangkat lain (konflik).
+-- Satu baris per pemain. Kolom rev naik setiap kali save berubah, dipakai
+-- server untuk mencegah dua perubahan bersamaan saling menimpa.
 create table if not exists public.saves (
   user_id    uuid primary key references auth.users (id) on delete cascade,
   data       jsonb not null,
@@ -55,24 +55,14 @@ create policy "saves: baca milik sendiri"
   to authenticated
   using ((select auth.uid()) = user_id);
 
+-- Mode online "server-authoritative": browser TIDAK boleh menulis save.
+-- Semua perubahan lewat Edge Function "game" (pakai kunci server) dan fungsi
+-- trading di social.sql. Browser hanya boleh membaca save miliknya sendiri.
 drop policy if exists "saves: buat milik sendiri" on public.saves;
-create policy "saves: buat milik sendiri"
-  on public.saves for insert
-  to authenticated
-  with check ((select auth.uid()) = user_id);
-
 drop policy if exists "saves: ubah milik sendiri" on public.saves;
-create policy "saves: ubah milik sendiri"
-  on public.saves for update
-  to authenticated
-  using ((select auth.uid()) = user_id)
-  with check ((select auth.uid()) = user_id);
-
 drop policy if exists "saves: hapus milik sendiri" on public.saves;
-create policy "saves: hapus milik sendiri"
-  on public.saves for delete
-  to authenticated
-  using ((select auth.uid()) = user_id);
+revoke insert, update, delete on public.saves from anon, authenticated;
+grant select on public.saves to authenticated;
 
 -- updated_at diisi otomatis oleh server
 create or replace function public.touch_updated_at()

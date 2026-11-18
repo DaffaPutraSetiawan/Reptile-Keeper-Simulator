@@ -1,0 +1,267 @@
+/* =====================================================================
+   Morph Lab — logika inti game (dipakai bersama oleh browser & server)
+   Browser memakainya untuk mode offline; Edge Function "game" memakainya
+   untuk mode online sehingga hasil breeding, pasar, dan uang dihitung server.
+   Tidak boleh bergantung pada DOM, bahasa, atau penyimpanan.
+   ===================================================================== */
+(function(root){
+'use strict';
+let S=null;               // state game yang sedang diproses
+const BUYER_COUNT=8;      // jumlah nama pembeli di kamus bahasa
+
+/* ========= DATA GENETIKA ========= */
+const LOCI=[
+ {k:'pastel',t:'id',a:'Pastel',sk:'superpastel'},
+ {k:'bel',t:'bel',a:'Mojave/Lesser'},
+ {k:'enchi',t:'id',a:'Enchi',sk:'superenchi'},
+ {k:'yb',t:'id',a:'Yellow Belly',sk:'ivory'},
+ {k:'cinnamon',t:'id',a:'Cinnamon',sk:'supercinnamon'},
+ {k:'banana',t:'id',a:'Banana',sk:'superbanana'},
+ {k:'spider',t:'dom',a:'Spider'},
+ {k:'pinstripe',t:'dom',a:'Pinstripe'},
+ {k:'albino',t:'rec',a:'Albino'},
+ {k:'piebald',t:'rec',a:'Piebald'},
+ {k:'clown',t:'rec',a:'Clown'},
+ {k:'axanthic',t:'rec',a:'Axanthic'},
+];
+const TL={pastel:'Pastel',superpastel:'Super Pastel',mojave:'Mojave',lesser:'Lesser',bel:'BEL',enchi:'Enchi',superenchi:'Super Enchi',yb:'Yellow Belly',ivory:'Ivory',cinnamon:'Cinnamon',supercinnamon:'Super Cinnamon',banana:'Banana',superbanana:'Super Banana',spider:'Spider',pinstripe:'Pinstripe',albino:'Albino',piebald:'Piebald',clown:'Clown',axanthic:'Axanthic'};
+const TV={pastel:45,superpastel:150,mojave:55,lesser:55,bel:600,enchi:60,superenchi:260,yb:40,ivory:280,cinnamon:50,supercinnamon:260,banana:140,superbanana:500,spider:70,pinstripe:60,albino:280,piebald:380,clown:520,axanthic:300};
+const TLOC={pastel:'pastel',superpastel:'pastel',mojave:'bel',lesser:'bel',bel:'bel',enchi:'enchi',superenchi:'enchi',yb:'yb',ivory:'yb',cinnamon:'cinnamon',supercinnamon:'cinnamon',banana:'banana',superbanana:'banana',spider:'spider',pinstripe:'pinstripe',albino:'albino',piebald:'piebald',clown:'clown',axanthic:'axanthic'};
+const ALLT=Object.keys(TL);
+
+/* ========= UTIL ========= */
+const R=Math.random;
+const pick=a=>a[Math.floor(R()*a.length)];
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const money=n=>(n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString('en-US');
+const fmt=n=>Math.round(n).toLocaleString('en-US');
+
+/* ========= STATE ========= */
+const mi=()=>(8+S.turn)%12;
+const yr=()=>1+Math.floor((8+S.turn)/12);
+const inSeason=()=>[9,10,11,0,1,2].includes(mi());
+const cap=()=>S.racks*10;
+// Catatan disimpan sebagai kunci + parameter supaya ikut berganti bahasa.
+function log(m,p,k){S.log.unshift({w:S.turn,m,p:p||{},k:k||'info'});if(S.log.length>150)S.log.length=150}
+
+/* ========= GENETIKA ========= */
+const emptyGeno=()=>Object.fromEntries(LOCI.map(l=>[l.k,[0,0]]));
+function G(spec){const g=emptyGeno();for(const k in spec)g[k]=spec[k].slice();return g}
+function locusTraits(l,a){const n=(a[0]?1:0)+(a[1]?1:0);
+ if(l.t==='id')return n===1?[l.k]:n===2?[l.sk]:[];
+ if(l.t==='bel')return n===1?[(a[0]||a[1])===1?'mojave':'lesser']:n===2?['bel']:[];
+ if(l.t==='dom')return n?[l.k]:[];
+ return n===2?[l.k]:[]}
+function traitsOf(g){const o=[];for(const l of LOCI)o.push(...locusTraits(l,g[l.k]));return o}
+const INC_ORDER=['superpastel','pastel','superenchi','enchi','superbanana','banana','supercinnamon','cinnamon','mojave','lesser','bel','yb','ivory'];
+const BLABEL={'1,1':'Super Mojave','2,2':'Super Lesser','1,2':'Mojave Lesser','2,1':'Mojave Lesser'};
+function nameOf(tr,g){
+ const s=new Set(tr);let combo='';
+ const take=(...k)=>{if(k.every(x=>s.has(x))){k.forEach(x=>s.delete(x));return true}return false};
+ if(take('pastel','spider','pinstripe'))combo='Spinnerblast';
+ else if(take('superpastel','spider'))combo='Killer Bee';
+ else if(take('pastel','spider'))combo='Bumblebee';
+ else if(take('pastel','pinstripe'))combo='Lemon Blast';
+ else if(take('spider','pinstripe'))combo='Spinner';
+ const out=[];
+ for(const k of INC_ORDER)if(s.has(k))out.push(k==='bel'&&g?BLABEL[g.bel.join(',')]+' (BEL)':TL[k]);
+ if(s.has('spider'))out.push('Spider');if(s.has('pinstripe'))out.push('Pinstripe');
+ if(combo)out.push(combo);
+ if(s.has('clown'))out.push('Clown');if(s.has('piebald'))out.push('Piebald');
+ if(s.has('albino')&&s.has('axanthic'))out.push('Snow');else{if(s.has('axanthic'))out.push('Axanthic');if(s.has('albino'))out.push('Albino')}
+ return out.length?out.join(' '):'Normal'}
+const fullName=s=>nameOf(traitsOf(s.g),s.g);
+const code=s=>'BP-'+String(s.id).padStart(4,'0');
+function hetText(s){const v=new Set(traitsOf(s.g));const o=[];for(const l of LOCI){if(l.t!=='rec'||v.has(l.k))continue;const p=(s.hp||{})[l.k]||0;if(p<0.01)continue;o.push(p>=0.999?'het '+l.a:Math.round(p*100)+'% pos het '+l.a)}return o.join(', ')}
+// peluang (sepengetahuan pemain) induk menurunkan alel resesif
+function transmitP(s,l){return traitsOf(s.g).includes(l.k)?1:((s.hp||{})[l.k]||0)*0.5}
+function childHp(m,f){const hp={};for(const l of LOCI){if(l.t!=='rec')continue;const a=transmitP(m,l),b=transmitP(f,l),pv=a*b;hp[l.k]=pv>=1?1:(a*(1-b)+b*(1-a))/(1-pv)}return hp}
+function breedGeno(m,f){const g={};for(const l of LOCI)g[l.k]=[pick(m.g[l.k]),pick(f.g[l.k])];return g}
+function odds(m,f){
+ let dist=[{tr:[],p:1}];
+ for(const l of LOCI){
+  let oc;
+  if(l.t==='rec'){const pv=transmitP(m,l)*transmitP(f,l);oc=[];if(pv>0)oc.push({tr:[l.k],p:pv});if(pv<1)oc.push({tr:[],p:1-pv})}
+  else{const mp=new Map();for(const x of m.g[l.k])for(const y of f.g[l.k]){const tr=locusTraits(l,[x,y]);const k=tr.join();const e=mp.get(k);if(e)e.p+=.25;else mp.set(k,{tr,p:.25})}oc=[...mp.values()]}
+  const nd=new Map();
+  for(const d of dist)for(const o of oc){const tr=d.tr.concat(o.tr),k=tr.join('|'),e=nd.get(k);if(e)e.p+=d.p*o.p;else nd.set(k,{tr,p:d.p*o.p})}
+  dist=[...nd.values()];
+ }
+ return dist.sort((a,b)=>b.p-a.p)}
+
+/* ========= EKONOMI ========= */
+const mm=t=>S.mm[t]||1;
+function baseValue(tr){let sum=0;for(const t of tr)sum+=TV[t]*mm(t);return 40+sum*(1+0.35*Math.max(0,tr.length-1))}
+function value(s){const tr=traitsOf(s.g),vs=new Set(tr);let v=baseValue(tr);
+ for(const l of LOCI)if(l.t==='rec'&&!vs.has(l.k))v+=((s.hp||{})[l.k]||0)*TV[l.k]*0.18*mm(l.k);
+ if(s.sex==='F')v*=1.35;v*=1+Math.min(1.6,Math.max(0,(s.w-80)/1100));return Math.round(v/5)*5}
+
+/* ========= ULAR ========= */
+function newSnake(o){return Object.assign({id:null,sex:'M',age:0,w:70,g:emptyGeno(),hp:{},sire:null,dam:null,gen:0,seed:Math.floor(R()*1e9),lastLaid:-99,listed:false,pairedWith:null,pairs:0,gravid:null,nick:''},o)}
+function addSnake(s){s.id=S.nextId++;S.snakes.push(s);return s}
+const byId=id=>S.snakes.find(s=>s.id===id);
+function femaleReady(s){if(s.gravid)return 'r_gravid';if(s.age<24)return 'r_fage';if(s.w<1500)return 'r_fweight';if(S.turn-s.lastLaid<8)return 'r_recover';if(s.listed)return 'r_listed';return ''}
+function maleReady(s){if(s.age<10)return 'r_mage';if(s.w<650)return 'r_mweight';if(s.pairs>=4)return 'r_mpairs';if(s.listed)return 'r_listed';return ''}
+const readyMsg=s=>s.sex==='M'?maleReady(s):femaleReady(s);
+function snap(s){return{id:s.id,g:JSON.parse(JSON.stringify(s.g)),hp:{...s.hp},label:code(s)+' '+fullName(s),gen:s.gen}}
+function removeSnake(s){if(s.sex==='M')S.snakes.forEach(f=>{if(f.pairedWith===s.id)f.pairedWith=null});if(s.pairedWith){const m=byId(s.pairedWith);if(m)m.pairs=Math.max(0,m.pairs-1)}S.snakes=S.snakes.filter(x=>x!==s)}
+function dexAdd(tr){const k=nameOf(tr);if(S.dex[k])return false;S.dex[k]={tr,wt:S.turn};return true}
+function grow(s){if(s.gravid){s.w=Math.round(s.w*0.99);return}const K=s.sex==='F'?2300:1400,r=(s.sex==='F'?0.14:0.18)*(0.85+R()*0.3);s.w=Math.round(s.w+r*s.w*(1-s.w/K))}
+
+/* ========= PASAR & PESANAN ========= */
+const POOL=[['pastel',10],['mojave',6],['lesser',6],['enchi',6],['yb',7],['cinnamon',6],['banana',4],['spider',6],['pinstripe',6],['albino',5],['piebald',4],['clown',3],['axanthic',4]];
+function wpick(pool){const tot=pool.reduce((a,b)=>a+b[1],0);let r=R()*tot;for(const p of pool){r-=p[1];if(r<=0)return p[0]}return pool[0][0]}
+function genMarketSnake(){
+ const n=R()<.55?1:R()<.78?2:3;const g=emptyGeno(),hp={};const used=new Set();let tries=0;
+ while(used.size<n&&tries++<30){const k=wpick(POOL);if(used.has(k))continue;used.add(k);
+  if(k==='mojave'||k==='lesser'){const al=k==='mojave'?1:2;if(g.bel[0])g.bel[1]=al;else g.bel[0]=al;continue}
+  const l=LOCI.find(x=>x.k===k);
+  if(l.t==='id')g[k]=R()<.15?[1,1]:[1,0];
+  else if(l.t==='dom')g[k]=[1,0];
+  else{const r=R();if(r<.3){g[k]=[1,1];hp[k]=1}else if(r<.75){g[k]=[1,0];hp[k]=1}else{const p=pick([.66,.5]);g[k]=[R()<p?1:0,0];hp[k]=p}}
+ }
+ const sex=R()<.5?'M':'F';let age,w;const r=R();
+ if(r<.5){age=1+Math.floor(R()*3);w=70+R()*110}
+ else if(r<.8){age=10+Math.floor(R()*7);w=sex==='F'?500+R()*500:450+R()*450}
+ else{age=28+Math.floor(R()*22);w=sex==='F'?1550+R()*650:900+R()*450}
+ const s=newSnake({sex,age,w:Math.round(w),g,hp});return{lid:Math.floor(R()*1e9),s,price:Math.round(value(s)*1.2/5)*5}}
+function refreshMarket(){S.market=Array.from({length:8},genMarketSnake)}
+function genOrder(){
+ const own=new Set();
+ S.snakes.forEach(s=>{traitsOf(s.g).forEach(t=>own.add(t));LOCI.forEach(l=>{if(l.t==='rec'&&((s.hp||{})[l.k]||0)>.4)own.add(l.k)})});
+ let pool=[...own];if(pool.length<2)pool=['pastel','spider','albino','enchi'];
+ if(R()<.35)pool.push(pick(ALLT.filter(t=>!['bel','superbanana','supercinnamon'].includes(t))));
+ const n=R()<.45?1:2;const tr=[];const locs=new Set();let tries=0;
+ while(tr.length<n&&tries++<30){const t=pick(pool);if(locs.has(TLOC[t]))continue;locs.add(TLOC[t]);tr.push(t)}
+ tr.sort((a,b)=>ALLT.indexOf(a)-ALLT.indexOf(b));
+ const sex=R()<.4?'F':R()<.3?'M':null;
+ const reward=Math.round((baseValue(tr)*(sex==='F'?1.35:1)*2.1+60)/5)*5;
+ return{oid:Math.floor(R()*1e9),tr,sex,reward,left:8+Math.floor(R()*7),bi:Math.floor(R()*BUYER_COUNT)}}
+function matches(o){return S.snakes.filter(s=>{const tr=traitsOf(s.g);return o.tr.every(t=>tr.includes(t))&&(!o.sex||s.sex===o.sex)&&!s.gravid&&!s.listed})}
+
+/* ========= GAME BARU ========= */
+function newGame(){
+ S={v:2,rev:0,turn:0,money:2000,racks:2,nextId:1,snakes:[],clutches:[],market:[],orders:[],dex:{},mm:{},log:[],event:null,stats:{hatched:0,sold:0,earned:0,clutches:0}};
+ addSnake(newSnake({sex:'M',age:26,w:1080,g:G({pastel:[1,0]})}));
+ addSnake(newSnake({sex:'M',age:14,w:690,g:G({albino:[1,1]}),hp:{albino:1}}));
+ addSnake(newSnake({sex:'F',age:38,w:1880,g:G({albino:[1,0]}),hp:{albino:1}}));
+ addSnake(newSnake({sex:'F',age:34,w:1690,g:G({spider:[1,0]})}));
+ addSnake(newSnake({sex:'F',age:11,w:640,g:G({enchi:[1,0],clown:[R()<.5?1:0,0]}),hp:{clown:.5}}));
+ S.snakes.forEach(s=>dexAdd(traitsOf(s.g)));
+ refreshMarket();S.orders=[genOrder(),genOrder()];
+ log('l_welcome',{v:money(2000)},'star');
+ return S;
+}
+
+/* ========= MAJU SATU BULAN ========= */
+function advance(){
+ const ev=S.event||{};const head=[];
+ S.turn++;
+ // 1. inkubator
+ for(const c of S.clutches.slice()){
+  c.hatchIn--;if(c.hatchIn>0)continue;
+  let born=0,dead=0;const vis=new Set();const newNames=[];
+  for(const g of c.eggs){if(R()<.04){dead++;continue}
+   const s=addSnake(newSnake({sex:R()<.5?'M':'F',w:Math.round(55+R()*40),g,hp:{...c.hp},sire:c.sireLabel,dam:c.damLabel,gen:c.gen}));
+   const tr=traitsOf(g);tr.forEach(t=>{if(['albino','piebald','clown','axanthic'].includes(t))vis.add(t)});
+   for(const l of LOCI)if(l.t==='rec'&&tr.includes(l.k))s.hp[l.k]=1;
+   if(dexAdd(tr))newNames.push(nameOf(tr));born++;}
+  S.stats.hatched+=born;
+  log('l_hatch',{dam:c.damLabel.split(' ')[0],sire:c.sireLabel.split(' ')[0],born,dead},'good');
+  head.push(['h_born',{n:born}]);
+  newNames.forEach(n=>{log('l_newmorph',{n},'star');head.push(['h_new',{n}])});
+  for(const k of vis)for(const pid of [c.sireId,c.damId]){const p=byId(pid);if(p&&!traitsOf(p.g).includes(k)&&(p.hp[k]||0)<1){p.hp[k]=1;log('l_proven',{c:code(p),g:TL[k]},'star')}}
+  S.clutches=S.clutches.filter(x=>x!==c);
+ }
+ // 2. bertelur
+ for(const f of S.snakes){if(!f.gravid)continue;f.gravid.layIn--;if(f.gravid.layIn>0)continue;
+  const m=f.gravid.sire;const n=clamp(Math.round(2+(f.w-1300)/170+R()*2.5-1),2,11);
+  const eggs=[];let slugs=0;for(let i=0;i<n;i++){if(R()<.88)eggs.push(breedGeno(m,f));else slugs++}
+  S.clutches.push({cid:Math.floor(R()*1e9),damId:f.id,sireId:m.id,damLabel:code(f)+' '+fullName(f),sireLabel:m.label,eggs,slugs,hatchIn:2,hp:childHp(m,f),gen:Math.max(f.gen,m.gen)+1});
+  S.stats.clutches++;
+  log('l_laid',{c:code(f),n,good:eggs.length,slug:slugs},'good');head.push(['h_laid',{c:code(f),n:eggs.length}]);
+  f.gravid=null;f.lastLaid=S.turn;f.w=Math.round(f.w*.72);}
+ // 3. ovulasi dari perkawinan bulan lalu
+ for(const f of S.snakes){if(!f.pairedWith)continue;const m=byId(f.pairedWith);
+  if(m&&R()<.55){f.gravid={sire:snap(m),layIn:2};log('l_ovul',{f:code(f),m:code(m)},'good');head.push(['h_gravid',{c:code(f)}])}
+  else log('l_noovul',{f:code(f)},'info');
+  f.pairedWith=null}
+ S.snakes.forEach(s=>{if(s.sex==='M'&&s.pairs){s.w=Math.round(s.w*(1-.015*s.pairs));s.pairs=0}});
+ // 4. pertumbuhan
+ S.snakes.forEach(s=>{s.age++;grow(s)});
+ // 5. iklan
+ for(const s of S.snakes.slice()){if(!s.listed)continue;if(R()<(ev.expo?.7:.35)){const v=value(s);S.money+=v;S.stats.sold++;S.stats.earned+=v;traitsOf(s.g).forEach(t=>S.mm[t]=mm(t)*.97);log('l_soldad',{c:code(s),n:fullName(s),v:money(v)},'good');head.push(['h_sold',{c:code(s),v:money(v)}]);removeSnake(s)}}
+ // 6. biaya
+ const food=Math.round(S.snakes.reduce((a,s)=>a+2+s.w/250,0)*(ev.food||1));const util=S.racks*8;const over=Math.max(0,S.snakes.length-cap())*15;
+ S.money-=food+util+over;
+ log('l_costs',{food:money(food),util:money(util),over:over?money(over):''},over?'bad':'info');
+ // 7. pesanan
+ for(const o of S.orders.slice()){o.left--;if(o.left<=0){S.orders=S.orders.filter(x=>x!==o);log('l_orderexp',{bi:o.bi,b:o.buyer,n:nameOf(o.tr)},'bad')}}
+ if(S.orders.length<3&&R()<.5){const o=genOrder();S.orders.push(o);log('l_ordernew',{bi:o.bi,sx:o.sex?(o.sex==='F'?'♀ ':'♂ '):'',n:nameOf(o.tr),r:money(o.reward)},'star')}
+ // 8. pasar
+ ALLT.forEach(t=>{S.mm[t]=clamp(mm(t)+(1-mm(t))*.06+(R()-.5)*.05,.5,1.6)});
+ refreshMarket();
+ S.event=null;
+ if(R()<.3){const r=R();
+  if(r<.25)S.event={expo:true,e:'ev_expo'};
+  else if(r<.5){const g=pick(ALLT);S.mm[g]=mm(g)*.8;S.event={e:'ev_flood',g:TL[g]}}
+  else if(r<.75){const g=pick(ALLT);S.mm[g]=mm(g)*1.25;S.event={e:'ev_trend',g:TL[g]}}
+  else S.event={food:1.5,e:'ev_food'};
+  log('l_event',{e:S.event.e,g:S.event.g},'star')}
+ if(mi()===9)log('l_season',null,'star');
+ if(mi()===3)log('l_seasonend',null,'info');
+ if(S.money<0)log('l_debt',null,'bad');
+ return head;
+}
+
+/* ========= AKSI PEMAIN (semua divalidasi) ========= */
+function fail(code){throw new Error(code)}
+const toId=x=>{const n=Number(x);if(!Number.isInteger(n))fail('bad_action');return n};
+function mustSnake(id){const s=byId(toId(id));if(!s)fail('snake_not_found');return s}
+// Pastikan ular yang baru masuk (mis. dari trade) tercatat di Morph Dex.
+function syncDex(){for(const s of S.snakes){s.hp=s.hp||{};dexAdd(traitsOf(s.g))}}
+const ACTIONS={
+ advance(){return{head:advance()}},
+ pair(a){const m=mustSnake(a.m),f=mustSnake(a.f);
+  if(m.sex!=='M'||f.sex!=='F')fail('bad_action');
+  if(!inSeason())fail('not_season');
+  if(maleReady(m)||femaleReady(f))fail('not_ready');
+  if(f.pairedWith)fail('already_paired');
+  f.pairedWith=m.id;m.pairs++;log('l_paired',{m:code(m),f:code(f)});return{toast:'t_paired'}},
+ unpair(a){const f=mustSnake(a.f);if(!f.pairedWith)return{};const m=byId(f.pairedWith);if(m)m.pairs=Math.max(0,m.pairs-1);f.pairedWith=null;return{}},
+ list(a){const s=mustSnake(a.id);if(s.gravid)fail('gravid_locked');
+  s.listed=!s.listed;
+  if(s.listed&&s.pairedWith){const m=byId(s.pairedWith);if(m)m.pairs=Math.max(0,m.pairs-1);s.pairedWith=null}
+  if(s.listed&&s.sex==='M'){S.snakes.forEach(f=>{if(f.pairedWith===s.id)f.pairedWith=null});s.pairs=0}
+  log(s.listed?'l_listed':'l_unlisted',{c:code(s)});return{}},
+ quicksell(a){const s=mustSnake(a.id);if(s.gravid)fail('gravid_locked');
+  const v=Math.round(value(s)*.6);S.money+=v;S.stats.sold++;S.stats.earned+=v;traitsOf(s.g).forEach(g=>S.mm[g]=mm(g)*.97);
+  log('l_quick',{c:code(s),n:fullName(s),v:money(v)},'good');removeSnake(s);return{}},
+ nick(a){const s=mustSnake(a.id);s.nick=String(a.name==null?'':a.name).replace(/[\u0000-\u001f\u007f]/g,'').trim().slice(0,24);return{}},
+ buy(a){const lid=toId(a.lid);const L=S.market.find(x=>x.lid===lid);if(!L)fail('listing_gone');if(S.money<L.price)fail('not_enough_money');
+  S.money-=L.price;const s=addSnake(L.s);S.market=S.market.filter(x=>x!==L);const nw=dexAdd(traitsOf(s.g));
+  log('l_buy',{c:code(s),n:fullName(s),h:hetText(s),v:money(L.price)});if(nw)log('l_newmorph',{n:nameOf(traitsOf(s.g))},'star');return{}},
+ rack(){if(S.money<250)fail('not_enough_money');S.money-=250;S.racks++;log('l_rack',{cap:cap()});return{}},
+ fulfill(a){const o=S.orders.find(x=>x.oid===toId(a.oid));if(!o)fail('order_gone');const s=mustSnake(a.sid);
+  if(!matches(o).includes(s))fail('order_mismatch');
+  S.money+=o.reward;S.stats.sold++;S.stats.earned+=o.reward;log('l_fulfill',{c:code(s),n:fullName(s),bi:o.bi,b:o.buyer,r:money(o.reward)},'star');
+  removeSnake(s);S.orders=S.orders.filter(x=>x!==o);return{}},
+};
+// Jalankan satu aksi pada state (state diubah langsung). Melempar Error(kode) kalau tidak sah.
+function applyAction(state,a){
+ if(!a||typeof a!=='object'||typeof a.type!=='string'||!Object.prototype.hasOwnProperty.call(ACTIONS,a.type))fail('bad_action');
+ S=state;syncDex();
+ return ACTIONS[a.type](a)||{};
+}
+function isState(x){return !!(x&&typeof x==='object'&&Array.isArray(x.snakes)&&typeof x.turn==='number'&&typeof x.money==='number')}
+
+root.MorphCore={
+ LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,POOL,BUYER_COUNT,
+ R,pick,clamp,money,fmt,
+ use(s){S=s},state(){return S},
+ mi,yr,inSeason,cap,log,
+ emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,
+ mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,matches,
+ newGame,advance,applyAction,syncDex,isState,ACTION_TYPES:Object.keys(ACTIONS)
+};
+})(typeof globalThis!=='undefined'?globalThis:this);

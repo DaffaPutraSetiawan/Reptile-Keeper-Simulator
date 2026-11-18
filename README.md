@@ -8,7 +8,11 @@ Game simulasi breeding ball python berbasis web, dengan genetika morph yang meng
 
 Buka `index.html` di browser. Tidak perlu install apa pun. Progres tersimpan otomatis di `localStorage` browser.
 
-Kalau Supabase sudah dikonfigurasi, pemain bisa **daftar dan masuk** untuk menyimpan progres di cloud dan melanjutkan dari perangkat lain. Panduannya ada di [SETUP-SUPABASE.md](SETUP-SUPABASE.md).
+Ada dua mode:
+- **Offline** (tanpa akun): semua berjalan di browser, save di `localStorage`.
+- **Online** (setelah login): setiap aksi dikirim ke server (Edge Function `game`), yang menghitung hasil breeding, pasar, dan uang. Save online tidak bisa diubah dari browser, jadi aman dari kecurangan, dan bisa dipakai untuk trading.
+
+Panduan menyiapkan server ada di [SETUP-SUPABASE.md](SETUP-SUPABASE.md).
 
 Bisa juga dimainkan online lewat GitHub Pages: **Settings → Pages → Deploy from a branch → `main` / root**.
 
@@ -32,9 +36,12 @@ Bisa juga dimainkan online lewat GitHub Pages: **Settings → Pages → Deploy f
 
 | File | Isi |
 |---|---|
-| `index.html` | Seluruh game (HTML + CSS + JavaScript) |
+| `index.html` | Tampilan game (HTML + CSS + JavaScript) |
+| `core.js` | Logika inti game (genetika, ekonomi, aksi), dipakai browser & server |
 | `config.js` | URL & publishable key Supabase (kosong = mode offline) |
 | `supabase/schema.sql` | Tabel `profiles` & `saves` dengan Row Level Security |
+| `supabase/functions/game/` | Edge Function mode online (`index.ts`, `handler.js`, salinan `core.js`) |
+| `scripts/sync-core.sh` | Menyalin `core.js` ke Edge Function |
 | `supabase/social.sql` | Teman, chat, trading (escrow) + fungsi server & realtime |
 | `assets/` | Logo, favicon, dan ikon aplikasi |
 | `SETUP-SUPABASE.md` | Panduan menyiapkan login & cloud save |
@@ -43,7 +50,7 @@ Bisa juga dimainkan online lewat GitHub Pages: **Settings → Pages → Deploy f
 
 - [x] Login & cloud save (Supabase)
 - [x] Teman, chat & trading antar teman (escrow, divalidasi server)
-- [ ] Pindahkan logika breeding & ekonomi ke server (anti-cheat penuh)
+- [x] Mode online server-authoritative (breeding & ekonomi dihitung server)
 
 - [ ] Spesies baru (leopard gecko, bearded dragon, corn snake)
 - [ ] Perawatan & kesehatan (suhu, kelembapan, shedding, mogok makan)
