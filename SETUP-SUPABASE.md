@@ -72,7 +72,7 @@ Publishable key memang dirancang untuk ditaruh di kode yang bisa dilihat publik,
 
 Saat pemain login, game berjalan dalam **mode online ("server-authoritative")**. Browser hanya mengirim *aksi* (lanjut bulan, kawinkan, beli, jual, dan seterusnya). Edge Function `game` yang menjalankannya: mengocok angka acak (telur, gen, ovulasi, pasar), menghitung uang, lalu menyimpan hasilnya. Browser **tidak punya izin menulis** ke tabel `saves`, hanya membaca miliknya sendiri.
 
-- Logika game ada di [`core.js`](core.js). File yang sama dipakai browser (mode offline) dan server (salinannya ada di `supabase/functions/game/core.js`).
+- Logika game ada di [`core.js`](core.js). Server menjalankan semua aksi dengan file ini (salinannya ada di `supabase/functions/game/core.js`); browser memakainya hanya untuk menampilkan nama morph, nilai, dan peluang.
 - Setiap kali `core.js` diubah, jalankan `./scripts/sync-core.sh`, lalu deploy ulang fungsinya:
   ```bash
   supabase functions deploy game --project-ref <project-ref>
