@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MorphLab — Ball Python Breeder</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#13120e;--panel:#1d1b16;--panel2:#26231c;--line:#39342a;--text:#efe8d6;--mut:#a59d88;--acc:#e3a63b;--good:#8cc06a;--bad:#e0675a;--blue:#7fb2e5;--pink:#e58fb0}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(1100px 520px at 15% -10%,#2b2619 0,transparent 60%),var(--bg);color:var(--text);font:14px/1.45 'DM Sans',system-ui,sans-serif;min-height:100vh}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:12px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(19,18,14,.94);backdrop-filter:blur(6px);z-index:5}
+.brand{font-family:Fraunces,serif;font-weight:800;font-size:22px;letter-spacing:-.01em;margin-right:auto;line-height:1.1}
+.brand small{display:block;font:500 11px 'DM Sans',sans-serif;color:var(--mut);letter-spacing:.09em;text-transform:uppercase}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:5px 12px;min-width:84px}
+.stat b{display:block;font-size:15px}.stat span{font-size:10.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.07em}
+.stat.neg b{color:var(--bad)}
+.season{border-color:#4f6b3a}.season b{color:var(--good)}
+button{font:inherit;cursor:pointer;border-radius:9px;border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:7px 12px;transition:background .12s,border-color .12s}
+button:hover:not(:disabled){border-color:#6a604a;background:#2e2a21}
+button.pri{background:var(--acc);color:#1b1407;border-color:var(--acc);font-weight:700}
+button.pri:hover:not(:disabled){background:#f0b54a}
+button.ghost{background:none}
+button:disabled{opacity:.42;cursor:not-allowed}
+nav{display:flex;gap:2px;padding:6px 20px 0;overflow-x:auto;border-bottom:1px solid var(--line)}
+nav button{border:none;background:none;border-bottom:2px solid transparent;border-radius:0;color:var(--mut);padding:10px 12px;white-space:nowrap}
+nav button:hover:not(:disabled){background:none;color:var(--text)}
+nav button.on{color:var(--text);border-bottom-color:var(--acc)}
+nav .cnt{font-size:11px;background:var(--panel2);border-radius:20px;padding:1px 7px;margin-left:4px}
+main{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;padding:18px 20px 40px;max-width:1500px;margin:0 auto}
+@media(max-width:920px){main{grid-template-columns:1fr}aside .panel{position:static;max-height:420px}}
+@media(max-width:640px){header{position:static}main{padding:14px 12px 40px}}
+h2{font-family:Fraunces,serif;font-weight:700;font-size:21px;margin:0 0 4px}
+h3{font-family:Fraunces,serif;font-weight:600;font-size:16px;margin:18px 0 8px}
+.sub{color:var(--mut);margin:0 0 14px}
+.toolbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px}
+.chip{padding:5px 11px;border-radius:20px;font-size:13px}
+.chip.on{background:var(--acc);color:#1b1407;border-color:var(--acc)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px;transition:transform .12s,border-color .12s;position:relative}
+.card.click{cursor:pointer}.card.click:hover{transform:translateY(-2px);border-color:#5d5541}
+.snk{width:100%;aspect-ratio:320/148;display:block;border-radius:10px;background:radial-gradient(120% 90% at 50% 40%,#3a3324 0,#211e17 75%)}
+.nm{font-weight:700;margin-top:8px;line-height:1.25}
+.het{font-size:12px;color:var(--acc);min-height:16px}
+.meta{font-size:12px;color:var(--mut)}
+.val{font-weight:700;margin-top:6px}
+.sx{font-weight:700}.sx.M{color:var(--blue)}.sx.F{color:var(--pink)}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.tag{font-size:11px;padding:2px 7px;border-radius:20px;background:var(--panel2);border:1px solid var(--line);color:var(--mut)}
+.tag.g{color:var(--good);border-color:#4f6b3a}.tag.a{color:var(--acc);border-color:#7a5b22}.tag.p{color:var(--pink);border-color:#7a4a5c}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+.pair{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:start}
+@media(max-width:640px){.pair{grid-template-columns:1fr}.pair .x{display:none}}
+.pair .x{font-family:Fraunces,serif;font-size:28px;color:var(--mut);align-self:center}
+select,input{font:inherit;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:7px 9px;width:100%}
+.warn{color:var(--bad);font-size:12.5px;margin-top:6px}
+.ok{color:var(--good);font-size:12.5px;margin-top:6px}
+table{width:100%;border-collapse:collapse}
+td,th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--mut);font-weight:500}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+img.mini{width:110px;aspect-ratio:320/148;border-radius:7px;display:block;background:#221f18}
+.bar{height:6px;background:var(--panel2);border-radius:4px;overflow:hidden;margin-top:3px}.bar i{display:block;height:100%;background:var(--acc)}
+aside .panel{position:sticky;top:96px;max-height:calc(100vh - 120px);overflow:auto}
+.log{list-style:none;margin:0;padding:0}
+.log li{padding:7px 0;border-bottom:1px dashed var(--line);font-size:12.5px}
+.log li .d{color:var(--mut);font-size:11px;display:block}
+.log li.good{color:#cfe6bd}.log li.bad{color:#f0b3ab}.log li.star{color:#f5d38c}
+#modal{position:fixed;inset:0;background:rgba(8,7,5,.7);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
+#modal.hidden{display:none}
+.mbox{background:var(--panel);border:1px solid var(--line);border-radius:16px;max-width:640px;width:100%;max-height:92vh;overflow:auto;padding:18px}
+.mbox img.big{width:100%;aspect-ratio:640/296;border-radius:12px;display:block;background:radial-gradient(120% 90% at 50% 40%,#3a3324 0,#211e17 75%)}
+dl{display:grid;grid-template-columns:130px 1fr;gap:4px 10px;margin:12px 0;font-size:13.5px}dt{color:var(--mut)}dd{margin:0}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.row{display:flex;gap:8px;align-items:center}
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);opacity:0;background:#2a271f;border:1px solid #5d5541;border-radius:12px;padding:10px 16px;max-width:min(560px,92vw);transition:.25s;z-index:30;pointer-events:none;font-size:13.5px}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.dexq{filter:brightness(0);opacity:.55}
+.qwrap{border-radius:10px;background:radial-gradient(120% 90% at 50% 40%,#3a3324 0,#211e17 75%)}
+.qwrap .snk{background:none}
+.guide p,.guide li{color:#dcd4c0;max-width:72ch}
+.guide code{background:var(--panel2);padding:1px 6px;border-radius:5px}
+.kbd{font-size:12px;color:var(--mut)}
+.empty{color:var(--mut);padding:30px;text-align:center;border:1px dashed var(--line);border-radius:14px}
+</style>
+</head>
+<body>
+<header id="hdr"></header>
+<nav id="tabs"></nav>
+<main><section id="view"></section><aside><div class="panel"><h3 style="margin-top:0">Catatan breeder</h3><ul class="log" id="log"></ul></div></aside></main>
+<div id="modal" class="hidden"></div>
+<div id="toast"></div>
+<script>
+'use strict';
+/* ========= DATA GENETIKA ========= */
+const MONTHS=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+const LOCI=[
+ {k:'pastel',t:'id',a:'Pastel',sk:'superpastel'},
+ {k:'bel',t:'bel',a:'Mojave/Lesser'},
+ {k:'enchi',t:'id',a:'Enchi',sk:'superenchi'},
+ {k:'yb',t:'id',a:'Yellow Belly',sk:'ivory'},
+ {k:'cinnamon',t:'id',a:'Cinnamon',sk:'supercinnamon'},
+ {k:'banana',t:'id',a:'Banana',sk:'superbanana'},
+ {k:'spider',t:'dom',a:'Spider'},
+ {k:'pinstripe',t:'dom',a:'Pinstripe'},
+ {k:'albino',t:'rec',a:'Albino'},
+ {k:'piebald',t:'rec',a:'Piebald'},
+ {k:'clown',t:'rec',a:'Clown'},
+ {k:'axanthic',t:'rec',a:'Axanthic'},
+];
+const TL={pastel:'Pastel',superpastel:'Super Pastel',mojave:'Mojave',lesser:'Lesser',bel:'BEL',enchi:'Enchi',superenchi:'Super Enchi',yb:'Yellow Belly',ivory:'Ivory',cinnamon:'Cinnamon',supercinnamon:'Super Cinnamon',banana:'Banana',superbanana:'Super Banana',spider:'Spider',pinstripe:'Pinstripe',albino:'Albino',piebald:'Piebald',clown:'Clown',axanthic:'Axanthic'};
+const TV={pastel:45,superpastel:150,mojave:55,lesser:55,bel:600,enchi:60,superenchi:260,yb:40,ivory:280,cinnamon:50,supercinnamon:260,banana:140,superbanana:500,spider:70,pinstripe:60,albino:280,piebald:380,clown:520,axanthic:300};
+const TLOC={pastel:'pastel',superpastel:'pastel',mojave:'bel',lesser:'bel',bel:'bel',enchi:'enchi',superenchi:'enchi',yb:'yb',ivory:'yb',cinnamon:'cinnamon',supercinnamon:'cinnamon',banana:'banana',superbanana:'banana',spider:'spider',pinstripe:'pinstripe',albino:'albino',piebald:'piebald',clown:'clown',axanthic:'axanthic'};
+const ALLT=Object.keys(TL);
+const KEY='morphlab_bp_v1';
+
+/* ========= UTIL ========= */
+const R=Math.random;
+const pick=a=>a[Math.floor(R()*a.length)];
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const lerp=(a,b,t)=>a.map((x,i)=>x+(b[i]-x)*t);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>(n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString('en-US');
+const fmt=n=>Math.round(n).toLocaleString('en-US');
+function rngSeed(s){let a=s>>>0;return()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function strHash(s){let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
+function noise(seed){const r=rngSeed(seed);const p=Array.from({length:64},()=>r());return x=>{x=((x%64)+64)%64;const i=Math.floor(x),f=x-i,s=f*f*(3-2*f);return p[i]+(p[(i+1)%64]-p[i])*s}}
+function hash3(i,j,s){const h=Math.sin(i*127.1+j*311.7+s*0.0131)*43758.5453;return h-Math.floor(h)}
+
+/* ========= STATE ========= */
+let S=null, TAB='koleksi', FILTER='all', SORT='val', SEL={m:null,f:null};
+const mi=()=>(8+S.turn)%12;
+const yr=()=>1+Math.floor((8+S.turn)/12);
+const dateTxt=()=>MONTHS[mi()]+' · Tahun '+yr();
+const inSeason=()=>[9,10,11,0,1,2].includes(mi());
+const cap=()=>S.racks*10;
+function log(t,k='info'){S.log.unshift({d:dateTxt(),t,k});if(S.log.length>150)S.log.length=150}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function load(){try{const d=localStorage.getItem(KEY);if(d){S=JSON.parse(d);return !!(S&&S.snakes)}}catch(e){}return false}
+
+/* ========= GENETIKA ========= */
+const emptyGeno=()=>Object.fromEntries(LOCI.map(l=>[l.k,[0,0]]));
+function G(spec){const g=emptyGeno();for(const k in spec)g[k]=spec[k].slice();return g}
+function locusTraits(l,a){const n=(a[0]?1:0)+(a[1]?1:0);
+ if(l.t==='id')return n===1?[l.k]:n===2?[l.sk]:[];
+ if(l.t==='bel')return n===1?[(a[0]||a[1])===1?'mojave':'lesser']:n===2?['bel']:[];
+ if(l.t==='dom')return n?[l.k]:[];
+ return n===2?[l.k]:[]}
+function traitsOf(g){const o=[];for(const l of LOCI)o.push(...locusTraits(l,g[l.k]));return o}
+const INC_ORDER=['superpastel','pastel','superenchi','enchi','superbanana','banana','supercinnamon','cinnamon','mojave','lesser','bel','yb','ivory'];
+const BLABEL={'1,1':'Super Mojave','2,2':'Super Lesser','1,2':'Mojave Lesser','2,1':'Mojave Lesser'};
+function nameOf(tr,g){
+ const s=new Set(tr);let combo='';
+ const take=(...k)=>{if(k.every(x=>s.has(x))){k.forEach(x=>s.delete(x));return true}return false};
+ if(take('pastel','spider','pinstripe'))combo='Spinnerblast';
+ else if(take('superpastel','spider'))combo='Killer Bee';
+ else if(take('pastel','spider'))combo='Bumblebee';
+ else if(take('pastel','pinstripe'))combo='Lemon Blast';
+ else if(take('spider','pinstripe'))combo='Spinner';
+ const out=[];
+ for(const k of INC_ORDER)if(s.has(k))out.push(k==='bel'&&g?BLABEL[g.bel.join(',')]+' (BEL)':TL[k]);
+ if(s.has('spider'))out.push('Spider');if(s.has('pinstripe'))out.push('Pinstripe');
+ if(combo)out.push(combo);
+ if(s.has('clown'))out.push('Clown');if(s.has('piebald'))out.push('Piebald');
+ if(s.has('albino')&&s.has('axanthic'))out.push('Snow');else{if(s.has('axanthic'))out.push('Axanthic');if(s.has('albino'))out.push('Albino')}
+ return out.length?out.join(' '):'Normal'}
+const fullName=s=>nameOf(traitsOf(s.g),s.g);
+const code=s=>'BP-'+String(s.id).padStart(4,'0');
+function hetText(s){const v=new Set(traitsOf(s.g));const o=[];for(const l of LOCI){if(l.t!=='rec'||v.has(l.k))continue;const p=(s.hp||{})[l.k]||0;if(p<0.01)continue;o.push(p>=0.999?'het '+l.a:Math.round(p*100)+'% pos het '+l.a)}return o.join(', ')}
+// peluang (sepengetahuan pemain) induk menurunkan alel resesif
+function transmitP(s,l){return traitsOf(s.g).includes(l.k)?1:((s.hp||{})[l.k]||0)*0.5}
+function childHp(m,f){const hp={};for(const l of LOCI){if(l.t!=='rec')continue;const a=transmitP(m,l),b=transmitP(f,l),pv=a*b;hp[l.k]=pv>=1?1:(a*(1-b)+b*(1-a))/(1-pv)}return hp}
+function breedGeno(m,f){const g={};for(const l of LOCI)g[l.k]=[pick(m.g[l.k]),pick(f.g[l.k])];return g}
+function odds(m,f){
+ let dist=[{tr:[],p:1}];
+ for(const l of LOCI){
+  let oc;
+  if(l.t==='rec'){const pv=transmitP(m,l)*transmitP(f,l);oc=[];if(pv>0)oc.push({tr:[l.k],p:pv});if(pv<1)oc.push({tr:[],p:1-pv})}
+  else{const mp=new Map();for(const x of m.g[l.k])for(const y of f.g[l.k]){const tr=locusTraits(l,[x,y]);const k=tr.join();const e=mp.get(k);if(e)e.p+=.25;else mp.set(k,{tr,p:.25})}oc=[...mp.values()]}
+  const nd=new Map();
+  for(const d of dist)for(const o of oc){const tr=d.tr.concat(o.tr),k=tr.join('|'),e=nd.get(k);if(e)e.p+=d.p*o.p;else nd.set(k,{tr,p:d.p*o.p})}
+  dist=[...nd.values()];
+ }
+ return dist.sort((a,b)=>b.p-a.p)}
+
+/* ========= EKONOMI ========= */
+const mm=t=>S.mm[t]||1;
+function baseValue(tr){let sum=0;for(const t of tr)sum+=TV[t]*mm(t);return 40+sum*(1+0.35*Math.max(0,tr.length-1))}
+function value(s){const tr=traitsOf(s.g),vs=new Set(tr);let v=baseValue(tr);
+ for(const l of LOCI)if(l.t==='rec'&&!vs.has(l.k))v+=((s.hp||{})[l.k]||0)*TV[l.k]*0.18*mm(l.k);
+ if(s.sex==='F')v*=1.35;v*=1+Math.min(1.6,Math.max(0,(s.w-80)/1100));return Math.round(v/5)*5}
+
+/* ========= ULAR ========= */
+function newSnake(o){return Object.assign({id:null,sex:'M',age:0,w:70,g:emptyGeno(),hp:{},sire:null,dam:null,gen:0,seed:Math.floor(R()*1e9),lastLaid:-99,listed:false,pairedWith:null,pairs:0,gravid:null,nick:''},o)}
+function addSnake(s){s.id=S.nextId++;S.snakes.push(s);return s}
+const byId=id=>S.snakes.find(s=>s.id===id);
+function femaleReady(s){if(s.gravid)return 'Sedang bunting';if(s.age<24)return 'Umur belum cukup (min. 24 bulan)';if(s.w<1500)return 'Berat belum cukup (min. 1.500 g)';if(S.turn-s.lastLaid<8)return 'Masih pemulihan setelah bertelur';if(s.listed)return 'Sedang diiklankan';return ''}
+function maleReady(s){if(s.age<10)return 'Umur belum cukup (min. 10 bulan)';if(s.w<650)return 'Berat belum cukup (min. 650 g)';if(s.pairs>=4)return 'Sudah 4 pasangan bulan ini';if(s.listed)return 'Sedang diiklankan';return ''}
+const readyMsg=s=>s.sex==='M'?maleReady(s):femaleReady(s);
+function snap(s){return{id:s.id,g:JSON.parse(JSON.stringify(s.g)),hp:{...s.hp},label:code(s)+' '+fullName(s),gen:s.gen}}
+function removeSnake(s){if(s.sex==='M')S.snakes.forEach(f=>{if(f.pairedWith===s.id)f.pairedWith=null});if(s.pairedWith){const m=byId(s.pairedWith);if(m)m.pairs=Math.max(0,m.pairs-1)}S.snakes=S.snakes.filter(x=>x!==s)}
+function dexAdd(tr){const k=nameOf(tr);if(S.dex[k])return false;S.dex[k]={tr,when:dateTxt()};return true}
+function grow(s){if(s.gravid){s.w=Math.round(s.w*0.99);return}const K=s.sex==='F'?2300:1400,r=(s.sex==='F'?0.14:0.18)*(0.85+R()*0.3);s.w=Math.round(s.w+r*s.w*(1-s.w/K))}
+
+/* ========= PASAR & PESANAN ========= */
+const POOL=[['pastel',10],['mojave',6],['lesser',6],['enchi',6],['yb',7],['cinnamon',6],['banana',4],['spider',6],['pinstripe',6],['albino',5],['piebald',4],['clown',3],['axanthic',4]];
+function wpick(pool){const tot=pool.reduce((a,b)=>a+b[1],0);let r=R()*tot;for(const p of pool){r-=p[1];if(r<=0)return p[0]}return pool[0][0]}
+function genMarketSnake(){
+ const n=R()<.55?1:R()<.78?2:3;const g=emptyGeno(),hp={};const used=new Set();let tries=0;
+ while(used.size<n&&tries++<30){const k=wpick(POOL);if(used.has(k))continue;used.add(k);
+  if(k==='mojave'||k==='lesser'){const al=k==='mojave'?1:2;if(g.bel[0])g.bel[1]=al;else g.bel[0]=al;continue}
+  const l=LOCI.find(x=>x.k===k);
+  if(l.t==='id')g[k]=R()<.15?[1,1]:[1,0];
+  else if(l.t==='dom')g[k]=[1,0];
+  else{const r=R();if(r<.3){g[k]=[1,1];hp[k]=1}else if(r<.75){g[k]=[1,0];hp[k]=1}else{const p=pick([.66,.5]);g[k]=[R()<p?1:0,0];hp[k]=p}}
+ }
+ const sex=R()<.5?'M':'F';let age,w;const r=R();
+ if(r<.5){age=1+Math.floor(R()*3);w=70+R()*110}
+ else if(r<.8){age=10+Math.floor(R()*7);w=sex==='F'?500+R()*500:450+R()*450}
+ else{age=28+Math.floor(R()*22);w=sex==='F'?1550+R()*650:900+R()*450}
+ const s=newSnake({sex,age,w:Math.round(w),g,hp});return{lid:Math.floor(R()*1e9),s,price:Math.round(value(s)*1.2/5)*5}}
+function refreshMarket(){S.market=Array.from({length:8},genMarketSnake)}
+function genOrder(){
+ const own=new Set();
+ S.snakes.forEach(s=>{traitsOf(s.g).forEach(t=>own.add(t));LOCI.forEach(l=>{if(l.t==='rec'&&((s.hp||{})[l.k]||0)>.4)own.add(l.k)})});
+ let pool=[...own];if(pool.length<2)pool=['pastel','spider','albino','enchi'];
+ if(R()<.35)pool.push(pick(ALLT.filter(t=>!['bel','superbanana','supercinnamon'].includes(t))));
+ const n=R()<.45?1:2;const tr=[];const locs=new Set();let tries=0;
+ while(tr.length<n&&tries++<30){const t=pick(pool);if(locs.has(TLOC[t]))continue;locs.add(TLOC[t]);tr.push(t)}
+ tr.sort((a,b)=>ALLT.indexOf(a)-ALLT.indexOf(b));
+ const sex=R()<.4?'F':R()<.3?'M':null;
+ const reward=Math.round((baseValue(tr)*(sex==='F'?1.35:1)*2.1+60)/5)*5;
+ return{oid:Math.floor(R()*1e9),tr,sex,reward,left:8+Math.floor(R()*7),buyer:pick(['Rina (Bandung)','Pak Darto','Komunitas Herp Jogja','Kevin – Reptile Shop','Mei Ling (Medan)','Toko Sisik Surabaya','Ayu – kolektor','Expo Serpent Jakarta'])}}
+function matches(o){return S.snakes.filter(s=>{const tr=traitsOf(s.g);return o.tr.every(t=>tr.includes(t))&&(!o.sex||s.sex===o.sex)&&!s.gravid&&!s.listed})}
+
+/* ========= GAME BARU ========= */
+function newGame(){
+ S={turn:0,money:2000,racks:2,nextId:1,snakes:[],clutches:[],market:[],orders:[],dex:{},mm:{},log:[],event:null,stats:{hatched:0,sold:0,earned:0,clutches:0}};
+ addSnake(newSnake({sex:'M',age:26,w:1080,g:G({pastel:[1,0]})}));
+ addSnake(newSnake({sex:'M',age:14,w:690,g:G({albino:[1,1]}),hp:{albino:1}}));
+ addSnake(newSnake({sex:'F',age:38,w:1880,g:G({albino:[1,0]}),hp:{albino:1}}));
+ addSnake(newSnake({sex:'F',age:34,w:1690,g:G({spider:[1,0]})}));
+ addSnake(newSnake({sex:'F',age:11,w:640,g:G({enchi:[1,0],clown:[R()<.5?1:0,0]}),hp:{clown:.5}}));
+ S.snakes.forEach(s=>dexAdd(traitsOf(s.g)));
+ refreshMarket();S.orders=[genOrder(),genOrder()];
+ log('Selamat datang di MorphLab! Kamu mulai dengan 5 ekor ball python, $2.000 dan 2 rak (20 tub). Musim kawin mulai bulan depan (Okt–Mar).','star');
+ SEL={m:null,f:null};
+}
+
+/* ========= MAJU SATU BULAN ========= */
+function advance(){
+ const ev=S.event||{};const before=S.log.length;const head=[];
+ S.turn++;
+ // 1. inkubator
+ for(const c of S.clutches.slice()){
+  c.hatchIn--;if(c.hatchIn>0)continue;
+  let born=0,dead=0;const vis=new Set();const newNames=[];
+  for(const g of c.eggs){if(R()<.04){dead++;continue}
+   const s=addSnake(newSnake({sex:R()<.5?'M':'F',w:Math.round(55+R()*40),g,hp:{...c.hp},sire:c.sireLabel,dam:c.damLabel,gen:c.gen}));
+   const tr=traitsOf(g);tr.forEach(t=>{if(['albino','piebald','clown','axanthic'].includes(t))vis.add(t)});
+   for(const l of LOCI)if(l.t==='rec'&&tr.includes(l.k))s.hp[l.k]=1;
+   if(dexAdd(tr))newNames.push(nameOf(tr));born++;}
+  S.stats.hatched+=born;
+  log(`🥚 Clutch ${c.damLabel.split(' ')[0]} × ${c.sireLabel.split(' ')[0]} menetas: ${born} bayi${dead?`, ${dead} mati dalam telur`:''}.`,'good');
+  head.push(`${born} bayi menetas`);
+  newNames.forEach(n=>{log(`✨ Morph baru tercatat di Morph Dex: ${n}!`,'star');head.push('Morph baru: '+n)});
+  for(const k of vis)for(const pid of [c.sireId,c.damId]){const p=byId(pid);if(p&&!traitsOf(p.g).includes(k)&&(p.hp[k]||0)<1){p.hp[k]=1;log(`🔬 ${code(p)} terbukti het ${TL[k]} (keturunannya visual).`,'star')}}
+  S.clutches=S.clutches.filter(x=>x!==c);
+ }
+ // 2. bertelur
+ for(const f of S.snakes){if(!f.gravid)continue;f.gravid.layIn--;if(f.gravid.layIn>0)continue;
+  const m=f.gravid.sire;const n=clamp(Math.round(2+(f.w-1300)/170+R()*2.5-1),2,11);
+  const eggs=[];let slugs=0;for(let i=0;i<n;i++){if(R()<.88)eggs.push(breedGeno(m,f));else slugs++}
+  S.clutches.push({cid:Math.floor(R()*1e9),damId:f.id,sireId:m.id,damLabel:code(f)+' '+fullName(f),sireLabel:m.label,eggs,slugs,hatchIn:2,hp:childHp(m,f),gen:Math.max(f.gen,m.gen)+1});
+  S.stats.clutches++;
+  log(`🥚 ${code(f)} bertelur ${n} butir: ${eggs.length} subur, ${slugs} slug. Masuk inkubator (±58 hari).`,'good');head.push(`${code(f)} bertelur ${eggs.length} telur subur`);
+  f.gravid=null;f.lastLaid=S.turn;f.w=Math.round(f.w*.72);}
+ // 3. ovulasi dari perkawinan bulan lalu
+ for(const f of S.snakes){if(!f.pairedWith)continue;const m=byId(f.pairedWith);
+  if(m&&R()<.55){f.gravid={sire:snap(m),layIn:2};log(`💛 ${code(f)} berovulasi setelah kawin dengan ${code(m)}. Akan bertelur dalam ±2 bulan.`,'good');head.push(`${code(f)} bunting`)}
+  else log(`${code(f)} tidak berovulasi bulan ini. Coba pasangkan lagi selama masih musim.`,'info');
+  f.pairedWith=null}
+ S.snakes.forEach(s=>{if(s.sex==='M'&&s.pairs){s.w=Math.round(s.w*(1-.015*s.pairs));s.pairs=0}});
+ // 4. pertumbuhan
+ S.snakes.forEach(s=>{s.age++;grow(s)});
+ // 5. iklan
+ for(const s of S.snakes.slice()){if(!s.listed)continue;if(R()<(ev.expo?.7:.35)){const v=value(s);S.money+=v;S.stats.sold++;S.stats.earned+=v;traitsOf(s.g).forEach(t=>S.mm[t]=mm(t)*.97);log(`💰 ${code(s)} ${fullName(s)} laku lewat iklan: ${money(v)}.`,'good');head.push(`${code(s)} laku ${money(v)}`);removeSnake(s)}}
+ // 6. biaya
+ const food=Math.round(S.snakes.reduce((a,s)=>a+2+s.w/250,0)*(ev.food||1));const util=S.racks*8;const over=Math.max(0,S.snakes.length-cap())*15;
+ S.money-=food+util+over;
+ log(`Biaya bulanan: pakan ${money(food)}, listrik & rak ${money(util)}${over?`, tub darurat ${money(over)} (kapasitas penuh!)`:''}.`,over?'bad':'info');
+ // 7. pesanan
+ for(const o of S.orders.slice()){o.left--;if(o.left<=0){S.orders=S.orders.filter(x=>x!==o);log(`Pesanan ${o.buyer} (${nameOf(o.tr)}) kedaluwarsa.`,'bad')}}
+ if(S.orders.length<3&&R()<.5){const o=genOrder();S.orders.push(o);log(`📬 Pesanan baru dari ${o.buyer}: ${o.sex?(o.sex==='F'?'♀ ':'♂ '):''}${nameOf(o.tr)} — hadiah ${money(o.reward)}.`,'star')}
+ // 8. pasar
+ ALLT.forEach(t=>{S.mm[t]=clamp(mm(t)+(1-mm(t))*.06+(R()-.5)*.05,.5,1.6)});
+ refreshMarket();
+ S.event=null;
+ if(R()<.3){const r=R();
+  if(r<.25)S.event={expo:true,txt:'Reptile Expo bulan ini! Iklan 2× lebih cepat laku.'};
+  else if(r<.5){const t=pick(ALLT);S.mm[t]=mm(t)*.8;S.event={txt:`Pasar kebanjiran ${TL[t]}, harganya turun 20%.`}}
+  else if(r<.75){const t=pick(ALLT);S.mm[t]=mm(t)*1.25;S.event={txt:`${TL[t]} lagi tren di forum, harganya naik 25%.`}}
+  else S.event={food:1.5,txt:'Harga tikus pakan naik bulan ini (+50% biaya pakan).'};
+  log('📢 '+S.event.txt,'star')}
+ if(mi()===9)log('🌙 Musim kawin dimulai! Pasangkan ular yang sudah siap (Okt–Mar).','star');
+ if(mi()===3)log('Musim kawin berakhir. Fokus membesarkan bayi dan menjual.','info');
+ if(S.money<0)log('⚠️ Saldo minus! Jual beberapa ular sebelum utangmu makin besar.','bad');
+ save();
+ toast(`<b>${dateTxt()}</b>${head.length?' — '+esc(head.slice(0,3).join(' · ')):' — bulan tenang.'}`);
+}
+
+/* ========= RENDER ULAR (prosedural) ========= */
+function appearance(tr){
+ const s=new Set(tr);let g=[176,118,52],p=[40,28,20],eye=[25,18,12],belly=[236,228,206];
+ const st={spider:s.has('spider'),pin:s.has('pinstripe'),clown:s.has('clown'),reduce:0,solid:0,pied:s.has('piebald'),dorsal:null,speckle:null,outline:null,flame:false};
+ if(s.has('pastel')){g=lerp(g,[222,178,58],.6);p=lerp(p,[78,58,40],.4);st.reduce+=.06}
+ if(s.has('superpastel')){g=[240,206,72];p=[112,88,58];st.reduce+=.14}
+ if(s.has('cinnamon')){g=lerp(g,[146,82,44],.65);p=lerp(p,[38,20,12],.5)}
+ if(s.has('supercinnamon')){g=[74,43,28];p=[50,29,20];st.solid=.85}
+ if(s.has('enchi')){g=lerp(g,[224,140,44],.55);st.reduce+=.16}
+ if(s.has('superenchi')){g=lerp(g,[232,138,36],.85);p=lerp(p,[128,80,42],.6);st.reduce+=.38}
+ if(s.has('banana')){g=lerp(g,[242,196,96],.7);p=[178,146,178];st.speckle=[64,42,36]}
+ if(s.has('superbanana')){g=[248,226,152];p=[216,202,216];st.speckle=[120,90,80]}
+ if(s.has('mojave')){g=lerp(g,[200,152,96],.5);p=lerp(p,[58,50,54],.35);st.outline=[232,218,186]}
+ if(s.has('lesser')){g=lerp(g,[206,162,98],.6);p=lerp(p,[98,72,52],.5);st.outline=[226,206,166]}
+ if(s.has('yb')){st.flame=true;st.reduce+=.03}
+ if(s.has('clown'))g=lerp(g,[208,146,62],.4);
+ if(s.has('albino')){p=[250,246,234];g=lerp([Math.min(255,g[0]+45),Math.min(255,g[1]+40),Math.max(0,g[2]-25)],[250,204,72],.5);eye=[214,58,72];if(st.speckle)st.speckle=[232,170,160];belly=[252,248,236];st.solid=Math.min(st.solid,.2)}
+ if(s.has('axanthic')){const ds=c=>{const l=c[0]*.3+c[1]*.59+c[2]*.11;return lerp(c,[l*.97,l*.97,l*1.03],.88)};g=ds(g);p=ds(p);if(!s.has('albino'))p=lerp(p,[22,22,26],.3);belly=[226,226,228];if(st.speckle)st.speckle=ds(st.speckle)}
+ if(s.has('albino')&&s.has('axanthic')){g=[244,238,222];p=[252,250,244];belly=[255,255,252]}
+ if(s.has('ivory')){g=[238,230,206];p=[234,224,198];st.dorsal=[226,196,104];st.solid=1;st.speckle=null}
+ if(s.has('bel')){g=[247,247,243];p=[247,247,243];eye=[86,148,222];st.solid=1;st.dorsal=null;st.speckle=null;st.outline=null;belly=[252,252,250]}
+ return{g,p,eye,belly,st}}
+function colorAt(t,u,A,st,n1,n2,n3,bands,seed){
+ const au=Math.abs(u),g=A.g,p=A.p;
+ const v=Math.sin((t*bands+.45*n1(t*7)+.55*au*au+(u<0?.08:0))*6.2832);
+ const T=-.05-st.reduce*1.6;let pat=false,faint=0;
+ if(st.clown)pat=au<.16+.06*n2(t*12)||(au>.5&&au<.8&&v>.9);
+ else if(st.spider&&st.pin)pat=au<.05||(Math.abs(v)<.05&&au>.3);
+ else if(st.spider)pat=au<.07||(Math.abs(v)<.09+.04*n3(t*10)&&au>.16);
+ else if(st.pin){pat=au<.055;if(!pat&&au>.55&&au<.62&&v>.2){pat=true;faint=.5}}
+ else if(au<.22){const v2=Math.sin((t*bands+.5+.3*n2(t*9))*6.2832);pat=!(v2>.45-st.reduce*1.4)}
+ else{pat=!(v>T);if(!pat&&st.reduce<.3&&au>.55&&au<.86&&v>.8&&v<.97)pat=true}
+ let c;
+ if(pat)c=lerp(p,g,Math.max(st.solid,faint));
+ else{c=g.slice();if(st.outline&&!st.clown&&!st.spider&&!st.pin&&Math.abs(v-T)<.14&&au>=.22)c=lerp(c,st.outline,.65);
+  if(st.speckle&&hash3(Math.floor(t*150),Math.floor((u+1)*5),seed)<.07)c=lerp(c,st.speckle,.8)}
+ if(au>.8)c=lerp(c,A.belly,(au-.8)/.2*(st.flame?.55:.25));
+ if(st.dorsal&&au<.14)c=lerp(c,st.dorsal,.75*(1-au/.14));
+ if(st.pied){const wm=n2(t*3.1+20)+.3*au-(t<.13?1:0)-(t>.9?.15:0);if(wm>.52)c=[250,249,245]}
+ let f=1.06-.34*au*au;if(u>-.55&&u<-.15)f+=.07;
+ return[clamp(c[0]*f,0,255),clamp(c[1]*f,0,255),clamp(c[2]*f,0,255)]}
+function drawSnake(cv,tr,seed){
+ const W=cv.width,H=cv.height,x=cv.getContext('2d');x.clearRect(0,0,W,H);
+ const A=appearance(tr),st=A.st,n1=noise(seed+1),n2=noise(seed+2),n3=noise(seed+3),rr=rngSeed(seed+9);
+ const R0=H*.12,amp=H*.22,mx=W*.12,ph=rr()*6.283,fq=1.2+rr()*.35,bands=8.5+rr()*2;
+ const pos=t=>[mx+t*(W-2*mx),H*.5+amp*Math.sin(t*6.283*fq+ph)*(.5+.5*t)];
+ const rad=t=>t<.22?R0*(.6+.4*t/.22):t<.66?R0:R0*Math.max(.1,1-(t-.66)/.34*.92);
+ x.fillStyle='rgba(0,0,0,.22)';
+ for(let i=0;i<=220;i++){const t=.02+i/220*.98,[px,py]=pos(t);x.beginPath();x.arc(px+H*.02,py+H*.035,rad(t)*1.05,0,6.283);x.fill()}
+ const N=Math.round(W*1.4),L=18;
+ for(let i=N;i>=0;i--){const t=.03+i/N*.97,[px,py]=pos(t),[ax,ay]=pos(t+.002),[bx,by]=pos(t-.002);
+  let dx=ax-bx,dy=ay-by;const dl=Math.hypot(dx,dy)||1;dx/=dl;dy/=dl;const nx=-dy,ny=dx,r=rad(t),sz=Math.max(1.6,2*r/L+1.2);
+  for(let j=0;j<L;j++){const u=-1+(j+.5)*2/L,c=colorAt(t,u,A,st,n1,n2,n3,bands,seed);
+   x.fillStyle=`rgb(${c[0]|0},${c[1]|0},${c[2]|0})`;x.fillRect(px+nx*u*r-sz/2,py+ny*u*r-sz/2,sz,sz)}}
+ const[hx,hy]=pos(.03),[ax,ay]=pos(.05);let dx=hx-ax,dy=hy-ay;const dl=Math.hypot(dx,dy)||1;dx/=dl;dy/=dl;
+ const sh=(c,f)=>`rgb(${c.map(v=>clamp(v*f,0,255)|0).join(',')})`;
+ x.save();x.translate(hx+dx*R0*.7,hy+dy*R0*.7);x.rotate(Math.atan2(dy,dx));
+ const hl=R0*1.12,hw=R0*.8;
+ // kepala berbentuk tetes: belakang lebar, moncong mengecil
+ x.fillStyle=sh(A.g,.96);x.beginPath();x.moveTo(-hl*.9,0);
+ x.bezierCurveTo(-hl*.9,-hw*1.05,hl*.55,-hw*.95,hl,0);x.bezierCurveTo(hl*.55,hw*.95,-hl*.9,hw*1.05,-hl*.9,0);x.fill();
+ // head stamp gelap di atas kepala
+ x.fillStyle=sh(lerp(A.p,A.g,st.solid),.95);x.beginPath();x.moveTo(-hl*.85,0);
+ x.bezierCurveTo(-hl*.85,-hw*.5,hl*.35,-hw*.38,hl*.7,0);x.bezierCurveTo(hl*.35,hw*.38,-hl*.85,hw*.5,-hl*.85,0);x.fill();
+ x.fillStyle=sh(A.eye,1);for(const s of[-1,1]){x.beginPath();x.arc(hl*.3,s*hw*.66,R0*.14,0,6.283);x.fill()}
+ x.fillStyle='rgba(255,255,255,.55)';for(const s of[-1,1]){x.beginPath();x.arc(hl*.34,s*hw*.62,R0*.045,0,6.283);x.fill()}
+ x.restore()}
+const TH=new Map();
+function thumb(tr,seed,big){const k=tr.join('|')+'#'+seed+(big?'B':'');if(TH.has(k))return TH.get(k);const c=document.createElement('canvas');c.width=big?640:320;c.height=big?296:148;drawSnake(c,tr,seed);const u=c.toDataURL();TH.set(k,u);return u}
+
+/* ========= UI ========= */
+const $=id=>document.getElementById(id);
+function toast(h){const t=$('toast');t.innerHTML=h;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('show'),3800)}
+function ageTxt(m){return m<12?m+' bln':Math.floor(m/12)+' th'+(m%12?' '+m%12+' bln':'')}
+function tags(s){const o=[];
+ if(s.gravid)o.push(`<span class="tag p">Bunting · bertelur ±${s.gravid.layIn} bln</span>`);
+ if(s.pairedWith)o.push(`<span class="tag p">Dikawinkan dgn ${code(byId(s.pairedWith)||{id:0})}</span>`);
+ if(s.sex==='M'&&s.pairs)o.push(`<span class="tag p">${s.pairs} pasangan bln ini</span>`);
+ if(s.listed)o.push('<span class="tag a">Diiklankan</span>');
+ if(!readyMsg(s))o.push('<span class="tag g">Siap kawin</span>');
+ if(s.age<4)o.push('<span class="tag">Hatchling</span>');
+ return o.join('')}
+function card(s){const tr=traitsOf(s.g);return `<div class="card click" data-open="${s.id}"><img class="snk" src="${thumb(tr,s.seed)}" alt="${esc(fullName(s))}"><div class="nm"><span class="sx ${s.sex}">${s.sex==='M'?'♂':'♀'}</span> ${esc(fullName(s))}</div><div class="het">${esc(hetText(s))}</div><div class="meta">${s.nick?esc(s.nick)+' · ':''}${code(s)} · ${ageTxt(s.age)} · ${fmt(s.w)} g</div><div class="tags">${tags(s)}</div><div class="val">${money(value(s))}</div></div>`}
+
+function render(){
+ const sea=inSeason();
+ $('hdr').innerHTML=`<div class="brand">MorphLab<small>Ball Python Breeding Sim</small></div>
+ <div class="stat"><span>Tanggal</span><b>${dateTxt()}</b></div>
+ <div class="stat ${S.money<0?'neg':''}"><span>Saldo</span><b>${money(S.money)}</b></div>
+ <div class="stat"><span>Tub terpakai</span><b style="color:${S.snakes.length>cap()?'var(--bad)':'inherit'}">${S.snakes.length}/${cap()}</b></div>
+ <div class="stat ${sea?'season':''}"><span>Musim</span><b>${sea?'Kawin 🌙':'Istirahat'}</b></div>
+ <button class="pri" data-act="advance">Lanjut bulan ▶</button>`;
+ const T=[['koleksi','Koleksi',S.snakes.length],['breeding','Kawinkan'],['inkubator','Inkubator',S.clutches.length+S.snakes.filter(s=>s.gravid).length],['pasar','Pasar'],['pesanan','Pesanan',S.orders.length],['dex','Morph Dex',Object.keys(S.dex).length],['panduan','Panduan genetika']];
+ $('tabs').innerHTML=T.map(([k,l,c])=>`<button class="${TAB===k?'on':''}" data-act="tab" data-tab="${k}">${l}${c!=null?`<span class="cnt">${c}</span>`:''}</button>`).join('');
+ $('view').innerHTML=({koleksi:vKoleksi,breeding:vBreeding,inkubator:vInkubator,pasar:vPasar,pesanan:vPesanan,dex:vDex,panduan:vPanduan})[TAB]();
+ $('log').innerHTML=S.log.slice(0,60).map(l=>`<li class="${l.k}"><span class="d">${l.d}</span>${esc(l.t)}</li>`).join('');
+}
+function vKoleksi(){
+ let L=S.snakes.filter(s=>FILTER==='all'||(FILTER==='M'&&s.sex==='M')||(FILTER==='F'&&s.sex==='F')||(FILTER==='ready'&&!readyMsg(s))||(FILTER==='listed'&&s.listed));
+ L.sort(SORT==='val'?(a,b)=>value(b)-value(a):SORT==='age'?(a,b)=>b.age-a.age:(a,b)=>b.id-a.id);
+ const F=[['all','Semua'],['M','♂ Jantan'],['F','♀ Betina'],['ready','Siap kawin'],['listed','Diiklankan']];
+ const total=S.snakes.reduce((a,s)=>a+value(s),0);
+ return `<h2>Koleksi</h2><p class="sub">${S.snakes.length} ekor · nilai koleksi ${money(total)} · klik ular untuk detail, jual, atau iklankan.</p>
+ <div class="toolbar">${F.map(([k,l])=>`<button class="chip ${FILTER===k?'on':''}" data-act="filter" data-v="${k}">${l}</button>`).join('')}
+ <span style="margin-left:auto" class="kbd">Urutkan</span><select id="sort" style="width:auto">${[['val','Nilai'],['age','Umur'],['new','Terbaru']].map(([k,l])=>`<option value="${k}" ${SORT===k?'selected':''}>${l}</option>`).join('')}</select></div>
+ ${L.length?`<div class="grid">${L.map(card).join('')}</div>`:'<div class="empty">Tidak ada ular untuk filter ini.</div>'}`}
+function snakeOpt(s){const r=readyMsg(s);return `<option value="${s.id}" ${(SEL.m===s.id||SEL.f===s.id)?'selected':''}>${code(s)} — ${esc(fullName(s))}${hetText(s)?' ('+esc(hetText(s))+')':''}${r?' ⏳':' ✓'}</option>`}
+function vBreeding(){
+ const M=S.snakes.filter(s=>s.sex==='M'),F=S.snakes.filter(s=>s.sex==='F');
+ if(!M.find(s=>s.id===SEL.m))SEL.m=(M.find(s=>!maleReady(s))||M[0]||{}).id||null;
+ if(!F.find(s=>s.id===SEL.f))SEL.f=(F.find(s=>!femaleReady(s)&&!s.pairedWith)||F[0]||{}).id||null;
+ const m=byId(SEL.m),f=byId(SEL.f);
+ let html=`<h2>Kawinkan</h2><p class="sub">Pilih pasangan, lihat peluang tiap morph keturunannya, lalu pasangkan saat musim kawin (Okt–Mar). Peluang ovulasi ±55% per bulan.</p>`;
+ if(!m||!f)return html+'<div class="empty">Kamu butuh minimal 1 jantan dan 1 betina.</div>';
+ const rm=maleReady(m),rf=femaleReady(f),sea=inSeason();
+ const can=sea&&!rm&&!rf&&!f.pairedWith;
+ const box=(s,list,id,r)=>`<div class="panel"><select id="${id}">${list.map(snakeOpt).join('')}</select><img class="snk" style="margin-top:10px" src="${thumb(traitsOf(s.g),s.seed)}"><div class="nm"><span class="sx ${s.sex}">${s.sex==='M'?'♂':'♀'}</span> ${esc(fullName(s))}</div><div class="het">${esc(hetText(s))}</div><div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g</div>${r?`<div class="warn">⏳ ${r}</div>`:'<div class="ok">✓ Siap kawin</div>'}</div>`;
+ html+=`<div class="pair">${box(m,M,'selM',rm)}<div class="x">×</div>${box(f,F,'selF',rf||(f.pairedWith?'Sudah dipasangkan bulan ini':''))}</div>
+ <div class="toolbar" style="margin-top:12px"><button class="pri" data-act="pair" ${can?'':'disabled'}>Pasangkan bulan ini</button>${!sea?'<span class="warn" style="margin:0">Di luar musim kawin. Tunggu Oktober.</span>':''}</div>`;
+ const od=odds(m,f);const hp=childHp(m,f);
+ const ev=od.reduce((a,o)=>a+o.p*baseValue(o.tr),0)*1.175;
+ const hn=LOCI.filter(l=>l.t==='rec'&&hp[l.k]>0.001&&hp[l.k]<.999).map(l=>Math.round(hp[l.k]*100)+'% pos het '+l.a).concat(LOCI.filter(l=>l.t==='rec'&&hp[l.k]>=.999&&!od.every(o=>o.tr.includes(l.k))).map(l=>'100% het '+l.a));
+ html+=`<h3>Peluang keturunan</h3><p class="sub">Estimasi nilai rata-rata per bayi: <b>${money(ev)}</b>. Keturunan yang tampak normal untuk gen resesif: ${hn.length?esc(hn.join(', ')):'tidak membawa het yang diketahui'}.</p>
+ <div class="panel" style="padding:4px 8px"><table><tr><th></th><th>Morph</th><th class="num">Peluang</th><th class="num">Nilai bayi ♂</th></tr>
+ ${od.slice(0,18).map(o=>{const n=nameOf(o.tr);return `<tr><td style="width:120px"><img class="mini" src="${thumb(o.tr,strHash(n))}"></td><td>${esc(n)}${S.dex[n]?'':' <span class="tag a">baru</span>'}<div class="bar"><i style="width:${(o.p/od[0].p*100).toFixed(1)}%"></i></div></td><td class="num">${(o.p*100).toFixed(o.p<.01?2:1)}%</td><td class="num">${money(Math.round(baseValue(o.tr)/5)*5)}</td></tr>`}).join('')}
+ </table>${od.length>18?`<p class="kbd">+${od.length-18} kombinasi lain dengan peluang lebih kecil.</p>`:''}</div>`;
+ const P=S.snakes.filter(s=>s.pairedWith);
+ if(P.length)html+=`<h3>Pasangan bulan ini</h3><div class="panel">${P.map(s=>`<div class="row" style="justify-content:space-between;padding:4px 0"><span>${code(s)} ${esc(fullName(s))} × ${code(byId(s.pairedWith))} ${esc(fullName(byId(s.pairedWith)))}</span><button class="ghost" data-act="unpair" data-id="${s.id}">Batalkan</button></div>`).join('')}</div>`;
+ return html}
+function vInkubator(){
+ const Gv=S.snakes.filter(s=>s.gravid);
+ let h=`<h2>Inkubator</h2><p class="sub">Betina bunting bertelur ±2 bulan setelah ovulasi. Telur diinkubasi di 31–32 °C dan menetas setelah ±2 bulan. Setelah bertelur, betina butuh waktu untuk naik berat lagi.</p>`;
+ h+=`<h3>Betina bunting</h3>`+(Gv.length?`<div class="grid">${Gv.map(card).join('')}</div>`:'<div class="empty">Belum ada betina bunting.</div>');
+ h+=`<h3>Clutch di inkubator</h3>`+(S.clutches.length?`<div class="panel" style="padding:4px 8px"><table><tr><th>Induk betina</th><th>Induk jantan</th><th class="num">Subur</th><th class="num">Slug</th><th class="num">Menetas</th></tr>${S.clutches.map(c=>`<tr><td>${esc(c.damLabel)}</td><td>${esc(c.sireLabel)}</td><td class="num">${c.eggs.length}</td><td class="num">${c.slugs}</td><td class="num">${c.hatchIn} bln</td></tr>`).join('')}</table></div>`:'<div class="empty">Inkubator kosong.</div>');
+ return h}
+function vPasar(){
+ let h=`<h2>Pasar</h2><p class="sub">Stok penjual berganti tiap bulan. Status het dari penjual selalu jujur, tapi "pos het" artinya belum pasti.${S.event?' <b>📢 '+esc(S.event.txt)+'</b>':''}</p>
+ <div class="toolbar"><button data-act="rack" ${S.money<250?'disabled':''}>Beli rak baru (+10 tub) · $250</button><span class="kbd">Kapasitas sekarang ${cap()} tub. Lewat kapasitas kena biaya tub darurat $15/ekor/bulan.</span></div><div class="grid">`;
+ h+=S.market.map(L=>{const s=L.s,tr=traitsOf(s.g);return `<div class="card"><img class="snk" src="${thumb(tr,s.seed)}"><div class="nm"><span class="sx ${s.sex}">${s.sex==='M'?'♂':'♀'}</span> ${esc(nameOf(tr,s.g))}</div><div class="het">${esc(hetText(s))}</div><div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g</div><div class="row" style="justify-content:space-between;margin-top:8px"><b>${money(L.price)}</b><button class="pri" data-act="buy" data-id="${L.lid}" ${S.money<L.price?'disabled':''}>Beli</button></div></div>`}).join('');
+ return h+'</div>'}
+function vPesanan(){
+ let h=`<h2>Pesanan pembeli</h2><p class="sub">Pembeli bayar jauh di atas harga pasar untuk morph tertentu. Ular yang dikirim harus punya semua gen visual yang diminta (gen tambahan boleh).</p>`;
+ if(!S.orders.length)return h+'<div class="empty">Belum ada pesanan. Pesanan baru muncul seiring waktu.</div>';
+ return h+`<div class="grid">${S.orders.map(o=>{const ms=matches(o);const n=nameOf(o.tr);return `<div class="card"><img class="snk" src="${thumb(o.tr,strHash(n))}"><div class="nm">${o.sex?`<span class="sx ${o.sex}">${o.sex==='M'?'♂':'♀'}</span> `:''}${esc(n)}</div><div class="meta">${esc(o.buyer)} · sisa ${o.left} bulan</div><div class="val">Hadiah ${money(o.reward)}</div>${ms.length?`<select id="ord-${o.oid}" style="margin-top:8px">${ms.map(s=>`<option value="${s.id}">${code(s)} ${esc(fullName(s))} (${money(value(s))})</option>`).join('')}</select><button class="pri" style="margin-top:8px;width:100%" data-act="fulfill" data-id="${o.oid}">Kirim ke pembeli</button>`:'<div class="kbd" style="margin-top:8px">Belum ada ular yang cocok di koleksimu.</div>'}</div>`}).join('')}</div>`}
+const TARGETS=[['pastel'],['superpastel'],['mojave'],['lesser'],['bel'],['enchi'],['superenchi'],['yb'],['ivory'],['cinnamon'],['supercinnamon'],['banana'],['superbanana'],['spider'],['pinstripe'],['albino'],['piebald'],['clown'],['axanthic'],['pastel','spider'],['superpastel','spider'],['pastel','pinstripe'],['spider','pinstripe'],['pastel','spider','pinstripe'],['albino','axanthic'],['pastel','albino'],['spider','albino'],['enchi','pastel'],['pastel','clown'],['banana','clown'],['piebald','albino'],['enchi','yb']];
+function vDex(){
+ const keys=new Set(TARGETS.map(t=>nameOf(t)));
+ const extra=Object.keys(S.dex).filter(k=>!keys.has(k));
+ const found=TARGETS.filter(t=>S.dex[nameOf(t)]).length;
+ const cell=(tr,known,when)=>{const n=nameOf(tr);return `<div class="card"><div class="qwrap"><img class="snk ${known?'':'dexq'}" src="${thumb(tr,strHash(n))}"></div><div class="nm">${known?esc(n):'???'}</div><div class="meta">${known?'Ditemukan '+esc(when):'Belum ditemukan'}</div>${known?`<div class="val">${money(Math.round(baseValue(tr)/5)*5)}</div>`:''}</div>`};
+ return `<h2>Morph Dex</h2><p class="sub">${found}/${TARGETS.length} morph target ditemukan · ${Object.keys(S.dex).length} morph total. Statistik: ${S.stats.clutches} clutch, ${S.stats.hatched} bayi menetas, ${S.stats.sold} ular terjual (${money(S.stats.earned)}).</p>
+ <div class="grid">${TARGETS.map(t=>{const n=nameOf(t);return cell(t,!!S.dex[n],S.dex[n]&&S.dex[n].when)}).join('')}</div>
+ ${extra.length?`<h3>Kombinasi lain yang kamu temukan</h3><div class="grid">${extra.map(k=>cell(S.dex[k].tr,true,S.dex[k].when)).join('')}</div>`:''}
+ <h3>Simpan / ulang</h3><div class="toolbar"><button data-act="reset">Mulai game baru</button><span class="kbd">Progres tersimpan otomatis di browser ini.</span></div>`}
+function vPanduan(){return `<div class="guide"><h2>Panduan genetika</h2><p class="sub">Game ini memakai pola pewarisan morph ball python seperti di dunia nyata (disederhanakan).</p>
+<h3>1. Resesif: Albino, Piebald, Clown, Axanthic</h3><p>Butuh <b>dua salinan</b> gen agar terlihat (visual). Ular dengan satu salinan disebut <b>het</b>: tampak normal, tapi membawa gen tersebut.</p>
+<ul><li>Visual × Normal → 100% bayi het (tampak normal)</li><li>Het × Het → 25% visual, dan bayi yang tampak normal = <b>66% pos het</b></li><li>Visual × Het → 50% visual, sisanya 100% het</li></ul>
+<p>"Pos het" artinya <i>mungkin</i> het. Satu-satunya cara membuktikan adalah mengawinkannya dan melihat apakah ada bayi visual. Game akan menandai induk sebagai <b>terbukti het</b> kalau itu terjadi.</p>
+<h3>2. Co-dominan / incomplete dominant: Pastel, Enchi, Yellow Belly, Cinnamon, Banana, Mojave, Lesser</h3><p>Satu salinan sudah terlihat. Dua salinan menghasilkan <b>bentuk super</b> yang berbeda: Super Pastel, Super Enchi, Ivory (super Yellow Belly), Super Cinnamon, Super Banana.</p><ul><li>Pastel × Normal → 50% Pastel, 50% Normal</li><li>Pastel × Pastel → 25% Super Pastel, 50% Pastel, 25% Normal</li></ul>
+<h3>3. BEL complex (Mojave & Lesser)</h3><p>Mojave dan Lesser adalah <b>alel di lokus yang sama</b>. Kombinasi dua alel apa pun (Super Mojave, Super Lesser, Mojave Lesser) menghasilkan <b>Blue-Eyed Leucistic</b>: putih bersih bermata biru. Karena satu lokus, ular BEL selalu menurunkan tepat satu alel Mojave/Lesser ke tiap bayinya.</p>
+<h3>4. Dominan: Spider, Pinstripe</h3><p>Satu salinan sudah terlihat penuh, dan dua salinan tampak sama. Catatan dunia nyata: Spider membawa masalah neurologis ("wobble"), dan banyak breeder memilih tidak memproduksinya lagi. Di game ini gen tersebut tetap ada untuk keperluan edukasi.</p>
+<h3>5. Kombinasi terkenal</h3><p>Pastel + Spider = <b>Bumblebee</b> · Super Pastel + Spider = <b>Killer Bee</b> · Pastel + Pinstripe = <b>Lemon Blast</b> · Spider + Pinstripe = <b>Spinner</b> · Albino + Axanthic = <b>Snow</b>.</p>
+<h3>6. Siklus breeding</h3><ul><li>Jantan siap kawin: umur ≥10 bulan dan berat ≥650 g. Bisa dipasangkan dengan maksimal 4 betina per bulan.</li><li>Betina siap kawin: umur ≥24 bulan dan berat ≥1.500 g, serta tidak bertelur dalam 8 bulan terakhir.</li><li>Musim kawin: Oktober–Maret. Peluang ovulasi ±55% per bulan, lalu bertelur ±2 bulan kemudian dan menetas ±2 bulan setelah itu.</li><li>Jumlah telur bergantung berat betina. ±12% telur adalah slug (tidak subur).</li><li>Betina turun ±28% berat setelah bertelur, jadi perlu waktu pulih.</li></ul>
+<h3>7. Ekonomi</h3><p>Harga tiap gen naik turun. Kalau kamu terus menjual morph yang sama, pasar jadi jenuh dan harganya turun. Betina lebih mahal, dan ular dewasa lebih mahal daripada hatchling. Jual cepat memberi 60% nilai langsung, sedangkan iklan memberi 100% nilai tapi butuh waktu.</p></div>`}
+
+function modal(h){const m=$('modal');m.innerHTML=`<div class="mbox">${h}</div>`;m.classList.remove('hidden')}
+function closeModal(){$('modal').classList.add('hidden');$('modal').innerHTML=''}
+function openSnake(id){const s=byId(id);if(!s)return;const tr=traitsOf(s.g),r=readyMsg(s);
+ modal(`<img class="big" src="${thumb(tr,s.seed,true)}"><h2 style="margin-top:12px"><span class="sx ${s.sex}">${s.sex==='M'?'♂':'♀'}</span> ${esc(fullName(s))}</h2><div class="het">${esc(hetText(s))}</div>
+ <dl><dt>Kode</dt><dd>${code(s)}</dd><dt>Umur · berat</dt><dd>${ageTxt(s.age)} · ${fmt(s.w)} g</dd><dt>Induk jantan</dt><dd>${esc(s.sire||'tidak diketahui (dibeli)')}</dd><dt>Induk betina</dt><dd>${esc(s.dam||'tidak diketahui (dibeli)')}</dd><dt>Generasi</dt><dd>F${s.gen}</dd><dt>Status kawin</dt><dd>${r?'⏳ '+esc(r):'✓ Siap kawin'}</dd><dt>Nilai pasar</dt><dd><b>${money(value(s))}</b></dd></dl>
+ <div class="row"><input id="nick" maxlength="24" placeholder="Nama panggilan" value="${esc(s.nick)}"><button data-act="nick" data-id="${s.id}">Simpan</button></div>
+ <div class="actions"><button class="pri" data-act="list" data-id="${s.id}" ${s.gravid?'disabled':''}>${s.listed?'Batalkan iklan':'Iklankan · '+money(value(s))}</button><button data-act="quicksell" data-id="${s.id}" ${s.gravid?'disabled':''}>Jual cepat · ${money(value(s)*.6)}</button><button data-act="tobreed" data-id="${s.id}">Rencanakan kawin</button><button class="ghost" data-act="close">Tutup</button></div>
+ ${s.gravid?'<p class="kbd">Betina bunting tidak bisa dijual sampai bertelur.</p>':''}`)}
+
+function act(a,id,el){
+ if(a==='tab'){TAB=el.dataset.tab}
+ else if(a==='filter'){FILTER=el.dataset.v}
+ else if(a==='advance'){advance()}
+ else if(a==='close'){closeModal();return}
+ else if(a==='nick'){const s=byId(id);s.nick=$('nick').value.trim().slice(0,24);closeModal()}
+ else if(a==='list'){const s=byId(id);s.listed=!s.listed;if(s.listed&&s.pairedWith){const m=byId(s.pairedWith);if(m)m.pairs--;s.pairedWith=null}if(s.listed&&s.sex==='M')S.snakes.forEach(f=>{if(f.pairedWith===s.id)f.pairedWith=null}),s.pairs=0;log(s.listed?`${code(s)} diiklankan.`:`Iklan ${code(s)} dibatalkan.`);closeModal()}
+ else if(a==='quicksell'){const s=byId(id);const v=Math.round(value(s)*.6);S.money+=v;S.stats.sold++;S.stats.earned+=v;traitsOf(s.g).forEach(t=>S.mm[t]=mm(t)*.97);log(`💰 ${code(s)} ${fullName(s)} dijual cepat: ${money(v)}.`,'good');removeSnake(s);closeModal()}
+ else if(a==='tobreed'){const s=byId(id);if(s.sex==='M')SEL.m=id;else SEL.f=id;TAB='breeding';closeModal()}
+ else if(a==='pair'){const m=byId(SEL.m),f=byId(SEL.f);if(m&&f&&inSeason()&&!maleReady(m)&&!femaleReady(f)&&!f.pairedWith){f.pairedWith=m.id;m.pairs++;log(`${code(m)} dipasangkan dengan ${code(f)}. Hasil ovulasi terlihat bulan depan.`);toast('Pasangan dibuat. Klik <b>Lanjut bulan</b> untuk melihat hasilnya.')}}
+ else if(a==='unpair'){const f=byId(id);const m=byId(f.pairedWith);if(m)m.pairs=Math.max(0,m.pairs-1);f.pairedWith=null}
+ else if(a==='buy'){const L=S.market.find(x=>x.lid===id);if(L&&S.money>=L.price){S.money-=L.price;const s=addSnake(L.s);S.market=S.market.filter(x=>x!==L);const nw=dexAdd(traitsOf(s.g));log(`🛒 Membeli ${code(s)} ${fullName(s)}${hetText(s)?' '+hetText(s):''} seharga ${money(L.price)}.`);if(nw)log(`✨ Morph baru tercatat di Morph Dex: ${nameOf(traitsOf(s.g))}!`,'star')}}
+ else if(a==='rack'){if(S.money>=250){S.money-=250;S.racks++;log(`Membeli rak baru. Kapasitas sekarang ${cap()} tub.`)}}
+ else if(a==='fulfill'){const o=S.orders.find(x=>x.oid===id);const sel=$('ord-'+id);const s=sel&&byId(+sel.value);if(o&&s&&o.tr.every(t=>traitsOf(s.g).includes(t))){S.money+=o.reward;S.stats.sold++;S.stats.earned+=o.reward;log(`📦 ${code(s)} ${fullName(s)} dikirim ke ${o.buyer}. Hadiah ${money(o.reward)}!`,'star');removeSnake(s);S.orders=S.orders.filter(x=>x!==o)}}
+ else if(a==='reset'){modal(`<h2>Mulai game baru?</h2><p class="sub">Semua progres di browser ini akan dihapus.</p><div class="actions"><button class="pri" data-act="resetyes">Ya, mulai baru</button><button class="ghost" data-act="close">Batal</button></div>`);return}
+ else if(a==='resetyes'){newGame();TAB='koleksi';closeModal()}
+ save();render()}
+
+function boot(){
+ if(!load())newGame();
+ S.snakes.forEach(s=>{s.hp=s.hp||{}});
+ document.addEventListener('click',e=>{
+  if(e.target.id==='modal'){closeModal();return}
+  const a=e.target.closest('[data-act]');if(a){act(a.dataset.act,+a.dataset.id,a);return}
+  const o=e.target.closest('[data-open]');if(o)openSnake(+o.dataset.open)});
+ document.addEventListener('change',e=>{const t=e.target;
+  if(t.id==='selM'){SEL.m=+t.value;render()}else if(t.id==='selF'){SEL.f=+t.value;render()}else if(t.id==='sort'){SORT=t.value;render()}});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+ render();
+}
+if(typeof window!=='undefined'&&window.document&&!window.__TEST__)boot();
+</script>
+</body>
+</html>
