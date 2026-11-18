@@ -4,14 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Morph Lab — Reptile Breeder Sim</title>
+<script>try{var _t=localStorage.getItem('morphlab_theme');if(_t&&_t!=='terra')document.documentElement.setAttribute('data-theme',_t)}catch(e){}</script>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#13120e;--panel:#1d1b16;--panel2:#26231c;--line:#39342a;--text:#efe8d6;--mut:#a59d88;--acc:#e3a63b;--good:#8cc06a;--bad:#e0675a;--blue:#7fb2e5;--pink:#e58fb0}
+:root{--bg:#13120e;--panel:#1d1b16;--panel2:#26231c;--line:#39342a;--text:#efe8d6;--mut:#a59d88;--acc:#e3a63b;--good:#8cc06a;--bad:#e0675a;--blue:#7fb2e5;--pink:#e58fb0;
+ --glow:#2b2619;--hover:#2e2a21;--lineh:#6a604a;--line2:#5d5541;--onacc:#1b1407;--acc2:#f0b54a;--img1:#3a3324;--img2:#211e17;--panel3:#221f19;--toast:#2a271f;--accbg:#2c261a;--me:#3a2f17;--meline:#6b5426;--input:#15130f;--hdr:rgba(19,18,14,.94)}
+/* Tema warna (Pengaturan → Tema warna). Default = Terrarium di atas. */
+html[data-theme=forest]{--bg:#0d1511;--panel:#14201a;--panel2:#1a2a22;--line:#2a3f33;--text:#e4f0e7;--mut:#94ad9d;--acc:#4fc884;--good:#a6dc7c;--bad:#e5705f;
+ --glow:#16301f;--hover:#203429;--lineh:#46685a;--line2:#3d5c4d;--onacc:#06190e;--acc2:#6fdc9c;--img1:#21392b;--img2:#111c16;--panel3:#15231c;--toast:#182a20;--accbg:#173323;--me:#173a26;--meline:#2f6a47;--input:#0a120e;--hdr:rgba(13,21,17,.94)}
+html[data-theme=ocean]{--bg:#0c111d;--panel:#131a2b;--panel2:#1a2338;--line:#2a3550;--text:#e5eaf6;--mut:#97a3c0;--acc:#5fa4ff;--good:#7fd6a0;--bad:#f0707a;
+ --glow:#18264a;--hover:#212c46;--lineh:#4b5d87;--line2:#3e4e74;--onacc:#06101f;--acc2:#82b9ff;--img1:#22304f;--img2:#0f1525;--panel3:#141c2e;--toast:#18213a;--accbg:#172743;--me:#1b2f55;--meline:#33558f;--input:#090d17;--hdr:rgba(12,17,29,.94)}
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(1100px 520px at 15% -10%,#2b2619 0,transparent 60%),var(--bg);color:var(--text);font:14px/1.45 'DM Sans',system-ui,sans-serif;min-height:100vh}
-header{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:12px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(19,18,14,.94);backdrop-filter:blur(6px);z-index:5}
+body{margin:0;background:radial-gradient(1100px 520px at 15% -10%,var(--glow) 0,transparent 60%),var(--bg);color:var(--text);font:14px/1.45 'DM Sans',system-ui,sans-serif;min-height:100vh}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:12px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--hdr);backdrop-filter:blur(6px);z-index:5}
 #hdr{display:contents}
 .brand{margin:0 auto 0 0;line-height:0}.brand img{height:52px;width:auto;display:block}
 @media(max-width:640px){.brand img{height:40px}}
@@ -21,9 +28,9 @@ table.pv{width:100%;border-collapse:collapse;margin-top:6px}table.pv td{padding:
 .stat.neg b{color:var(--bad)}
 .season{border-color:#4f6b3a}.season b{color:var(--good)}
 button{font:inherit;cursor:pointer;border-radius:9px;border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:7px 12px;transition:background .12s,border-color .12s}
-button:hover:not(:disabled){border-color:#6a604a;background:#2e2a21}
-button.pri{background:var(--acc);color:#1b1407;border-color:var(--acc);font-weight:700}
-button.pri:hover:not(:disabled){background:#f0b54a}
+button:hover:not(:disabled){border-color:var(--lineh);background:var(--hover)}
+button.pri{background:var(--acc);color:var(--onacc);border-color:var(--acc);font-weight:700}
+button.pri:hover:not(:disabled){background:var(--acc2)}
 button.ghost{background:none}
 button:disabled{opacity:.42;cursor:not-allowed}
 nav{display:flex;gap:2px;padding:6px 20px 0;overflow-x:auto;border-bottom:1px solid var(--line)}
@@ -39,11 +46,11 @@ h3{font-family:Fraunces,serif;font-weight:600;font-size:16px;margin:18px 0 8px}
 .sub{color:var(--mut);margin:0 0 14px}
 .toolbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px}
 .chip{padding:5px 11px;border-radius:20px;font-size:13px}
-.chip.on{background:var(--acc);color:#1b1407;border-color:var(--acc)}
+.chip.on{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:12px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px;transition:transform .12s,border-color .12s;position:relative}
-.card.click{cursor:pointer}.card.click:hover{transform:translateY(-2px);border-color:#5d5541}
-.snk{width:100%;aspect-ratio:320/148;display:block;border-radius:10px;background:radial-gradient(120% 90% at 50% 40%,#3a3324 0,#211e17 75%)}
+.card.click{cursor:pointer}.card.click:hover{transform:translateY(-2px);border-color:var(--line2)}
+.snk{width:100%;aspect-ratio:320/148;display:block;border-radius:10px;background:radial-gradient(120% 90% at 50% 40%,var(--img1) 0,var(--img2) 75%)}
 .nm{font-weight:700;margin-top:8px;line-height:1.25}
 .het{font-size:12px;color:var(--acc);min-height:16px}
 .meta{font-size:12px;color:var(--mut)}
@@ -63,7 +70,7 @@ table{width:100%;border-collapse:collapse}
 td,th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
 th{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--mut);font-weight:500}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
-img.mini{width:110px;aspect-ratio:320/148;border-radius:7px;display:block;background:#221f18}
+img.mini{width:110px;aspect-ratio:320/148;border-radius:7px;display:block;background:var(--panel3)}
 .bar{height:6px;background:var(--panel2);border-radius:4px;overflow:hidden;margin-top:3px}.bar i{display:block;height:100%;background:var(--acc)}
 aside .panel{position:sticky;top:96px;max-height:calc(100vh - 120px);overflow:auto}
 .log{list-style:none;margin:0;padding:0}
@@ -75,21 +82,21 @@ i.gone{color:var(--mut);font-weight:400}
 #modal{position:fixed;inset:0;background:rgba(8,7,5,.7);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
 #modal.hidden{display:none}
 .mbox{background:var(--panel);border:1px solid var(--line);border-radius:16px;max-width:640px;width:100%;max-height:92vh;overflow:auto;padding:18px}
-.mbox img.big{width:100%;aspect-ratio:640/296;border-radius:12px;display:block;background:radial-gradient(120% 90% at 50% 40%,#3a3324 0,#211e17 75%)}
+.mbox img.big{width:100%;aspect-ratio:640/296;border-radius:12px;display:block;background:radial-gradient(120% 90% at 50% 40%,var(--img1) 0,var(--img2) 75%)}
 dl{display:grid;grid-template-columns:130px 1fr;gap:4px 10px;margin:12px 0;font-size:13.5px}dt{color:var(--mut)}dd{margin:0}
 .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 .row{display:flex;gap:8px;align-items:center}
-#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);opacity:0;background:#2a271f;border:1px solid #5d5541;border-radius:12px;padding:10px 16px;max-width:min(560px,92vw);transition:.25s;z-index:30;pointer-events:none;font-size:13.5px}
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);opacity:0;background:var(--toast);border:1px solid var(--line2);border-radius:12px;padding:10px 16px;max-width:min(560px,92vw);transition:.25s;z-index:30;pointer-events:none;font-size:13.5px}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .dexq{filter:brightness(0);opacity:.55}
-.qwrap{border-radius:10px;background:radial-gradient(120% 90% at 50% 40%,#3a3324 0,#211e17 75%)}
+.qwrap{border-radius:10px;background:radial-gradient(120% 90% at 50% 40%,var(--img1) 0,var(--img2) 75%)}
 .qwrap .snk{background:none}
 .guide p,.guide li{color:#dcd4c0;max-width:72ch}
 .guide code{background:var(--panel2);padding:1px 6px;border-radius:5px}
 .kbd{font-size:12px;color:var(--mut)}
 .langsw{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
 .langsw button{border:none;border-radius:0;background:none;color:var(--mut);padding:7px 10px;font-weight:700;font-size:12.5px;letter-spacing:.04em}
-.langsw button.on{background:var(--acc);color:#1b1407}
+.langsw button.on{background:var(--acc);color:var(--onacc)}
 .langsw button:hover:not(.on){color:var(--text);background:var(--panel2)}
 .acct{display:flex;align-items:center;gap:7px;padding:7px 12px;border-radius:10px;white-space:nowrap}
 .acct small{color:var(--mut);font-size:11px;margin-left:2px}
@@ -102,19 +109,19 @@ dl{display:grid;grid-template-columns:130px 1fr;gap:4px 10px;margin:12px 0;font-
 .pweye:hover:not(:disabled){background:var(--panel);color:var(--text)}
 .msg{min-height:18px;font-size:13px}.msg .warn,.msg .ok{margin:0}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:560px){.grid2{grid-template-columns:1fr}}
-.cnt.hot{background:var(--acc);color:#1b1407;font-weight:700}
+.cnt.hot{background:var(--acc);color:var(--onacc);font-weight:700}
 .social{display:grid;grid-template-columns:300px minmax(0,1fr);gap:14px;align-items:start}
 @media(max-width:760px){.social{grid-template-columns:1fr}}
 .col-left{display:grid;gap:8px}.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--mut);margin:6px 0 4px}
 .addf .row{flex-wrap:wrap}.addf .row input{flex:1 1 150px;min-width:0}.addf .row button{flex:1 1 auto}.addf .row button[data-act=profile_lookup]{flex:0 0 auto;padding-left:14px;padding-right:14px}.addf .msg{margin-top:6px}
 .frow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--panel);width:100%;text-align:left}
-.fbtn.on{border-color:var(--acc);background:#2c261a}
+.fbtn.on{border-color:var(--acc);background:var(--accbg)}
 button.sm{padding:4px 10px;font-size:12.5px}
 .col-right{min-height:340px;display:flex;flex-direction:column}
 .chathead{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding-bottom:10px;border-bottom:1px solid var(--line)}
 .chatlog{flex:1;overflow:auto;max-height:380px;min-height:220px;padding:12px 2px;display:flex;flex-direction:column;gap:8px}
 .bub{max-width:78%;background:var(--panel2);border:1px solid var(--line);border-radius:12px 12px 12px 4px;padding:7px 11px;align-self:flex-start;word-wrap:break-word;white-space:pre-wrap}
-.bub.me{align-self:flex-end;background:#3a2f17;border-color:#6b5426;border-radius:12px 12px 4px 12px}
+.bub.me{align-self:flex-end;background:var(--me);border-color:var(--meline);border-radius:12px 12px 4px 12px}
 .bub span{display:block;font-size:10.5px;color:var(--mut);margin-top:3px}
 .chatin{padding-top:10px;border-top:1px solid var(--line)}.chatin input{flex:1}
 .tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
@@ -122,7 +129,7 @@ button.sm{padding:4px 10px;font-size:12.5px}
 .mini-row{display:flex;gap:8px;align-items:center;padding:4px 0;font-size:13px}.mini-row img.mini{width:84px}.mini-row.money{font-weight:700}
 .tb .tblist{max-height:300px;overflow:auto;display:grid;gap:6px;padding-right:4px}
 .tbrow{display:flex;gap:8px;align-items:center;padding:6px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:13px}
-.tbrow.on{border-color:var(--acc);background:#2c261a}.tbrow.off{opacity:.5;cursor:not-allowed}.tbrow img.mini{width:84px}
+.tbrow.on{border-color:var(--acc);background:var(--accbg)}.tbrow.off{opacity:.5;cursor:not-allowed}.tbrow img.mini{width:84px}
 .tbrow input{width:auto}.tbm{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px}.tbm input{width:120px}
 .mbox:has(.tb){max-width:860px}
 .gated nav,.gated aside{display:none}.gated main{grid-template-columns:minmax(0,1fr);max-width:860px}
@@ -135,13 +142,18 @@ button.sm{padding:4px 10px;font-size:12.5px}
 .origin{font-size:11.5px;color:#c9b98f;margin-top:2px}.origin .linkbtn{color:inherit}
 .linkbtn{background:none;border:0;padding:0;color:inherit;font:inherit;font-weight:inherit;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}.linkbtn:hover{color:var(--acc)}
 .prof .profhead{display:flex;gap:14px;align-items:center}.prof h2{margin:0 0 2px}
-.avatar{width:64px;height:64px;border-radius:50%;overflow:hidden;flex:none;background:#2c2820;border:2px solid var(--acc);display:grid;place-items:center}.avatar img{width:150%;height:150%;object-fit:cover}.avatar span{font-size:28px;font-weight:700;color:var(--acc)}
+.avatar{width:64px;height:64px;border-radius:50%;overflow:hidden;flex:none;background:var(--panel3);border:2px solid var(--acc);display:grid;place-items:center}.avatar img{width:150%;height:150%;object-fit:cover}.avatar span{font-size:28px;font-weight:700;color:var(--acc)}
 .prof .bio{white-space:pre-line;margin:12px 0;line-height:1.5}
-.pstats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:10px 0 4px}.pstats div{background:#221f19;border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}.pstats b{display:block;font-size:18px}.pstats span{font-size:11.5px;color:var(--mut)}
-.showcase{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}.sc-card{position:relative;background:#221f19;border:1px solid var(--line);border-radius:12px;padding:8px}.sc-card img{width:100%;border-radius:8px;display:block}.sc-name{font-weight:700;margin-top:6px;font-size:13.5px}.sc-card .meta,.sc-card .het{font-size:11.5px}.sc-val{font-weight:700;color:var(--acc);margin-top:4px;font-size:13px}.sc-rank{position:absolute;top:12px;left:12px;background:var(--acc);color:#1b1408;font-weight:800;font-size:11px;border-radius:6px;padding:1px 6px}
-.pick{max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:4px}.form label.pickrow{display:flex;gap:10px;color:var(--fg,inherit);font-size:13px}.pickrow{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:8px;cursor:pointer}.pickrow:hover{background:#25211a}.pickrow.on{background:#2f2815}.pickrow input{width:auto;margin:0}.pickrow .ord{width:16px;font-weight:800;color:var(--acc);text-align:center}.pickrow .pk{display:flex;flex-direction:column;font-size:13px}.pickrow .meta{font-size:11.5px}
-textarea{width:100%;box-sizing:border-box;resize:vertical;font:inherit;background:#15130f;color:inherit;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.pstats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:10px 0 4px}.pstats div{background:var(--panel3);border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}.pstats b{display:block;font-size:18px}.pstats span{font-size:11.5px;color:var(--mut)}
+.showcase{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}.sc-card{position:relative;background:var(--panel3);border:1px solid var(--line);border-radius:12px;padding:8px}.sc-card img{width:100%;border-radius:8px;display:block}.sc-name{font-weight:700;margin-top:6px;font-size:13.5px}.sc-card .meta,.sc-card .het{font-size:11.5px}.sc-val{font-weight:700;color:var(--acc);margin-top:4px;font-size:13px}.sc-rank{position:absolute;top:12px;left:12px;background:var(--acc);color:var(--onacc);font-weight:800;font-size:11px;border-radius:6px;padding:1px 6px}
+.pick{max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:4px}.form label.pickrow{display:flex;gap:10px;color:var(--fg,inherit);font-size:13px}.pickrow{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:8px;cursor:pointer}.pickrow:hover{background:var(--hover)}.pickrow.on{background:var(--accbg)}.pickrow input{width:auto;margin:0}.pickrow .ord{width:16px;font-weight:800;color:var(--acc);text-align:center}.pickrow .pk{display:flex;flex-direction:column;font-size:13px}.pickrow .meta{font-size:11.5px}
+textarea{width:100%;box-sizing:border-box;resize:vertical;font:inherit;background:var(--input);color:inherit;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
 @media (max-width:640px){.pstats{grid-template-columns:repeat(3,1fr)}}
+.gear{display:inline-flex;align-items:center;gap:7px}.gear .gico{font-size:16px;line-height:1}.gear .gname{font-weight:600;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.settings section.set{border-top:1px solid var(--line);padding:12px 0 4px;margin-top:10px}.settings section.set:first-of-type{border-top:0;margin-top:0;padding-top:4px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:6px}.opt{position:relative;display:flex;align-items:center;gap:8px;text-align:left;padding:10px 12px}.opt.on{border-color:var(--acc);background:var(--accbg)}.opt .chk{margin-left:auto;color:var(--acc);font-weight:800}.opt .flag{font-size:18px}
+.opt.theme{flex-direction:column;align-items:flex-start;gap:4px}.opt.theme small{color:var(--mut);font-size:11.5px}.opt.theme .chk{position:absolute;top:8px;right:10px}.sw{display:flex;gap:4px}.sw i{width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.15);display:block}
+@media (max-width:640px){.gear .gname{display:none}}
 .dzone{margin-top:18px;padding-top:12px;border-top:1px solid #4a2b26}.dzone .lbl{color:var(--bad)}.dzrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0}.dzrow p{margin:2px 0 0;font-size:12.5px;color:var(--mut)}.dzrow button{flex:none}
 .warnbox{border:1px solid #7a3d34;background:#2a1714;border-radius:12px;padding:10px 14px;margin:10px 0}.warnbox p{margin:6px 0;font-size:13.5px}
 button.danger{background:var(--bad);border-color:var(--bad);color:#1b0a07;font-weight:700}button.danger:hover:not(:disabled){background:#ec7d71}
@@ -291,6 +303,7 @@ id:{
  t_uname:p=>`Username <b>${p.u}</b> tersimpan.`,t_pw:'Password baru tersimpan.',t_cloudload:p=>`☁️ Save dari akunmu dimuat: <b>${p.d}</b>`,t_logout:'Kamu sudah keluar. Progresmu aman tersimpan di server.',
  nolib_h:'Cloud save tidak tersedia',nolib_b:'Library Supabase gagal dimuat (koneksi internet atau pemblokir iklan). Game tetap jalan dan progres tersimpan di browser ini. Muat ulang halaman untuk mencoba lagi.',
  fg_need:'Isi email dulu, lalu klik "Lupa password?" lagi.',fg_sent:p=>`Link reset password dikirim ke <b>${p.e}</b>.`,
+ set_title:'Pengaturan',set_lang:'Bahasa',set_theme:'Tema warna',th_terra:'Terrarium',th_terra_d:'Cokelat hangat & amber (bawaan)',th_forest:'Hutan Hujan',th_forest_d:'Hijau gelap & zamrud',th_ocean:'Samudra Malam',th_ocean_d:'Biru tua & biru langit',
  pv_open:'Lihat perkiraan saldo bulan depan',pv_h:'Perkiraan saldo bulan depan',pv_sub:'Biaya ini dipotong otomatis saat kamu menekan “Lanjut bulan”.',pv_now:'Saldo sekarang',pv_food:p=>`Pakan · ${p.n} ekor`,pv_util:p=>`Listrik & rak · ${p.r} rak × $8`,pv_over:p=>`Tub darurat · ${p.n} ekor di atas kapasitas (${p.c}) × $15`,pv_total:'Total pengeluaran',pv_after:'Perkiraan saldo',pv_formula:'Pakan per ekor: $2 + $1 per 250 g berat (dihitung dari berat setelah tumbuh bulan depan).',pv_debt:'⚠️ Saldo akan minus! Jual, iklankan, atau kirim ular ke pesanan dulu.',pv_n_born:p=>`Termasuk ${p.n} bayi yang akan menetas (bisa kurang kalau ada telur yang mati).`,pv_n_lay:p=>`${p.n} betina akan bertelur, beratnya turun ±28% sehingga pakannya lebih murah.`,pv_n_foodx:'Harga pakan sedang naik +50% (event bulan ini).',pv_n_listed:p=>`Belum termasuk uang dari ${p.n} ular yang diiklankan kalau terjual.`,pv_n_random:'Ini perkiraan: pertumbuhan & event baru bersifat acak.',
  tab_teman:'Teman',tab_global:'Global chat',gc_sub:p=>`Ngobrol dengan semua pemain Morph Lab. Hanya ${p.n} pesan terakhir yang disimpan; pesan yang lebih lama terhapus otomatis.`,gc_ph:'Tulis pesan untuk semua pemain…',gc_empty:'Belum ada pesan. Jadilah yang pertama menyapa!',e_empty_message:'Pesan masih kosong.',e_message_too_long:'Pesan terlalu panjang.',busy:'Tunggu sebentar, sedang memproses…',
  so_login:'Masuk ke akun untuk menambah teman, chat, dan trading.',so_login_btn:'☁️ Masuk / Daftar',
@@ -465,6 +478,7 @@ en:{
  t_uname:p=>`Username <b>${p.u}</b> saved.`,t_pw:'New password saved.',t_cloudload:p=>`☁️ Loaded the save from your account: <b>${p.d}</b>`,t_logout:'You’re logged out. Your progress is safe on the server.',
  nolib_h:'Cloud save unavailable',nolib_b:'The Supabase library failed to load (internet connection or an ad blocker). The game still works and progress is saved in this browser. Reload the page to try again.',
  fg_need:'Enter your email first, then click "Forgot password?" again.',fg_sent:p=>`A password reset link was sent to <b>${p.e}</b>.`,
+ set_title:'Settings',set_lang:'Language',set_theme:'Color theme',th_terra:'Terrarium',th_terra_d:'Warm brown & amber (default)',th_forest:'Rainforest',th_forest_d:'Deep green & emerald',th_ocean:'Night Ocean',th_ocean_d:'Navy & sky blue',
  pv_open:'See next month’s balance forecast',pv_h:'Next month’s balance forecast',pv_sub:'These costs are deducted automatically when you press “Next month”.',pv_now:'Current balance',pv_food:p=>`Feeders · ${p.n} ${p.n===1?'snake':'snakes'}`,pv_util:p=>`Power & racks · ${p.r} ${p.r===1?'rack':'racks'} × $8`,pv_over:p=>`Emergency tubs · ${p.n} over capacity (${p.c}) × $15`,pv_total:'Total costs',pv_after:'Expected balance',pv_formula:'Feeders per snake: $2 + $1 per 250 g of body weight (using next month’s weight after growth).',pv_debt:'⚠️ Your balance will go negative! Sell, list, or ship snakes to orders first.',pv_n_born:p=>`Includes ${p.n} ${p.n===1?'hatchling':'hatchlings'} due to hatch (could be fewer if an egg fails).`,pv_n_lay:p=>`${p.n} ${p.n===1?'female':'females'} will lay eggs and lose ~28% of their weight, so feeding them costs less.`,pv_n_foodx:'Feeder prices are up +50% (this month’s event).',pv_n_listed:p=>`Doesn’t include money from ${p.n} listed ${p.n===1?'snake':'snakes'} if they sell.`,pv_n_random:'This is an estimate: growth and new events are random.',
  tab_teman:'Friends',tab_global:'Global chat',gc_sub:p=>`Chat with every Morph Lab player. Only the last ${p.n} messages are kept; older ones are deleted automatically.`,gc_ph:'Write a message to everyone…',gc_empty:'No messages yet. Be the first to say hi!',e_empty_message:'The message is empty.',e_message_too_long:'The message is too long.',busy:'One moment, still working…',
  so_login:'Log in to add friends, chat and trade.',so_login_btn:'☁️ Log in / Sign up',
@@ -641,7 +655,6 @@ function render(){
  $('hdr').innerHTML=` <div class="stat"><span>${t('hdr_date')}</span><b>${S.turn}</b></div>
  ${(()=>{const pv=previewNext();return `<button class="stat statbtn ${S.money<0?'neg':''}" data-act="preview" title="${t('pv_open')}"><span>${t('hdr_bal')}</span><b>${money(S.money)}</b><small class="${pv.after<0?'bad':''}">→ ${money(pv.after)}</small></button>`})()}
  <div class="stat"><span>${t('hdr_tubs')}</span><b style="color:${S.snakes.length>cap()?'var(--bad)':'inherit'}">${S.snakes.length}/${cap()}</b></div>
- <div class="langsw" role="group" aria-label="${t('lang_label')}">${['id','en'].map(l=>`<button data-act="lang" data-v="${l}" class="${LANG===l?'on':''}" aria-pressed="${LANG===l}" lang="${l}" title="${l==='id'?'Bahasa Indonesia':'English'}">${l.toUpperCase()}</button>`).join('')}</div>
  <span id="acct"></span><button class="pri" data-act="advance">${t('advance')}</button>`;
  renderAcct();
  renderTabs();
@@ -760,7 +773,7 @@ function openSnake(id){const s=byId(id);if(!s)return;const tr=traitsOf(s.g),r=re
  ${s.gravid?`<p class="kbd">${t('gravid_nosale')}</p>`:''}`)}
 
 const SOCIAL_ACTS=new Set(['openchat','fr_accept','fr_decline','fr_remove','fr_remove_yes','tr_new','tb_close','tr_send','tr_accept','tr_accept_yes','tr_decline','tr_cancel']);
-const FREE_ACTS=new Set(['preview','profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
+const FREE_ACTS=new Set(['settings','theme','preview','profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
 // Jalankan aksi game: dikirim ke server (Edge Function "game") yang menghitung hasilnya.
 async function game(a){
  if(!Cloud.user||!S)return null;
@@ -772,7 +785,7 @@ async function game(a){
  if(a.type==='advance')toast(`<b>${dateTxt()}</b>${r.head&&r.head.length?' — '+esc(r.head.slice(0,3).map(h=>t(h[0],h[1])).join(' · ')):esc(t('h_quiet'))}`);
  else if(r.toast)toast(t(r.toast));
  return r}
-const GATE_ACTS=new Set(['dz_open','dz_next','lang','login','signup','authmode','close','togglepw','forgot','acctinfo','gate_retry','gate_reload','logout','account','pickname']);
+const GATE_ACTS=new Set(['settings','theme','dz_open','dz_next','lang','login','signup','authmode','close','togglepw','forgot','acctinfo','gate_retry','gate_reload','logout','account','pickname']);
 function act(a,id,el){
  if(!S&&!GATE_ACTS.has(a))return;
  if(a==='gate_reload'){location.reload();return}
@@ -784,7 +797,7 @@ function act(a,id,el){
  if(a==='tab'&&el.dataset.tab==='teman'&&Social.ch)Social.refresh();
  switch(a){
   case 'tab':TAB=el.dataset.tab;if(TAB==='global'){Global.unread=0;Global.focus=false;if(!Global.loaded)Global.load()}break;
-  case 'lang':setLang(el.dataset.v);break;
+  case 'lang':{const reopen=settingsOpen();setLang(el.dataset.v);if(reopen){render();showSettings();return}break}
   case 'filter':FILTER=el.dataset.v;break;
   case 'close':closeModal();return;
   case 'tobreed':{const s=byId(id);if(s.sex==='M')SEL.m=id;else SEL.f=id;TAB='breeding';closeModal();break}
@@ -892,7 +905,7 @@ function renderAcct(){const el=$('acct');if(!el)return;const c=Cloud;let h='';
  if(c.status==='nolib')h=`<button class="acct warnb" data-act="acctinfo" title="${t('acct_nolib_t')}">${t('acct_nolib')}</button>`;
  else if(c.status==='guest')h=`<button class="acct" data-act="login">${t('acct_login')}</button>`;
  else if(c.user){const st={sync:t('st_sync'),saved:t('st_saved'),error:t('st_error'),conflict:t('st_conflict')}[c.status]||'';
-  h=`<button class="acct ${c.status==='error'?'warnb':''}" data-act="account" title="${t('mode_online_t')}"><span class="dot ${c.status}"></span>${esc(c.profile?c.profile.username:(c.user.email||t('acct_default')))}<small>🌐 ${st}</small></button>`}
+  h=`<button class="acct gear ${c.status==='error'?'warnb':''}" data-act="settings" title="${t('set_title')} · ${st}" aria-label="${t('set_title')}"><span class="gico" aria-hidden="true">⚙️</span><span class="gname">${esc(c.profile?c.profile.username:(c.user.email||t('acct_default')))}</span><span class="dot ${c.status}" title="${st}"></span></button>`}
  el.innerHTML=h}
 const EYE='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
 const EYE_OFF='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.1 10.1 0 0 1 12 19C5.5 19 2 12 2 12a18.4 18.4 0 0 1 5.06-5.94M9.9 4.24A9.1 9.1 0 0 1 12 4c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"/><path d="M2 2l20 20"/></svg>';
@@ -909,13 +922,24 @@ function showAuth(mode,msg){mode=mode||'login';
 function showUsername(msg){modal(`<h2>${t('un_h')}</h2><p class="sub">${t('un_sub')}</p>
  <form data-form="username" class="form" novalidate><label>Username<input name="username" maxlength="20" placeholder="${t('au_uname_ph')}"></label><div class="msg">${msg||''}</div><div class="actions"><button class="pri" type="submit">${t('un_save')}</button></div></form>`,true)}
 function showSetPassword(){modal(`<h2>${t('pw_h')}</h2><form data-form="setpw" class="form" novalidate>${pwField(t('pw_new'),'new-password',t('au_pw_ph'))}<div class="msg"></div><div class="actions"><button class="pri" type="submit">${t('pw_save')}</button></div></form>`,true)}
-function showAccount(){const c=Cloud;const tm=c.lastSaved?new Date(c.lastSaved).toLocaleTimeString(LANG==='id'?'id-ID':'en-GB',{hour:'2-digit',minute:'2-digit'}):'';
+// Tema warna: disimpan di browser ini
+const THEMES=[{k:'terra',sw:['#13120e','#26231c','#e3a63b','#8cc06a']},{k:'forest',sw:['#0d1511','#1a2a22','#4fc884','#a6dc7c']},{k:'ocean',sw:['#0c111d','#1a2338','#5fa4ff','#7fd6a0']}];
+let THEME='terra';try{THEME=localStorage.getItem('morphlab_theme')||'terra'}catch(e){}
+function applyTheme(k){if(!THEMES.some(x=>x.k===k))k='terra';THEME=k;try{localStorage.setItem('morphlab_theme',k)}catch(e){}
+ if(typeof document!=='undefined'&&document.documentElement){if(k==='terra')delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=k}}
+applyTheme(THEME);
+const settingsOpen=()=>!!document.querySelector('#modal .settings');
+function showSettings(){const c=Cloud;const tm=c.lastSaved?new Date(c.lastSaved).toLocaleTimeString(LANG==='id'?'id-ID':'en-GB',{hour:'2-digit',minute:'2-digit'}):'';
  const st={sync:t('ac_syncing'),saved:t('ac_saved',{t:tm}),error:t('ac_error',{e:esc(errText(c.err))})}[c.status]||'';
- modal(`<h2>${t('ac_h')}</h2><dl><dt>Username</dt><dd>${c.profile?esc(c.profile.username):t('ac_notset')}</dd><dt>Email</dt><dd>${esc(c.user.email||'')}</dd><dt>${t('ac_status')}</dt><dd>${st}</dd><dt>${t('ac_mode')}</dt><dd>${t('mode_online_t')}</dd></dl>
- <div class="actions">${c.profile?`<button class="pri" data-act="profile_me">👤 ${t('pf_mine')}</button>`:''}<button data-act="syncnow">${t('ac_syncnow')}</button>${c.profile?'':`<button data-act="pickname">${t('ac_pick')}</button>`}<button data-act="logout">${t('ac_logout')}</button><button class="ghost" data-act="close">${t('close')}</button></div>
- <div class="dzone"><div class="lbl">${t('dz_title')}</div>
-  <div class="dzrow"><div><b>${t('dzr_h')}</b><p>${t('dzr_short')}</p></div><button class="danger sm" data-act="dz_open" data-k="reset">${t('dzr_btn')}</button></div>
-  <div class="dzrow"><div><b>${t('dzd_h')}</b><p>${t('dzd_short')}</p></div><button class="danger sm" data-act="dz_open" data-k="delete">${t('dzd_btn')}</button></div></div>`)}
+ const acct=c.user?`<section class="set"><div class="lbl">👤 ${t('ac_h')}</div><dl><dt>Username</dt><dd>${c.profile?esc(c.profile.username):t('ac_notset')}</dd><dt>Email</dt><dd>${esc(c.user.email||'')}</dd><dt>${t('ac_status')}</dt><dd>${st}</dd><dt>${t('ac_mode')}</dt><dd>${t('mode_online_t')}</dd></dl>
+ <div class="actions">${c.profile?`<button class="pri" data-act="profile_me">👤 ${t('pf_mine')}</button>`:`<button data-act="pickname">${t('ac_pick')}</button>`}${S?`<button data-act="syncnow">${t('ac_syncnow')}</button>`:''}<button data-act="logout">${t('ac_logout')}</button></div></section>`:'';
+ const lang=`<section class="set"><div class="lbl">🌐 ${t('set_lang')}</div><div class="opts">${[['id','🇮🇩','Bahasa Indonesia'],['en','🇬🇧','English']].map(([k,f,n])=>`<button class="opt ${LANG===k?'on':''}" data-act="lang" data-v="${k}" aria-pressed="${LANG===k}" lang="${k}"><span class="flag">${f}</span>${n}${LANG===k?' <span class="chk">✓</span>':''}</button>`).join('')}</div></section>`;
+ const theme=`<section class="set"><div class="lbl">🎨 ${t('set_theme')}</div><div class="opts themes">${THEMES.map(x=>`<button class="opt theme ${THEME===x.k?'on':''}" data-act="theme" data-v="${x.k}" aria-pressed="${THEME===x.k}"><span class="sw">${x.sw.map(c=>`<i style="background:${c}"></i>`).join('')}</span><b>${t('th_'+x.k)}</b><small>${t('th_'+x.k+'_d')}</small>${THEME===x.k?'<span class="chk">✓</span>':''}</button>`).join('')}</div></section>`;
+ const danger=c.user?`<div class="dzone"><div class="lbl">${t('dz_title')}</div>
+  ${S?`<div class="dzrow"><div><b>${t('dzr_h')}</b><p>${t('dzr_short')}</p></div><button class="danger sm" data-act="dz_open" data-k="reset">${t('dzr_btn')}</button></div>`:''}
+  <div class="dzrow"><div><b>${t('dzd_h')}</b><p>${t('dzd_short')}</p></div><button class="danger sm" data-act="dz_open" data-k="delete">${t('dzd_btn')}</button></div></div>`:'';
+ modal(`<div class="settings"><h2>⚙️ ${t('set_title')}</h2>${acct}${lang}${theme}${danger}<div class="actions"><button class="ghost" data-act="close">${t('close')}</button></div></div>`)}
+const showAccount=showSettings;
 // Opsi berbahaya: verifikasi 2 langkah (1. yakin? 2. ketik RESET / DELETE)
 const DZ={reset:{w:'RESET',p:'dzr'},delete:{w:'DELETE',p:'dzd'}};
 function dangerStep1(k){const d=DZ[k];modal(`<h2>${t(d.p+'_h')}?</h2><div class="warnbox">${t(d.p+'_list')}</div>
@@ -957,7 +981,9 @@ function cloudAct(a,el){
   login:()=>showAuth('login'),
   signup:()=>showAuth('signup'),
   authmode:()=>showAuth(el.dataset.v),
-  account:()=>showAccount(),
+  account:()=>showSettings(),
+  settings:()=>showSettings(),
+  theme:()=>{applyTheme(el.dataset.v);if(settingsOpen())showSettings()},
   acctinfo:()=>modal(`<h2>${t('nolib_h')}</h2><p class="sub">${t('nolib_b')}</p><div class="actions"><button class="ghost" data-act="close">${t('close')}</button></div>`),
   syncnow:()=>{closeModal();Online.act({type:'init'}).then(()=>toast(t('t_reloaded'))).catch(e=>toast(errText(e)))},
   pickname:()=>showUsername(''),
