@@ -1,6 +1,6 @@
 # Setup Supabase (login & cloud save)
 
-Langkah ini cukup dilakukan sekali. Selama `config.js` masih kosong, game tetap bisa dimainkan dalam mode offline (save hanya di browser).
+Langkah ini cukup dilakukan sekali. Game wajib login, jadi `config.js` harus terisi dan server harus siap sebelum game bisa dimainkan.
 
 ## 1. Buat project
 
@@ -81,9 +81,9 @@ Saat pemain login, game berjalan dalam **mode online ("server-authoritative")**.
 - Fungsi ini memakai kunci rahasia server yang otomatis tersedia di Supabase (`SUPABASE_SECRET_KEYS`). Kunci itu tidak pernah dikirim ke browser.
 - Setiap save punya nomor versi (`rev`). Kalau dua perubahan terjadi bersamaan (misalnya trade diterima saat kamu klik "Lanjut bulan"), server membaca ulang dan mengulang aksinya, jadi tidak ada yang saling menimpa.
 
-### Mode offline
+### Wajib login
 
-Tanpa login, game berjalan sepenuhnya di browser dengan save di `localStorage`. Save offline **tidak bisa** diunggah ke akun, karena kalau bisa, pemain tinggal mengedit save offline lalu mengunggahnya. Save online dan offline terpisah: keluar dari akun membawamu kembali ke save offline.
+Game hanya bisa dimainkan setelah login. Pengunjung yang belum login melihat halaman sambutan dengan tombol **Masuk** dan **Daftar**. Tidak ada mode offline, jadi tidak ada logika game yang berjalan bebas di browser.
 
 ## Catatan keamanan
 

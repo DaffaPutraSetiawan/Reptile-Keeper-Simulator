@@ -122,6 +122,12 @@ button.sm{padding:4px 10px;font-size:12.5px}
 .tbrow.on{border-color:var(--acc);background:#2c261a}.tbrow.off{opacity:.5;cursor:not-allowed}.tbrow img.mini{width:84px}
 .tbrow input{width:auto}.tbm{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px}.tbm input{width:120px}
 .mbox:has(.tb){max-width:860px}
+.gated nav,.gated aside{display:none}.gated main{grid-template-columns:minmax(0,1fr);max-width:860px}
+.gate{padding:26px}.gate h2{font-size:26px}
+.gate-morphs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
+@media(max-width:560px){.gate-morphs{grid-template-columns:repeat(2,1fr)}}
+.gate-morphs figure{margin:0}.gate-morphs figcaption{font-size:12.5px;color:var(--mut);margin-top:4px;text-align:center}
+.gate-f{list-style:none;padding:0;margin:0 0 6px;display:grid;gap:6px;color:#dcd4c0}
 .empty{color:var(--mut);padding:30px;text-align:center;border:1px dashed var(--line);border-radius:14px}
 </style>
 </head>
@@ -139,7 +145,6 @@ button.sm{padding:4px 10px;font-size:12.5px}
 /* ========= LOGIKA INTI (core.js, sama dengan yang dipakai server) ========= */
 const Core=window.MorphCore;
 const {LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,inSeason,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches}=Core;
-const KEY='morphlab_bp_v1';
 
 /* ========= UTIL ========= */
 const lerp=(a,b,t)=>a.map((x,i)=>x+(b[i]-x)*t);
@@ -221,19 +226,19 @@ id:{
  dex_found:p=>'Ditemukan '+p.d,dex_notfound:'Belum ditemukan',
  dex_sub:p=>`${p.f}/${p.t} morph target ditemukan · ${p.n} morph total. Statistik: ${p.c} clutch, ${p.h} bayi menetas, ${p.s} ular terjual (${p.e}).`,
  dex_extra:'Kombinasi lain yang kamu temukan',save_h:'Simpan / ulang',newgame:'Mulai game baru',
- save_cloud:'Mode online: progres dihitung dan disimpan di server, jadi aman dari kecurangan. Save offline di browser ini tetap terpisah.',save_local:'Mode offline: progres tersimpan di browser ini saja. Masuk ke akun untuk main online (bisa trading, dihitung server). Save online terpisah dari save offline.',
+ save_cloud:'Progres dihitung dan disimpan di server, jadi aman dari kecurangan dan bisa dilanjutkan dari perangkat mana pun.',save_local:'Mode offline: progres tersimpan di browser ini saja. Masuk ke akun untuk main online (bisa trading, dihitung server). Save online terpisah dari save offline.',
  // detail ular
  d_code:'Kode',d_agew:'Umur · berat',d_sire:'Induk jantan',d_dam:'Induk betina',d_unknown:'tidak diketahui (dibeli)',d_gen:'Generasi',d_status:'Status kawin',d_value:'Nilai pasar',
  nick_ph:'Nama panggilan',save:'Simpan',unlist:'Batalkan iklan',list:p=>'Iklankan · '+p.v,quick:p=>'Jual cepat · '+p.v,plan:'Rencanakan kawin',close:'Tutup',gravid_nosale:'Betina bunting tidak bisa dijual sampai bertelur.',
  // mulai ulang
- reset_h:'Mulai game baru?',reset_local:'Semua progres di browser ini akan dihapus.',reset_cloud:'Game online di akunmu akan diulang dari awal. Save offline di browser ini tidak berubah.',reset_yes:'Ya, mulai baru',btn_cancel:'Batal',
+ reset_h:'Mulai game baru?',reset_local:'Semua progres di browser ini akan dihapus.',reset_cloud:'Game di akunmu akan diulang dari awal. Ini tidak bisa dibatalkan.',reset_yes:'Ya, mulai baru',btn_cancel:'Batal',
  // akun & cloud
  acct_nolib:'⚠️ Cloud tidak tersedia',acct_nolib_t:'Library Supabase gagal dimuat',acct_login:'☁️ Masuk / Daftar',acct_default:'Akun',
  st_sync:'Menyimpan…',st_saved:'Tersimpan',st_error:'Gagal sync',st_conflict:'Perlu dipilih',
  summary:p=>`${p.d}<br>${p.v} · ${p.n} ular · ${p.x} morph di Dex`,
  cf_h:'Pilih save yang dipakai',cf_login:'Akunmu sudah punya save di cloud, dan perangkat ini juga punya progres yang berbeda.',cf_device:'Save di akunmu baru saja diubah dari perangkat atau tab lain.',
  cf_over:'Save yang tidak dipilih akan ditimpa.',cf_acc:'☁️ Save di akun',cf_useacc:'Pakai save akun',cf_dev:'💻 Perangkat ini',cf_usedev:'Pakai save ini',
- au_login:'Masuk',au_signup_h:'Daftar akun',au_signup:'Daftar',au_sub:'Main online: progres dihitung dan disimpan di server, bisa dilanjutkan dari perangkat mana pun, dan bisa trading dengan teman. Save offline di browser ini tetap terpisah.',
+ au_login:'Masuk',au_signup_h:'Daftar akun',au_signup:'Daftar',au_sub:'Progres dihitung dan disimpan di server, bisa dilanjutkan dari perangkat mana pun, dan bisa trading dengan teman.',
  au_note:' Username dipakai sebagai nama publikmu (nanti juga untuk trading) dan tidak bisa diganti.',
  au_uname_ph:'3–20 karakter: huruf, angka, _',au_email_ph:'nama@email.com',au_pw_ph:'minimal 6 karakter',au_create:'Buat akun',au_forgot:'Lupa password?',
  un_h:'Pilih username',un_sub:'Username jadi nama publikmu di Morph Lab dan nanti dipakai untuk trading. Tidak bisa diganti setelah dibuat.',un_save:'Simpan username',
@@ -247,7 +252,7 @@ id:{
  processing:'Memproses…',
  t_login:'Berhasil masuk. Menyinkronkan save…',t_signup:'Akun dibuat! Menyinkronkan save…',
  su_confirm:p=>`Akun dibuat. Cek email <b>${p.e}</b> dan klik link konfirmasi, lalu kembali ke halaman ini untuk masuk.`,
- t_uname:p=>`Username <b>${p.u}</b> tersimpan.`,t_pw:'Password baru tersimpan.',t_cloudload:p=>`☁️ Save dari akunmu dimuat: <b>${p.d}</b>`,t_logout:'Kamu sudah keluar dan kembali ke mode offline. Progres online-mu aman di server.',
+ t_uname:p=>`Username <b>${p.u}</b> tersimpan.`,t_pw:'Password baru tersimpan.',t_cloudload:p=>`☁️ Save dari akunmu dimuat: <b>${p.d}</b>`,t_logout:'Kamu sudah keluar. Progresmu aman tersimpan di server.',
  nolib_h:'Cloud save tidak tersedia',nolib_b:'Library Supabase gagal dimuat (koneksi internet atau pemblokir iklan). Game tetap jalan dan progres tersimpan di browser ini. Muat ulang halaman untuk mencoba lagi.',
  fg_need:'Isi email dulu, lalu klik "Lupa password?" lagi.',fg_sent:p=>`Link reset password dikirim ke <b>${p.e}</b>.`,
  tab_teman:'Teman',busy:'Tunggu sebentar, sedang memproses…',
@@ -294,13 +299,19 @@ id:{
  l_trade_done:p=>`🤝 Trade dengan ${p.u} selesai! Kamu menerima ${p.n} ular${p.mo?` dan ${money(p.mo)}`:''}.`,
  l_trade_back:p=>`↩️ Tawaranmu ke ${p.u} ${p.why==='declined'?'ditolak':'dibatalkan'}; ${p.n} ular${p.mo?` dan ${money(p.mo)}`:''} kembali ke koleksimu.`,
  e_busy:'Tunggu sebentar, sedang memproses…',e_sync_timeout:'Sinkronisasi terlalu lama. Coba lagi.',e_sync_failed:'Gagal menyimpan ke cloud. Coba lagi.',
- t_online:'🌐 Mode online: semua aksi dihitung dan disimpan di server.',t_reset:'Game online dimulai ulang dari awal.',t_reloaded:'Save dimuat ulang dari server.',
+ t_online:'🌐 Game dimuat. Semua aksi dihitung dan disimpan di server.',t_reset:'Game online dimulai ulang dari awal.',t_reloaded:'Save dimuat ulang dari server.',
  mode_online_t:'Online · dihitung server',ac_mode:'Mode',
  e_not_season:'Di luar musim kawin (Okt–Mar).',e_not_ready:'Ular belum siap kawin.',e_already_paired:'Betina ini sudah dipasangkan bulan ini.',
  e_gravid_locked:'Betina bunting tidak bisa dijual atau diiklankan sampai bertelur.',e_listing_gone:'Ular di pasar ini sudah tidak tersedia.',
  e_order_gone:'Pesanan ini sudah tidak berlaku.',e_order_mismatch:'Ular ini tidak cocok dengan pesanan.',e_bad_action:'Aksi tidak valid.',
  e_busy_retry:'Server sedang sibuk. Coba lagi.',e_network:'Tidak bisa terhubung ke server. Periksa internet lalu coba lagi.',
  e_db_error:'Server gagal menyimpan. Coba lagi.',e_server_error:'Terjadi kesalahan di server. Coba lagi.',
+ gate_title:'Selamat datang di Morph Lab',gate_sub:'Simulasi breeding ball python dengan genetika morph seperti dunia nyata. Masuk atau buat akun gratis untuk mulai main.',
+ gate_f1:'🧬 12 gen asli: resesif, co-dominan, dominan, dan kompleks BEL',gate_f2:'🥚 Musim kawin, ovulasi, inkubasi, dan het yang harus dibuktikan',
+ gate_f3:'🤝 Tambah teman, chat, dan trading ular dengan escrow',gate_f4:'🌐 Progres disimpan & dihitung di server, main dari perangkat mana pun',
+ gate_login:'Masuk',gate_signup:'Daftar gratis',gate_loading:'Memuat game dari server…',gate_note:'Butuh email untuk mendaftar.',
+ gate_down_h:'Server tidak bisa dihubungi',gate_down:'Game ini butuh koneksi ke server. Periksa internet atau matikan pemblokir iklan untuk situs ini, lalu muat ulang halaman.',
+ gate_err_h:'Gagal memuat game',gate_retry:'Coba lagi',gate_reload:'Muat ulang halaman',
  guide:`<h2>Panduan genetika</h2><p class="sub">Game ini memakai pola pewarisan morph ball python seperti di dunia nyata (disederhanakan).</p>
 <h3>1. Resesif: Albino, Piebald, Clown, Axanthic</h3><p>Butuh <b>dua salinan</b> gen agar terlihat (visual). Ular dengan satu salinan disebut <b>het</b>: tampak normal, tapi membawa gen tersebut.</p>
 <ul><li>Visual × Normal → 100% bayi het (tampak normal)</li><li>Het × Het → 25% visual, dan bayi yang tampak normal = <b>66% pos het</b></li><li>Visual × Het → 50% visual, sisanya 100% het</li></ul>
@@ -370,16 +381,16 @@ en:{
  dex_found:p=>'Found '+p.d,dex_notfound:'Not found yet',
  dex_sub:p=>`${p.f}/${p.t} target morphs found · ${p.n} morphs total. Stats: ${p.c} clutches, ${p.h} hatchlings, ${p.s} snakes sold (${p.e}).`,
  dex_extra:'Other combos you discovered',save_h:'Save / restart',newgame:'Start a new game',
- save_cloud:'Online mode: progress is calculated and saved on the server, so it can’t be cheated. Your offline save in this browser stays separate.',save_local:'Offline mode: progress is saved in this browser only. Log in to play online (trading, server-calculated). Online and offline saves are separate.',
+ save_cloud:'Progress is calculated and saved on the server, so it can’t be cheated and you can continue on any device.',save_local:'Offline mode: progress is saved in this browser only. Log in to play online (trading, server-calculated). Online and offline saves are separate.',
  d_code:'ID',d_agew:'Age · weight',d_sire:'Sire',d_dam:'Dam',d_unknown:'unknown (purchased)',d_gen:'Generation',d_status:'Breeding status',d_value:'Market value',
  nick_ph:'Nickname',save:'Save',unlist:'Cancel listing',list:p=>'List for sale · '+p.v,quick:p=>'Quick sell · '+p.v,plan:'Plan a pairing',close:'Close',gravid_nosale:'Gravid females can’t be sold until they lay.',
- reset_h:'Start a new game?',reset_local:'All progress in this browser will be erased.',reset_cloud:'Your online game will restart from scratch. Your offline save in this browser is not affected.',reset_yes:'Yes, start over',btn_cancel:'Cancel',
+ reset_h:'Start a new game?',reset_local:'All progress in this browser will be erased.',reset_cloud:'The game in your account will restart from scratch. This can’t be undone.',reset_yes:'Yes, start over',btn_cancel:'Cancel',
  acct_nolib:'⚠️ Cloud unavailable',acct_nolib_t:'The Supabase library failed to load',acct_login:'☁️ Log in / Sign up',acct_default:'Account',
  st_sync:'Saving…',st_saved:'Saved',st_error:'Sync failed',st_conflict:'Needs your choice',
  summary:p=>`${p.d}<br>${p.v} · ${p.n} snakes · ${p.x} morphs in Dex`,
  cf_h:'Choose which save to keep',cf_login:'Your account already has a cloud save, and this device has different progress.',cf_device:'Your account save was just changed from another device or tab.',
  cf_over:'The save you don’t pick will be overwritten.',cf_acc:'☁️ Account save',cf_useacc:'Use account save',cf_dev:'💻 This device',cf_usedev:'Use this save',
- au_login:'Log in',au_signup_h:'Create an account',au_signup:'Sign up',au_sub:'Play online: progress is calculated and saved on the server, works on any device, and lets you trade with friends. Your offline save in this browser stays separate.',
+ au_login:'Log in',au_signup_h:'Create an account',au_signup:'Sign up',au_sub:'Progress is calculated and saved on the server, works on any device, and lets you trade with friends.',
  au_note:' Your username is your public name (also used for trading later) and can’t be changed.',
  au_uname_ph:'3–20 characters: letters, numbers, _',au_email_ph:'name@email.com',au_pw_ph:'at least 6 characters',au_create:'Create account',au_forgot:'Forgot password?',
  un_h:'Choose a username',un_sub:'Your username is your public name in Morph Lab and will be used for trading later. It can’t be changed once set.',un_save:'Save username',
@@ -393,7 +404,7 @@ en:{
  processing:'Working…',
  t_login:'Logged in. Syncing your save…',t_signup:'Account created! Syncing your save…',
  su_confirm:p=>`Account created. Check <b>${p.e}</b> for a confirmation link, then come back to this page to log in.`,
- t_uname:p=>`Username <b>${p.u}</b> saved.`,t_pw:'New password saved.',t_cloudload:p=>`☁️ Loaded the save from your account: <b>${p.d}</b>`,t_logout:'You’re logged out and back in offline mode. Your online progress is safe on the server.',
+ t_uname:p=>`Username <b>${p.u}</b> saved.`,t_pw:'New password saved.',t_cloudload:p=>`☁️ Loaded the save from your account: <b>${p.d}</b>`,t_logout:'You’re logged out. Your progress is safe on the server.',
  nolib_h:'Cloud save unavailable',nolib_b:'The Supabase library failed to load (internet connection or an ad blocker). The game still works and progress is saved in this browser. Reload the page to try again.',
  fg_need:'Enter your email first, then click "Forgot password?" again.',fg_sent:p=>`A password reset link was sent to <b>${p.e}</b>.`,
  tab_teman:'Friends',busy:'One moment, still working…',
@@ -440,13 +451,19 @@ en:{
  l_trade_done:p=>`🤝 Trade with ${p.u} complete! You received ${p.n} ${p.n===1?'snake':'snakes'}${p.mo?` and ${money(p.mo)}`:''}.`,
  l_trade_back:p=>`↩️ Your offer to ${p.u} was ${p.why==='declined'?'declined':'cancelled'}; ${p.n} ${p.n===1?'snake':'snakes'}${p.mo?` and ${money(p.mo)}`:''} returned to your collection.`,
  e_busy:'One moment, still working…',e_sync_timeout:'Sync took too long. Try again.',e_sync_failed:'Couldn’t save to the cloud. Try again.',
- t_online:'🌐 Online mode: every action is calculated and saved on the server.',t_reset:'Your online game was restarted from scratch.',t_reloaded:'Save reloaded from the server.',
+ t_online:'🌐 Game loaded. Every action is calculated and saved on the server.',t_reset:'Your online game was restarted from scratch.',t_reloaded:'Save reloaded from the server.',
  mode_online_t:'Online · server-calculated',ac_mode:'Mode',
  e_not_season:'Out of breeding season (Oct–Mar).',e_not_ready:'This snake isn’t ready to breed.',e_already_paired:'This female is already paired this month.',
  e_gravid_locked:'Gravid females can’t be sold or listed until they lay.',e_listing_gone:'That market listing is no longer available.',
  e_order_gone:'This order is no longer available.',e_order_mismatch:'This snake doesn’t match the order.',e_bad_action:'Invalid action.',
  e_busy_retry:'The server is busy. Try again.',e_network:'Can’t reach the server. Check your internet and try again.',
  e_db_error:'The server couldn’t save. Try again.',e_server_error:'Something went wrong on the server. Try again.',
+ gate_title:'Welcome to Morph Lab',gate_sub:'A ball python breeding sim with real-world morph genetics. Log in or create a free account to start playing.',
+ gate_f1:'🧬 12 real genes: recessive, co-dominant, dominant and the BEL complex',gate_f2:'🥚 Breeding season, ovulation, incubation, and hets you have to prove',
+ gate_f3:'🤝 Add friends, chat, and trade snakes with escrow',gate_f4:'🌐 Progress is saved & calculated on the server, play from any device',
+ gate_login:'Log in',gate_signup:'Sign up free',gate_loading:'Loading your game from the server…',gate_note:'An email address is required to sign up.',
+ gate_down_h:'Can’t reach the server',gate_down:'This game needs a connection to the server. Check your internet or turn off ad blockers for this site, then reload the page.',
+ gate_err_h:'Couldn’t load the game',gate_retry:'Try again',gate_reload:'Reload page',
  guide:`<h2>Genetics guide</h2><p class="sub">This game uses real-world ball python morph inheritance (simplified).</p>
 <h3>1. Recessive: Albino, Piebald, Clown, Axanthic</h3><p>A snake needs <b>two copies</b> of the gene to show it (visual). A snake with one copy is <b>het</b>: it looks normal but carries the gene.</p>
 <ul><li>Visual × Normal → 100% het babies (normal-looking)</li><li>Het × Het → 25% visual, and the normal-looking babies are <b>66% pos het</b></li><li>Visual × Het → 50% visual, the rest 100% het</li></ul>
@@ -468,11 +485,8 @@ function buyerName(o){return o.bi!=null?t('buyers')[o.bi]:(o.buyer||o.b||'')}
 let S=null, TAB='koleksi', FILTER='all', SORT='val', SEL={m:null,f:null};
 const dateOf=w=>t('months')[(8+w)%12]+' · '+t('year')+' '+(1+Math.floor((8+w)/12));
 const dateTxt=()=>dateOf(S.turn);
-// Save OFFLINE disimpan di browser. Saat login (mode online), save ada di server dan tidak ditulis ke sini.
-function saveLocal(){if(typeof Cloud!=='undefined'&&Cloud.user)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
-function load(){try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(Core.isState(d)){delete d.owner;setS(d);S.snakes.forEach(s=>{s.hp=s.hp||{}});return true}}catch(e){}return false}
-function setS(x){S=x;Core.use(S)}
-function newGame(){setS(Core.newGame());SEL={m:null,f:null}}
+// Game hanya bisa dimainkan setelah login; save ada di server (lihat Online & Cloud).
+function setS(x){S=x;if(S)Core.use(S)}
 
 /* ========= RENDER ULAR (prosedural) ========= */
 function appearance(tr){
@@ -561,6 +575,8 @@ function card(s){const tr=traitsOf(s.g);return `<div class="card click" data-ope
 function logLine(l){const d=l.m?dateOf(l.w):l.d;const txt=l.m?t(l.m,l.p):l.t;return `<li class="${l.k}"><span class="d">${esc(d)}</span>${esc(txt)}</li>`}
 
 function render(){
+ if(!Cloud.user||!S){renderGate();return}
+ document.body.classList.remove('gated');
  const sea=inSeason();
  $('hdr').innerHTML=` <div class="stat"><span>${t('hdr_date')}</span><b>${dateTxt()}</b></div>
  <div class="stat ${S.money<0?'neg':''}"><span>${t('hdr_bal')}</span><b>${money(S.money)}</b></div>
@@ -574,6 +590,22 @@ function render(){
  $('logh').textContent=t('log_title');
  $('log').innerHTML=S.log.slice(0,60).map(logLine).join('');
  afterRender();
+}
+/* ========= HALAMAN MASUK (wajib login) ========= */
+const GATE_MORPHS=[['pastel','spider'],['bel'],['albino'],['piebald'],['banana','clown'],['ivory']];
+function vGate(){
+ const st=Cloud.status;
+ if(st==='off'||st==='nolib')return `<div class="gate panel"><h2>${t('gate_down_h')}</h2><p class="sub">${t('gate_down')}</p><div class="actions"><button class="pri" data-act="gate_reload">${t('gate_reload')}</button></div></div>`;
+ if(st==='checking'||(Cloud.user&&st==='sync'))return `<div class="gate panel"><p class="sub" style="margin:0">⏳ ${t('gate_loading')}</p></div>`;
+ if(Cloud.user&&st==='error')return `<div class="gate panel"><h2>${t('gate_err_h')}</h2><p class="warn">${esc(errText(Cloud.err))}</p><div class="actions"><button class="pri" data-act="gate_retry">${t('gate_retry')}</button><button class="ghost" data-act="logout">${t('ac_logout')}</button></div></div>`;
+ return `<div class="gate panel"><h2>${t('gate_title')}</h2><p class="sub">${t('gate_sub')}</p>
+ <div class="gate-morphs">${GATE_MORPHS.map(tr=>{const n=nameOf(tr);return `<figure><img class="snk" src="${thumb(tr,strHash(n))}" alt="${esc(n)}"><figcaption>${esc(n)}</figcaption></figure>`}).join('')}</div>
+ <ul class="gate-f">${[1,2,3,4].map(i=>`<li>${t('gate_f'+i)}</li>`).join('')}</ul>
+ <div class="actions"><button class="pri" data-act="login">${t('gate_login')}</button><button data-act="signup">${t('gate_signup')}</button></div><p class="kbd">${t('gate_note')}</p></div>`}
+function renderGate(){
+ document.body.classList.add('gated');
+ $('hdr').innerHTML=`<div class="langsw" role="group" aria-label="${t('lang_label')}">${['id','en'].map(l=>`<button data-act="lang" data-v="${l}" class="${LANG===l?'on':''}" aria-pressed="${LANG===l}" lang="${l}" title="${l==='id'?'Bahasa Indonesia':'English'}">${l.toUpperCase()}</button>`).join('')}</div><span id="acct"></span>`;
+ renderAcct();$('tabs').innerHTML='';$('view').innerHTML=vGate();
 }
 function vKoleksi(){
  let L=S.snakes.filter(s=>FILTER==='all'||(FILTER==='M'&&s.sex==='M')||(FILTER==='F'&&s.sex==='F')||(FILTER==='ready'&&!readyMsg(s))||(FILTER==='listed'&&s.listed));
@@ -632,7 +664,7 @@ function vDex(){
  return `<h2>Morph Dex</h2><p class="sub">${t('dex_sub',{f:found,t:TARGETS.length,n:Object.keys(S.dex).length,c:S.stats.clutches,h:S.stats.hatched,s:S.stats.sold,e:money(S.stats.earned)})}</p>
  <div class="grid">${TARGETS.map(x=>cell(x,S.dex[nameOf(x)])).join('')}</div>
  ${extra.length?`<h3>${t('dex_extra')}</h3><div class="grid">${extra.map(k=>cell(S.dex[k].tr,S.dex[k])).join('')}</div>`:''}
- <h3>${t('save_h')}</h3><div class="toolbar"><button data-act="reset">${t('newgame')}</button><span class="kbd">${Cloud.user?t('save_cloud'):t('save_local')}</span></div>`}
+ <h3>${t('save_h')}</h3><div class="toolbar"><button data-act="reset">${t('newgame')}</button><span class="kbd">${t('save_cloud')}</span></div>`}
 function vPanduan(){return `<div class="guide">${t('guide')}</div>`}
 
 let MODAL_LOCK=false;
@@ -647,16 +679,19 @@ function openSnake(id){const s=byId(id);if(!s)return;const tr=traitsOf(s.g),r=re
 
 const SOCIAL_ACTS=new Set(['openchat','fr_accept','fr_decline','fr_remove','fr_remove_yes','tr_new','tb_close','tr_send','tr_accept','tr_accept_yes','tr_decline','tr_cancel']);
 const FREE_ACTS=new Set(['tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
-// Jalankan aksi game: offline dihitung di browser, online dikirim ke server (Edge Function "game").
+// Jalankan aksi game: dikirim ke server (Edge Function "game") yang menghitung hasilnya.
 async function game(a){
- let r;
- if(Cloud.user){try{r=await Online.act(a)}catch(e){toast(errText(e));render();return null}}
- else{Core.use(S);try{r=Core.applyAction(S,a)}catch(e){toast(errText(e));return null}saveLocal()}
+ if(!Cloud.user||!S)return null;
+ let r;try{r=await Online.act(a)}catch(e){toast(errText(e));render();return null}
  render();
  if(a.type==='advance')toast(`<b>${dateTxt()}</b>${r.head&&r.head.length?' — '+esc(r.head.slice(0,3).map(h=>t(h[0],h[1])).join(' · ')):esc(t('h_quiet'))}`);
  else if(r.toast)toast(t(r.toast));
  return r}
+const GATE_ACTS=new Set(['lang','login','signup','authmode','close','togglepw','forgot','acctinfo','gate_retry','gate_reload','logout','account','pickname']);
 function act(a,id,el){
+ if(!S&&!GATE_ACTS.has(a))return;
+ if(a==='gate_reload'){location.reload();return}
+ if(a==='gate_retry'){Cloud.onLogin();return}
  if((Cloud.rpcBusy||Online.busy)&&!FREE_ACTS.has(a)){toast(t('busy'));return}
  if(SOCIAL_ACTS.has(a)){guarded(()=>socialAct(a,el));return}
  if(cloudAct(a,el))return;
@@ -667,10 +702,8 @@ function act(a,id,el){
   case 'filter':FILTER=el.dataset.v;break;
   case 'close':closeModal();return;
   case 'tobreed':{const s=byId(id);if(s.sex==='M')SEL.m=id;else SEL.f=id;TAB='breeding';closeModal();break}
-  case 'reset':modal(`<h2>${t('reset_h')}</h2><p class="sub">${Cloud.user?t('reset_cloud'):t('reset_local')}</p><div class="actions"><button class="pri" data-act="resetyes">${t('reset_yes')}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`);return;
-  case 'resetyes':closeModal(true);TAB='koleksi';
-   if(Cloud.user){game({type:'reset'});return}
-   newGame();saveLocal();break;
+  case 'reset':modal(`<h2>${t('reset_h')}</h2><p class="sub">${t('reset_cloud')}</p><div class="actions"><button class="pri" data-act="resetyes">${t('reset_yes')}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`);return;
+  case 'resetyes':closeModal(true);TAB='koleksi';game({type:'reset'});return;
   // aksi game (divalidasi ulang oleh core / server)
   case 'advance':game({type:'advance'});return;
   case 'nick':{const name=$('nick').value;closeModal();game({type:'nick',id,name});return}
@@ -701,24 +734,24 @@ var Online={busy:false,
 };
 
 /* ========= AKUN & CLOUD (Supabase) ========= */
-var Cloud={sb:null,user:null,profile:null,status:'off',err:'',lastSaved:0,rpcBusy:false,
+var Cloud={sb:null,user:null,profile:null,status:'checking',err:'',lastSaved:0,rpcBusy:false,
  init(){
   const C=window.MORPHLAB_CONFIG||{};
-  if(!C.supabaseUrl||!C.supabasePublishableKey){this.status='off';return}
-  if(!window.supabase||!window.supabase.createClient){this.status='nolib';renderAcct();return}
-  try{this.sb=window.supabase.createClient(C.supabaseUrl,C.supabasePublishableKey)}catch(e){this.status='nolib';renderAcct();return}
-  this.status='guest';renderAcct();
+  if(!C.supabaseUrl||!C.supabasePublishableKey){this.status='off';render();return}
+  if(!window.supabase||!window.supabase.createClient){this.status='nolib';render();return}
+  try{this.sb=window.supabase.createClient(C.supabaseUrl,C.supabasePublishableKey)}catch(e){this.status='nolib';render();return}
   // Jangan panggil Supabase langsung di dalam callback ini (bisa deadlock) — tunda dengan setTimeout.
   this.sb.auth.onAuthStateChange((ev,session)=>{
    if(ev==='PASSWORD_RECOVERY')setTimeout(showSetPassword,0);
    const u=session&&session.user;
+   if(!u&&this.status==='checking'){this.status='guest';setTimeout(render,0)}
    if(u&&(!this.user||this.user.id!==u.id)){this.user=u;setTimeout(()=>this.onLogin(),0)}
-   else if(!u&&this.user)setTimeout(()=>this.toOffline(),0);
+   else if(!u&&this.user)setTimeout(()=>this.toGate(),0);
   });
  },
  // Masuk ke mode online: muat (atau buat) game di server.
  async onLogin(){
-  this.status='sync';this.err='';renderAcct();
+  this.status='sync';this.err='';render();
   try{
    await this.ensureProfile();
    await Online.act({type:'init'});
@@ -726,10 +759,10 @@ var Cloud={sb:null,user:null,profile:null,status:'off',err:'',lastSaved:0,rpcBus
    try{Social.start()}catch(e){console.warn('social',e)}
   }catch(e){this.fail(e)}
  },
- // Kembali ke mode offline: save offline di browser ini dimuat lagi.
- toOffline(){
+ // Keluar: kembali ke halaman masuk.
+ toGate(){
   Social.stop();this.user=null;this.profile=null;this.status=this.sb?'guest':'off';
-  if(!load())newGame();SEL={m:null,f:null};TAB=TAB==='teman'?'koleksi':TAB;closeModal(true);render()},
+  setS(null);SEL={m:null,f:null};TAB='koleksi';closeModal(true);render()},
  expired(){toast(t('e_not_authenticated'))},
  async ensureProfile(){
   const{data,error}=await this.sb.from('profiles').select('username').eq('id',this.user.id).maybeSingle();
@@ -762,7 +795,7 @@ var Cloud={sb:null,user:null,profile:null,status:'off',err:'',lastSaved:0,rpcBus
   setS(r.data);S.rev=r.rev;S.snakes.forEach(s=>{s.hp=s.hp||{};dexAdd(traitsOf(s.g))});
   this.status='saved';this.err='';this.lastSaved=Date.now();render()},
  fail(e){console.warn('Cloud:',e);this.status='error';this.err=(e&&e.message)||String(e);renderAcct()},
- async logout(){Social.stop();await this.sb.auth.signOut();this.toOffline();toast(t('t_logout'))}
+ async logout(){Social.stop();try{await this.sb.auth.signOut()}catch(e){}this.toGate();toast(t('t_logout'))}
 };
 
 const URL_HERE=()=>location.origin+location.pathname;
@@ -789,7 +822,7 @@ function showUsername(msg){modal(`<h2>${t('un_h')}</h2><p class="sub">${t('un_su
 function showSetPassword(){modal(`<h2>${t('pw_h')}</h2><form data-form="setpw" class="form" novalidate>${pwField(t('pw_new'),'new-password',t('au_pw_ph'))}<div class="msg"></div><div class="actions"><button class="pri" type="submit">${t('pw_save')}</button></div></form>`,true)}
 function showAccount(){const c=Cloud;const tm=c.lastSaved?new Date(c.lastSaved).toLocaleTimeString(LANG==='id'?'id-ID':'en-GB',{hour:'2-digit',minute:'2-digit'}):'';
  const st={sync:t('ac_syncing'),saved:t('ac_saved',{t:tm}),error:t('ac_error',{e:esc(errText(c.err))})}[c.status]||'';
- modal(`<h2>${t('ac_h')}</h2><dl><dt>Username</dt><dd>${c.profile?esc(c.profile.username):t('ac_notset')}</dd><dt>Email</dt><dd>${esc(c.user.email||'')}</dd><dt>${t('ac_status')}</dt><dd>${st}</dd><dt>${t('ac_mode')}</dt><dd>${t('mode_online_t')}</dd><dt>${t('ac_ver')}</dt><dd>#${S.rev||0}</dd></dl>
+ modal(`<h2>${t('ac_h')}</h2><dl><dt>Username</dt><dd>${c.profile?esc(c.profile.username):t('ac_notset')}</dd><dt>Email</dt><dd>${esc(c.user.email||'')}</dd><dt>${t('ac_status')}</dt><dd>${st}</dd><dt>${t('ac_mode')}</dt><dd>${t('mode_online_t')}</dd><dt>${t('ac_ver')}</dt><dd>#${S&&S.rev||0}</dd></dl>
  <div class="actions"><button class="pri" data-act="syncnow">${t('ac_syncnow')}</button>${c.profile?'':`<button data-act="pickname">${t('ac_pick')}</button>`}<button data-act="logout">${t('ac_logout')}</button><button class="ghost" data-act="close">${t('close')}</button></div>`)}
 const AUTH_ERR=m=>{m=String(m||'');if(/invalid login/i.test(m))return t('e_cred');if(/not confirmed/i.test(m))return t('e_unconf');if(/rate limit|too many/i.test(m))return t('e_rate');if(/already registered|already exists/i.test(m))return t('e_exists');if(/password/i.test(m)&&/6|short|weak/i.test(m))return t('e_weak');return esc(m)};
 async function handleForm(kind,f){
@@ -814,6 +847,7 @@ async function handleForm(kind,f){
 function cloudAct(a,el){
  const map={
   login:()=>showAuth('login'),
+  signup:()=>showAuth('signup'),
   authmode:()=>showAuth(el.dataset.v),
   account:()=>showAccount(),
   acctinfo:()=>modal(`<h2>${t('nolib_h')}</h2><p class="sub">${t('nolib_b')}</p><div class="actions"><button class="ghost" data-act="close">${t('close')}</button></div>`),
@@ -890,7 +924,7 @@ var Social={data:null,open:null,msgs:[],draft:'',chatFocus:false,ch:null,timer:n
   this.onMessage(data);return true;
  }
 };
-function renderTabs(){if(!S||!$('tabs'))return;
+function renderTabs(){if(!S||!Cloud.user||!$('tabs'))return;
  const T=[['koleksi',S.snakes.length],['breeding'],['inkubator',S.clutches.length+S.snakes.filter(s=>s.gravid).length],['pasar'],['pesanan',S.orders.length],['dex',Object.keys(S.dex).length],['teman',Social.badge()||null,true],['panduan']];
  $('tabs').innerHTML=T.map(([k,c,hot])=>`<button class="${TAB===k?'on':''}" data-act="tab" data-tab="${k}">${t('tab_'+k)}${c!=null?`<span class="cnt${hot?' hot':''}">${c}</span>`:''}</button>`).join('')}
 
@@ -1009,8 +1043,6 @@ async function socialForm(kind,f){
 
 function boot(){
  setLang(LANG);
- if(!load())newGame();
- S.snakes.forEach(s=>{s.hp=s.hp||{}});
  document.addEventListener('click',e=>{
   if(e.target.id==='modal'){closeModal();return}
   const a=e.target.closest('[data-act]');if(a){act(a.dataset.act,+a.dataset.id,a);return}

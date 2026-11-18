@@ -6,11 +6,9 @@ Game simulasi breeding ball python berbasis web, dengan genetika morph yang meng
 
 ## Cara main
 
-Buka `index.html` di browser. Tidak perlu install apa pun. Progres tersimpan otomatis di `localStorage` browser.
+Buka game lewat GitHub Pages, lalu masuk atau daftar.
 
-Ada dua mode:
-- **Offline** (tanpa akun): semua berjalan di browser, save di `localStorage`.
-- **Online** (setelah login): setiap aksi dikirim ke server (Edge Function `game`), yang menghitung hasil breeding, pasar, dan uang. Save online tidak bisa diubah dari browser, jadi aman dari kecurangan, dan bisa dipakai untuk trading.
+Game **wajib login** (daftar gratis dengan email). Setiap aksi dikirim ke server (Edge Function `game`), yang menghitung hasil breeding, pasar, dan uang. Save tidak bisa diubah dari browser, jadi aman dari kecurangan, bisa dilanjutkan dari perangkat mana pun, dan dipakai untuk trading.
 
 Panduan menyiapkan server ada di [SETUP-SUPABASE.md](SETUP-SUPABASE.md).
 
@@ -37,8 +35,8 @@ Bisa juga dimainkan online lewat GitHub Pages: **Settings → Pages → Deploy f
 | File | Isi |
 |---|---|
 | `index.html` | Tampilan game (HTML + CSS + JavaScript) |
-| `core.js` | Logika inti game (genetika, ekonomi, aksi), dipakai browser & server |
-| `config.js` | URL & publishable key Supabase (kosong = mode offline) |
+| `core.js` | Logika inti game (genetika, ekonomi, aksi); dihitung di server, dipakai browser untuk tampilan |
+| `config.js` | URL & publishable key Supabase |
 | `supabase/schema.sql` | Tabel `profiles` & `saves` dengan Row Level Security |
 | `supabase/functions/game/` | Edge Function mode online (`index.ts`, `handler.js`, salinan `core.js`) |
 | `scripts/sync-core.sh` | Menyalin `core.js` ke Edge Function |
