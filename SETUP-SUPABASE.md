@@ -66,7 +66,7 @@ Publishable key memang dirancang untuk ditaruh di kode yang bisa dilihat publik,
 - Saat diterima, server menukar barang kedua pihak dalam satu transaksi: semuanya berpindah, atau tidak ada yang berpindah sama sekali.
 - Kalau ditolak, dibatalkan, atau pertemanan dihapus, isi escrow dikembalikan utuh ke penawar.
 - **Unfriend** menghapus permanen semua chat di antara kedua pemain dan membatalkan trade yang sedang berlangsung. Game menampilkan peringatan dulu sebelum dijalankan.
-- **Kalau akun dihapus** (misalnya oleh admin di Authentication → Users), trigger `morphlab_before_user_delete` lebih dulu membatalkan tawaran yang menunggu jawaban akun itu dan mengembalikan barangnya ke penawar. Setelah itu chat, pertemanan, profil, save, dan trade milik akun tersebut ikut terhapus.
+- **Kalau akun dihapus** (misalnya oleh admin di Authentication → Users), trigger `morphlab_before_user_delete` lebih dulu membatalkan tawaran yang menunggu jawaban akun itu dan mengembalikan barangnya ke penawar. Tawaran yang dikirim akun itu dan belum dijawab ikut dibatalkan. Setelah itu chat, pertemanan, profil, dan save akun tersebut terhapus. Riwayat trade pemain lain dengan akun itu **tetap ada** dan tampil sebagai "(akun dihapus)"; riwayat baru dibuang kalau kedua pemainnya sudah dihapus.
 - Server hanya mengubah save milik pemain yang sedang beraksi. Barang untuk pihak lain dikirim sebagai *kiriman* (tabel `deliveries`), yang otomatis diklaim saat game pemiliknya terbuka.
 - Genotipe het tersembunyi tidak terlihat saat melihat koleksi atau tawaran teman. Genotipe aslinya baru ikut pindah setelah trade selesai.
 

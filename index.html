@@ -68,6 +68,7 @@ aside .panel{position:sticky;top:96px;max-height:calc(100vh - 120px);overflow:au
 .log{list-style:none;margin:0;padding:0}
 .log li{padding:7px 0;border-bottom:1px dashed var(--line);font-size:12.5px}
 .logh{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}.logh h3{margin:0}
+i.gone{color:var(--mut);font-weight:400}
 .log li .d{color:var(--mut);font-size:11px;display:block}
 .log li.good{color:#cfe6bd}.log li.bad{color:#f0b3ab}.log li.star{color:#f5d38c}
 #modal{position:fixed;inset:0;background:rgba(8,7,5,.7);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
@@ -276,7 +277,7 @@ id:{
  so_rm_final:'Tindakan ini tidak bisa dibatalkan.',
  so_remove_yes:'Ya, hapus teman & chat',so_you:'Kamu',so_loading:'Memuat…',
  tr_h:'Trading',tr_in_h:'Tawaran masuk',tr_out_h:'Tawaran kamu',tr_hist_h:'Riwayat trade',tr_none:'Belum ada tawaran.',
- tr_from:p=>`Dari ${p.u}`,tr_to:p=>`Ke ${p.u}`,tr_get:'Kamu dapat',tr_give:'Kamu berikan',tr_nothing:'Tidak ada',
+ tr_from:p=>`Dari ${p.u}`,tr_gone:'(akun dihapus)',tr_to:p=>`Ke ${p.u}`,tr_get:'Kamu dapat',tr_give:'Kamu berikan',tr_nothing:'Tidak ada',
  tr_accept:'Terima',tr_decline:'Tolak',tr_cancel:'Batalkan tawaran',
  tr_escrow:'Barangmu dititipkan (escrow) sampai tawaran diterima, ditolak, atau dibatalkan.',
  tr_st_pending:'Menunggu',tr_st_accepted:'Diterima',tr_st_declined:'Ditolak',tr_st_cancelled:'Dibatalkan',
@@ -430,7 +431,7 @@ en:{
  so_rm_final:'This can’t be undone.',
  so_remove_yes:'Yes, remove friend & chat',so_you:'You',so_loading:'Loading…',
  tr_h:'Trading',tr_in_h:'Incoming offers',tr_out_h:'Your offers',tr_hist_h:'Trade history',tr_none:'No offers.',
- tr_from:p=>`From ${p.u}`,tr_to:p=>`To ${p.u}`,tr_get:'You get',tr_give:'You give',tr_nothing:'Nothing',
+ tr_from:p=>`From ${p.u}`,tr_gone:'(deleted account)',tr_to:p=>`To ${p.u}`,tr_get:'You get',tr_give:'You give',tr_nothing:'Nothing',
  tr_accept:'Accept',tr_decline:'Decline',tr_cancel:'Cancel offer',
  tr_escrow:'Your items are held in escrow until the offer is accepted, declined or cancelled.',
  tr_st_pending:'Pending',tr_st_accepted:'Accepted',tr_st_declined:'Declined',tr_st_cancelled:'Cancelled',
@@ -945,7 +946,7 @@ function miniList(arr,money_){const items=(arr||[]).map(s=>{const tr=traitsOf(s.
 function tradeCard(x){
  const get=x.dir==='in'?[x.offer,x.offer_money]:[x.request,x.request_money],give=x.dir==='in'?[x.request,x.request_money]:[x.offer,x.offer_money];
  const pend=x.status==='pending';
- return `<div class="panel trade ${pend?'':'done'}"><div class="row" style="justify-content:space-between"><b>${x.dir==='in'?t('tr_from',{u:esc(x.username)}):t('tr_to',{u:esc(x.username)})}</b><span class="tag ${x.status==='accepted'?'g':pend?'a':''}">${t('tr_st_'+x.status)}</span></div>
+ return `<div class="panel trade ${pend?'':'done'}"><div class="row" style="justify-content:space-between"><b>${(()=>{const u=x.username?esc(x.username):`<i class="gone">${t('tr_gone')}</i>`;return x.dir==='in'?t('tr_from',{u}):t('tr_to',{u})})()}</b><span class="tag ${x.status==='accepted'?'g':pend?'a':''}">${t('tr_st_'+x.status)}</span></div>
  ${x.note?`<p class="note">“${esc(x.note)}”</p>`:''}
  <div class="grid2" style="margin-top:8px"><div><div class="lbl">${t('tr_get')}</div>${miniList(get[0],get[1])}</div><div><div class="lbl">${t('tr_give')}</div>${miniList(give[0],give[1])}</div></div>
  ${pend&&x.dir==='in'?`<div class="actions"><button class="pri" data-act="tr_accept" data-tid="${x.id}">${t('tr_accept')}</button><button data-act="tr_decline" data-tid="${x.id}">${t('tr_decline')}</button></div>`:''}

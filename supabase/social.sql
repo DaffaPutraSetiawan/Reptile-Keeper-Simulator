@@ -44,8 +44,9 @@ create index if not exists messages_sender_time_idx on public.messages (sender, 
 
 create table if not exists public.trades (
   id              bigint generated always as identity primary key,
-  from_user       uuid not null references auth.users (id) on delete cascade,
-  to_user         uuid not null references auth.users (id) on delete cascade,
+  -- null = akun pemain itu sudah dihapus (riwayat tetap tampil sebagai "(akun dihapus)")
+  from_user       uuid references auth.users (id) on delete set null,
+  to_user         uuid references auth.users (id) on delete set null,
   offer_money     integer not null default 0 check (offer_money between 0 and 10000000),
   request_money   integer not null default 0 check (request_money between 0 and 10000000),
   offer_preview   jsonb not null default '[]'::jsonb,   -- ular yang ditawarkan (tanpa gen het tersembunyi)
@@ -58,6 +59,12 @@ create table if not exists public.trades (
   resolved_at     timestamptz,
   constraint trades_not_self check (from_user <> to_user)
 );
+-- Database lama: riwayat trade tidak ikut terhapus saat akun salah satu pemain dihapus.
+alter table public.trades alter column from_user drop not null, alter column to_user drop not null;
+alter table public.trades drop constraint if exists trades_from_user_fkey, drop constraint if exists trades_to_user_fkey;
+alter table public.trades
+  add constraint trades_from_user_fkey foreign key (from_user) references auth.users (id) on delete set null,
+  add constraint trades_to_user_fkey foreign key (to_user) references auth.users (id) on delete set null;
 create index if not exists trades_from_idx on public.trades (from_user, id desc);
 create index if not exists trades_to_idx on public.trades (to_user, id desc);
 
@@ -539,14 +546,24 @@ end $$;
 -- Tanpa ini, tawaran KE akun yang dihapus ikut terhapus (cascade) beserta
 -- escrow-nya, sehingga ular & uang penawar hilang. Trigger ini membatalkan
 -- tawaran tersebut dan mengirim isinya kembali ke penawar sebagai kiriman.
--- Chat, pertemanan, profil, save, dan trade milik akun itu tetap ikut terhapus.
+-- Chat, pertemanan, profil, dan save akun itu ikut terhapus. Riwayat trade pemain lain tetap ada.
 create or replace function public._on_user_deleted()
 returns trigger language plpgsql security definer set search_path = '' as $$
 declare t public.trades;
 begin
+  -- 1) tawaran yang menunggu jawaban akun ini: batalkan, isinya kembali ke penawar
   for t in select * from public.trades where to_user = old.id and status = 'pending' for update loop
     perform public._refund_trade(t, 'deleted', old.id);
   end loop;
+  -- 2) tawaran yang dikirim akun ini dan belum dijawab: batalkan (isi escrow hilang bersama akunnya)
+  delete from public.trade_escrow
+   where trade_id in (select id from public.trades where from_user = old.id and status = 'pending');
+  update public.trades set status = 'cancelled', resolved_at = now()
+   where from_user = old.id and status = 'pending';
+  -- 3) riwayat dengan pemain yang akunnya juga sudah dihapus: tidak ada lagi yang bisa melihatnya
+  delete from public.trades
+   where (from_user = old.id and to_user is null) or (to_user = old.id and from_user is null);
+  -- Riwayat lainnya tetap ada; kolom akun ini otomatis jadi null (on delete set null).
   return old;
 end $$;
 
