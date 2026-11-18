@@ -114,23 +114,30 @@ function dexAdd(tr){const k=nameOf(tr);if(S.dex[k])return false;S.dex[k]={tr,wt:
 function grow(s){if(s.gravid){s.w=Math.round(s.w*0.99);return}const K=s.sex==='F'?2300:1400,r=(s.sex==='F'?0.14:0.18)*(0.85+R()*0.3);s.w=Math.round(s.w+r*s.w*(1-s.w/K))}
 
 /* ========= PASAR & PESANAN ========= */
-const POOL=[['pastel',10],['mojave',6],['lesser',6],['enchi',6],['yb',7],['cinnamon',6],['banana',4],['spider',6],['pinstripe',6],['albino',5],['piebald',4],['clown',3],['axanthic',4]];
+// Pasar: 3 ular bergen tunggal (atau Normal), gennya tidak boleh sama, stok berganti tiap 50 turn.
+// Tiap ular di pasar bisa dibeli berkali-kali: bayi (2× harga dasar) atau siap kawin (4× harga dasar), ♂ atau ♀.
+const MARKET_SIZE=3,MARKET_EVERY=50,BUY_MULT={baby:2,adult:4};
+const MARKET_POOL=[['normal',8],['pastel',10],['mojave',6],['lesser',6],['enchi',6],['yb',7],['cinnamon',6],['banana',4],['spider',6],['pinstripe',6],['albino',5],['piebald',4],['clown',3],['axanthic',4]];
+const POOL=MARKET_POOL;
 function wpick(pool){const tot=pool.reduce((a,b)=>a+b[1],0);let r=R()*tot;for(const p of pool){r-=p[1];if(r<=0)return p[0]}return pool[0][0]}
-function genMarketSnake(){
- const n=R()<.55?1:R()<.78?2:3;const g=emptyGeno(),hp={};const used=new Set();let tries=0;
- while(used.size<n&&tries++<30){const k=wpick(POOL);if(used.has(k))continue;used.add(k);
-  if(k==='mojave'||k==='lesser'){const al=k==='mojave'?1:2;if(g.bel[0])g.bel[1]=al;else g.bel[0]=al;continue}
-  const l=LOCI.find(x=>x.k===k);
-  if(l.t==='id')g[k]=R()<.15?[1,1]:[1,0];
-  else if(l.t==='dom')g[k]=[1,0];
-  else{const r=R();if(r<.3){g[k]=[1,1];hp[k]=1}else if(r<.75){g[k]=[1,0];hp[k]=1}else{const p=pick([.66,.5]);g[k]=[R()<p?1:0,0];hp[k]=p}}
- }
- const sex=R()<.5?'M':'F';let age,w;const r=R();
- if(r<.5){age=1+Math.floor(R()*3);w=70+R()*110}
- else if(r<.8){age=10+Math.floor(R()*7);w=sex==='F'?500+R()*500:450+R()*450}
- else{age=28+Math.floor(R()*22);w=sex==='F'?1550+R()*650:900+R()*450}
- const s=newSnake({sex,age,w:Math.round(w),g,hp});return{lid:Math.floor(R()*1e9),s,price:Math.round(value(s)*1.2/5)*5}}
-function refreshMarket(){S.market=Array.from({length:8},genMarketSnake)}
+function listingGeno(gene){const g=emptyGeno(),hp={};if(gene==='normal')return{g,hp};
+ if(gene==='mojave'){g.bel=[1,0];return{g,hp}}if(gene==='lesser'){g.bel=[2,0];return{g,hp}}
+ const l=LOCI.find(x=>x.k===gene);if(l.t==='rec'){g[gene]=[1,1];hp[gene]=1}else g[gene]=[1,0];return{g,hp}}
+const listingTraits=L=>L.gene==='normal'?[]:[L.gene];
+const marketBase=L=>Math.round(baseValue(listingTraits(L))/5)*5;          // harga dasar (ikut harga pasar morph)
+const marketPrice=(L,age)=>marketBase(L)*(BUY_MULT[age]||0);
+const marketLeft=()=>Math.max(0,MARKET_EVERY-(S.turn-(S.marketAt||0)));   // turn sampai stok berganti
+function refreshMarket(){const pool=MARKET_POOL.slice();S.market=[];
+ while(S.market.length<MARKET_SIZE&&pool.length){const k=wpick(pool);pool.splice(pool.findIndex(p=>p[0]===k),1);S.market.push({lid:Math.floor(R()*1e9),gene:k})}
+ S.marketAt=S.turn}
+// Save lama (8 ular, ganti tiap bulan) diubah ke format pasar baru.
+const marketOk=()=>Array.isArray(S.market)&&S.market.length===MARKET_SIZE&&S.market.every(L=>L&&L.gene)&&S.marketAt!=null;
+function ensureMarket(){if(!marketOk())refreshMarket()}
+function makeMarketSnake(L,age,sex){const{g,hp}=listingGeno(L.gene);let a,w;
+ if(age==='baby'){a=1+Math.floor(R()*3);w=Math.round(70+R()*110)}
+ else if(sex==='F'){a=24+Math.floor(R()*7);w=Math.round(1500+R()*400)}
+ else{a=10+Math.floor(R()*7);w=Math.round(550+R()*350)}
+ return newSnake({sex,age:a,w,g,hp})}
 function genOrder(){
  const own=new Set();
  S.snakes.forEach(s=>{traitsOf(s.g).forEach(t=>own.add(t));LOCI.forEach(l=>{if(l.t==='rec'&&((s.hp||{})[l.k]||0)>.4)own.add(l.k)})});
@@ -236,7 +243,7 @@ function advance(){
  if(S.orders.length<3&&R()<.5){const o=genOrder();S.orders.push(o);log('l_ordernew',{bi:o.bi,sx:o.sex?(o.sex==='F'?'♀ ':'♂ '):'',n:nameOf(o.tr),r:money(o.reward)},'star')}
  // 8. pasar
  ALLT.forEach(t=>{S.mm[t]=clamp(mm(t)+(1-mm(t))*.06+(R()-.5)*.05,.5,1.6)});
- refreshMarket();
+ ensureMarket();if(S.turn-S.marketAt>=MARKET_EVERY)refreshMarket();
  S.event=null;
  if(R()<.3){const r=R();
   if(r<.25)S.event={expo:true,e:'ev_expo'};
@@ -271,9 +278,11 @@ const ACTIONS={
   const v=Math.round(value(s)*.6);S.money+=v;S.stats.sold++;S.stats.earned+=v;traitsOf(s.g).forEach(g=>S.mm[g]=mm(g)*.97);
   log('l_quick',{c:code(s),n:fullName(s),v:money(v)},'good');removeSnake(s);return{}},
  nick(a){const s=mustSnake(a.id);s.nick=String(a.name==null?'':a.name).replace(/[\u0000-\u001f\u007f]/g,'').trim().slice(0,24);return{}},
- buy(a){const lid=toId(a.lid);const L=S.market.find(x=>x.lid===lid);if(!L)fail('listing_gone');if(S.money<L.price)fail('not_enough_money');
-  S.money-=L.price;const s=addSnake(L.s);s.src={t:'market',turn:S.turn};S.market=S.market.filter(x=>x!==L);const nw=dexAdd(traitsOf(s.g));
-  log('l_buy',{c:code(s),n:fullName(s),h:hetText(s),v:money(L.price)});if(nw)log('l_newmorph',{n:nameOf(traitsOf(s.g))},'star');return{}},
+ buy(a){const lid=toId(a.lid);const L=S.market.find(x=>x.lid===lid);if(!L)fail('listing_gone');
+  if(!Object.prototype.hasOwnProperty.call(BUY_MULT,a.age)||(a.sex!=='M'&&a.sex!=='F'))fail('bad_action');
+  const price=marketPrice(L,a.age);if(S.money<price)fail('not_enough_money');
+  S.money-=price;const s=addSnake(makeMarketSnake(L,a.age,a.sex));s.src={t:'market',turn:S.turn};const nw=dexAdd(traitsOf(s.g));   // listing tetap ada: bisa dibeli lagi
+  log('l_buy',{c:code(s),n:fullName(s),h:hetText(s),v:money(price)});if(nw)log('l_newmorph',{n:nameOf(traitsOf(s.g))},'star');return{}},
  clearlog(){S.log=[];return{toast:'t_logcleared'}},
  incubate(a){const c=S.clutches.find(x=>x.cid===toId(a.cid));if(!c)fail('clutch_not_found');
   if(!tempOpen(c))fail('temp_locked');
@@ -288,7 +297,7 @@ const ACTIONS={
 // Jalankan satu aksi pada state (state diubah langsung). Melempar Error(kode) kalau tidak sah.
 function applyAction(state,a){
  if(!a||typeof a!=='object'||typeof a.type!=='string'||!Object.prototype.hasOwnProperty.call(ACTIONS,a.type))fail('bad_action');
- S=state;syncDex();trimLog();
+ S=state;syncDex();trimLog();ensureMarket();
  return ACTIONS[a.type](a)||{};
 }
 function isState(x){return !!(x&&typeof x==='object'&&Array.isArray(x.snakes)&&typeof x.turn==='number'&&typeof x.money==='number')}
@@ -301,6 +310,7 @@ root.MorphCore={
  emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,
  mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,matches,
  monthlyCosts,previewNext,
+ MARKET_SIZE,MARKET_EVERY,BUY_MULT,MARKET_POOL,listingTraits,marketBase,marketPrice,marketLeft,refreshMarket,ensureMarket,marketOk,
  INC_MONTHS,TEMP_MIN,TEMP_MAX,TEMP_MID,TEMP_STEP,femaleChance,incTotal,tempOpen,tempMonthsLeft,
  newGame,advance,applyAction,syncDex,isState,ACTION_TYPES:Object.keys(ACTIONS)
 };

@@ -155,6 +155,8 @@ textarea{width:100%;box-sizing:border-box;resize:vertical;font:inherit;backgroun
 .opt.theme{flex-direction:column;align-items:flex-start;gap:4px}.opt.theme small{color:var(--mut);font-size:11.5px}.opt.theme .chk{position:absolute;top:8px;right:10px}.sw{display:flex;gap:4px}.sw i{width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.15);display:block}
 @media (max-width:640px){.gear .gname{display:none}}
 .tcell select{width:auto;min-width:210px;padding:5px 8px}.tcell .odds{color:var(--mut);font-size:12.5px;margin-left:4px}.tcell .kbd{font-size:11.5px;margin-top:3px}
+.card.mk .meta{margin-bottom:8px}.sexsw{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-bottom:8px}.sexsw button{flex:1;border:0;border-radius:0;background:none;color:var(--mut);padding:6px}.sexsw button.on{background:var(--accbg);color:var(--text);font-weight:700}
+.buyopt{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 0;border-top:1px dashed var(--line)}.buyopt>div{display:flex;flex-direction:column}.buyopt .kbd{font-size:11.5px}.buyopt button{white-space:nowrap;min-width:84px}
 .dzone{margin-top:18px;padding-top:12px;border-top:1px solid #4a2b26}.dzone .lbl{color:var(--bad)}.dzrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0}.dzrow p{margin:2px 0 0;font-size:12.5px;color:var(--mut)}.dzrow button{flex:none}
 .warnbox{border:1px solid #7a3d34;background:#2a1714;border-radius:12px;padding:10px 14px;margin:10px 0}.warnbox p{margin:6px 0;font-size:13.5px}
 button.danger{background:var(--bad);border-color:var(--bad);color:#1b0a07;font-weight:700}button.danger:hover:not(:disabled){background:#ec7d71}
@@ -174,7 +176,7 @@ button.danger{background:var(--bad);border-color:var(--bad);color:#1b0a07;font-w
 'use strict';
 /* ========= LOGIKA INTI (core.js, sama dengan yang dipakai server) ========= */
 const Core=window.MorphCore;
-const {previewNext,TEMP_MIN,TEMP_MAX,TEMP_STEP,TEMP_MID,femaleChance,tempOpen,tempMonthsLeft,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches}=Core;
+const {marketOk,marketBase,marketPrice,marketLeft,listingTraits,BUY_MULT,previewNext,TEMP_MIN,TEMP_MAX,TEMP_STEP,TEMP_MID,femaleChance,tempOpen,tempMonthsLeft,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches}=Core;
 
 /* ========= UTIL ========= */
 const lerp=(a,b,t)=>a.map((x,i)=>x+(b[i]-x)*t);
@@ -268,6 +270,7 @@ id:{
  th_dam:'Induk betina',th_sire:'Induk jantan',th_fertile:'Subur',th_slug:'Slug',th_hatch:'Menetas',mo:p=>`${p.n} bln`,inc_empty:'Inkubator kosong.',
  // pasar
  mk_sub:'Stok penjual berganti tiap bulan. Status het dari penjual selalu jujur, tapi "pos het" artinya belum pasti.',
+ mk_sub2:'Pasar menjual 3 ular dengan gen tunggal (atau Normal) yang berbeda-beda. Beli sebanyak yang kamu mau: pilih jenis kelamin, lalu beli sebagai bayi (2× harga dasar) atau siap kawin (4× harga dasar).',mk_reset:p=>`Stok berganti dalam ${p.n} turn`,mk_base:p=>`harga dasar ${p.v}`,mk_kind_one:'Gen tunggal',mk_kind_rec:'Gen tunggal (resesif, visual)',mk_kind_normal:'Tanpa gen',mk_f:'Betina',mk_m:'Jantan',mk_baby:'Bayi',mk_baby_d:'1–3 bulan · 70–180 g',mk_adult:'Siap kawin',mk_adult_f:'2 th+ · ±1,5–1,9 kg · bisa langsung dikawinkan',mk_adult_m:'10 bln+ · ±550–900 g · bisa langsung dikawinkan',
  rack_btn:'Beli rak baru (+10 tub) · $250',rack_note:p=>`Kapasitas sekarang ${p.n} tub. Lewat kapasitas kena biaya tub darurat $15/ekor/bulan.`,buy:'Beli',
  // pesanan
  ord_h:'Pesanan pembeli',ord_sub:'Pembeli bayar jauh di atas harga pasar untuk morph tertentu. Ular yang dikirim harus punya semua gen visual yang diminta (gen tambahan boleh).',
@@ -449,6 +452,7 @@ en:{
  inc_gravid_h:'Gravid females',inc_gravid_empty:'No gravid females yet.',inc_clutch_h:'Clutches in the incubator',
  th_dam:'Dam',th_sire:'Sire',th_fertile:'Fertile',th_slug:'Slugs',th_hatch:'Hatches in',mo:p=>`${p.n} mo`,inc_empty:'The incubator is empty.',
  mk_sub:'Sellers restock every month. Het claims from sellers are always honest, but "pos het" means it isn’t certain.',
+ mk_sub2:'The market sells 3 snakes, each with a different single gene (or Normal). Buy as many as you like: pick a sex, then buy as a baby (2× base price) or breeding-ready (4× base price).',mk_reset:p=>`Restocks in ${p.n} ${p.n===1?'turn':'turns'}`,mk_base:p=>`base price ${p.v}`,mk_kind_one:'Single gene',mk_kind_rec:'Single gene (recessive, visual)',mk_kind_normal:'No genes',mk_f:'Female',mk_m:'Male',mk_baby:'Baby',mk_baby_d:'1–3 months · 70–180 g',mk_adult:'Breeding-ready',mk_adult_f:'2 yr+ · ~1.5–1.9 kg · can be paired right away',mk_adult_m:'10 mo+ · ~550–900 g · can be paired right away',
  rack_btn:'Buy a new rack (+10 tubs) · $250',rack_note:p=>`Current capacity: ${p.n} tubs. Going over capacity costs $15 per snake per month for emergency tubs.`,buy:'Buy',
  ord_h:'Buyer orders',ord_sub:'Buyers pay well above market price for specific morphs. The snake you ship must show every requested visual gene (extra genes are fine).',
  ord_empty:'No orders yet. New orders appear over time.',ord_left:p=>`${p.n} ${p.n===1?'month':'months'} left`,ord_reward:p=>`Reward ${p.v}`,ord_ship:'Ship to buyer',ord_nomatch:'No matching snake in your collection yet.',
@@ -750,10 +754,19 @@ function vInkubator(){
  h+=`<h3>${t('inc_clutch_h')}</h3>`+(S.clutches.length?`<div class="panel" style="padding:4px 8px"><table><tr><th>${t('th_dam')}</th><th>${t('th_sire')}</th><th class="num">${t('th_fertile')}</th><th class="num">${t('th_slug')}</th><th class="num">${t('th_hatch')}</th><th>${t('th_temp')}</th></tr>${S.clutches.map(c=>`<tr><td>${esc(c.damLabel)}</td><td>${esc(c.sireLabel)}</td><td class="num">${c.eggs.length}</td><td class="num">${c.slugs}</td><td class="num">${t('mo',{n:c.hatchIn})}</td><td>${tempCell(c)}</td></tr>`).join('')}</table></div>`:`<div class="empty">${t('inc_empty')}</div>`);
  return h}
 function eventText(e){return e.e?t(e.e,e):(e.txt||'')}
+// Pasar: 3 ular bergen tunggal; tiap ular bisa dibeli berkali-kali sebagai bayi atau siap kawin, ♂/♀
+const MKSEX={};
 function vPasar(){
- let h=`<h2>${t('tab_pasar')}</h2><p class="sub">${esc(t('mk_sub'))}${S.event?' <b>📢 '+esc(eventText(S.event))+'</b>':''}</p>
- <div class="toolbar"><button data-act="rack" ${S.money<250?'disabled':''}>${t('rack_btn')}</button><span class="kbd">${t('rack_note',{n:cap()})}</span></div><div class="grid">`;
- h+=S.market.map(L=>{const s=L.s,tr=traitsOf(s.g);return `<div class="card"><img class="snk" src="${thumb(tr,s.seed)}"><div class="nm">${sexIcon(s.sex)} ${esc(nameOf(tr,s.g))}</div><div class="het">${esc(hetText(s))}</div><div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g</div><div class="row" style="justify-content:space-between;margin-top:8px"><b>${money(L.price)}</b><button class="pri" data-act="buy" data-id="${L.lid}" ${S.money<L.price?'disabled':''}>${t('buy')}</button></div></div>`}).join('');
+ let h=`<h2>${t('tab_pasar')}</h2><p class="sub">${t('mk_sub2')}${S.event?' <b>📢 '+esc(eventText(S.event))+'</b>':''}</p>
+ <div class="toolbar"><span class="tag a">🔄 ${t('mk_reset',{n:marketLeft()})}</span><button data-act="rack" ${S.money<250?'disabled':''}>${t('rack_btn')}</button><span class="kbd">${t('rack_note',{n:cap()})}</span></div><div class="grid">`;
+ if(!marketOk())return h+`</div><div class="empty">${t('so_loading')}</div>`;
+ h+=S.market.map(L=>{const tr=listingTraits(L),sx=MKSEX[L.lid]||'F',base=marketBase(L),pb=marketPrice(L,'baby'),pa=marketPrice(L,'adult');
+  const rec=tr.length&&['albino','piebald','clown','axanthic'].includes(tr[0]);
+  return `<div class="card mk"><img class="snk" src="${thumb(tr,L.lid)}"><div class="nm">${esc(nameOf(tr))}</div>
+  <div class="meta">${t(tr.length?(rec?'mk_kind_rec':'mk_kind_one'):'mk_kind_normal')} · ${t('mk_base',{v:money(base)})}</div>
+  <div class="sexsw" role="group">${['F','M'].map(x=>`<button class="${sx===x?'on':''}" data-act="mk_sex" data-id="${L.lid}" data-v="${x}" aria-pressed="${sx===x}">${x==='F'?'♀ '+t('mk_f'):'♂ '+t('mk_m')}</button>`).join('')}</div>
+  <div class="buyopt"><div><b>🐣 ${t('mk_baby')}</b><span class="kbd">${t('mk_baby_d')}</span></div><button class="pri" data-act="buy" data-id="${L.lid}" data-age="baby" ${S.money<pb?'disabled':''}>${money(pb)}</button></div>
+  <div class="buyopt"><div><b>🐍 ${t('mk_adult')}</b><span class="kbd">${t(sx==='F'?'mk_adult_f':'mk_adult_m')}</span></div><button class="pri" data-act="buy" data-id="${L.lid}" data-age="adult" ${S.money<pa?'disabled':''}>${money(pa)}</button></div></div>`}).join('');
  return h+'</div>'}
 function vPesanan(){
  let h=`<h2>${t('ord_h')}</h2><p class="sub">${t('ord_sub')}</p>`;
@@ -783,7 +796,7 @@ function openSnake(id){const s=byId(id);if(!s)return;const tr=traitsOf(s.g),r=re
  ${s.gravid?`<p class="kbd">${t('gravid_nosale')}</p>`:''}`)}
 
 const SOCIAL_ACTS=new Set(['openchat','fr_accept','fr_decline','fr_remove','fr_remove_yes','tr_new','tb_close','tr_send','tr_accept','tr_accept_yes','tr_decline','tr_cancel']);
-const FREE_ACTS=new Set(['settings','theme','preview','profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
+const FREE_ACTS=new Set(['mk_sex','settings','theme','preview','profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
 // Jalankan aksi game: dikirim ke server (Edge Function "game") yang menghitung hasilnya.
 async function game(a){
  if(!Cloud.user||!S)return null;
@@ -823,7 +836,8 @@ function act(a,id,el){
   case 'quicksell':closeModal();game({type:'quicksell',id});return;
   case 'pair':game({type:'pair',m:SEL.m,f:SEL.f});return;
   case 'unpair':game({type:'unpair',f:id});return;
-  case 'buy':game({type:'buy',lid:id});return;
+  case 'buy':game({type:'buy',lid:id,age:el.dataset.age,sex:MKSEX[id]||'F'});return;
+  case 'mk_sex':MKSEX[id]=el.dataset.v;break;
   case 'rack':game({type:'rack'});return;
   case 'fulfill':{const sel=$('ord-'+id);if(sel)game({type:'fulfill',oid:id,sid:+sel.value});return}
  }

@@ -28,7 +28,15 @@ export async function handle(body, uid, db) {
 
     // Buat game baru kalau pemain belum punya save (atau minta mulai ulang).
     if (action.type === 'init' || action.type === 'reset') {
-      if (action.type === 'init' && valid) return { state: row.data, rev: row.rev };
+      if (action.type === 'init' && valid) {
+        // Save lama dengan format pasar lama: ubah sekali ke pasar baru lalu simpan.
+        C.use(row.data);
+        if (C.marketOk()) return { state: row.data, rev: row.rev };
+        C.ensureMarket();
+        row.data.rev = row.rev + 1;
+        if (await db.update(uid, row.data, row.rev)) return { state: row.data, rev: row.data.rev };
+        continue;
+      }
       const fresh = C.newGame();
       if (row) {
         fresh.rev = row.rev + 1;
