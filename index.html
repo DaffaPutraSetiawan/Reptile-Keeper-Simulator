@@ -58,7 +58,7 @@ h3{font-family:Fraunces,serif;font-weight:600;font-size:16px;margin:18px 0 8px}
 .sx{font-weight:700}.sx.M{color:var(--blue)}.sx.F{color:var(--pink)}
 .tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
 .tag{font-size:11px;padding:2px 7px;border-radius:20px;background:var(--panel2);border:1px solid var(--line);color:var(--mut)}
-.tag.g{color:var(--good);border-color:#4f6b3a}.tag.a{color:var(--acc);border-color:#7a5b22}.tag.p{color:var(--pink);border-color:#7a4a5c}
+.tag.g{color:var(--good);border-color:#4f6b3a}.tag.b{color:var(--bad);border-color:#7a3a33}.tag.a{color:var(--acc);border-color:#7a5b22}.tag.p{color:var(--pink);border-color:#7a4a5c}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
 .pair{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:start}
 @media(max-width:640px){.pair{grid-template-columns:1fr}.pair .x{display:none}}
@@ -176,7 +176,7 @@ button.danger{background:var(--bad);border-color:var(--bad);color:#1b0a07;font-w
 'use strict';
 /* ========= LOGIKA INTI (core.js, sama dengan yang dipakai server) ========= */
 const Core=window.MorphCore;
-const {rackPrice,marketOk,marketBase,marketPrice,marketLeft,listingTraits,BUY_MULT,previewNext,TEMP_MIN,TEMP_MAX,TEMP_STEP,TEMP_MID,femaleChance,tempOpen,tempMonthsLeft,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches}=Core;
+const {maxAge,lifeLeft,OLD_WARN,rackPrice,marketOk,marketBase,marketPrice,marketLeft,listingTraits,BUY_MULT,previewNext,TEMP_MIN,TEMP_MAX,TEMP_STEP,TEMP_MID,femaleChance,tempOpen,tempMonthsLeft,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches}=Core;
 
 /* ========= UTIL ========= */
 const lerp=(a,b,t)=>a.map((x,i)=>x+(b[i]-x)*t);
@@ -204,7 +204,7 @@ id:{
  l_laid:p=>`🥚 ${p.c} bertelur ${p.n} butir: ${p.good} subur, ${p.slug} slug. Masuk inkubator (±58 hari).`,
  l_ovul:p=>`💛 ${p.f} berovulasi setelah kawin dengan ${p.m}. Akan bertelur dalam ±2 bulan.`,
  l_noovul:p=>`${p.f} tidak berovulasi bulan ini. Coba pasangkan lagi.`,
- l_soldad:p=>`💰 ${p.c} ${p.n} laku lewat iklan: ${p.v}.`,
+ l_soldad:p=>`💰 ${p.c} ${p.n} laku lewat iklan: ${p.v}.`,l_oldage:p=>`🕯️ ${p.c} ${p.n} mati karena tua di umur ${t('age',{m:p.a})}${p.gr?' (sedang bunting, telurnya ikut hilang)':''}.`,
  l_costs:p=>`Biaya bulanan: pakan ${p.food}, listrik & rak ${p.util}${p.over?`, tub darurat ${p.over} (kapasitas penuh!)`:''}.`,
  l_orderexp:p=>`Pesanan ${buyerName(p)} (${p.n}) kedaluwarsa.`,
  l_ordernew:p=>`📬 Pesanan baru dari ${buyerName(p)}: ${p.sx}${p.n} — hadiah ${p.r}.`,
@@ -225,7 +225,7 @@ id:{
  ev_trend:p=>`${p.g} lagi tren di forum, harganya naik 25%.`,
  ev_food:'Harga tikus pakan naik bulan ini (+50% biaya pakan).',
  // ringkasan bulan (toast)
- h_born:p=>`${p.n} bayi menetas`,h_new:p=>'Morph baru: '+p.n,h_laid:p=>`${p.c} bertelur ${p.n} telur subur`,h_gravid:p=>`${p.c} bunting`,h_sold:p=>`${p.c} laku ${p.v}`,h_quiet:' — bulan tenang.',
+ h_born:p=>`${p.n} bayi menetas`,h_new:p=>'Morph baru: '+p.n,h_laid:p=>`${p.c} bertelur ${p.n} telur subur`,h_gravid:p=>`${p.c} bunting`,h_sold:p=>`${p.c} laku ${p.v}`,h_oldage:p=>`${p.c} mati karena tua`,h_quiet:' — bulan tenang.',
  // header & tab
  hdr_date:'Turn dimainkan',hdr_bal:'Saldo',hdr_tubs:'Tub terpakai',hdr_season:'Musim',season_on:'Kawin 🌙',season_off:'Istirahat',advance:'Lanjut bulan ▶',
  tab_koleksi:'Koleksi',tab_breeding:'Kawinkan',tab_inkubator:'Inkubator',tab_pasar:'Pasar',tab_pesanan:'Pesanan',tab_dex:'Morph Dex',tab_panduan:'Panduan genetika',
@@ -250,7 +250,7 @@ id:{
  t_deleted:'Akunmu sudah dihapus. Terima kasih sudah bermain Morph Lab.',e_confirm_mismatch:'Kata konfirmasi tidak cocok.',
  log_title:'Catatan breeder',log_clear:'🗑️ Hapus',log_empty:'Catatan masih kosong.',log_clear_h:'Hapus catatan breeder?',log_clear_q:'Semua catatan akan dihapus permanen. Koleksi, uang, dan progres game tidak berubah.',log_clear_yes:'Ya, hapus catatan',t_logcleared:'Catatan breeder dihapus.',
  // tag kartu
- tag_gravid:p=>`Bunting · bertelur ±${p.n} bln`,tag_pairedw:p=>`Dikawinkan dgn ${p.c}`,tag_pairs:p=>`${p.n} pasangan bln ini`,tag_listed:'Diiklankan',tag_ready:'Siap kawin',tag_hatch:'Hatchling',
+ tag_gravid:p=>`Bunting · bertelur ±${p.n} bln`,tag_pairedw:p=>`Dikawinkan dgn ${p.c}`,tag_pairs:p=>`${p.n} pasangan bln ini`,tag_listed:'Diiklankan',tag_ready:'Siap kawin',tag_hatch:'Hatchling',tag_old:p=>`Tua · sisa ${p.a}`,d_life:'Batas umur',d_life_v:p=>`${p.max} · sisa ${p.left}`,
  // koleksi
  col_sub:p=>`${p.n} ekor · nilai koleksi ${p.v} · klik ular untuk detail, jual, atau iklankan.`,
  f_all:'Semua',f_M:'♂ Jantan',f_F:'♀ Betina',f_ready:'Siap kawin',f_listed:'Diiklankan',
@@ -310,7 +310,7 @@ id:{
  fg_need:'Isi email dulu, lalu klik "Lupa password?" lagi.',fg_sent:p=>`Link reset password dikirim ke <b>${p.e}</b>.`,
  set_about:'Tentang',ver_server:'Versi server game',ver_web:'Versi web',ver_ok:'Web & server sudah versi terbaru yang sama.',ver_old_web:'Halaman ini masih versi lama. Muat ulang (Ctrl+Shift+R) untuk memakai versi terbaru.',ver_old_server:'Server sedang diperbarui; versi web lebih baru dari server.',ver_reload:'Muat ulang halaman',
  set_title:'Pengaturan',set_lang:'Bahasa',set_theme:'Tema warna',th_terra:'Terrarium',th_terra_d:'Cokelat hangat & amber (bawaan)',th_forest:'Hutan Hujan',th_forest_d:'Hijau gelap & zamrud',th_ocean:'Samudra Malam',th_ocean_d:'Biru tua & biru langit',
- pv_open:'Lihat perkiraan saldo bulan depan',pv_h:'Perkiraan saldo bulan depan',pv_sub:'Biaya ini dipotong otomatis saat kamu menekan “Lanjut bulan”.',pv_now:'Saldo sekarang',pv_food:p=>`Pakan · ${p.n} ekor`,pv_util:p=>`Listrik & rak · ${p.r} rak × $8`,pv_over:p=>`Tub darurat · ${p.n} ekor di atas kapasitas (${p.c}) × $15`,pv_total:'Total pengeluaran',pv_after:'Perkiraan saldo',pv_formula:'Pakan per ekor: $2 + $1 per 250 g berat (dihitung dari berat setelah tumbuh bulan depan).',pv_debt:'⚠️ Saldo akan minus! Jual, iklankan, atau kirim ular ke pesanan dulu.',pv_n_born:p=>`Termasuk ${p.n} bayi yang akan menetas (bisa kurang kalau ada telur yang mati).`,pv_n_lay:p=>`${p.n} betina akan bertelur, beratnya turun ±28% sehingga pakannya lebih murah.`,pv_n_foodx:'Harga pakan sedang naik +50% (event bulan ini).',pv_n_listed:p=>`Belum termasuk uang dari ${p.n} ular yang diiklankan kalau terjual.`,pv_n_random:'Ini perkiraan: pertumbuhan & event baru bersifat acak.',
+ pv_open:'Lihat perkiraan saldo bulan depan',pv_h:'Perkiraan saldo bulan depan',pv_sub:'Biaya ini dipotong otomatis saat kamu menekan “Lanjut bulan”.',pv_now:'Saldo sekarang',pv_food:p=>`Pakan · ${p.n} ekor`,pv_util:p=>`Listrik & rak · ${p.r} rak × $8`,pv_over:p=>`Tub darurat · ${p.n} ekor di atas kapasitas (${p.c}) × $15`,pv_total:'Total pengeluaran',pv_after:'Perkiraan saldo',pv_formula:'Pakan per ekor: $2 + $1 per 250 g berat (dihitung dari berat setelah tumbuh bulan depan).',pv_debt:'⚠️ Saldo akan minus! Jual, iklankan, atau kirim ular ke pesanan dulu.',pv_n_born:p=>`Termasuk ${p.n} bayi yang akan menetas (bisa kurang kalau ada telur yang mati).`,pv_n_lay:p=>`${p.n} betina akan bertelur, beratnya turun ±28% sehingga pakannya lebih murah.`,pv_n_foodx:'Harga pakan sedang naik +50% (event bulan ini).',pv_n_listed:p=>`Belum termasuk uang dari ${p.n} ular yang diiklankan kalau terjual.`,pv_n_old:p=>`${p.n} ular akan mati karena tua bulan depan, jadi tidak dihitung biaya pakannya.`,pv_n_random:'Ini perkiraan: pertumbuhan & event baru bersifat acak.',
  tab_teman:'Teman',tab_global:'Global chat',gc_sub:p=>`Ngobrol dengan semua pemain Morph Lab. Hanya ${p.n} pesan terakhir yang disimpan; pesan yang lebih lama terhapus otomatis.`,gc_ph:'Tulis pesan untuk semua pemain…',gc_empty:'Belum ada pesan. Jadilah yang pertama menyapa!',e_empty_message:'Pesan masih kosong.',e_message_too_long:'Pesan terlalu panjang.',busy:'Tunggu sebentar, sedang memproses…',
  so_login:'Masuk ke akun untuk menambah teman, chat, dan trading.',so_login_btn:'☁️ Masuk / Daftar',
  so_offline:'Fitur teman butuh koneksi ke server. Periksa koneksi internet lalu muat ulang halaman.',
@@ -378,7 +378,7 @@ id:{
 <h3>3. BEL complex (Mojave & Lesser)</h3><p>Mojave dan Lesser adalah <b>alel di lokus yang sama</b>. Kombinasi dua alel apa pun (Super Mojave, Super Lesser, Mojave Lesser) menghasilkan <b>Blue-Eyed Leucistic</b>: putih bersih bermata biru. Karena satu lokus, ular BEL selalu menurunkan tepat satu alel Mojave/Lesser ke tiap bayinya.</p>
 <h3>4. Dominan: Spider, Pinstripe</h3><p>Satu salinan sudah terlihat penuh, dan dua salinan tampak sama. Catatan dunia nyata: Spider membawa masalah neurologis ("wobble"), dan banyak breeder memilih tidak memproduksinya lagi. Di game ini gen tersebut tetap ada untuk keperluan edukasi.</p>
 <h3>5. Kombinasi terkenal</h3><p>Pastel + Spider = <b>Bumblebee</b> · Super Pastel + Spider = <b>Killer Bee</b> · Pastel + Pinstripe = <b>Lemon Blast</b> · Spider + Pinstripe = <b>Spinner</b> · Albino + Axanthic = <b>Snow</b>.</p>
-<h3>6. Siklus breeding</h3><ul><li>Tidak ada musim kawin: ular bisa dikawinkan kapan saja asal umurnya cukup.</li><li>Jantan siap kawin: umur ≥10 bulan. Bisa dipasangkan dengan maksimal 4 betina per bulan.</li><li>Betina siap kawin: umur ≥24 bulan, tidak sedang bunting, dan tidak bertelur dalam 8 bulan terakhir.</li><li>Peluang ovulasi ±55% per bulan, lalu bertelur ±2 bulan kemudian dan menetas ±2 bulan setelah itu.</li><li>Jumlah telur bergantung berat betina: makin berat, makin banyak telur. ±12% telur adalah slug (tidak subur).</li><li>Betina turun ±28% berat setelah bertelur.</li><li>🌡️ Suhu inkubator menentukan jenis kelamin anak: 29 °C = ♀80% / ♂20%, 31 °C = 50/50, 33 °C = ♀20% / ♂80%. Suhu bisa diubah di tab Inkubator hanya selama sepertiga pertama masa inkubasi.</li></ul>
+<h3>6. Siklus breeding</h3><ul><li>Tidak ada musim kawin: ular bisa dikawinkan kapan saja asal umurnya cukup.</li><li>Jantan siap kawin: umur ≥10 bulan. Bisa dipasangkan dengan maksimal 4 betina per bulan.</li><li>Batas umur ball python: <b>30 tahun</b> (360 bulan). Saat mencapai batas itu, ular mati karena tua. Label <b>Tua</b> muncul di 12 bulan terakhir.</li><li>Betina siap kawin: umur ≥24 bulan, tidak sedang bunting, dan tidak bertelur dalam 8 bulan terakhir.</li><li>Peluang ovulasi ±55% per bulan, lalu bertelur ±2 bulan kemudian dan menetas ±2 bulan setelah itu.</li><li>Jumlah telur bergantung berat betina: makin berat, makin banyak telur. ±12% telur adalah slug (tidak subur).</li><li>Betina turun ±28% berat setelah bertelur.</li><li>🌡️ Suhu inkubator menentukan jenis kelamin anak: 29 °C = ♀80% / ♂20%, 31 °C = 50/50, 33 °C = ♀20% / ♂80%. Suhu bisa diubah di tab Inkubator hanya selama sepertiga pertama masa inkubasi.</li></ul>
 <h3>7. Ekonomi</h3><p>Harga tiap gen naik turun. Kalau kamu terus menjual morph yang sama, pasar jadi jenuh dan harganya turun. Betina lebih mahal, dan ular dewasa lebih mahal daripada hatchling. Jual cepat memberi 60% nilai langsung, sedangkan iklan memberi 100% nilai tapi butuh waktu.</p>`
 },
 en:{
@@ -395,7 +395,7 @@ en:{
  l_laid:p=>`🥚 ${p.c} laid ${p.n} eggs: ${p.good} fertile, ${p.slug} ${p.slug===1?'slug':'slugs'}. Moved to the incubator (~58 days).`,
  l_ovul:p=>`💛 ${p.f} ovulated after pairing with ${p.m}. Expect eggs in about 2 months.`,
  l_noovul:p=>`${p.f} didn’t ovulate this month. Try pairing again.`,
- l_soldad:p=>`💰 ${p.c} ${p.n} sold through your listing: ${p.v}.`,
+ l_soldad:p=>`💰 ${p.c} ${p.n} sold through your listing: ${p.v}.`,l_oldage:p=>`🕯️ ${p.c} ${p.n} died of old age at ${t('age',{m:p.a})}${p.gr?' (she was gravid, so the eggs were lost too)':''}.`,
  l_costs:p=>`Monthly costs: feeders ${p.food}, power & racks ${p.util}${p.over?`, emergency tubs ${p.over} (over capacity!)`:''}.`,
  l_orderexp:p=>`The order from ${buyerName(p)} (${p.n}) expired.`,
  l_ordernew:p=>`📬 New order from ${buyerName(p)}: ${p.sx}${p.n} — reward ${p.r}.`,
@@ -414,7 +414,7 @@ en:{
  ev_flood:p=>`The market is flooded with ${p.g}; prices are down 20%.`,
  ev_trend:p=>`${p.g} is trending on the forums; prices are up 25%.`,
  ev_food:'Feeder rat prices are up this month (+50% feeding costs).',
- h_born:p=>`${p.n} hatched`,h_new:p=>'New morph: '+p.n,h_laid:p=>`${p.c} laid ${p.n} fertile eggs`,h_gravid:p=>`${p.c} is gravid`,h_sold:p=>`${p.c} sold for ${p.v}`,h_quiet:' — a quiet month.',
+ h_born:p=>`${p.n} hatched`,h_new:p=>'New morph: '+p.n,h_laid:p=>`${p.c} laid ${p.n} fertile eggs`,h_gravid:p=>`${p.c} is gravid`,h_sold:p=>`${p.c} sold for ${p.v}`,h_oldage:p=>`${p.c} died of old age`,h_quiet:' — a quiet month.',
  hdr_date:'Turns played',hdr_bal:'Balance',hdr_tubs:'Tubs used',hdr_season:'Season',season_on:'Breeding 🌙',season_off:'Off-season',advance:'Next month ▶',
  tab_koleksi:'Collection',tab_breeding:'Breeding',tab_inkubator:'Incubator',tab_pasar:'Market',tab_pesanan:'Orders',tab_dex:'Morph Dex',tab_panduan:'Genetics guide',
  og_got:'Acquired',og_origin:'Origin keeper',og_chain:'Keeper history',og_you:'you',
@@ -437,7 +437,7 @@ en:{
  dzd_list:'<p>🗑️ Your login, username and game save are permanently deleted.</p><p>👥 All friendships and chats are deleted too.</p><p>🔁 Unanswered trade offers are cancelled; other players’ items go back to them.</p><p>📜 In other players’ trade history you’ll appear as "(deleted account)".</p><p><b>This can’t be undone.</b></p>',
  t_deleted:'Your account has been deleted. Thanks for playing Morph Lab.',e_confirm_mismatch:'The confirmation word doesn’t match.',
  log_title:'Breeder log',log_clear:'🗑️ Clear',log_empty:'No log entries yet.',log_clear_h:'Clear breeder log?',log_clear_q:'All log entries will be permanently deleted. Your collection, money and game progress stay the same.',log_clear_yes:'Yes, clear log',t_logcleared:'Breeder log cleared.',
- tag_gravid:p=>`Gravid · eggs in ~${p.n} mo`,tag_pairedw:p=>`Paired with ${p.c}`,tag_pairs:p=>`${p.n} ${p.n===1?'pairing':'pairings'} this month`,tag_listed:'Listed',tag_ready:'Ready to breed',tag_hatch:'Hatchling',
+ tag_gravid:p=>`Gravid · eggs in ~${p.n} mo`,tag_pairedw:p=>`Paired with ${p.c}`,tag_pairs:p=>`${p.n} ${p.n===1?'pairing':'pairings'} this month`,tag_listed:'Listed',tag_ready:'Ready to breed',tag_hatch:'Hatchling',tag_old:p=>`Old · ${p.a} left`,d_life:'Lifespan',d_life_v:p=>`${p.max} · ${p.left} left`,
  col_sub:p=>`${p.n} ${p.n===1?'snake':'snakes'} · collection value ${p.v} · click a snake to see details, sell it or list it.`,
  f_all:'All',f_M:'♂ Males',f_F:'♀ Females',f_ready:'Ready to breed',f_listed:'Listed',
  sort_by:'Sort by',sort_val:'Value',sort_age:'Age',sort_new:'Newest',col_empty:'No snakes match this filter.',
@@ -488,7 +488,7 @@ en:{
  fg_need:'Enter your email first, then click "Forgot password?" again.',fg_sent:p=>`A password reset link was sent to <b>${p.e}</b>.`,
  set_about:'About',ver_server:'Game server version',ver_web:'Web version',ver_ok:'Web & server are on the same latest version.',ver_old_web:'This page is an older version. Reload (Ctrl+Shift+R) to get the latest.',ver_old_server:'The server is being updated; the web version is newer than the server.',ver_reload:'Reload page',
  set_title:'Settings',set_lang:'Language',set_theme:'Color theme',th_terra:'Terrarium',th_terra_d:'Warm brown & amber (default)',th_forest:'Rainforest',th_forest_d:'Deep green & emerald',th_ocean:'Night Ocean',th_ocean_d:'Navy & sky blue',
- pv_open:'See next month’s balance forecast',pv_h:'Next month’s balance forecast',pv_sub:'These costs are deducted automatically when you press “Next month”.',pv_now:'Current balance',pv_food:p=>`Feeders · ${p.n} ${p.n===1?'snake':'snakes'}`,pv_util:p=>`Power & racks · ${p.r} ${p.r===1?'rack':'racks'} × $8`,pv_over:p=>`Emergency tubs · ${p.n} over capacity (${p.c}) × $15`,pv_total:'Total costs',pv_after:'Expected balance',pv_formula:'Feeders per snake: $2 + $1 per 250 g of body weight (using next month’s weight after growth).',pv_debt:'⚠️ Your balance will go negative! Sell, list, or ship snakes to orders first.',pv_n_born:p=>`Includes ${p.n} ${p.n===1?'hatchling':'hatchlings'} due to hatch (could be fewer if an egg fails).`,pv_n_lay:p=>`${p.n} ${p.n===1?'female':'females'} will lay eggs and lose ~28% of their weight, so feeding them costs less.`,pv_n_foodx:'Feeder prices are up +50% (this month’s event).',pv_n_listed:p=>`Doesn’t include money from ${p.n} listed ${p.n===1?'snake':'snakes'} if they sell.`,pv_n_random:'This is an estimate: growth and new events are random.',
+ pv_open:'See next month’s balance forecast',pv_h:'Next month’s balance forecast',pv_sub:'These costs are deducted automatically when you press “Next month”.',pv_now:'Current balance',pv_food:p=>`Feeders · ${p.n} ${p.n===1?'snake':'snakes'}`,pv_util:p=>`Power & racks · ${p.r} ${p.r===1?'rack':'racks'} × $8`,pv_over:p=>`Emergency tubs · ${p.n} over capacity (${p.c}) × $15`,pv_total:'Total costs',pv_after:'Expected balance',pv_formula:'Feeders per snake: $2 + $1 per 250 g of body weight (using next month’s weight after growth).',pv_debt:'⚠️ Your balance will go negative! Sell, list, or ship snakes to orders first.',pv_n_born:p=>`Includes ${p.n} ${p.n===1?'hatchling':'hatchlings'} due to hatch (could be fewer if an egg fails).`,pv_n_lay:p=>`${p.n} ${p.n===1?'female':'females'} will lay eggs and lose ~28% of their weight, so feeding them costs less.`,pv_n_foodx:'Feeder prices are up +50% (this month’s event).',pv_n_listed:p=>`Doesn’t include money from ${p.n} listed ${p.n===1?'snake':'snakes'} if they sell.`,pv_n_old:p=>`${p.n} ${p.n===1?'snake':'snakes'} will die of old age next month, so they aren’t counted in feeder costs.`,pv_n_random:'This is an estimate: growth and new events are random.',
  tab_teman:'Friends',tab_global:'Global chat',gc_sub:p=>`Chat with every Morph Lab player. Only the last ${p.n} messages are kept; older ones are deleted automatically.`,gc_ph:'Write a message to everyone…',gc_empty:'No messages yet. Be the first to say hi!',e_empty_message:'The message is empty.',e_message_too_long:'The message is too long.',busy:'One moment, still working…',
  so_login:'Log in to add friends, chat and trade.',so_login_btn:'☁️ Log in / Sign up',
  so_offline:'Friends need a connection to the server. Check your internet connection and reload the page.',
@@ -556,7 +556,7 @@ en:{
 <h3>3. BEL complex (Mojave & Lesser)</h3><p>Mojave and Lesser are <b>alleles at the same locus</b>. Any combination of two of them (Super Mojave, Super Lesser, Mojave Lesser) produces a <b>Blue-Eyed Leucistic</b>: solid white with blue eyes. Because it is one locus, a BEL always passes exactly one Mojave/Lesser allele to each baby.</p>
 <h3>4. Dominant: Spider, Pinstripe</h3><p>One copy shows fully, and two copies look the same. Real-world note: Spider is linked to a neurological problem ("wobble"), and many breeders have stopped producing it. It stays in this game for educational purposes.</p>
 <h3>5. Famous combos</h3><p>Pastel + Spider = <b>Bumblebee</b> · Super Pastel + Spider = <b>Killer Bee</b> · Pastel + Pinstripe = <b>Lemon Blast</b> · Spider + Pinstripe = <b>Spinner</b> · Albino + Axanthic = <b>Snow</b>.</p>
-<h3>6. Breeding cycle</h3><ul><li>There is no breeding season: snakes can be paired any time once they’re old enough.</li><li>Males are ready at ≥10 months and can be paired with up to 4 females per month.</li><li>Females are ready at ≥24 months, as long as they aren’t gravid and haven’t laid in the last 8 months.</li><li>Each month a paired female has a ~55% chance to ovulate; she lays about 2 months later, and the eggs hatch about 2 months after that.</li><li>Clutch size depends on the female’s weight: heavier females lay more eggs. About 12% of eggs are slugs (infertile).</li><li>Females lose about 28% of their weight after laying.</li><li>🌡️ Incubator temperature sets the babies’ sex: 29 °C = ♀80% / ♂20%, 31 °C = 50/50, 33 °C = ♀20% / ♂80%. You can change it in the Incubator tab only during the first third of incubation.</li></ul>
+<h3>6. Breeding cycle</h3><ul><li>There is no breeding season: snakes can be paired any time once they’re old enough.</li><li>Males are ready at ≥10 months and can be paired with up to 4 females per month.</li><li>Ball python lifespan: <b>30 years</b> (360 months). A snake that reaches it dies of old age. An <b>Old</b> tag appears during its last 12 months.</li><li>Females are ready at ≥24 months, as long as they aren’t gravid and haven’t laid in the last 8 months.</li><li>Each month a paired female has a ~55% chance to ovulate; she lays about 2 months later, and the eggs hatch about 2 months after that.</li><li>Clutch size depends on the female’s weight: heavier females lay more eggs. About 12% of eggs are slugs (infertile).</li><li>Females lose about 28% of their weight after laying.</li><li>🌡️ Incubator temperature sets the babies’ sex: 29 °C = ♀80% / ♂20%, 31 °C = 50/50, 33 °C = ♀20% / ♂80%. You can change it in the Incubator tab only during the first third of incubation.</li></ul>
 <h3>7. Economy</h3><p>Prices for each gene rise and fall. If you keep selling the same morph, the market gets saturated and its price drops. Females are worth more, and adults are worth more than hatchlings. Quick selling pays 60% of the value right away; a listing pays 100% but takes time.</p>`
 }};
 let LANG=(()=>{try{const l=localStorage.getItem('morphlab_lang');if(l==='id'||l==='en')return l}catch(e){}
@@ -654,6 +654,7 @@ function tags(s){const o=[];
  if(s.listed)o.push(`<span class="tag a">${t('tag_listed')}</span>`);
  if(!readyMsg(s))o.push(`<span class="tag g">${t('tag_ready')}</span>`);
  if(s.age<4)o.push(`<span class="tag">${t('tag_hatch')}</span>`);
+ if(lifeLeft(s)<=OLD_WARN)o.push(`<span class="tag b">${t('tag_old',{a:ageTxt(lifeLeft(s))})}</span>`);
  return o.join('')}
 function card(s){const tr=traitsOf(s.g);return `<div class="card click" data-open="${s.id}"><img class="snk" src="${thumb(tr,s.seed)}" alt="${esc(fullName(s))}"><div class="nm">${sexIcon(s.sex)} ${esc(fullName(s))}</div><div class="het">${esc(hetText(s))}</div><div class="meta">${s.nick?esc(s.nick)+' · ':''}${code(s)} · ${ageTxt(s.age)} · ${fmt(s.w)} g</div><div class="tags">${tags(s)}</div><div class="val">${money(value(s))}</div></div>`}
 function logLine(l){const d=l.m?dateOf(l.w):l.d;const txt=l.m?t(l.m,l.p):l.t;return `<li class="${l.k}"><span class="d">${esc(d)}</span>${esc(txt)}</li>`}
@@ -678,6 +679,7 @@ function showPreview(){const p=previewNext();const row=(ic,k,v,cls)=>`<tr class=
  const notes=[];
  if(p.born)notes.push(t('pv_n_born',{n:p.born}));
  if(p.laying)notes.push(t('pv_n_lay',{n:p.laying}));
+ if(p.dying)notes.push(t('pv_n_old',{n:p.dying}));
  if(p.foodx>1)notes.push(t('pv_n_foodx'));
  if(p.listed)notes.push(t('pv_n_listed',{n:p.listed}));
  notes.push(t('pv_n_random'));
@@ -792,7 +794,7 @@ function modal(h,lock){MODAL_LOCK=!!lock;const m=$('modal');m.innerHTML=`<div cl
 function closeModal(force){if(MODAL_LOCK&&!force)return;MODAL_LOCK=false;$('modal').classList.add('hidden');$('modal').innerHTML=''}
 function openSnake(id){const s=byId(id);if(!s)return;const tr=traitsOf(s.g),r=readyMsg(s);
  modal(`<img class="big" src="${thumb(tr,s.seed,true)}"><h2 style="margin-top:12px">${sexIcon(s.sex)} ${esc(fullName(s))}</h2><div class="het">${esc(hetText(s))}</div>
- <dl><dt>${t('d_code')}</dt><dd>${code(s)}</dd><dt>${t('d_agew')}</dt><dd>${ageTxt(s.age)} · ${fmt(s.w)} g</dd><dt>${t('d_sire')}</dt><dd>${esc(s.sire||t('d_unknown'))}</dd><dt>${t('d_dam')}</dt><dd>${esc(s.dam||t('d_unknown'))}</dd><dt>${t('og_got')}</dt><dd>${srcTxt(s)}</dd><dt>${t('og_origin')}</dt><dd>${(o=>whoTxt(o.u)+` <span class="kbd">(${t(OG_HOW[o.how]||'og_unknown')})</span>`)(originOf(s,null))}</dd>${(s.keepers||[]).length?`<dt>${t('og_chain')}</dt><dd>${s.keepers.map(u=>profLink(u)).join(' → ')} → ${t('og_you')}</dd>`:''}<dt>${t('d_status')}</dt><dd>${r?'⏳ '+esc(t(r)):t('ready_ok')}</dd><dt>${t('d_value')}</dt><dd><b>${money(value(s))}</b></dd></dl>
+ <dl><dt>${t('d_code')}</dt><dd>${code(s)}</dd><dt>${t('d_agew')}</dt><dd>${ageTxt(s.age)} · ${fmt(s.w)} g</dd><dt>${t('d_life')}</dt><dd>${t('d_life_v',{max:ageTxt(maxAge(s)),left:ageTxt(lifeLeft(s))})}</dd><dt>${t('d_sire')}</dt><dd>${esc(s.sire||t('d_unknown'))}</dd><dt>${t('d_dam')}</dt><dd>${esc(s.dam||t('d_unknown'))}</dd><dt>${t('og_got')}</dt><dd>${srcTxt(s)}</dd><dt>${t('og_origin')}</dt><dd>${(o=>whoTxt(o.u)+` <span class="kbd">(${t(OG_HOW[o.how]||'og_unknown')})</span>`)(originOf(s,null))}</dd>${(s.keepers||[]).length?`<dt>${t('og_chain')}</dt><dd>${s.keepers.map(u=>profLink(u)).join(' → ')} → ${t('og_you')}</dd>`:''}<dt>${t('d_status')}</dt><dd>${r?'⏳ '+esc(t(r)):t('ready_ok')}</dd><dt>${t('d_value')}</dt><dd><b>${money(value(s))}</b></dd></dl>
  <div class="row"><input id="nick" maxlength="24" placeholder="${t('nick_ph')}" value="${esc(s.nick)}"><button data-act="nick" data-id="${s.id}">${t('save')}</button></div>
  <div class="actions"><button class="pri" data-act="list" data-id="${s.id}" ${s.gravid?'disabled':''}>${s.listed?t('unlist'):t('list',{v:money(value(s))})}</button><button data-act="quicksell" data-id="${s.id}" ${s.gravid?'disabled':''}>${t('quick',{v:money(value(s)*.6)})}</button><button data-act="tobreed" data-id="${s.id}">${t('plan')}</button><button class="ghost" data-act="close">${t('close')}</button></div>
  ${s.gravid?`<p class="kbd">${t('gravid_nosale')}</p>`:''}`)}

@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:12,date:'2026-11-19'};
+const VERSION={v:13,date:'2026-11-19'};
 const BUYER_COUNT=8;      // jumlah nama pembeli di kamus bahasa
 
 /* ========= DATA GENETIKA ========= */
@@ -109,6 +109,12 @@ function value(s){const tr=traitsOf(s.g),vs=new Set(tr);let v=baseValue(tr);
 function newSnake(o){return Object.assign({id:null,sex:'M',age:0,w:70,g:emptyGeno(),hp:{},sire:null,dam:null,gen:0,seed:Math.floor(R()*1e9),lastLaid:-99,listed:false,pairedWith:null,pairs:0,gravid:null,nick:''},o)}
 function addSnake(s){s.id=S.nextId++;S.snakes.push(s);return s}
 const byId=id=>S.snakes.find(s=>s.id===id);
+// Batas umur per spesies (dalam turn = bulan). Ular mati karena tua begitu umurnya mencapai batas ini.
+// Spesies baru cukup ditambah di sini; ular tanpa s.sp dianggap ball python.
+const SPECIES={ball:{maxAge:360}};   // ball python: 30 tahun
+const OLD_WARN=12;                   // label "Tua" muncul saat sisa umur <= 12 bulan
+const maxAge=s=>(SPECIES[s&&s.sp]||SPECIES.ball).maxAge;
+const lifeLeft=s=>Math.max(0,maxAge(s)-s.age);
 // Syarat kawin: cukup umur (tidak ada musim kawin & syarat berat).
 function femaleReady(s){if(s.gravid)return 'r_gravid';if(s.age<24)return 'r_fage';if(S.turn-s.lastLaid<8)return 'r_recover';if(s.listed)return 'r_listed';return ''}
 function maleReady(s){if(s.age<10)return 'r_mage';if(s.pairs>=4)return 'r_mpairs';if(s.listed)return 'r_listed';return ''}
@@ -190,14 +196,15 @@ function monthlyCosts(snakes,racks,ev){
 // Belum termasuk penjualan dari iklan & event baru (keduanya acak).
 function previewNext(){
  const ev=S.event||{};let born=0,laying=0;
- const list=S.snakes.map(s=>({w:s.w,sex:s.sex,gravid:s.gravid?{layIn:s.gravid.layIn}:null,pairs:s.pairs||0}));
+ const alive=S.snakes.filter(s=>s.age+1<maxAge(s)),dying=S.snakes.length-alive.length;
+ const list=alive.map(s=>({w:s.w,sex:s.sex,gravid:s.gravid?{layIn:s.gravid.layIn}:null,pairs:s.pairs||0}));
  for(const c of S.clutches)if(c.hatchIn<=1){const n=Math.round(c.eggs.length*0.96);born+=n;for(let i=0;i<n;i++)list.push({w:75,sex:'H',gravid:null,pairs:0})}
  for(const s of list){if(s.gravid&&s.gravid.layIn<=1){s.w=Math.round(s.w*.72);s.gravid=null;laying++}}
  for(const s of list){if(s.sex==='M'&&s.pairs)s.w=Math.round(s.w*(1-.015*s.pairs))}
  for(const s of list){if(s.gravid){s.w=Math.round(s.w*0.99);continue}
   const K=s.sex==='F'?2300:s.sex==='M'?1400:1850,r=s.sex==='F'?0.14:s.sex==='M'?0.18:0.16;s.w=Math.round(s.w+r*s.w*(1-s.w/K))}
  const c=monthlyCosts(list,S.racks,ev);
- return{...c,count:list.length,born,laying,racks:S.racks,cap:cap(),overN:Math.max(0,list.length-cap()),foodx:ev.food||1,
+ return{...c,count:list.length,born,laying,dying,racks:S.racks,cap:cap(),overN:Math.max(0,list.length-cap()),foodx:ev.food||1,
   listed:S.snakes.filter(s=>s.listed).length,money:S.money,after:S.money-c.total}}
 
 /* ========= MAJU SATU BULAN ========= */
@@ -237,6 +244,8 @@ function advance(){
  S.snakes.forEach(s=>{if(s.sex==='M'&&s.pairs){s.w=Math.round(s.w*(1-.015*s.pairs));s.pairs=0}});
  // 4. pertumbuhan
  S.snakes.forEach(s=>{s.age++;grow(s)});
+ // 4b. mati karena tua (ular yang sedang bunting ikut mati bersama telurnya)
+ for(const s of S.snakes.slice())if(s.age>=maxAge(s)){log('l_oldage',{c:code(s),n:fullName(s),a:s.age,gr:s.gravid?1:0},'bad');head.push(['h_oldage',{c:code(s)}]);removeSnake(s)}
  // 5. iklan
  for(const s of S.snakes.slice()){if(!s.listed)continue;if(R()<(ev.expo?.7:.35)){const v=value(s);S.money+=v;S.stats.sold++;S.stats.earned+=v;traitsOf(s.g).forEach(t=>S.mm[t]=mm(t)*.97);log('l_soldad',{c:code(s),n:fullName(s),v:money(v)},'good');head.push(['h_sold',{c:code(s),v:money(v)}]);removeSnake(s)}}
  // 6. biaya
@@ -313,6 +322,7 @@ root.MorphCore={
  use(s){S=s},state(){return S},
  mi,yr,cap,log,rackPrice,
  emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,
+ SPECIES,OLD_WARN,maxAge,lifeLeft,
  mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,matches,
  monthlyCosts,previewNext,
  MARKET_SIZE,MARKET_EVERY,BUY_MULT,MARKET_POOL,listingTraits,marketBase,marketPrice,marketLeft,refreshMarket,ensureMarket,marketOk,
