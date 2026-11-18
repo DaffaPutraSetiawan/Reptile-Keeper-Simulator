@@ -147,12 +147,14 @@ create or replace function public._public_snake(s jsonb)
 returns jsonb language plpgsql immutable set search_path = '' as $$
 declare k text; g jsonb := coalesce(s -> 'g', '{}'::jsonb);
 begin
-  foreach k in array array['albino', 'piebald', 'clown', 'axanthic'] loop
+  -- gen resesif yang tidak terlihat (het) disembunyikan dari pemain lain
+  foreach k in array array['albino', 'piebald', 'clown', 'axanthic',
+                           'tremper', 'bell', 'rainwater', 'eclipse', 'blizzard', 'murphy', 'marble'] loop
     if g ? k and (g -> k) <> '[1, 1]'::jsonb then
       g := jsonb_set(g, array[k], '[0, 0]'::jsonb);
     end if;
   end loop;
-  return jsonb_build_object('id', s -> 'id', 'sex', s -> 'sex', 'age', s -> 'age', 'w', s -> 'w',
+  return jsonb_build_object('id', s -> 'id', 'sp', coalesce(s -> 'sp', '"ball"'::jsonb), 'sex', s -> 'sex', 'age', s -> 'age', 'w', s -> 'w',
     'g', g, 'hp', coalesce(s -> 'hp', '{}'::jsonb), 'gen', s -> 'gen', 'seed', s -> 'seed',
     'sire', s -> 'sire', 'dam', s -> 'dam', 'nick', coalesce(s -> 'nick', '""'::jsonb),
     'src', s -> 'src', 'origin', s -> 'origin', 'keepers', s -> 'keepers');
@@ -161,14 +163,16 @@ end $$;
 -- Validasi dasar data ular (menolak data rusak / tidak masuk akal).
 create or replace function public._valid_snake(s jsonb)
 returns boolean language plpgsql immutable set search_path = '' as $$
-declare k text; a jsonb; v jsonb; maxv int;
+declare k text; a jsonb; v jsonb; maxv int; v_sp text := coalesce(s ->> 'sp', 'ball');
 begin
   if jsonb_typeof(s) <> 'object' or jsonb_typeof(s -> 'g') <> 'object' then return false; end if;
+  if v_sp not in ('ball', 'leo') then return false; end if;   -- spesies yang dikenal game
   if coalesce(s ->> 'sex', '') not in ('M', 'F') then return false; end if;
   if jsonb_typeof(s -> 'age') <> 'number' or (s ->> 'age')::numeric not between 0 and 600 then return false; end if;
-  if jsonb_typeof(s -> 'w') <> 'number' or (s ->> 'w')::numeric not between 20 and 6000 then return false; end if;
+  if jsonb_typeof(s -> 'w') <> 'number' or (s ->> 'w')::numeric not between 1 and 6000 then return false; end if;
   for k, a in select * from jsonb_each(s -> 'g') loop
-    if k not in ('pastel','bel','enchi','yb','cinnamon','banana','spider','pinstripe','albino','piebald','clown','axanthic') then return false; end if;
+    if v_sp = 'ball' and k not in ('pastel','bel','enchi','yb','cinnamon','banana','spider','pinstripe','albino','piebald','clown','axanthic') then return false; end if;
+    if v_sp = 'leo' and k not in ('tremper','bell','rainwater','eclipse','blizzard','murphy','marble','macksnow','giant','lemonfrost','enigma','wy') then return false; end if;
     if jsonb_typeof(a) <> 'array' or jsonb_array_length(a) <> 2 then return false; end if;
     maxv := case when k = 'bel' then 2 else 1 end;
     for v in select * from jsonb_array_elements(a) loop

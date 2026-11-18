@@ -8,11 +8,13 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:14,date:'2026-11-19'};
+const VERSION={v:15,date:'2026-11-19'};
 const BUYER_COUNT=8;      // jumlah nama pembeli di kamus bahasa
 
 /* ========= DATA GENETIKA ========= */
-const LOCI=[
+// Kunci gen dibuat unik untuk semua spesies, jadi spesies sebuah genotipe bisa dikenali dari kuncinya.
+// t: 'id' = co-dominan (2 salinan = bentuk super sk) · 'dom' = dominan · 'rec' = resesif · 'bel' = kompleks BEL
+const BALL_LOCI=[
  {k:'pastel',t:'id',a:'Pastel',sk:'superpastel'},
  {k:'bel',t:'bel',a:'Mojave/Lesser'},
  {k:'enchi',t:'id',a:'Enchi',sk:'superenchi'},
@@ -26,10 +28,61 @@ const LOCI=[
  {k:'clown',t:'rec',a:'Clown'},
  {k:'axanthic',t:'rec',a:'Axanthic'},
 ];
-const TL={pastel:'Pastel',superpastel:'Super Pastel',mojave:'Mojave',lesser:'Lesser',bel:'BEL',enchi:'Enchi',superenchi:'Super Enchi',yb:'Yellow Belly',ivory:'Ivory',cinnamon:'Cinnamon',supercinnamon:'Super Cinnamon',banana:'Banana',superbanana:'Super Banana',spider:'Spider',pinstripe:'Pinstripe',albino:'Albino',piebald:'Piebald',clown:'Clown',axanthic:'Axanthic'};
-const TV={pastel:45,superpastel:150,mojave:55,lesser:55,bel:600,enchi:60,superenchi:260,yb:40,ivory:280,cinnamon:50,supercinnamon:260,banana:140,superbanana:500,spider:70,pinstripe:60,albino:280,piebald:380,clown:520,axanthic:300};
-const TLOC={pastel:'pastel',superpastel:'pastel',mojave:'bel',lesser:'bel',bel:'bel',enchi:'enchi',superenchi:'enchi',yb:'yb',ivory:'yb',cinnamon:'cinnamon',supercinnamon:'cinnamon',banana:'banana',superbanana:'banana',spider:'spider',pinstripe:'pinstripe',albino:'albino',piebald:'piebald',clown:'clown',axanthic:'axanthic'};
+// Leopard gecko. Tiga strain albino ada di lokus berbeda, jadi Tremper × Bell tidak menghasilkan albino.
+const LEO_LOCI=[
+ {k:'tremper',t:'rec',a:'Tremper Albino'},
+ {k:'bell',t:'rec',a:'Bell Albino'},
+ {k:'rainwater',t:'rec',a:'Rainwater Albino'},
+ {k:'eclipse',t:'rec',a:'Eclipse'},
+ {k:'blizzard',t:'rec',a:'Blizzard'},
+ {k:'murphy',t:'rec',a:'Murphy Patternless'},
+ {k:'marble',t:'rec',a:'Marble Eye'},
+ {k:'macksnow',t:'id',a:'Mack Snow',sk:'supersnow'},
+ {k:'giant',t:'id',a:'Giant',sk:'supergiant'},
+ {k:'lemonfrost',t:'id',a:'Lemon Frost',sk:'superlemonfrost'},
+ {k:'enigma',t:'dom',a:'Enigma'},
+ {k:'wy',t:'dom',a:'White & Yellow'},
+];
+const LOCI=BALL_LOCI;     // nama lama, tetap dipakai untuk ball python
+const TL={pastel:'Pastel',superpastel:'Super Pastel',mojave:'Mojave',lesser:'Lesser',bel:'BEL',enchi:'Enchi',superenchi:'Super Enchi',yb:'Yellow Belly',ivory:'Ivory',cinnamon:'Cinnamon',supercinnamon:'Super Cinnamon',banana:'Banana',superbanana:'Super Banana',spider:'Spider',pinstripe:'Pinstripe',albino:'Albino',piebald:'Piebald',clown:'Clown',axanthic:'Axanthic',
+ tremper:'Tremper Albino',bell:'Bell Albino',rainwater:'Rainwater Albino',eclipse:'Eclipse',blizzard:'Blizzard',murphy:'Murphy Patternless',marble:'Marble Eye',macksnow:'Mack Snow',supersnow:'Super Snow',giant:'Giant',supergiant:'Super Giant',lemonfrost:'Lemon Frost',superlemonfrost:'Super Lemon Frost',enigma:'Enigma',wy:'White & Yellow'};
+const TV={pastel:45,superpastel:150,mojave:55,lesser:55,bel:600,enchi:60,superenchi:260,yb:40,ivory:280,cinnamon:50,supercinnamon:260,banana:140,superbanana:500,spider:70,pinstripe:60,albino:280,piebald:380,clown:520,axanthic:300,
+ tremper:45,bell:55,rainwater:55,eclipse:60,blizzard:50,murphy:55,marble:70,macksnow:30,supersnow:120,giant:40,supergiant:140,lemonfrost:120,superlemonfrost:360,enigma:45,wy:45};
+const TLOC={pastel:'pastel',superpastel:'pastel',mojave:'bel',lesser:'bel',bel:'bel',enchi:'enchi',superenchi:'enchi',yb:'yb',ivory:'yb',cinnamon:'cinnamon',supercinnamon:'cinnamon',banana:'banana',superbanana:'banana',spider:'spider',pinstripe:'pinstripe',albino:'albino',piebald:'piebald',clown:'clown',axanthic:'axanthic',
+ tremper:'tremper',bell:'bell',rainwater:'rainwater',eclipse:'eclipse',blizzard:'blizzard',murphy:'murphy',marble:'marble',macksnow:'macksnow',supersnow:'macksnow',giant:'giant',supergiant:'giant',lemonfrost:'lemonfrost',superlemonfrost:'lemonfrost',enigma:'enigma',wy:'wy'};
 const ALLT=Object.keys(TL);
+
+/* ========= SPESIES ========= */
+// Semua angka yang berbeda antarspesies ada di sini. 1 turn = 1 bulan; berat dalam gram.
+//  fAge/mAge: umur minimal kawin · recover: jeda bulan setelah bertelur · ovul: peluang ovulasi setelah kawin
+//  layIn: bulan dari ovulasi sampai bertelur · K/r: pertumbuhan logistik (H = bayi yang belum diketahui kelaminnya)
+//  wBonus: [berat awal, pembagi] untuk bonus harga dari berat · inc: lama inkubasi · temp: pilihan suhu inkubator
+const SPECIES={
+ ball:{code:'BP',loci:BALL_LOCI,maxAge:360,base:40,fAge:24,mAge:10,recover:8,ovul:.55,layIn:2,slug:.12,layLoss:.72,gravidLoss:.99,
+  K:{F:2300,M:1400,H:1850},r:{F:.14,M:.18,H:.16},hatchW:[55,95],wBonus:[80,1100],foodBase:2,inc:2,
+  temp:{min:29,max:33,mid:31,step:.5},
+  eggs:f=>clamp(Math.round(2+(f.w-1300)/170+R()*2.5-1),2,11),
+  mk:{baby:{a:[1,3],w:[70,180]},F:{a:[24,30],w:[1500,1900]},M:{a:[10,16],w:[550,900]}},
+  pool:[['normal',8],['pastel',10],['mojave',6],['lesser',6],['enchi',6],['yb',7],['cinnamon',6],['banana',4],['spider',6],['pinstripe',6],['albino',5],['piebald',4],['clown',3],['axanthic',4]],
+  orderBase:['pastel','spider','albino','enchi'],orderSkip:['bel','superbanana','supercinnamon']},
+ leo:{code:'LG',loci:LEO_LOCI,maxAge:240,base:25,fAge:10,mAge:9,recover:2,ovul:.7,layIn:1,slug:.1,layLoss:.9,gravidLoss:1,
+  K:{F:65,M:75,H:70},r:{F:.4,M:.4,H:.4},hatchW:[3,5],wBonus:[4,40],foodBase:1,inc:2,
+  temp:{min:26,max:34,mid:30,step:.5},
+  eggs:()=>R()<.1?1:2,
+  mk:{baby:{a:[1,3],w:[6,15]},F:{a:[10,14],w:[50,62]},M:{a:[9,13],w:[55,70]}},
+  pool:[['normal',8],['tremper',9],['bell',6],['rainwater',5],['eclipse',6],['blizzard',6],['murphy',5],['marble',3],['macksnow',9],['giant',6],['lemonfrost',3],['enigma',5],['wy',5]],
+  orderBase:['macksnow','tremper','eclipse','giant'],orderSkip:['superlemonfrost','supergiant']},
+};
+const SPECIES_LIST=Object.keys(SPECIES);
+const TSP={};for(const sp of SPECIES_LIST)for(const l of SPECIES[sp].loci){TSP[l.k]=sp;if(l.sk)TSP[l.sk]=sp}
+TSP.mojave=TSP.lesser='ball';
+for(const sp of SPECIES_LIST)SPECIES[sp].traits=ALLT.filter(t=>TSP[t]===sp);
+// spesies sebuah objek (ular, clutch, listing pasar, pesanan); data lama tanpa sp = ball python
+const spOf=x=>(x&&x.sp&&SPECIES[x.sp])?x.sp:'ball';
+const spOfG=g=>g&&g.tremper!==undefined?'leo':'ball';
+const spOfTr=tr=>(tr||[]).some(t=>TSP[t]==='leo')?'leo':'ball';
+const lociOf=g=>SPECIES[spOfG(g)].loci;
+const isRec=k=>[...BALL_LOCI,...LEO_LOCI].some(l=>l.k===k&&l.t==='rec');
 
 /* ========= UTIL ========= */
 const R=Math.random;
@@ -37,6 +90,7 @@ const pick=a=>a[Math.floor(R()*a.length)];
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const money=n=>(n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString('en-US');
 const fmt=n=>Math.round(n).toLocaleString('en-US');
+const rint=([a,b])=>a+Math.floor(R()*(b-a+1));
 
 /* ========= STATE ========= */
 const mi=()=>(8+S.turn)%12;
@@ -52,17 +106,18 @@ function trimLog(){if(!Array.isArray(S.log))S.log=[];if(S.log.length>LOG_MAX)S.l
 function log(m,p,k){S.log.unshift({w:S.turn,m,p:p||{},k:k||'info'});trimLog()}
 
 /* ========= GENETIKA ========= */
-const emptyGeno=()=>Object.fromEntries(LOCI.map(l=>[l.k,[0,0]]));
-function G(spec){const g=emptyGeno();for(const k in spec)g[k]=spec[k].slice();return g}
+const emptyGeno=sp=>Object.fromEntries(SPECIES[sp||'ball'].loci.map(l=>[l.k,[0,0]]));
+function G(spec,sp){const g=emptyGeno(sp);for(const k in spec)g[k]=spec[k].slice();return g}
 function locusTraits(l,a){const n=(a[0]?1:0)+(a[1]?1:0);
  if(l.t==='id')return n===1?[l.k]:n===2?[l.sk]:[];
  if(l.t==='bel')return n===1?[(a[0]||a[1])===1?'mojave':'lesser']:n===2?['bel']:[];
  if(l.t==='dom')return n?[l.k]:[];
  return n===2?[l.k]:[]}
-function traitsOf(g){const o=[];for(const l of LOCI)o.push(...locusTraits(l,g[l.k]));return o}
+function traitsOf(g){const o=[];for(const l of lociOf(g))o.push(...locusTraits(l,g[l.k]||[0,0]));return o}
 const INC_ORDER=['superpastel','pastel','superenchi','enchi','superbanana','banana','supercinnamon','cinnamon','mojave','lesser','bel','yb','ivory'];
 const BLABEL={'1,1':'Super Mojave','2,2':'Super Lesser','1,2':'Mojave Lesser','2,1':'Mojave Lesser'};
-function nameOf(tr,g){
+const LEO_ORDER=['supergiant','giant','supersnow','macksnow','superlemonfrost','lemonfrost','wy','enigma','murphy','blizzard','marble','eclipse','tremper','bell','rainwater'];
+function nameBall(tr,g){
  const s=new Set(tr);let combo='';
  const take=(...k)=>{if(k.every(x=>s.has(x))){k.forEach(x=>s.delete(x));return true}return false};
  if(take('pastel','spider','pinstripe'))combo='Spinnerblast';
@@ -77,19 +132,40 @@ function nameOf(tr,g){
  if(s.has('clown'))out.push('Clown');if(s.has('piebald'))out.push('Piebald');
  if(s.has('albino')&&s.has('axanthic'))out.push('Snow');else{if(s.has('axanthic'))out.push('Axanthic');if(s.has('albino'))out.push('Albino')}
  return out.length?out.join(' '):'Normal'}
+// Nama kombinasi leopard gecko (RAPTOR = Tremper Albino + Eclipse, dst.)
+function nameLeo(tr){
+ const s=new Set(tr);let combo='';
+ const take=(...k)=>{if(k.every(x=>s.has(x))){k.forEach(x=>s.delete(x));return true}return false};
+ if(take('tremper','eclipse')){
+  if(take('macksnow','enigma'))combo='Dreamsicle';
+  else if(take('blizzard'))combo='Diablo Blanco';
+  else if(take('murphy'))combo='Ember';
+  else if(take('enigma'))combo='Nova';
+  else if(take('supersnow'))combo='Super RAPTOR';
+  else combo='RAPTOR';
+ }
+ else if(take('bell','eclipse'))combo='RADAR';
+ else if(take('rainwater','eclipse'))combo='Typhoon';
+ else if(take('supersnow','eclipse'))combo='Total Eclipse';
+ if(!combo&&s.has('blizzard')){const a=['tremper','bell','rainwater'].find(x=>s.has(x));
+  if(a){s.delete('blizzard');s.delete(a);combo=(a==='tremper'?'':TL[a].replace(' Albino','')+' ')+'Blazing Blizzard'}}
+ const out=[];for(const k of LEO_ORDER)if(s.has(k))out.push(TL[k]);
+ if(combo)out.push(combo);
+ return out.length?out.join(' '):'Normal'}
+function nameOf(tr,g){return (g?spOfG(g):spOfTr(tr))==='leo'?nameLeo(tr):nameBall(tr,g)}
 const fullName=s=>nameOf(traitsOf(s.g),s.g);
-const code=s=>'BP-'+String(s.id).padStart(4,'0');
-function hetText(s){const v=new Set(traitsOf(s.g));const o=[];for(const l of LOCI){if(l.t!=='rec'||v.has(l.k))continue;const p=(s.hp||{})[l.k]||0;if(p<0.01)continue;o.push(p>=0.999?'het '+l.a:Math.round(p*100)+'% pos het '+l.a)}return o.join(', ')}
+const code=s=>SPECIES[spOfG(s.g)].code+'-'+String(s.id).padStart(4,'0');
+function hetText(s){const v=new Set(traitsOf(s.g));const o=[];for(const l of lociOf(s.g)){if(l.t!=='rec'||v.has(l.k))continue;const p=(s.hp||{})[l.k]||0;if(p<0.01)continue;o.push(p>=0.999?'het '+l.a:Math.round(p*100)+'% pos het '+l.a)}return o.join(', ')}
 // peluang (sepengetahuan pemain) induk menurunkan alel resesif
 function transmitP(s,l){return traitsOf(s.g).includes(l.k)?1:((s.hp||{})[l.k]||0)*0.5}
-function childHp(m,f){const hp={};for(const l of LOCI){if(l.t!=='rec')continue;const a=transmitP(m,l),b=transmitP(f,l),pv=a*b;hp[l.k]=pv>=1?1:(a*(1-b)+b*(1-a))/(1-pv)}return hp}
-function breedGeno(m,f){const g={};for(const l of LOCI)g[l.k]=[pick(m.g[l.k]),pick(f.g[l.k])];return g}
+function childHp(m,f){const hp={};for(const l of lociOf(f.g)){if(l.t!=='rec')continue;const a=transmitP(m,l),b=transmitP(f,l),pv=a*b;hp[l.k]=pv>=1?1:(a*(1-b)+b*(1-a))/(1-pv)}return hp}
+function breedGeno(m,f){const g={};for(const l of lociOf(f.g))g[l.k]=[pick(m.g[l.k]||[0,0]),pick(f.g[l.k]||[0,0])];return g}
 function odds(m,f){
  let dist=[{tr:[],p:1}];
- for(const l of LOCI){
+ for(const l of lociOf(f.g)){
   let oc;
   if(l.t==='rec'){const pv=transmitP(m,l)*transmitP(f,l);oc=[];if(pv>0)oc.push({tr:[l.k],p:pv});if(pv<1)oc.push({tr:[],p:1-pv})}
-  else{const mp=new Map();for(const x of m.g[l.k])for(const y of f.g[l.k]){const tr=locusTraits(l,[x,y]);const k=tr.join();const e=mp.get(k);if(e)e.p+=.25;else mp.set(k,{tr,p:.25})}oc=[...mp.values()]}
+  else{const mp=new Map();for(const x of m.g[l.k]||[0,0])for(const y of f.g[l.k]||[0,0]){const tr=locusTraits(l,[x,y]);const k=tr.join();const e=mp.get(k);if(e)e.p+=.25;else mp.set(k,{tr,p:.25})}oc=[...mp.values()]}
   const nd=new Map();
   for(const d of dist)for(const o of oc){const tr=d.tr.concat(o.tr),k=tr.join('|'),e=nd.get(k);if(e)e.p+=d.p*o.p;else nd.set(k,{tr,p:d.p*o.p})}
   dist=[...nd.values()];
@@ -98,10 +174,10 @@ function odds(m,f){
 
 /* ========= EKONOMI ========= */
 const mm=t=>S.mm[t]||1;
-function baseValue(tr){let sum=0;for(const t of tr)sum+=TV[t]*mm(t);return 40+sum*(1+0.35*Math.max(0,tr.length-1))}
-function value(s){const tr=traitsOf(s.g),vs=new Set(tr);let v=baseValue(tr);
- for(const l of LOCI)if(l.t==='rec'&&!vs.has(l.k))v+=((s.hp||{})[l.k]||0)*TV[l.k]*0.18*mm(l.k);
- if(s.sex==='F')v*=1.35;v*=1+Math.min(1.6,Math.max(0,(s.w-80)/1100));return Math.round(v/5)*5}
+function baseValue(tr,sp){let sum=0;for(const t of tr)sum+=TV[t]*mm(t);return SPECIES[sp||spOfTr(tr)].base+sum*(1+0.35*Math.max(0,tr.length-1))}
+function value(s){const sp=spOfG(s.g),P=SPECIES[sp],tr=traitsOf(s.g),vs=new Set(tr);let v=baseValue(tr,sp);
+ for(const l of P.loci)if(l.t==='rec'&&!vs.has(l.k))v+=((s.hp||{})[l.k]||0)*TV[l.k]*0.18*mm(l.k);
+ if(s.sex==='F')v*=1.35;v*=1+Math.min(1.6,Math.max(0,(s.w-P.wBonus[0])/P.wBonus[1]));return Math.round(v/5)*5}
 
 /* ========= ULAR ========= */
 // Asal-usul: s.src = cara pemilik sekarang mendapatkannya {t:'starter'|'market'|'bred'|'trade', turn, from?}.
@@ -109,58 +185,65 @@ function value(s){const tr=traitsOf(s.g),vs=new Set(tr);let v=baseValue(tr);
 function newSnake(o){return Object.assign({id:null,sex:'M',age:0,w:70,g:emptyGeno(),hp:{},sire:null,dam:null,gen:0,seed:Math.floor(R()*1e9),lastLaid:-99,listed:false,pairedWith:null,pairs:0,gravid:null,nick:''},o)}
 function addSnake(s){s.id=S.nextId++;S.snakes.push(s);return s}
 const byId=id=>S.snakes.find(s=>s.id===id);
-// Batas umur per spesies (dalam turn = bulan). Ular mati karena tua begitu umurnya mencapai batas ini.
-// Spesies baru cukup ditambah di sini; ular tanpa s.sp dianggap ball python.
-const SPECIES={ball:{maxAge:360}};   // ball python: 30 tahun
+// Batas umur per spesies (SPECIES[sp].maxAge, dalam bulan). Ular mati karena tua begitu umurnya mencapai batas ini.
 const OLD_WARN=12;                   // label "Tua" muncul saat sisa umur <= 12 bulan
-const maxAge=s=>(SPECIES[s&&s.sp]||SPECIES.ball).maxAge;
+const maxAge=s=>SPECIES[spOf(s)].maxAge;
 const lifeLeft=s=>Math.max(0,maxAge(s)-s.age);
 // Syarat kawin: cukup umur (tidak ada musim kawin & syarat berat).
-function femaleReady(s){if(s.gravid)return 'r_gravid';if(s.age<24)return 'r_fage';if(S.turn-s.lastLaid<8)return 'r_recover';if(s.listed)return 'r_listed';return ''}
-function maleReady(s){if(s.age<10)return 'r_mage';if(s.pairs>=4)return 'r_mpairs';if(s.listed)return 'r_listed';return ''}
+function femaleReady(s){const sp=spOf(s),P=SPECIES[sp];if(s.gravid)return 'r_gravid';if(s.age<P.fAge)return sp==='ball'?'r_fage':'r_fage_'+sp;if(S.turn-s.lastLaid<P.recover)return 'r_recover';if(s.listed)return 'r_listed';return ''}
+function maleReady(s){const sp=spOf(s);if(s.age<SPECIES[sp].mAge)return sp==='ball'?'r_mage':'r_mage_'+sp;if(s.pairs>=4)return 'r_mpairs';if(s.listed)return 'r_listed';return ''}
 const readyMsg=s=>s.sex==='M'?maleReady(s):femaleReady(s);
 function snap(s){return{id:s.id,g:JSON.parse(JSON.stringify(s.g)),hp:{...s.hp},label:code(s)+' '+fullName(s),gen:s.gen}}
 function removeSnake(s){if(s.sex==='M')S.snakes.forEach(f=>{if(f.pairedWith===s.id)f.pairedWith=null});if(s.pairedWith){const m=byId(s.pairedWith);if(m)m.pairs=Math.max(0,m.pairs-1)}S.snakes=S.snakes.filter(x=>x!==s)}
-function dexAdd(tr){const k=nameOf(tr);if(S.dex[k])return false;S.dex[k]={tr,wt:S.turn};return true}
-function grow(s){if(s.gravid){s.w=Math.round(s.w*0.99);return}const K=s.sex==='F'?2300:1400,r=(s.sex==='F'?0.14:0.18)*(0.85+R()*0.3);s.w=Math.round(s.w+r*s.w*(1-s.w/K))}
+// Morph Dex: kunci ball python = nama morph (seperti dulu); spesies lain diberi awalan, mis. "leo:RAPTOR".
+const dexKey=(tr,sp)=>(sp&&sp!=='ball'?sp+':':'')+nameOf(tr);
+function dexAdd(tr,sp){sp=sp||spOfTr(tr);const k=dexKey(tr,sp);if(S.dex[k])return false;S.dex[k]=sp==='ball'?{tr,wt:S.turn}:{tr,wt:S.turn,sp};return true}
+// Gen Giant membuat tubuh lebih besar (1 salinan ×1,25, Super Giant ×1,6).
+function sizeMult(g){if(!g||!g.giant)return 1;const n=(g.giant[0]?1:0)+(g.giant[1]?1:0);return n===2?1.6:n===1?1.25:1}
+const kOf=(sp,sex,g)=>SPECIES[sp].K[sex==='F'||sex==='M'?sex:'H']*sizeMult(g);
+function growW(sp,sex,w,g,rf){const P=SPECIES[sp],r=P.r[sex==='F'||sex==='M'?sex:'H']*rf;return Math.round(w+r*w*(1-w/kOf(sp,sex,g)))}
+function grow(s){const sp=spOf(s);if(s.gravid){s.w=Math.round(s.w*SPECIES[sp].gravidLoss);return}s.w=growW(sp,s.sex,s.w,s.g,0.85+R()*0.3)}
 
 /* ========= PASAR & PESANAN ========= */
-// Pasar: 3 ular bergen tunggal (atau Normal), gennya tidak boleh sama, stok berganti tiap 50 turn.
-// Tiap ular di pasar bisa dibeli berkali-kali: bayi (2× harga dasar) atau siap kawin (4× harga dasar), ♂ atau ♀.
+// Pasar: tiap spesies punya 3 hewan bergen tunggal (atau Normal), gennya tidak boleh sama, stok berganti tiap 50 turn.
+// Tiap hewan di pasar bisa dibeli berkali-kali: bayi (2× harga dasar) atau siap kawin (4× harga dasar), ♂ atau ♀.
 const MARKET_SIZE=3,MARKET_EVERY=50,BUY_MULT={baby:2,adult:4};
-const MARKET_POOL=[['normal',8],['pastel',10],['mojave',6],['lesser',6],['enchi',6],['yb',7],['cinnamon',6],['banana',4],['spider',6],['pinstripe',6],['albino',5],['piebald',4],['clown',3],['axanthic',4]];
+const MARKET_POOL=SPECIES.ball.pool;
 const POOL=MARKET_POOL;
 function wpick(pool){const tot=pool.reduce((a,b)=>a+b[1],0);let r=R()*tot;for(const p of pool){r-=p[1];if(r<=0)return p[0]}return pool[0][0]}
-function listingGeno(gene){const g=emptyGeno(),hp={};if(gene==='normal')return{g,hp};
+function listingGeno(gene,sp){const g=emptyGeno(sp),hp={};if(gene==='normal')return{g,hp};
  if(gene==='mojave'){g.bel=[1,0];return{g,hp}}if(gene==='lesser'){g.bel=[2,0];return{g,hp}}
- const l=LOCI.find(x=>x.k===gene);if(l.t==='rec'){g[gene]=[1,1];hp[gene]=1}else g[gene]=[1,0];return{g,hp}}
+ const l=SPECIES[sp].loci.find(x=>x.k===gene);if(l.t==='rec'){g[gene]=[1,1];hp[gene]=1}else g[gene]=[1,0];return{g,hp}}
 const listingTraits=L=>L.gene==='normal'?[]:[L.gene];
-const marketBase=L=>Math.round(baseValue(listingTraits(L))/5)*5;          // harga dasar (ikut harga pasar morph)
+const marketBase=L=>Math.round(baseValue(listingTraits(L),spOf(L))/5)*5;     // harga dasar (ikut harga pasar morph)
 const marketPrice=(L,age)=>marketBase(L)*(BUY_MULT[age]||0);
 const marketLeft=()=>Math.max(0,MARKET_EVERY-(S.turn-(S.marketAt||0)));   // turn sampai stok berganti
-function refreshMarket(){const pool=MARKET_POOL.slice();S.market=[];
- while(S.market.length<MARKET_SIZE&&pool.length){const k=wpick(pool);pool.splice(pool.findIndex(p=>p[0]===k),1);S.market.push({lid:Math.floor(R()*1e9),gene:k})}
- S.marketAt=S.turn}
-// Save lama (8 ular, ganti tiap bulan) diubah ke format pasar baru.
-const marketOk=()=>Array.isArray(S.market)&&S.market.length===MARKET_SIZE&&S.market.every(L=>L&&L.gene)&&S.marketAt!=null;
-function ensureMarket(){if(!marketOk())refreshMarket()}
-function makeMarketSnake(L,age,sex){const{g,hp}=listingGeno(L.gene);let a,w;
- if(age==='baby'){a=1+Math.floor(R()*3);w=Math.round(70+R()*110)}
- else if(sex==='F'){a=24+Math.floor(R()*7);w=Math.round(1500+R()*400)}
- else{a=10+Math.floor(R()*7);w=Math.round(550+R()*350)}
- return newSnake({sex,age:a,w,g,hp})}
+// Isi ulang stok satu spesies saja (listing ball python tanpa sp, sama seperti format lama).
+function fillMarket(sp){S.market=(Array.isArray(S.market)?S.market:[]).filter(L=>L&&spOf(L)!==sp);const pool=SPECIES[sp].pool.slice();let n=0;
+ while(n<MARKET_SIZE&&pool.length){const k=wpick(pool);pool.splice(pool.findIndex(p=>p[0]===k),1);const L={lid:Math.floor(R()*1e9),gene:k};if(sp!=='ball')L.sp=sp;S.market.push(L);n++}}
+function refreshMarket(){S.market=[];for(const sp of SPECIES_LIST)fillMarket(sp);S.marketAt=S.turn}
+const spMarketOk=sp=>{const L=S.market.filter(x=>spOf(x)===sp);return L.length===MARKET_SIZE&&new Set(L.map(x=>x.gene)).size===L.length&&L.every(x=>SPECIES[sp].pool.some(p=>p[0]===x.gene))};
+const marketOk=()=>Array.isArray(S.market)&&S.marketAt!=null&&S.market.every(L=>L&&L.gene&&(!L.sp||SPECIES[L.sp]))&&SPECIES_LIST.every(spMarketOk);
+// Save lama: format pasar lama diganti total; spesies baru yang belum punya stok ditambahkan tanpa mengganti stok lain.
+function ensureMarket(){if(marketOk())return;
+ if(!Array.isArray(S.market)||S.marketAt==null||!S.market.every(L=>L&&L.gene&&(!L.sp||SPECIES[L.sp]))){refreshMarket();return}
+ for(const sp of SPECIES_LIST)if(!spMarketOk(sp))fillMarket(sp)}
+function makeMarketSnake(L,age,sex){const sp=spOf(L),{g,hp}=listingGeno(L.gene,sp),M=SPECIES[sp].mk[age==='baby'?'baby':sex];
+ const s=newSnake({sex,age:rint(M.a),w:rint(M.w),g,hp});if(sp!=='ball')s.sp=sp;return s}
 function genOrder(){
+ const hasLeo=S.snakes.some(s=>spOf(s)==='leo');
+ const sp=R()<(hasLeo?.4:.12)?'leo':'ball',P=SPECIES[sp];
  const own=new Set();
- S.snakes.forEach(s=>{traitsOf(s.g).forEach(t=>own.add(t));LOCI.forEach(l=>{if(l.t==='rec'&&((s.hp||{})[l.k]||0)>.4)own.add(l.k)})});
- let pool=[...own];if(pool.length<2)pool=['pastel','spider','albino','enchi'];
- if(R()<.35)pool.push(pick(ALLT.filter(t=>!['bel','superbanana','supercinnamon'].includes(t))));
+ S.snakes.filter(s=>spOf(s)===sp).forEach(s=>{traitsOf(s.g).forEach(t=>own.add(t));P.loci.forEach(l=>{if(l.t==='rec'&&((s.hp||{})[l.k]||0)>.4)own.add(l.k)})});
+ let pool=[...own];if(pool.length<2)pool=P.orderBase.slice();
+ if(R()<.35)pool.push(pick(P.traits.filter(t=>!P.orderSkip.includes(t))));
  const n=R()<.45?1:2;const tr=[];const locs=new Set();let tries=0;
  while(tr.length<n&&tries++<30){const t=pick(pool);if(locs.has(TLOC[t]))continue;locs.add(TLOC[t]);tr.push(t)}
  tr.sort((a,b)=>ALLT.indexOf(a)-ALLT.indexOf(b));
  const sex=R()<.4?'F':R()<.3?'M':null;
- const reward=Math.round((baseValue(tr)*(sex==='F'?1.35:1)*2.1+60)/5)*5;
- return{oid:Math.floor(R()*1e9),tr,sex,reward,left:8+Math.floor(R()*7),bi:Math.floor(R()*BUYER_COUNT)}}
-function matches(o){return S.snakes.filter(s=>{const tr=traitsOf(s.g);return o.tr.every(t=>tr.includes(t))&&(!o.sex||s.sex===o.sex)&&!s.gravid&&!s.listed})}
+ const reward=Math.round((baseValue(tr,sp)*(sex==='F'?1.35:1)*2.1+(sp==='ball'?60:30))/5)*5;
+ const o={oid:Math.floor(R()*1e9),tr,sex,reward,left:8+Math.floor(R()*7),bi:Math.floor(R()*BUYER_COUNT)};if(sp!=='ball')o.sp=sp;return o}
+function matches(o){const sp=spOf(o);return S.snakes.filter(s=>{const tr=traitsOf(s.g);return spOf(s)===sp&&o.tr.every(t=>tr.includes(t))&&(!o.sex||s.sex===o.sex)&&!s.gravid&&!s.listed})}
 
 /* ========= GAME BARU ========= */
 function newGame(){
@@ -168,28 +251,35 @@ function newGame(){
  // Ular awal: sepasang yang sudah cukup umur untuk langsung dikawinkan
  addSnake(newSnake({sex:'M',age:14,w:760,g:G({albino:[1,0]}),hp:{albino:1}}));   // jantan Normal het Albino
  addSnake(newSnake({sex:'F',age:30,w:1750,g:G({albino:[1,1]}),hp:{albino:1}}));   // betina Albino
- S.snakes.forEach(s=>{s.src={t:'starter',turn:0};dexAdd(traitsOf(s.g))});
+ S.snakes.forEach(s=>{s.src={t:'starter',turn:0};dexAdd(traitsOf(s.g),'ball')});
  refreshMarket();S.orders=[genOrder(),genOrder()];
  log('l_welcome',{v:money(2000)},'star');
  return S;
 }
 
 /* ========= INKUBATOR: SUHU & JENIS KELAMIN ========= */
-// Suhu inkubasi tiap clutch menentukan peluang jenis kelamin anak: lebih dingin = lebih banyak betina,
-// lebih hangat = lebih banyak jantan, dibatasi 80% / 20%. Suhu hanya bisa diubah selama sepertiga
-// pertama masa inkubasi (incTotal disimpan per clutch supaya reptil lain bisa punya masa inkubasi berbeda).
-const INC_MONTHS=2,TEMP_MIN=29,TEMP_MAX=33,TEMP_MID=31,TEMP_STEP=.5;
-const femaleChance=temp=>clamp(0.5+(TEMP_MID-(temp==null?TEMP_MID:temp))*0.15,0.2,0.8);
+// Suhu inkubasi tiap clutch menentukan peluang jenis kelamin anak, dibatasi 80% / 20%. Suhu hanya bisa diubah
+// selama sepertiga pertama masa inkubasi (incTotal disimpan per clutch supaya tiap spesies bisa berbeda).
+//  Ball python: lebih dingin = lebih banyak betina (31 °C = 50:50).
+//  Leopard gecko: 26–27 °C hampir semua betina, 30 °C = 50:50, 32–33 °C kebanyakan jantan,
+//  dan di 34 °C kembali kebanyakan betina (pola "hot female" seperti di dunia nyata).
+const INC_MONTHS=2,TEMP_MIN=29,TEMP_MAX=33,TEMP_MID=31,TEMP_STEP=.5;   // nilai ball python (nama lama)
+const tempRange=sp=>SPECIES[sp||'ball'].temp;
+function femaleChance(temp,sp){sp=sp||'ball';const x=temp==null?tempRange(sp).mid:temp;
+ if(sp==='leo')return x>33?clamp(0.2+(x-33)*0.6,0.2,0.8):clamp(0.5+(30-x)*0.1,0.2,0.8);
+ return clamp(0.5+(TEMP_MID-x)*0.15,0.2,0.8)}
 const incTotal=c=>c.incTotal||INC_MONTHS;
 const incElapsed=c=>incTotal(c)-c.hatchIn;
 const tempOpen=c=>incElapsed(c)<incTotal(c)/3;                         // masih bisa diatur?
 const tempMonthsLeft=c=>Math.max(0,Math.ceil(incTotal(c)/3)-incElapsed(c)); // sisa bulan yang masih bisa diatur
+const validTemp=(tp,sp)=>{const T=tempRange(sp);return Number.isFinite(tp)&&tp>=T.min&&tp<=T.max&&Math.round(tp/T.step)*T.step===tp};
 
 /* ========= BIAYA BULANAN ========= */
 // Satu rumus untuk potongan saat "Lanjut bulan" dan untuk pratinjau saldo.
-// pakan: $2 + $1 per 250 g tiap ular (x1.5 saat harga pakan naik) · listrik & rak: $8/rak · tub darurat: $15/ular di atas kapasitas
+// pakan: $2 (ball python) / $1 (gecko) + $1 per 250 g tiap hewan (x1.5 saat harga pakan naik)
+// listrik & rak: $8/rak · tub darurat: $15/hewan di atas kapasitas
 function monthlyCosts(snakes,racks,ev){
- const food=Math.round(snakes.reduce((a,s)=>a+2+s.w/250,0)*((ev&&ev.food)||1));
+ const food=Math.round(snakes.reduce((a,s)=>a+SPECIES[spOf(s)].foodBase+s.w/250,0)*((ev&&ev.food)||1));
  const util=racks*8,over=Math.max(0,snakes.length-racks*10)*15;
  return{food,util,over,total:food+util+over}}
 // Perkiraan biaya bulan depan: meniru urutan advance() dengan nilai rata-rata (tanpa acak).
@@ -197,12 +287,11 @@ function monthlyCosts(snakes,racks,ev){
 function previewNext(){
  const ev=S.event||{};let born=0,laying=0;
  const alive=S.snakes.filter(s=>s.age+1<maxAge(s)),dying=S.snakes.length-alive.length;
- const list=alive.map(s=>({w:s.w,sex:s.sex,gravid:s.gravid?{layIn:s.gravid.layIn}:null,pairs:s.pairs||0}));
- for(const c of S.clutches)if(c.hatchIn<=1){const n=Math.round(c.eggs.length*0.96);born+=n;for(let i=0;i<n;i++)list.push({w:75,sex:'H',gravid:null,pairs:0})}
- for(const s of list){if(s.gravid&&s.gravid.layIn<=1){s.w=Math.round(s.w*.72);s.gravid=null;laying++}}
+ const list=alive.map(s=>({sp:spOf(s),w:s.w,sex:s.sex,g:s.g,gravid:s.gravid?{layIn:s.gravid.layIn}:null,pairs:s.pairs||0}));
+ for(const c of S.clutches)if(c.hatchIn<=1){const sp=spOf(c),hw=SPECIES[sp].hatchW,n=Math.round(c.eggs.length*0.96);born+=n;for(let i=0;i<n;i++)list.push({sp,w:(hw[0]+hw[1])/2,sex:'H',g:null,gravid:null,pairs:0})}
+ for(const s of list){if(s.gravid&&s.gravid.layIn<=1){s.w=Math.round(s.w*SPECIES[s.sp].layLoss);s.gravid=null;laying++}}
  for(const s of list){if(s.sex==='M'&&s.pairs)s.w=Math.round(s.w*(1-.015*s.pairs))}
- for(const s of list){if(s.gravid){s.w=Math.round(s.w*0.99);continue}
-  const K=s.sex==='F'?2300:s.sex==='M'?1400:1850,r=s.sex==='F'?0.14:s.sex==='M'?0.18:0.16;s.w=Math.round(s.w+r*s.w*(1-s.w/K))}
+ for(const s of list){if(s.gravid){s.w=Math.round(s.w*SPECIES[s.sp].gravidLoss);continue}s.w=growW(s.sp,s.sex,s.w,s.g,1)}
  const c=monthlyCosts(list,S.racks,ev);
  return{...c,count:list.length,born,laying,dying,racks:S.racks,cap:cap(),overN:Math.max(0,list.length-cap()),foodx:ev.food||1,
   listed:S.snakes.filter(s=>s.listed).length,money:S.money,after:S.money-c.total}}
@@ -214,13 +303,15 @@ function advance(){
  // 1. inkubator
  for(const c of S.clutches.slice()){
   c.hatchIn--;if(c.hatchIn>0)continue;
+  const sp=spOf(c),P=SPECIES[sp];
   let born=0,dead=0,nm=0,nf=0;const vis=new Set();const newNames=[];
   for(const g of c.eggs){if(R()<.04){dead++;continue}
-   const s=addSnake(newSnake({sex:R()<femaleChance(c.temp)?'F':'M',w:Math.round(55+R()*40),g,hp:{...c.hp},sire:c.sireLabel,dam:c.damLabel,gen:c.gen,src:{t:'bred',turn:S.turn}}));
-   const tr=traitsOf(g);tr.forEach(t=>{if(['albino','piebald','clown','axanthic'].includes(t))vis.add(t)});
-   for(const l of LOCI)if(l.t==='rec'&&tr.includes(l.k))s.hp[l.k]=1;
+   const o={sex:R()<femaleChance(c.temp,sp)?'F':'M',w:rint(P.hatchW),g,hp:{...c.hp},sire:c.sireLabel,dam:c.damLabel,gen:c.gen,src:{t:'bred',turn:S.turn}};if(sp!=='ball')o.sp=sp;
+   const s=addSnake(newSnake(o));
+   const tr=traitsOf(g);tr.forEach(t=>{if(isRec(t))vis.add(t)});
+   for(const l of P.loci)if(l.t==='rec'&&tr.includes(l.k))s.hp[l.k]=1;
    if(s.sex==='F')nf++;else nm++;
-   if(dexAdd(tr))newNames.push(nameOf(tr));born++;}
+   if(dexAdd(tr,sp))newNames.push(nameOf(tr));born++;}
   S.stats.hatched+=born;
   log('l_hatch',{dam:c.damLabel.split(' ')[0],sire:c.sireLabel.split(' ')[0],born,dead,nm,nf},'good');
   head.push(['h_born',{n:born}]);
@@ -230,21 +321,23 @@ function advance(){
  }
  // 2. bertelur
  for(const f of S.snakes){if(!f.gravid)continue;f.gravid.layIn--;if(f.gravid.layIn>0)continue;
-  const m=f.gravid.sire;const n=clamp(Math.round(2+(f.w-1300)/170+R()*2.5-1),2,11);
-  const eggs=[];let slugs=0;for(let i=0;i<n;i++){if(R()<.88)eggs.push(breedGeno(m,f));else slugs++}
-  S.clutches.push({cid:Math.floor(R()*1e9),damId:f.id,sireId:m.id,damLabel:code(f)+' '+fullName(f),sireLabel:m.label,eggs,slugs,hatchIn:INC_MONTHS,incTotal:INC_MONTHS,temp:TEMP_MID,hp:childHp(m,f),gen:Math.max(f.gen,m.gen)+1});
+  const sp=spOf(f),P=SPECIES[sp];
+  const m=f.gravid.sire;const n=P.eggs(f);
+  const eggs=[];let slugs=0;for(let i=0;i<n;i++){if(R()>=P.slug)eggs.push(breedGeno(m,f));else slugs++}
+  const c={cid:Math.floor(R()*1e9),damId:f.id,sireId:m.id,damLabel:code(f)+' '+fullName(f),sireLabel:m.label,eggs,slugs,hatchIn:P.inc,incTotal:P.inc,temp:P.temp.mid,hp:childHp(m,f),gen:Math.max(f.gen,m.gen)+1};
+  if(sp!=='ball')c.sp=sp;S.clutches.push(c);
   S.stats.clutches++;
   log('l_laid',{c:code(f),n,good:eggs.length,slug:slugs},'good');head.push(['h_laid',{c:code(f),n:eggs.length}]);
-  f.gravid=null;f.lastLaid=S.turn;f.w=Math.round(f.w*.72);}
+  f.gravid=null;f.lastLaid=S.turn;f.w=Math.round(f.w*P.layLoss);}
  // 3. ovulasi dari perkawinan bulan lalu
- for(const f of S.snakes){if(!f.pairedWith)continue;const m=byId(f.pairedWith);
-  if(m&&R()<.55){f.gravid={sire:snap(m),layIn:2};log('l_ovul',{f:code(f),m:code(m)},'good');head.push(['h_gravid',{c:code(f)}])}
+ for(const f of S.snakes){if(!f.pairedWith)continue;const m=byId(f.pairedWith),P=SPECIES[spOf(f)];
+  if(m&&R()<P.ovul){f.gravid={sire:snap(m),layIn:P.layIn};log('l_ovul',{f:code(f),m:code(m),n:P.layIn},'good');head.push(['h_gravid',{c:code(f)}])}
   else log('l_noovul',{f:code(f)},'info');
   f.pairedWith=null}
  S.snakes.forEach(s=>{if(s.sex==='M'&&s.pairs){s.w=Math.round(s.w*(1-.015*s.pairs));s.pairs=0}});
  // 4. pertumbuhan
  S.snakes.forEach(s=>{s.age++;grow(s)});
- // 4b. mati karena tua (ular yang sedang bunting ikut mati bersama telurnya)
+ // 4b. mati karena tua (betina yang sedang bunting ikut mati bersama telurnya)
  for(const s of S.snakes.slice())if(s.age>=maxAge(s)){log('l_oldage',{c:code(s),n:fullName(s),a:s.age,gr:s.gravid?1:0},'bad');head.push(['h_oldage',{c:code(s)}]);removeSnake(s)}
  // 5. iklan
  for(const s of S.snakes.slice()){if(!s.listed)continue;if(R()<(ev.expo?.7:.35)){const v=value(s);S.money+=v;S.stats.sold++;S.stats.earned+=v;traitsOf(s.g).forEach(t=>S.mm[t]=mm(t)*.97);log('l_soldad',{c:code(s),n:fullName(s),v:money(v)},'good');head.push(['h_sold',{c:code(s),v:money(v)}]);removeSnake(s)}}
@@ -273,12 +366,13 @@ function advance(){
 function fail(code){throw new Error(code)}
 const toId=x=>{const n=Number(x);if(!Number.isInteger(n))fail('bad_action');return n};
 function mustSnake(id){const s=byId(toId(id));if(!s)fail('snake_not_found');return s}
-// Pastikan ular yang baru masuk (mis. dari trade) tercatat di Morph Dex.
-function syncDex(){for(const s of S.snakes){s.hp=s.hp||{};dexAdd(traitsOf(s.g))}}
+// Pastikan hewan yang baru masuk (mis. dari trade) tercatat di Morph Dex.
+function syncDex(){for(const s of S.snakes){s.hp=s.hp||{};dexAdd(traitsOf(s.g),spOf(s))}}
 const ACTIONS={
  advance(){return{head:advance()}},
  pair(a){const m=mustSnake(a.m),f=mustSnake(a.f);
   if(m.sex!=='M'||f.sex!=='F')fail('bad_action');
+  if(spOf(m)!==spOf(f))fail('species_mismatch');
   if(maleReady(m)||femaleReady(f))fail('not_ready');
   if(f.pairedWith)fail('already_paired');
   f.pairedWith=m.id;m.pairs++;log('l_paired',{m:code(m),f:code(f)});return{toast:'t_paired'}},
@@ -295,12 +389,12 @@ const ACTIONS={
  buy(a){const lid=toId(a.lid);const L=S.market.find(x=>x.lid===lid);if(!L)fail('listing_gone');
   if(!Object.prototype.hasOwnProperty.call(BUY_MULT,a.age)||(a.sex!=='M'&&a.sex!=='F'))fail('bad_action');
   const price=marketPrice(L,a.age);if(S.money<price)fail('not_enough_money');
-  S.money-=price;const s=addSnake(makeMarketSnake(L,a.age,a.sex));s.src={t:'market',turn:S.turn};const nw=dexAdd(traitsOf(s.g));   // listing tetap ada: bisa dibeli lagi
+  S.money-=price;const s=addSnake(makeMarketSnake(L,a.age,a.sex));s.src={t:'market',turn:S.turn};const nw=dexAdd(traitsOf(s.g),spOf(s));   // listing tetap ada: bisa dibeli lagi
   log('l_buy',{c:code(s),n:fullName(s),h:hetText(s),v:money(price)});if(nw)log('l_newmorph',{n:nameOf(traitsOf(s.g))},'star');return{}},
  clearlog(){S.log=[];return{toast:'t_logcleared'}},
  incubate(a){const c=S.clutches.find(x=>x.cid===toId(a.cid));if(!c)fail('clutch_not_found');
   if(!tempOpen(c))fail('temp_locked');
-  const tp=Number(a.temp);if(!Number.isFinite(tp)||tp<TEMP_MIN||tp>TEMP_MAX||Math.round(tp/TEMP_STEP)*TEMP_STEP!==tp)fail('bad_temp');
+  const tp=Number(a.temp);if(!validTemp(tp,spOf(c)))fail('bad_temp');
   c.temp=tp;return{}},
  rack(){const price=rackPrice();if(S.money<price)fail('not_enough_money');S.money-=price;S.racks++;log('l_rack',{cap:cap(),v:money(price)});return{}},
  fulfill(a){const o=S.orders.find(x=>x.oid===toId(a.oid));if(!o)fail('order_gone');const s=mustSnake(a.sid);
@@ -317,16 +411,17 @@ function applyAction(state,a){
 function isState(x){return !!(x&&typeof x==='object'&&Array.isArray(x.snakes)&&typeof x.turn==='number'&&typeof x.money==='number')}
 
 root.MorphCore={
- VERSION,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,POOL,BUYER_COUNT,
+ VERSION,LOCI,BALL_LOCI,LEO_LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,POOL,BUYER_COUNT,
+ SPECIES,SPECIES_LIST,spOf,spOfG,spOfTr,lociOf,isRec,
  R,pick,clamp,money,fmt,
  use(s){S=s},state(){return S},
  mi,yr,cap,log,rackPrice,RACK_MULT,
  emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,
- SPECIES,OLD_WARN,maxAge,lifeLeft,
- mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,matches,
+ OLD_WARN,maxAge,lifeLeft,sizeMult,kOf,growW,
+ mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,dexKey,matches,
  monthlyCosts,previewNext,
- MARKET_SIZE,MARKET_EVERY,BUY_MULT,MARKET_POOL,listingTraits,marketBase,marketPrice,marketLeft,refreshMarket,ensureMarket,marketOk,
- INC_MONTHS,TEMP_MIN,TEMP_MAX,TEMP_MID,TEMP_STEP,femaleChance,incTotal,tempOpen,tempMonthsLeft,
+ MARKET_SIZE,MARKET_EVERY,BUY_MULT,MARKET_POOL,listingTraits,marketBase,marketPrice,marketLeft,refreshMarket,ensureMarket,marketOk,makeMarketSnake,
+ INC_MONTHS,TEMP_MIN,TEMP_MAX,TEMP_MID,TEMP_STEP,tempRange,femaleChance,incTotal,tempOpen,tempMonthsLeft,validTemp,
  newGame,advance,applyAction,syncDex,isState,ACTION_TYPES:Object.keys(ACTIONS)
 };
 })(typeof globalThis!=='undefined'?globalThis:this);
