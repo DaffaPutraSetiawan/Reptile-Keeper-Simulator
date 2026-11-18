@@ -1,4 +1,6 @@
-# Reptile Keeper Simulator — MorphLab
+# Reptile Keeper Simulator — Morph Lab
+
+![Morph Lab — Reptile Breeder Sim](assets/logo.png)
 
 Game simulasi breeding ball python berbasis web, dengan genetika morph yang mengikuti pola pewarisan di dunia nyata.
 
@@ -31,6 +33,7 @@ Bisa juga dimainkan online lewat GitHub Pages: **Settings → Pages → Deploy f
 | `index.html` | Seluruh game (HTML + CSS + JavaScript) |
 | `config.js` | URL & publishable key Supabase (kosong = mode offline) |
 | `supabase/schema.sql` | Tabel `profiles` & `saves` dengan Row Level Security |
+| `assets/` | Logo, favicon, dan ikon aplikasi |
 | `SETUP-SUPABASE.md` | Panduan menyiapkan login & cloud save |
 
 ## Rencana
