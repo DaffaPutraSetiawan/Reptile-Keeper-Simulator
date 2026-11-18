@@ -159,7 +159,7 @@ function hash3(i,j,s){const h=Math.sin(i*127.1+j*311.7+s*0.0131)*43758.5453;retu
 /* ========= BAHASA / LANGUAGE ========= */
 const I18N={
 id:{
- months:['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'],year:'Tahun',
+ turn_n:p=>'Turn '+p.n,
  age:p=>p.m<12?p.m+' bln':Math.floor(p.m/12)+' th'+(p.m%12?' '+p.m%12+' bln':''),
  buyers:['Rina (Bandung)','Pak Darto','Komunitas Herp Jogja','Kevin – Reptile Shop','Mei Ling (Medan)','Toko Sisik Surabaya','Ayu – kolektor','Expo Serpent Jakarta'],
  lang_label:'Bahasa',
@@ -197,7 +197,7 @@ id:{
  // ringkasan bulan (toast)
  h_born:p=>`${p.n} bayi menetas`,h_new:p=>'Morph baru: '+p.n,h_laid:p=>`${p.c} bertelur ${p.n} telur subur`,h_gravid:p=>`${p.c} bunting`,h_sold:p=>`${p.c} laku ${p.v}`,h_quiet:' — bulan tenang.',
  // header & tab
- hdr_date:'Tanggal',hdr_bal:'Saldo',hdr_tubs:'Tub terpakai',hdr_season:'Musim',season_on:'Kawin 🌙',season_off:'Istirahat',advance:'Lanjut bulan ▶',
+ hdr_date:'Turn dimainkan',hdr_bal:'Saldo',hdr_tubs:'Tub terpakai',hdr_season:'Musim',season_on:'Kawin 🌙',season_off:'Istirahat',advance:'Lanjut bulan ▶',
  tab_koleksi:'Koleksi',tab_breeding:'Kawinkan',tab_inkubator:'Inkubator',tab_pasar:'Pasar',tab_pesanan:'Pesanan',tab_dex:'Morph Dex',tab_panduan:'Panduan genetika',
  log_title:'Catatan breeder',
  // tag kartu
@@ -328,7 +328,7 @@ id:{
 <h3>7. Ekonomi</h3><p>Harga tiap gen naik turun. Kalau kamu terus menjual morph yang sama, pasar jadi jenuh dan harganya turun. Betina lebih mahal, dan ular dewasa lebih mahal daripada hatchling. Jual cepat memberi 60% nilai langsung, sedangkan iklan memberi 100% nilai tapi butuh waktu.</p>`
 },
 en:{
- months:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],year:'Year',
+ turn_n:p=>'Turn '+p.n,
  age:p=>p.m<12?p.m+' mo':Math.floor(p.m/12)+' yr'+(p.m%12?' '+p.m%12+' mo':''),
  buyers:['Rina (Bandung)','Mr. Darto','Jogja Herp Community','Kevin – Reptile Shop','Mei Ling (Medan)','Sisik Reptile Store, Surabaya','Ayu – collector','Serpent Expo Jakarta'],
  lang_label:'Language',
@@ -361,7 +361,7 @@ en:{
  ev_trend:p=>`${p.g} is trending on the forums; prices are up 25%.`,
  ev_food:'Feeder rat prices are up this month (+50% feeding costs).',
  h_born:p=>`${p.n} hatched`,h_new:p=>'New morph: '+p.n,h_laid:p=>`${p.c} laid ${p.n} fertile eggs`,h_gravid:p=>`${p.c} is gravid`,h_sold:p=>`${p.c} sold for ${p.v}`,h_quiet:' — a quiet month.',
- hdr_date:'Date',hdr_bal:'Balance',hdr_tubs:'Tubs used',hdr_season:'Season',season_on:'Breeding 🌙',season_off:'Off-season',advance:'Next month ▶',
+ hdr_date:'Turns played',hdr_bal:'Balance',hdr_tubs:'Tubs used',hdr_season:'Season',season_on:'Breeding 🌙',season_off:'Off-season',advance:'Next month ▶',
  tab_koleksi:'Collection',tab_breeding:'Breeding',tab_inkubator:'Incubator',tab_pasar:'Market',tab_pesanan:'Orders',tab_dex:'Morph Dex',tab_panduan:'Genetics guide',
  log_title:'Breeder log',
  tag_gravid:p=>`Gravid · eggs in ~${p.n} mo`,tag_pairedw:p=>`Paired with ${p.c}`,tag_pairs:p=>`${p.n} ${p.n===1?'pairing':'pairings'} this month`,tag_listed:'Listed',tag_ready:'Ready to breed',tag_hatch:'Hatchling',
@@ -489,7 +489,7 @@ function buyerName(o){return o.bi!=null?t('buyers')[o.bi]:(o.buyer||o.b||'')}
 
 /* ========= STATE ========= */
 let S=null, TAB='koleksi', FILTER='all', SORT='val', SEL={m:null,f:null};
-const dateOf=w=>t('months')[(8+w)%12]+' · '+t('year')+' '+(1+Math.floor((8+w)/12));
+const dateOf=w=>t('turn_n',{n:w});
 const dateTxt=()=>dateOf(S.turn);
 // Game hanya bisa dimainkan setelah login; save ada di server (lihat Online & Cloud).
 function setS(x){S=x;if(S)Core.use(S)}
@@ -583,7 +583,7 @@ function logLine(l){const d=l.m?dateOf(l.w):l.d;const txt=l.m?t(l.m,l.p):l.t;ret
 function render(){
  if(!Cloud.user||!S){renderGate();return}
  document.body.classList.remove('gated');
- $('hdr').innerHTML=` <div class="stat"><span>${t('hdr_date')}</span><b>${dateTxt()}</b></div>
+ $('hdr').innerHTML=` <div class="stat"><span>${t('hdr_date')}</span><b>${S.turn}</b></div>
  <div class="stat ${S.money<0?'neg':''}"><span>${t('hdr_bal')}</span><b>${money(S.money)}</b></div>
  <div class="stat"><span>${t('hdr_tubs')}</span><b style="color:${S.snakes.length>cap()?'var(--bad)':'inherit'}">${S.snakes.length}/${cap()}</b></div>
  <div class="langsw" role="group" aria-label="${t('lang_label')}">${['id','en'].map(l=>`<button data-act="lang" data-v="${l}" class="${LANG===l?'on':''}" aria-pressed="${LANG===l}" lang="${l}" title="${l==='id'?'Bahasa Indonesia':'English'}">${l.toUpperCase()}</button>`).join('')}</div>
