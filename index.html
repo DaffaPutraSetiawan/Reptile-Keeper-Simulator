@@ -246,7 +246,7 @@ id:{
  un_h:'Pilih username',un_sub:'Username jadi nama publikmu di Morph Lab dan nanti dipakai untuk trading. Tidak bisa diganti setelah dibuat.',un_save:'Simpan username',
  un_taken_meta:p=>`Username <b>${p.u}</b> sudah dipakai pemain lain. Pilih yang lain.`,
  pw_h:'Buat password baru',pw_new:'Password baru',pw_save:'Simpan password',pw_show:'Lihat password',pw_hide:'Sembunyikan password',
- ac_h:'Akun',ac_status:'Status cloud',ac_ver:'Versi save',ac_notset:'<i>belum dipilih</i>',ac_syncing:'Sedang menyimpan…',ac_saved:p=>'Tersimpan'+(p.t?' '+p.t:''),
+ ac_h:'Akun',ac_status:'Status cloud',ac_notset:'<i>belum dipilih</i>',ac_syncing:'Sedang menyimpan…',ac_saved:p=>'Tersimpan'+(p.t?' '+p.t:''),
  ac_error:p=>`Gagal sync: ${p.e}. Dicoba lagi otomatis.`,ac_conflict:'Menunggu pilihan save',ac_syncnow:'Muat ulang dari server',ac_pick:'Pilih username',ac_logout:'Keluar',
  e_cred:'Email atau password salah.',e_unconf:'Email belum dikonfirmasi. Buka link di email pendaftaranmu dulu.',e_rate:'Terlalu banyak percobaan. Tunggu sebentar lalu coba lagi.',
  e_exists:'Email itu sudah terdaftar. Silakan masuk.',e_weak:'Password terlalu lemah (minimal 6 karakter).',e_uname:'Username 3–20 karakter, hanya huruf, angka, dan _.',
@@ -400,7 +400,7 @@ en:{
  un_h:'Choose a username',un_sub:'Your username is your public name in Morph Lab and will be used for trading later. It can’t be changed once set.',un_save:'Save username',
  un_taken_meta:p=>`The username <b>${p.u}</b> is already taken. Please choose another.`,
  pw_h:'Set a new password',pw_new:'New password',pw_save:'Save password',pw_show:'Show password',pw_hide:'Hide password',
- ac_h:'Account',ac_status:'Cloud status',ac_ver:'Save version',ac_notset:'<i>not set</i>',ac_syncing:'Saving…',ac_saved:p=>'Saved'+(p.t?' at '+p.t:''),
+ ac_h:'Account',ac_status:'Cloud status',ac_notset:'<i>not set</i>',ac_syncing:'Saving…',ac_saved:p=>'Saved'+(p.t?' at '+p.t:''),
  ac_error:p=>`Sync failed: ${p.e}. Retrying automatically.`,ac_conflict:'Waiting for you to pick a save',ac_syncnow:'Reload from server',ac_pick:'Choose username',ac_logout:'Log out',
  e_cred:'Wrong email or password.',e_unconf:'Your email isn’t confirmed yet. Open the link in your sign-up email first.',e_rate:'Too many attempts. Wait a moment and try again.',
  e_exists:'That email is already registered. Please log in.',e_weak:'Password is too weak (at least 6 characters).',e_uname:'Username must be 3–20 characters: letters, numbers and _ only.',
@@ -829,7 +829,7 @@ function showUsername(msg){modal(`<h2>${t('un_h')}</h2><p class="sub">${t('un_su
 function showSetPassword(){modal(`<h2>${t('pw_h')}</h2><form data-form="setpw" class="form" novalidate>${pwField(t('pw_new'),'new-password',t('au_pw_ph'))}<div class="msg"></div><div class="actions"><button class="pri" type="submit">${t('pw_save')}</button></div></form>`,true)}
 function showAccount(){const c=Cloud;const tm=c.lastSaved?new Date(c.lastSaved).toLocaleTimeString(LANG==='id'?'id-ID':'en-GB',{hour:'2-digit',minute:'2-digit'}):'';
  const st={sync:t('ac_syncing'),saved:t('ac_saved',{t:tm}),error:t('ac_error',{e:esc(errText(c.err))})}[c.status]||'';
- modal(`<h2>${t('ac_h')}</h2><dl><dt>Username</dt><dd>${c.profile?esc(c.profile.username):t('ac_notset')}</dd><dt>Email</dt><dd>${esc(c.user.email||'')}</dd><dt>${t('ac_status')}</dt><dd>${st}</dd><dt>${t('ac_mode')}</dt><dd>${t('mode_online_t')}</dd><dt>${t('ac_ver')}</dt><dd>#${S&&S.rev||0}</dd></dl>
+ modal(`<h2>${t('ac_h')}</h2><dl><dt>Username</dt><dd>${c.profile?esc(c.profile.username):t('ac_notset')}</dd><dt>Email</dt><dd>${esc(c.user.email||'')}</dd><dt>${t('ac_status')}</dt><dd>${st}</dd><dt>${t('ac_mode')}</dt><dd>${t('mode_online_t')}</dd></dl>
  <div class="actions"><button class="pri" data-act="syncnow">${t('ac_syncnow')}</button>${c.profile?'':`<button data-act="pickname">${t('ac_pick')}</button>`}<button data-act="logout">${t('ac_logout')}</button><button class="ghost" data-act="close">${t('close')}</button></div>`)}
 const AUTH_ERR=m=>{m=String(m||'');if(/invalid login/i.test(m))return t('e_cred');if(/not confirmed/i.test(m))return t('e_unconf');if(/rate limit|too many/i.test(m))return t('e_rate');if(/already registered|already exists/i.test(m))return t('e_exists');if(/password/i.test(m)&&/6|short|weak/i.test(m))return t('e_weak');return esc(m)};
 async function handleForm(kind,f){
