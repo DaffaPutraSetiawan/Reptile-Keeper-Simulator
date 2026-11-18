@@ -281,7 +281,7 @@ id:{
  dex_extra:'Kombinasi lain yang kamu temukan',save_h:'Simpan / ulang',newgame:'Mulai game baru',
  save_cloud:'Progres dihitung dan disimpan di server, jadi aman dari kecurangan dan bisa dilanjutkan dari perangkat mana pun.',save_local:'Mode offline: progres tersimpan di browser ini saja. Masuk ke akun untuk main online (bisa trading, dihitung server). Save online terpisah dari save offline.',
  // detail ular
- d_code:'Kode',d_agew:'Umur · berat',d_sire:'Induk jantan',d_dam:'Induk betina',d_unknown:'tidak diketahui (dibeli)',d_gen:'Generasi',d_status:'Status kawin',d_value:'Nilai pasar',
+ d_code:'Kode',d_agew:'Umur · berat',d_sire:'Induk jantan',d_dam:'Induk betina',d_unknown:'tidak diketahui (dibeli)',d_status:'Status kawin',d_value:'Nilai pasar',
  nick_ph:'Nama panggilan',save:'Simpan',unlist:'Batalkan iklan',list:p=>'Iklankan · '+p.v,quick:p=>'Jual cepat · '+p.v,plan:'Rencanakan kawin',close:'Tutup',gravid_nosale:'Betina bunting tidak bisa dijual sampai bertelur.',
  // mulai ulang
  btn_cancel:'Batal',
@@ -461,7 +461,7 @@ en:{
  dex_sub:p=>`${p.f}/${p.t} target morphs found · ${p.n} morphs total. Stats: ${p.c} clutches, ${p.h} hatchlings, ${p.s} snakes sold (${p.e}).`,
  dex_extra:'Other combos you discovered',save_h:'Save / restart',newgame:'Start a new game',
  save_cloud:'Progress is calculated and saved on the server, so it can’t be cheated and you can continue on any device.',save_local:'Offline mode: progress is saved in this browser only. Log in to play online (trading, server-calculated). Online and offline saves are separate.',
- d_code:'ID',d_agew:'Age · weight',d_sire:'Sire',d_dam:'Dam',d_unknown:'unknown (purchased)',d_gen:'Generation',d_status:'Breeding status',d_value:'Market value',
+ d_code:'ID',d_agew:'Age · weight',d_sire:'Sire',d_dam:'Dam',d_unknown:'unknown (purchased)',d_status:'Breeding status',d_value:'Market value',
  nick_ph:'Nickname',save:'Save',unlist:'Cancel listing',list:p=>'List for sale · '+p.v,quick:p=>'Quick sell · '+p.v,plan:'Plan a pairing',close:'Close',gravid_nosale:'Gravid females can’t be sold until they lay.',
  btn_cancel:'Cancel',
  acct_nolib:'⚠️ Cloud unavailable',acct_nolib_t:'The Supabase library failed to load',acct_login:'☁️ Log in / Sign up',acct_default:'Account',
@@ -792,7 +792,7 @@ function modal(h,lock){MODAL_LOCK=!!lock;const m=$('modal');m.innerHTML=`<div cl
 function closeModal(force){if(MODAL_LOCK&&!force)return;MODAL_LOCK=false;$('modal').classList.add('hidden');$('modal').innerHTML=''}
 function openSnake(id){const s=byId(id);if(!s)return;const tr=traitsOf(s.g),r=readyMsg(s);
  modal(`<img class="big" src="${thumb(tr,s.seed,true)}"><h2 style="margin-top:12px">${sexIcon(s.sex)} ${esc(fullName(s))}</h2><div class="het">${esc(hetText(s))}</div>
- <dl><dt>${t('d_code')}</dt><dd>${code(s)}</dd><dt>${t('d_agew')}</dt><dd>${ageTxt(s.age)} · ${fmt(s.w)} g</dd><dt>${t('d_sire')}</dt><dd>${esc(s.sire||t('d_unknown'))}</dd><dt>${t('d_dam')}</dt><dd>${esc(s.dam||t('d_unknown'))}</dd><dt>${t('d_gen')}</dt><dd>F${s.gen}</dd><dt>${t('og_got')}</dt><dd>${srcTxt(s)}</dd><dt>${t('og_origin')}</dt><dd>${(o=>whoTxt(o.u)+` <span class="kbd">(${t(OG_HOW[o.how]||'og_unknown')})</span>`)(originOf(s,null))}</dd>${(s.keepers||[]).length?`<dt>${t('og_chain')}</dt><dd>${s.keepers.map(u=>profLink(u)).join(' → ')} → ${t('og_you')}</dd>`:''}<dt>${t('d_status')}</dt><dd>${r?'⏳ '+esc(t(r)):t('ready_ok')}</dd><dt>${t('d_value')}</dt><dd><b>${money(value(s))}</b></dd></dl>
+ <dl><dt>${t('d_code')}</dt><dd>${code(s)}</dd><dt>${t('d_agew')}</dt><dd>${ageTxt(s.age)} · ${fmt(s.w)} g</dd><dt>${t('d_sire')}</dt><dd>${esc(s.sire||t('d_unknown'))}</dd><dt>${t('d_dam')}</dt><dd>${esc(s.dam||t('d_unknown'))}</dd><dt>${t('og_got')}</dt><dd>${srcTxt(s)}</dd><dt>${t('og_origin')}</dt><dd>${(o=>whoTxt(o.u)+` <span class="kbd">(${t(OG_HOW[o.how]||'og_unknown')})</span>`)(originOf(s,null))}</dd>${(s.keepers||[]).length?`<dt>${t('og_chain')}</dt><dd>${s.keepers.map(u=>profLink(u)).join(' → ')} → ${t('og_you')}</dd>`:''}<dt>${t('d_status')}</dt><dd>${r?'⏳ '+esc(t(r)):t('ready_ok')}</dd><dt>${t('d_value')}</dt><dd><b>${money(value(s))}</b></dd></dl>
  <div class="row"><input id="nick" maxlength="24" placeholder="${t('nick_ph')}" value="${esc(s.nick)}"><button data-act="nick" data-id="${s.id}">${t('save')}</button></div>
  <div class="actions"><button class="pri" data-act="list" data-id="${s.id}" ${s.gravid?'disabled':''}>${s.listed?t('unlist'):t('list',{v:money(value(s))})}</button><button data-act="quicksell" data-id="${s.id}" ${s.gravid?'disabled':''}>${t('quick',{v:money(value(s)*.6)})}</button><button data-act="tobreed" data-id="${s.id}">${t('plan')}</button><button class="ghost" data-act="close">${t('close')}</button></div>
  ${s.gravid?`<p class="kbd">${t('gravid_nosale')}</p>`:''}`)}
@@ -1051,7 +1051,7 @@ const profLink=u=>u?`<button type="button" class="linkbtn" data-act="profile" da
 function profAvatar(p){const s=p.showcase[0];return s?`<img src="${thumb(traitsOf(s.g),s.seed)}" alt="">`:`<span>${esc(p.username.charAt(0).toUpperCase())}</span>`}
 function showcaseCard(s,i){const tr=traitsOf(s.g),nm=nameOf(tr,s.g),ht=hetText(s);
  return `<div class="sc-card"><div class="sc-rank">#${i+1}</div><img src="${thumb(tr,s.seed)}" alt=""><div class="sc-name">${sexIcon(s.sex)} ${esc(s.nick||nm)}</div>${s.nick?`<div class="meta">${esc(nm)}</div>`:''}${ht?`<div class="het">${esc(ht)}</div>`:''}
- <div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g${s.gen?' · Gen '+s.gen:''}</div><div class="sc-val">≈ ${money(value(s))}</div>${originLine(s,Profile.cur?Profile.cur.username:false)}</div>`}
+ <div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g</div><div class="sc-val">≈ ${money(value(s))}</div>${originLine(s,Profile.cur?Profile.cur.username:false)}</div>`}
 async function openProfile(u){u=String(u||'').trim();if(!u)return;
  modal(`<div class="empty" style="border:none">${t('pf_loading')}</div>`);
  const{data,error}=await Cloud.sb.rpc('get_profile',{p_username:u});
