@@ -130,6 +130,7 @@ button.sm{padding:4px 10px;font-size:12.5px}
 @media(max-width:560px){.gate-morphs{grid-template-columns:repeat(2,1fr)}}
 .gate-morphs figure{margin:0}.gate-morphs figcaption{font-size:12.5px;color:var(--mut);margin-top:4px;text-align:center}
 .gate-f{list-style:none;padding:0;margin:0 0 6px;display:grid;gap:6px;color:#dcd4c0}
+.origin{font-size:11.5px;color:#c9b98f;margin-top:2px}.origin .linkbtn{color:inherit}
 .linkbtn{background:none;border:0;padding:0;color:inherit;font:inherit;font-weight:inherit;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}.linkbtn:hover{color:var(--acc)}
 .prof .profhead{display:flex;gap:14px;align-items:center}.prof h2{margin:0 0 2px}
 .avatar{width:64px;height:64px;border-radius:50%;overflow:hidden;flex:none;background:#2c2820;border:2px solid var(--acc);display:grid;place-items:center}.avatar img{width:150%;height:150%;object-fit:cover}.avatar span{font-size:28px;font-weight:700;color:var(--acc)}
@@ -211,6 +212,10 @@ id:{
  // header & tab
  hdr_date:'Turn dimainkan',hdr_bal:'Saldo',hdr_tubs:'Tub terpakai',hdr_season:'Musim',season_on:'Kawin 🌙',season_off:'Istirahat',advance:'Lanjut bulan ▶',
  tab_koleksi:'Koleksi',tab_breeding:'Kawinkan',tab_inkubator:'Inkubator',tab_pasar:'Pasar',tab_pesanan:'Pesanan',tab_dex:'Morph Dex',tab_panduan:'Panduan genetika',
+ og_got:'Didapat dari',og_origin:'Origin keeper',og_chain:'Riwayat keeper',og_you:'kamu',
+ og_got_starter:'Ular awal',og_got_market:'Dibeli dari pasar',og_got_bred:'Hasil breeding-mu',og_got_trade:p=>`Trade dengan ${p.u}`,og_got_unknown:'Tidak tercatat (ular lama)',
+ og_bred:'hasil breeding',og_market:'beli dari pasar',og_starter:'ular awal',og_unknown:'asal tidak tercatat',
+ og_line:p=>`Origin: ${p.u} (${p.how})`,og_prev:p=>`${p.n} keeper sebelumnya`,
  pf_title:'Profil',pf_mine:'Profil saya',pf_view:'Lihat profil',pf_loading:'Memuat profil…',pf_you:'kamu',pf_joined:p=>`Bergabung ${p.d}`,
  pf_turn:'Turn',pf_snakes:'Ular',pf_morphs:'Morph ditemukan',pf_hatched:'Menetas',pf_friends:'Teman',
  pf_showcase:'Showcase',pf_nobio:'Belum ada bio.',pf_nobio_self:'Belum ada bio. Klik “Edit profil” untuk memperkenalkan dirimu.',
@@ -390,6 +395,10 @@ en:{
  h_born:p=>`${p.n} hatched`,h_new:p=>'New morph: '+p.n,h_laid:p=>`${p.c} laid ${p.n} fertile eggs`,h_gravid:p=>`${p.c} is gravid`,h_sold:p=>`${p.c} sold for ${p.v}`,h_quiet:' — a quiet month.',
  hdr_date:'Turns played',hdr_bal:'Balance',hdr_tubs:'Tubs used',hdr_season:'Season',season_on:'Breeding 🌙',season_off:'Off-season',advance:'Next month ▶',
  tab_koleksi:'Collection',tab_breeding:'Breeding',tab_inkubator:'Incubator',tab_pasar:'Market',tab_pesanan:'Orders',tab_dex:'Morph Dex',tab_panduan:'Genetics guide',
+ og_got:'Acquired',og_origin:'Origin keeper',og_chain:'Keeper history',og_you:'you',
+ og_got_starter:'Starter snake',og_got_market:'Bought from the market',og_got_bred:'Bred by you',og_got_trade:p=>`Traded with ${p.u}`,og_got_unknown:'Not recorded (older snake)',
+ og_bred:'bred',og_market:'bought from market',og_starter:'starter',og_unknown:'origin not recorded',
+ og_line:p=>`Origin: ${p.u} (${p.how})`,og_prev:p=>`${p.n} previous ${p.n===1?'keeper':'keepers'}`,
  pf_title:'Profile',pf_mine:'My profile',pf_view:'View profile',pf_loading:'Loading profile…',pf_you:'you',pf_joined:p=>`Joined ${p.d}`,
  pf_turn:'Turns',pf_snakes:'Snakes',pf_morphs:'Morphs found',pf_hatched:'Hatched',pf_friends:'Friends',
  pf_showcase:'Showcase',pf_nobio:'No bio yet.',pf_nobio_self:'No bio yet. Click “Edit profile” to introduce yourself.',
@@ -719,7 +728,7 @@ function modal(h,lock){MODAL_LOCK=!!lock;const m=$('modal');m.innerHTML=`<div cl
 function closeModal(force){if(MODAL_LOCK&&!force)return;MODAL_LOCK=false;$('modal').classList.add('hidden');$('modal').innerHTML=''}
 function openSnake(id){const s=byId(id);if(!s)return;const tr=traitsOf(s.g),r=readyMsg(s);
  modal(`<img class="big" src="${thumb(tr,s.seed,true)}"><h2 style="margin-top:12px">${sexIcon(s.sex)} ${esc(fullName(s))}</h2><div class="het">${esc(hetText(s))}</div>
- <dl><dt>${t('d_code')}</dt><dd>${code(s)}</dd><dt>${t('d_agew')}</dt><dd>${ageTxt(s.age)} · ${fmt(s.w)} g</dd><dt>${t('d_sire')}</dt><dd>${esc(s.sire||t('d_unknown'))}</dd><dt>${t('d_dam')}</dt><dd>${esc(s.dam||t('d_unknown'))}</dd><dt>${t('d_gen')}</dt><dd>F${s.gen}</dd><dt>${t('d_status')}</dt><dd>${r?'⏳ '+esc(t(r)):t('ready_ok')}</dd><dt>${t('d_value')}</dt><dd><b>${money(value(s))}</b></dd></dl>
+ <dl><dt>${t('d_code')}</dt><dd>${code(s)}</dd><dt>${t('d_agew')}</dt><dd>${ageTxt(s.age)} · ${fmt(s.w)} g</dd><dt>${t('d_sire')}</dt><dd>${esc(s.sire||t('d_unknown'))}</dd><dt>${t('d_dam')}</dt><dd>${esc(s.dam||t('d_unknown'))}</dd><dt>${t('d_gen')}</dt><dd>F${s.gen}</dd><dt>${t('og_got')}</dt><dd>${srcTxt(s)}</dd><dt>${t('og_origin')}</dt><dd>${(o=>whoTxt(o.u)+` <span class="kbd">(${t(OG_HOW[o.how]||'og_unknown')})</span>`)(originOf(s,null))}</dd>${(s.keepers||[]).length?`<dt>${t('og_chain')}</dt><dd>${s.keepers.map(u=>profLink(u)).join(' → ')} → ${t('og_you')}</dd>`:''}<dt>${t('d_status')}</dt><dd>${r?'⏳ '+esc(t(r)):t('ready_ok')}</dd><dt>${t('d_value')}</dt><dd><b>${money(value(s))}</b></dd></dl>
  <div class="row"><input id="nick" maxlength="24" placeholder="${t('nick_ph')}" value="${esc(s.nick)}"><button data-act="nick" data-id="${s.id}">${t('save')}</button></div>
  <div class="actions"><button class="pri" data-act="list" data-id="${s.id}" ${s.gravid?'disabled':''}>${s.listed?t('unlist'):t('list',{v:money(value(s))})}</button><button data-act="quicksell" data-id="${s.id}" ${s.gravid?'disabled':''}>${t('quick',{v:money(value(s)*.6)})}</button><button data-act="tobreed" data-id="${s.id}">${t('plan')}</button><button class="ghost" data-act="close">${t('close')}</button></div>
  ${s.gravid?`<p class="kbd">${t('gravid_nosale')}</p>`:''}`)}
@@ -935,6 +944,17 @@ function cloudAct(a,el){
  };
  if(!map[a])return false;map[a]();return true}
 
+/* ========= ASAL-USUL (ORIGIN KEEPER) ========= */
+// owner: null = milikku, string = username pemilik sekarang, false = pemilik tidak diketahui (akun dihapus)
+const OG_HOW={bred:'og_bred',market:'og_market',starter:'og_starter',unknown:'og_unknown'};
+const srcOf=s=>s.src||(s.gen>0?{t:'bred'}:null);
+function originOf(s,owner){if(s.origin&&s.origin.u)return{u:s.origin.u,how:s.origin.how};const r=srcOf(s);return{u:owner,how:r&&r.t!=='trade'?r.t:'unknown'}}
+function whoTxt(u,plain){return u===null?t('og_you'):u===false?t('tr_gone'):plain?esc(u):profLink(u)}
+function originLine(s,owner,plain){const o=originOf(s,owner),n=(s.keepers||[]).length;
+ return `<div class="origin">🏷️ ${t('og_line',{u:whoTxt(o.u,plain),how:t(OG_HOW[o.how]||'og_unknown')})}${n?' · '+t('og_prev',{n}):''}</div>`}
+function srcTxt(s){const r=srcOf(s);if(!r)return t('og_got_unknown');const tn=r.turn!=null?' · Turn '+r.turn:'';
+ if(r.t==='trade')return t('og_got_trade',{u:r.from?profLink(r.from):'?'})+tn;return t('og_got_'+r.t)+tn}
+
 /* ========= PROFIL ========= */
 const Profile={cur:null,edit:null};const BIO_MAX=160,SHOW_MAX=5;
 const longDate=d=>new Date(d).toLocaleDateString(LANG==='id'?'id-ID':'en-GB',{day:'numeric',month:'long',year:'numeric'});
@@ -942,7 +962,7 @@ const profLink=u=>u?`<button type="button" class="linkbtn" data-act="profile" da
 function profAvatar(p){const s=p.showcase[0];return s?`<img src="${thumb(traitsOf(s.g),s.seed)}" alt="">`:`<span>${esc(p.username.charAt(0).toUpperCase())}</span>`}
 function showcaseCard(s,i){const tr=traitsOf(s.g),nm=nameOf(tr,s.g),ht=hetText(s);
  return `<div class="sc-card"><div class="sc-rank">#${i+1}</div><img src="${thumb(tr,s.seed)}" alt=""><div class="sc-name">${sexIcon(s.sex)} ${esc(s.nick||nm)}</div>${s.nick?`<div class="meta">${esc(nm)}</div>`:''}${ht?`<div class="het">${esc(ht)}</div>`:''}
- <div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g${s.gen?' · Gen '+s.gen:''}</div><div class="sc-val">≈ ${money(value(s))}</div></div>`}
+ <div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g${s.gen?' · Gen '+s.gen:''}</div><div class="sc-val">≈ ${money(value(s))}</div>${originLine(s,Profile.cur?Profile.cur.username:false)}</div>`}
 async function openProfile(u){u=String(u||'').trim();if(!u)return;
  modal(`<div class="empty" style="border:none">${t('pf_loading')}</div>`);
  const{data,error}=await Cloud.sb.rpc('get_profile',{p_username:u});
@@ -1060,7 +1080,7 @@ function renderTabs(){if(!S||!Cloud.user||!$('tabs'))return;
  const T=[['koleksi',S.snakes.length],['breeding'],['inkubator',S.clutches.length+S.snakes.filter(s=>s.gravid).length],['pasar'],['pesanan',S.orders.length],['dex',Object.keys(S.dex).length],['teman',Social.badge()||null,true],['panduan']];
  $('tabs').innerHTML=T.map(([k,c,hot])=>`<button class="${TAB===k?'on':''}" data-act="tab" data-tab="${k}">${t('tab_'+k)}${c!=null?`<span class="cnt${hot?' hot':''}">${c}</span>`:''}</button>`).join('')}
 
-function miniList(arr,money_){const items=(arr||[]).map(s=>{const tr=traitsOf(s.g);return `<div class="mini-row"><img class="mini" src="${thumb(tr,s.seed)}" alt=""><div><div>${sexIcon(s.sex)} ${esc(nameOf(tr,s.g))}</div><div class="het">${esc(hetText(s))}</div><div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g · ${money(value(s))}</div></div></div>`});
+function miniList(arr,money_,owner){const items=(arr||[]).map(s=>{const tr=traitsOf(s.g);return `<div class="mini-row"><img class="mini" src="${thumb(tr,s.seed)}" alt=""><div><div>${sexIcon(s.sex)} ${esc(nameOf(tr,s.g))}</div><div class="het">${esc(hetText(s))}</div><div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g · ${money(value(s))}</div>${owner===undefined?'':originLine(s,owner)}</div></div>`});
  if(money_)items.push(`<div class="mini-row money">💵 ${money(money_)}</div>`);
  return items.length?items.join(''):`<div class="kbd">${t('tr_nothing')}</div>`}
 function tradeCard(x){
@@ -1068,7 +1088,7 @@ function tradeCard(x){
  const pend=x.status==='pending';
  return `<div class="panel trade ${pend?'':'done'}"><div class="row" style="justify-content:space-between"><b>${(()=>{const u=x.username?profLink(x.username):`<i class="gone">${t('tr_gone')}</i>`;return x.dir==='in'?t('tr_from',{u}):t('tr_to',{u})})()}</b><span class="tag ${x.status==='accepted'?'g':pend?'a':''}">${t('tr_st_'+x.status)}</span></div>
  ${x.note?`<p class="note">“${esc(x.note)}”</p>`:''}
- <div class="grid2" style="margin-top:8px"><div><div class="lbl">${t('tr_get')}</div>${miniList(get[0],get[1])}</div><div><div class="lbl">${t('tr_give')}</div>${miniList(give[0],give[1])}</div></div>
+ <div class="grid2" style="margin-top:8px"><div><div class="lbl">${t('tr_get')}</div>${miniList(get[0],get[1],x.username||false)}</div><div><div class="lbl">${t('tr_give')}</div>${miniList(give[0],give[1],null)}</div></div>
  ${pend&&x.dir==='in'?`<div class="actions"><button class="pri" data-act="tr_accept" data-tid="${x.id}">${t('tr_accept')}</button><button data-act="tr_decline" data-tid="${x.id}">${t('tr_decline')}</button></div>`:''}
  ${pend&&x.dir==='out'?`<p class="kbd">${t('tr_escrow')}</p><div class="actions"><button data-act="tr_cancel" data-tid="${x.id}">${t('tr_cancel')}</button></div>`:''}</div>`}
 function vTeman(){
@@ -1114,7 +1134,7 @@ async function openTradeBuilder(uid){
  TB.coll=data.snakes||[];paintTB();
 }
 function tbRow(s,side){const tr=traitsOf(s.g),blk=tradeBlock(s),on=TB[side].has(s.id);
- return `<label class="tbrow ${blk?'off':''} ${on?'on':''}"><input type="checkbox" data-tb="${side}" data-sid="${s.id}" ${on?'checked':''} ${blk?'disabled':''}><img class="mini" src="${thumb(tr,s.seed)}" alt=""><div><div>${sexIcon(s.sex)} ${esc(nameOf(tr,s.g))}</div><div class="het">${esc(hetText(s))}</div><div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g · ${money(value(s))}${blk?` · <span class="warn">${t(blk)}</span>`:''}</div></div></label>`}
+ return `<label class="tbrow ${blk?'off':''} ${on?'on':''}"><input type="checkbox" data-tb="${side}" data-sid="${s.id}" ${on?'checked':''} ${blk?'disabled':''}><img class="mini" src="${thumb(tr,s.seed)}" alt=""><div><div>${sexIcon(s.sex)} ${esc(nameOf(tr,s.g))}</div><div class="het">${esc(hetText(s))}</div><div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g · ${money(value(s))}${blk?` · <span class="warn">${t(blk)}</span>`:''}</div>${originLine(s,side==='mine'?null:TB.u,true)}</div></label>`}
 function paintTB(){
  if(!TB||!TB.coll)return;
  const gv=S.snakes.filter(s=>TB.mine.has(s.id)).reduce((a,s)=>a+value(s),0)+TB.om,rv=TB.coll.filter(s=>TB.theirs.has(s.id)).reduce((a,s)=>a+value(s),0)+TB.rm;

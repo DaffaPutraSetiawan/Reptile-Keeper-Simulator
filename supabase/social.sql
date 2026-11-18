@@ -154,7 +154,8 @@ begin
   end loop;
   return jsonb_build_object('id', s -> 'id', 'sex', s -> 'sex', 'age', s -> 'age', 'w', s -> 'w',
     'g', g, 'hp', coalesce(s -> 'hp', '{}'::jsonb), 'gen', s -> 'gen', 'seed', s -> 'seed',
-    'sire', s -> 'sire', 'dam', s -> 'dam', 'nick', coalesce(s -> 'nick', '""'::jsonb));
+    'sire', s -> 'sire', 'dam', s -> 'dam', 'nick', coalesce(s -> 'nick', '""'::jsonb),
+    'src', s -> 'src', 'origin', s -> 'origin', 'keepers', s -> 'keepers');
 end $$;
 
 -- Validasi dasar data ular (menolak data rusak / tidak masuk akal).
@@ -223,12 +224,41 @@ begin
 end $$;
 
 -- Masukkan ular ke save dengan id baru.
+-- Catat asal-usul saat ular berpindah pemilik lewat trade (dipanggil saat trade diterima, bukan saat escrow/refund).
+--  origin  : pemain pertama yang memelihara ular ini + caranya (bred / market / starter); tidak berubah lagi
+--  keepers : pemilik sebelumnya, urut dari yang pertama (maks. 10: pertama + 9 terakhir)
+--  src     : {t:'trade', from: pemberi}; turn diisi oleh _add_snakes sesuai turn penerima
+create or replace function public._stamp_transfer(p_snakes jsonb, p_giver uuid)
+returns jsonb language plpgsql stable security definer set search_path = '' as $$
+declare v_name text := coalesce(public._username(p_giver), '?'); s jsonb; v_out jsonb := '[]'::jsonb; v_how text; v_keep jsonb; n int;
+begin
+  for s in select * from jsonb_array_elements(coalesce(p_snakes, '[]'::jsonb)) loop
+    if coalesce(jsonb_typeof(s -> 'origin'), 'null') <> 'object' then
+      v_how := coalesce(s -> 'src' ->> 't', case when coalesce((s ->> 'gen')::int, 0) > 0 then 'bred' else 'unknown' end);
+      if v_how not in ('bred', 'market', 'starter') then v_how := 'unknown'; end if;
+      s := s || jsonb_build_object('origin', jsonb_build_object('u', v_name, 'how', v_how));
+    end if;
+    v_keep := (case when jsonb_typeof(s -> 'keepers') = 'array' then s -> 'keepers' else '[]'::jsonb end) || jsonb_build_array(v_name);
+    n := jsonb_array_length(v_keep);
+    if n > 10 then
+      select jsonb_build_array(v_keep -> 0) || jsonb_agg(e order by o) into v_keep
+        from jsonb_array_elements(v_keep) with ordinality t(e, o) where o > n - 9;
+    end if;
+    s := s || jsonb_build_object('keepers', v_keep, 'src', jsonb_build_object('t', 'trade', 'from', v_name));
+    v_out := v_out || jsonb_build_array(s);
+  end loop;
+  return v_out;
+end $$;
+
 create or replace function public._add_snakes(p_data jsonb, p_snakes jsonb)
 returns jsonb language plpgsql set search_path = '' as $$
 declare s jsonb; v_next int := coalesce((p_data ->> 'nextId')::int, 1);
         v_turn int := coalesce((p_data ->> 'turn')::int, 0); v_list jsonb := coalesce(p_data -> 'snakes', '[]'::jsonb);
 begin
   for s in select * from jsonb_array_elements(coalesce(p_snakes, '[]'::jsonb)) loop
+    if s -> 'src' ->> 't' = 'trade' and s -> 'src' -> 'turn' is null then
+      s := jsonb_set(s, '{src,turn}', to_jsonb(v_turn));   -- turn penerima saat ular masuk
+    end if;
     s := (s - 'xferAgo') || jsonb_build_object('id', v_next, 'listed', false, 'pairedWith', null, 'pairs', 0,
            'gravid', null, 'lastLaid', v_turn - least(coalesce((s ->> 'xferAgo')::int, 99), 99));
     v_list := v_list || jsonb_build_array(s);
@@ -543,13 +573,13 @@ begin
   end;
   v_data := public._add_money(v_take -> 'data', -t.request_money);   -- error 'not_enough_money' kalau kurang
   select snakes into v_escrow from public.trade_escrow where trade_id = t.id;
-  v_data := public._add_snakes(v_data, coalesce(v_escrow, '[]'::jsonb));
+  v_data := public._add_snakes(v_data, public._stamp_transfer(coalesce(v_escrow, '[]'::jsonb), t.from_user));
   v_data := public._add_money(v_data, t.offer_money);
   v_data := public._push_log(v_data, 'l_trade_done', jsonb_build_object('u', public._username(t.from_user),
               'n', jsonb_array_length(coalesce(v_escrow, '[]'::jsonb)), 'mo', t.offer_money));
 
   insert into public.deliveries (user_id, trade_id, snakes, money, log)
-  values (t.from_user, t.id, v_take -> 'picked', t.request_money,
+  values (t.from_user, t.id, public._stamp_transfer(v_take -> 'picked', me), t.request_money,
           jsonb_build_object('m', 'l_trade_done', 'p', jsonb_build_object('u', public._username(me),
             'n', jsonb_array_length(v_take -> 'picked'), 'mo', t.request_money)));
   update public.trades set status = 'accepted', resolved_at = now() where id = t.id;

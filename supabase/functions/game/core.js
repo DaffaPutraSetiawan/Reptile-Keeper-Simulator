@@ -99,6 +99,8 @@ function value(s){const tr=traitsOf(s.g),vs=new Set(tr);let v=baseValue(tr);
  if(s.sex==='F')v*=1.35;v*=1+Math.min(1.6,Math.max(0,(s.w-80)/1100));return Math.round(v/5)*5}
 
 /* ========= ULAR ========= */
+// Asal-usul: s.src = cara pemilik sekarang mendapatkannya {t:'starter'|'market'|'bred'|'trade', turn, from?}.
+// s.origin = {u, how} origin keeper (pemain pertama) & s.keepers = pemilik sebelumnya; keduanya diisi server saat trade.
 function newSnake(o){return Object.assign({id:null,sex:'M',age:0,w:70,g:emptyGeno(),hp:{},sire:null,dam:null,gen:0,seed:Math.floor(R()*1e9),lastLaid:-99,listed:false,pairedWith:null,pairs:0,gravid:null,nick:''},o)}
 function addSnake(s){s.id=S.nextId++;S.snakes.push(s);return s}
 const byId=id=>S.snakes.find(s=>s.id===id);
@@ -150,7 +152,7 @@ function newGame(){
  addSnake(newSnake({sex:'F',age:38,w:1880,g:G({albino:[1,0]}),hp:{albino:1}}));
  addSnake(newSnake({sex:'F',age:34,w:1690,g:G({spider:[1,0]})}));
  addSnake(newSnake({sex:'F',age:11,w:640,g:G({enchi:[1,0],clown:[R()<.5?1:0,0]}),hp:{clown:.5}}));
- S.snakes.forEach(s=>dexAdd(traitsOf(s.g)));
+ S.snakes.forEach(s=>{s.src={t:'starter',turn:0};dexAdd(traitsOf(s.g))});
  refreshMarket();S.orders=[genOrder(),genOrder()];
  log('l_welcome',{v:money(2000)},'star');
  return S;
@@ -165,7 +167,7 @@ function advance(){
   c.hatchIn--;if(c.hatchIn>0)continue;
   let born=0,dead=0;const vis=new Set();const newNames=[];
   for(const g of c.eggs){if(R()<.04){dead++;continue}
-   const s=addSnake(newSnake({sex:R()<.5?'M':'F',w:Math.round(55+R()*40),g,hp:{...c.hp},sire:c.sireLabel,dam:c.damLabel,gen:c.gen}));
+   const s=addSnake(newSnake({sex:R()<.5?'M':'F',w:Math.round(55+R()*40),g,hp:{...c.hp},sire:c.sireLabel,dam:c.damLabel,gen:c.gen,src:{t:'bred',turn:S.turn}}));
    const tr=traitsOf(g);tr.forEach(t=>{if(['albino','piebald','clown','axanthic'].includes(t))vis.add(t)});
    for(const l of LOCI)if(l.t==='rec'&&tr.includes(l.k))s.hp[l.k]=1;
    if(dexAdd(tr))newNames.push(nameOf(tr));born++;}
@@ -239,7 +241,7 @@ const ACTIONS={
   log('l_quick',{c:code(s),n:fullName(s),v:money(v)},'good');removeSnake(s);return{}},
  nick(a){const s=mustSnake(a.id);s.nick=String(a.name==null?'':a.name).replace(/[\u0000-\u001f\u007f]/g,'').trim().slice(0,24);return{}},
  buy(a){const lid=toId(a.lid);const L=S.market.find(x=>x.lid===lid);if(!L)fail('listing_gone');if(S.money<L.price)fail('not_enough_money');
-  S.money-=L.price;const s=addSnake(L.s);S.market=S.market.filter(x=>x!==L);const nw=dexAdd(traitsOf(s.g));
+  S.money-=L.price;const s=addSnake(L.s);s.src={t:'market',turn:S.turn};S.market=S.market.filter(x=>x!==L);const nw=dexAdd(traitsOf(s.g));
   log('l_buy',{c:code(s),n:fullName(s),h:hetText(s),v:money(L.price)});if(nw)log('l_newmorph',{n:nameOf(traitsOf(s.g))},'star');return{}},
  clearlog(){S.log=[];return{toast:'t_logcleared'}},
  rack(){if(S.money<250)fail('not_enough_money');S.money-=250;S.racks++;log('l_rack',{cap:cap()});return{}},
