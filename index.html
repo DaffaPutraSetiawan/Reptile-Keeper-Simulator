@@ -154,6 +154,7 @@ textarea{width:100%;box-sizing:border-box;resize:vertical;font:inherit;backgroun
 .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:6px}.opt{position:relative;display:flex;align-items:center;gap:8px;text-align:left;padding:10px 12px}.opt.on{border-color:var(--acc);background:var(--accbg)}.opt .chk{margin-left:auto;color:var(--acc);font-weight:800}.opt .flag{font-size:18px}
 .opt.theme{flex-direction:column;align-items:flex-start;gap:4px}.opt.theme small{color:var(--mut);font-size:11.5px}.opt.theme .chk{position:absolute;top:8px;right:10px}.sw{display:flex;gap:4px}.sw i{width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.15);display:block}
 @media (max-width:640px){.gear .gname{display:none}}
+.tcell select{width:auto;min-width:210px;padding:5px 8px}.tcell .odds{color:var(--mut);font-size:12.5px;margin-left:4px}.tcell .kbd{font-size:11.5px;margin-top:3px}
 .dzone{margin-top:18px;padding-top:12px;border-top:1px solid #4a2b26}.dzone .lbl{color:var(--bad)}.dzrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0}.dzrow p{margin:2px 0 0;font-size:12.5px;color:var(--mut)}.dzrow button{flex:none}
 .warnbox{border:1px solid #7a3d34;background:#2a1714;border-radius:12px;padding:10px 14px;margin:10px 0}.warnbox p{margin:6px 0;font-size:13.5px}
 button.danger{background:var(--bad);border-color:var(--bad);color:#1b0a07;font-weight:700}button.danger:hover:not(:disabled){background:#ec7d71}
@@ -173,7 +174,7 @@ button.danger{background:var(--bad);border-color:var(--bad);color:#1b0a07;font-w
 'use strict';
 /* ========= LOGIKA INTI (core.js, sama dengan yang dipakai server) ========= */
 const Core=window.MorphCore;
-const {previewNext,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches}=Core;
+const {previewNext,TEMP_MIN,TEMP_MAX,TEMP_STEP,TEMP_MID,femaleChance,tempOpen,tempMonthsLeft,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches}=Core;
 
 /* ========= UTIL ========= */
 const lerp=(a,b,t)=>a.map((x,i)=>x+(b[i]-x)*t);
@@ -195,7 +196,7 @@ id:{
  r_mage:'Umur belum cukup (min. 10 bulan)',r_mweight:'Berat belum cukup (min. 650 g)',r_mpairs:'Sudah 4 pasangan bulan ini',r_paired:'Sudah dipasangkan bulan ini',
  // catatan
  l_welcome:p=>`Selamat datang di Morph Lab! Kamu mulai dengan sepasang ball python — jantan Normal het Albino dan betina Albino — ${p.v} dan 2 rak (20 tub). Keduanya sudah cukup umur dan bisa langsung dikawinkan: rata-rata separuh anaknya Albino!`,
- l_hatch:p=>`🥚 Clutch ${p.dam} × ${p.sire} menetas: ${p.born} bayi${p.dead?`, ${p.dead} mati dalam telur`:''}.`,
+ l_hatch:p=>`🥚 Clutch ${p.dam} × ${p.sire} menetas: ${p.born} bayi${p.nm!=null?` (♂ ${p.nm} · ♀ ${p.nf})`:''}${p.dead?`, ${p.dead} mati dalam telur`:''}.`,
  l_newmorph:p=>`✨ Morph baru tercatat di Morph Dex: ${p.n}!`,
  l_proven:p=>`🔬 ${p.c} terbukti het ${p.g} (keturunannya visual).`,
  l_laid:p=>`🥚 ${p.c} bertelur ${p.n} butir: ${p.good} subur, ${p.slug} slug. Masuk inkubator (±58 hari).`,
@@ -261,7 +262,8 @@ id:{
  pairs_h:'Pasangan bulan ini',cancel:'Batalkan',
  t_paired:'Pasangan dibuat. Klik <b>Lanjut bulan</b> untuk melihat hasilnya.',
  // inkubator
- inc_sub:'Betina bunting bertelur ±2 bulan setelah ovulasi. Telur diinkubasi di 31–32 °C dan menetas setelah ±2 bulan. Setelah bertelur, betina butuh waktu untuk naik berat lagi.',
+ inc_sub:'Betina bunting bertelur ±2 bulan setelah ovulasi, lalu telurnya menetas setelah ±2 bulan di inkubator. Atur suhu tiap clutch (29–33 °C) untuk mengarahkan jenis kelamin anak: lebih dingin = lebih banyak betina, lebih hangat = lebih banyak jantan (maks. 80% : 20%). Suhu hanya bisa diubah selama sepertiga pertama masa inkubasi, setelah itu terkunci. Setelah bertelur, betina butuh waktu untuk naik berat lagi.',
+ th_temp:'Suhu inkubasi',inc_locked:'Terkunci — jenis kelamin sudah ditentukan suhu ini',inc_open:p=>`Masih bisa diubah sampai ${p.n} kali “Lanjut bulan” lagi`,inc_default:'bawaan',t_temp:p=>`🌡️ Suhu inkubasi diatur ke ${p.t} (${p.o}).`,e_temp_locked:'Suhu sudah terkunci: lewat sepertiga masa inkubasi.',e_bad_temp:'Suhu tidak valid (29–33 °C, kelipatan 0,5).',e_clutch_not_found:'Clutch tidak ditemukan.',
  inc_gravid_h:'Betina bunting',inc_gravid_empty:'Belum ada betina bunting.',inc_clutch_h:'Clutch di inkubator',
  th_dam:'Induk betina',th_sire:'Induk jantan',th_fertile:'Subur',th_slug:'Slug',th_hatch:'Menetas',mo:p=>`${p.n} bln`,inc_empty:'Inkubator kosong.',
  // pasar
@@ -372,7 +374,7 @@ id:{
 <h3>3. BEL complex (Mojave & Lesser)</h3><p>Mojave dan Lesser adalah <b>alel di lokus yang sama</b>. Kombinasi dua alel apa pun (Super Mojave, Super Lesser, Mojave Lesser) menghasilkan <b>Blue-Eyed Leucistic</b>: putih bersih bermata biru. Karena satu lokus, ular BEL selalu menurunkan tepat satu alel Mojave/Lesser ke tiap bayinya.</p>
 <h3>4. Dominan: Spider, Pinstripe</h3><p>Satu salinan sudah terlihat penuh, dan dua salinan tampak sama. Catatan dunia nyata: Spider membawa masalah neurologis ("wobble"), dan banyak breeder memilih tidak memproduksinya lagi. Di game ini gen tersebut tetap ada untuk keperluan edukasi.</p>
 <h3>5. Kombinasi terkenal</h3><p>Pastel + Spider = <b>Bumblebee</b> · Super Pastel + Spider = <b>Killer Bee</b> · Pastel + Pinstripe = <b>Lemon Blast</b> · Spider + Pinstripe = <b>Spinner</b> · Albino + Axanthic = <b>Snow</b>.</p>
-<h3>6. Siklus breeding</h3><ul><li>Tidak ada musim kawin: ular bisa dikawinkan kapan saja asal umurnya cukup.</li><li>Jantan siap kawin: umur ≥10 bulan. Bisa dipasangkan dengan maksimal 4 betina per bulan.</li><li>Betina siap kawin: umur ≥24 bulan, tidak sedang bunting, dan tidak bertelur dalam 8 bulan terakhir.</li><li>Peluang ovulasi ±55% per bulan, lalu bertelur ±2 bulan kemudian dan menetas ±2 bulan setelah itu.</li><li>Jumlah telur bergantung berat betina: makin berat, makin banyak telur. ±12% telur adalah slug (tidak subur).</li><li>Betina turun ±28% berat setelah bertelur.</li></ul>
+<h3>6. Siklus breeding</h3><ul><li>Tidak ada musim kawin: ular bisa dikawinkan kapan saja asal umurnya cukup.</li><li>Jantan siap kawin: umur ≥10 bulan. Bisa dipasangkan dengan maksimal 4 betina per bulan.</li><li>Betina siap kawin: umur ≥24 bulan, tidak sedang bunting, dan tidak bertelur dalam 8 bulan terakhir.</li><li>Peluang ovulasi ±55% per bulan, lalu bertelur ±2 bulan kemudian dan menetas ±2 bulan setelah itu.</li><li>Jumlah telur bergantung berat betina: makin berat, makin banyak telur. ±12% telur adalah slug (tidak subur).</li><li>Betina turun ±28% berat setelah bertelur.</li><li>🌡️ Suhu inkubator menentukan jenis kelamin anak: 29 °C = ♀80% / ♂20%, 31 °C = 50/50, 33 °C = ♀20% / ♂80%. Suhu bisa diubah di tab Inkubator hanya selama sepertiga pertama masa inkubasi.</li></ul>
 <h3>7. Ekonomi</h3><p>Harga tiap gen naik turun. Kalau kamu terus menjual morph yang sama, pasar jadi jenuh dan harganya turun. Betina lebih mahal, dan ular dewasa lebih mahal daripada hatchling. Jual cepat memberi 60% nilai langsung, sedangkan iklan memberi 100% nilai tapi butuh waktu.</p>`
 },
 en:{
@@ -383,7 +385,7 @@ en:{
  r_gravid:'Currently gravid',r_fage:'Too young (min. 24 months)',r_fweight:'Underweight (min. 1,500 g)',r_recover:'Still recovering after laying',r_listed:'Listed for sale',
  r_mage:'Too young (min. 10 months)',r_mweight:'Underweight (min. 650 g)',r_mpairs:'Already paired with 4 females this month',r_paired:'Already paired this month',
  l_welcome:p=>`Welcome to Morph Lab! You start with a pair of ball pythons — a Normal het Albino male and an Albino female — ${p.v} and 2 racks (20 tubs). Both are old enough to pair right away: on average half of the babies will be Albino!`,
- l_hatch:p=>`🥚 Clutch ${p.dam} × ${p.sire} hatched: ${p.born} ${p.born===1?'baby':'babies'}${p.dead?`, ${p.dead} died in the egg`:''}.`,
+ l_hatch:p=>`🥚 Clutch ${p.dam} × ${p.sire} hatched: ${p.born} ${p.born===1?'baby':'babies'}${p.nm!=null?` (♂ ${p.nm} · ♀ ${p.nf})`:''}${p.dead?`, ${p.dead} died in the egg`:''}.`,
  l_newmorph:p=>`✨ New morph added to the Morph Dex: ${p.n}!`,
  l_proven:p=>`🔬 ${p.c} is proven het ${p.g} (it produced a visual offspring).`,
  l_laid:p=>`🥚 ${p.c} laid ${p.n} eggs: ${p.good} fertile, ${p.slug} ${p.slug===1?'slug':'slugs'}. Moved to the incubator (~58 days).`,
@@ -442,7 +444,8 @@ en:{
  th_morph:'Morph',th_chance:'Chance',th_value:'♂ hatchling value',tag_new:'new',odds_more:p=>`+${p.n} more combinations with lower odds.`,
  pairs_h:'Pairings this month',cancel:'Cancel',
  t_paired:'Pairing set. Click <b>Next month</b> to see the result.',
- inc_sub:'Gravid females lay about 2 months after ovulating. Eggs incubate at 31–32 °C and hatch after about 2 months. After laying, females need time to regain weight.',
+ inc_sub:'Gravid females lay about 2 months after ovulating, and the eggs hatch after about 2 months in the incubator. Set each clutch’s temperature (29–33 °C) to steer the babies’ sex: cooler = more females, warmer = more males (up to 80% : 20%). The temperature can only be changed during the first third of incubation, then it locks. After laying, females need time to regain weight.',
+ th_temp:'Incubation temp',inc_locked:'Locked — this temperature has set the sexes',inc_open:p=>`Can still be changed for ${p.n} more “Next month” ${p.n===1?'press':'presses'}`,inc_default:'default',t_temp:p=>`🌡️ Incubation set to ${p.t} (${p.o}).`,e_temp_locked:'The temperature is locked: past the first third of incubation.',e_bad_temp:'Invalid temperature (29–33 °C, steps of 0.5).',e_clutch_not_found:'Clutch not found.',
  inc_gravid_h:'Gravid females',inc_gravid_empty:'No gravid females yet.',inc_clutch_h:'Clutches in the incubator',
  th_dam:'Dam',th_sire:'Sire',th_fertile:'Fertile',th_slug:'Slugs',th_hatch:'Hatches in',mo:p=>`${p.n} mo`,inc_empty:'The incubator is empty.',
  mk_sub:'Sellers restock every month. Het claims from sellers are always honest, but "pos het" means it isn’t certain.',
@@ -547,7 +550,7 @@ en:{
 <h3>3. BEL complex (Mojave & Lesser)</h3><p>Mojave and Lesser are <b>alleles at the same locus</b>. Any combination of two of them (Super Mojave, Super Lesser, Mojave Lesser) produces a <b>Blue-Eyed Leucistic</b>: solid white with blue eyes. Because it is one locus, a BEL always passes exactly one Mojave/Lesser allele to each baby.</p>
 <h3>4. Dominant: Spider, Pinstripe</h3><p>One copy shows fully, and two copies look the same. Real-world note: Spider is linked to a neurological problem ("wobble"), and many breeders have stopped producing it. It stays in this game for educational purposes.</p>
 <h3>5. Famous combos</h3><p>Pastel + Spider = <b>Bumblebee</b> · Super Pastel + Spider = <b>Killer Bee</b> · Pastel + Pinstripe = <b>Lemon Blast</b> · Spider + Pinstripe = <b>Spinner</b> · Albino + Axanthic = <b>Snow</b>.</p>
-<h3>6. Breeding cycle</h3><ul><li>There is no breeding season: snakes can be paired any time once they’re old enough.</li><li>Males are ready at ≥10 months and can be paired with up to 4 females per month.</li><li>Females are ready at ≥24 months, as long as they aren’t gravid and haven’t laid in the last 8 months.</li><li>Each month a paired female has a ~55% chance to ovulate; she lays about 2 months later, and the eggs hatch about 2 months after that.</li><li>Clutch size depends on the female’s weight: heavier females lay more eggs. About 12% of eggs are slugs (infertile).</li><li>Females lose about 28% of their weight after laying.</li></ul>
+<h3>6. Breeding cycle</h3><ul><li>There is no breeding season: snakes can be paired any time once they’re old enough.</li><li>Males are ready at ≥10 months and can be paired with up to 4 females per month.</li><li>Females are ready at ≥24 months, as long as they aren’t gravid and haven’t laid in the last 8 months.</li><li>Each month a paired female has a ~55% chance to ovulate; she lays about 2 months later, and the eggs hatch about 2 months after that.</li><li>Clutch size depends on the female’s weight: heavier females lay more eggs. About 12% of eggs are slugs (infertile).</li><li>Females lose about 28% of their weight after laying.</li><li>🌡️ Incubator temperature sets the babies’ sex: 29 °C = ♀80% / ♂20%, 31 °C = 50/50, 33 °C = ♀20% / ♂80%. You can change it in the Incubator tab only during the first third of incubation.</li></ul>
 <h3>7. Economy</h3><p>Prices for each gene rise and fall. If you keep selling the same morph, the market gets saturated and its price drops. Females are worth more, and adults are worth more than hatchlings. Quick selling pays 60% of the value right away; a listing pays 100% but takes time.</p>`
 }};
 let LANG=(()=>{try{const l=localStorage.getItem('morphlab_lang');if(l==='id'||l==='en')return l}catch(e){}
@@ -733,11 +736,18 @@ function vBreeding(){
  const P=S.snakes.filter(s=>s.pairedWith);
  if(P.length)html+=`<h3>${t('pairs_h')}</h3><div class="panel">${P.map(s=>`<div class="row" style="justify-content:space-between;padding:4px 0"><span>${code(s)} ${esc(fullName(s))} × ${code(byId(s.pairedWith))} ${esc(fullName(byId(s.pairedWith)))}</span><button class="ghost" data-act="unpair" data-id="${s.id}">${t('cancel')}</button></div>`).join('')}</div>`;
  return html}
+// Suhu inkubasi: pilihan 29–33 °C, hanya bisa diubah selama sepertiga pertama masa inkubasi
+const fmtTemp=x=>(+x).toFixed(1).replace('.',LANG==='id'?',':'.')+' °C';
+const sexOdds=temp=>{const f=Math.round(femaleChance(temp)*100);return `♀ ${f}% · ♂ ${100-f}%`};
+function tempCell(c){const cur=c.temp==null?TEMP_MID:c.temp;
+ if(!tempOpen(c))return `<div class="tcell"><b>${fmtTemp(cur)}</b> <span class="odds">${sexOdds(cur)}</span><div class="kbd">🔒 ${t('inc_locked')}</div></div>`;
+ const opts=[];for(let x=TEMP_MIN;x<=TEMP_MAX+1e-9;x+=TEMP_STEP){const v=Math.round(x*10)/10;opts.push(`<option value="${v}" ${v===cur?'selected':''}>${fmtTemp(v)} — ${sexOdds(v)}${v===TEMP_MID?' ('+t('inc_default')+')':''}</option>`)}
+ return `<div class="tcell"><select data-temp="${c.cid}" aria-label="${t('th_temp')}">${opts.join('')}</select><div class="kbd">🔓 ${t('inc_open',{n:tempMonthsLeft(c)})}</div></div>`}
 function vInkubator(){
  const Gv=S.snakes.filter(s=>s.gravid);
  let h=`<h2>${t('tab_inkubator')}</h2><p class="sub">${t('inc_sub')}</p>`;
  h+=`<h3>${t('inc_gravid_h')}</h3>`+(Gv.length?`<div class="grid">${Gv.map(card).join('')}</div>`:`<div class="empty">${t('inc_gravid_empty')}</div>`);
- h+=`<h3>${t('inc_clutch_h')}</h3>`+(S.clutches.length?`<div class="panel" style="padding:4px 8px"><table><tr><th>${t('th_dam')}</th><th>${t('th_sire')}</th><th class="num">${t('th_fertile')}</th><th class="num">${t('th_slug')}</th><th class="num">${t('th_hatch')}</th></tr>${S.clutches.map(c=>`<tr><td>${esc(c.damLabel)}</td><td>${esc(c.sireLabel)}</td><td class="num">${c.eggs.length}</td><td class="num">${c.slugs}</td><td class="num">${t('mo',{n:c.hatchIn})}</td></tr>`).join('')}</table></div>`:`<div class="empty">${t('inc_empty')}</div>`);
+ h+=`<h3>${t('inc_clutch_h')}</h3>`+(S.clutches.length?`<div class="panel" style="padding:4px 8px"><table><tr><th>${t('th_dam')}</th><th>${t('th_sire')}</th><th class="num">${t('th_fertile')}</th><th class="num">${t('th_slug')}</th><th class="num">${t('th_hatch')}</th><th>${t('th_temp')}</th></tr>${S.clutches.map(c=>`<tr><td>${esc(c.damLabel)}</td><td>${esc(c.sireLabel)}</td><td class="num">${c.eggs.length}</td><td class="num">${c.slugs}</td><td class="num">${t('mo',{n:c.hatchIn})}</td><td>${tempCell(c)}</td></tr>`).join('')}</table></div>`:`<div class="empty">${t('inc_empty')}</div>`);
  return h}
 function eventText(e){return e.e?t(e.e,e):(e.txt||'')}
 function vPasar(){
@@ -1301,6 +1311,7 @@ function boot(){
   else if(el.name==='confirm'&&el.form&&/^dz_/.test(el.form.dataset.form||'')){const d=DZ[el.form.dataset.form.slice(3)];el.form.querySelector('button[type=submit]').disabled=el.value.trim()!==d.w;el.form.querySelector('.msg').innerHTML=''}
   else if(el.id==='chatin'){Social.draft=el.value;Social.chatFocus=true}
   else if(el.id==='gchatin'){Global.draft=el.value;Global.focus=true}
+  else if(el.dataset&&el.dataset.temp){const cid=+el.dataset.temp,temp=+el.value;game({type:'incubate',cid,temp}).then(r=>{if(r)toast(t('t_temp',{t:fmtTemp(temp),o:sexOdds(temp)}))})}
   else if(el.dataset&&el.dataset.tbf&&TB){TB[el.dataset.tbf]=el.dataset.tbf==='note'?el.value:Math.max(0,Math.floor(+el.value||0));
    const sm=$('tbsum');if(el.dataset.tbf!=='note'&&sm){const gv=S.snakes.filter(s=>TB.mine.has(s.id)).reduce((a,s)=>a+value(s),0)+TB.om,rv=TB.coll.filter(s=>TB.theirs.has(s.id)).reduce((a,s)=>a+value(s),0)+TB.rm;sm.innerHTML=t('tb_sum',{g:money(gv),r:money(rv)})+(!TB.theirs.size&&!TB.rm?' · '+t('tb_gift'):'')}}});
  document.addEventListener('focusout',e=>{if(e.target.id==='chatin')Social.chatFocus=false});

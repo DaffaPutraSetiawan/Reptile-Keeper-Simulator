@@ -156,6 +156,17 @@ function newGame(){
  return S;
 }
 
+/* ========= INKUBATOR: SUHU & JENIS KELAMIN ========= */
+// Suhu inkubasi tiap clutch menentukan peluang jenis kelamin anak: lebih dingin = lebih banyak betina,
+// lebih hangat = lebih banyak jantan, dibatasi 80% / 20%. Suhu hanya bisa diubah selama sepertiga
+// pertama masa inkubasi (incTotal disimpan per clutch supaya reptil lain bisa punya masa inkubasi berbeda).
+const INC_MONTHS=2,TEMP_MIN=29,TEMP_MAX=33,TEMP_MID=31,TEMP_STEP=.5;
+const femaleChance=temp=>clamp(0.5+(TEMP_MID-(temp==null?TEMP_MID:temp))*0.15,0.2,0.8);
+const incTotal=c=>c.incTotal||INC_MONTHS;
+const incElapsed=c=>incTotal(c)-c.hatchIn;
+const tempOpen=c=>incElapsed(c)<incTotal(c)/3;                         // masih bisa diatur?
+const tempMonthsLeft=c=>Math.max(0,Math.ceil(incTotal(c)/3)-incElapsed(c)); // sisa bulan yang masih bisa diatur
+
 /* ========= BIAYA BULANAN ========= */
 // Satu rumus untuk potongan saat "Lanjut bulan" dan untuk pratinjau saldo.
 // pakan: $2 + $1 per 250 g tiap ular (x1.5 saat harga pakan naik) · listrik & rak: $8/rak · tub darurat: $15/ular di atas kapasitas
@@ -184,14 +195,15 @@ function advance(){
  // 1. inkubator
  for(const c of S.clutches.slice()){
   c.hatchIn--;if(c.hatchIn>0)continue;
-  let born=0,dead=0;const vis=new Set();const newNames=[];
+  let born=0,dead=0,nm=0,nf=0;const vis=new Set();const newNames=[];
   for(const g of c.eggs){if(R()<.04){dead++;continue}
-   const s=addSnake(newSnake({sex:R()<.5?'M':'F',w:Math.round(55+R()*40),g,hp:{...c.hp},sire:c.sireLabel,dam:c.damLabel,gen:c.gen,src:{t:'bred',turn:S.turn}}));
+   const s=addSnake(newSnake({sex:R()<femaleChance(c.temp)?'F':'M',w:Math.round(55+R()*40),g,hp:{...c.hp},sire:c.sireLabel,dam:c.damLabel,gen:c.gen,src:{t:'bred',turn:S.turn}}));
    const tr=traitsOf(g);tr.forEach(t=>{if(['albino','piebald','clown','axanthic'].includes(t))vis.add(t)});
    for(const l of LOCI)if(l.t==='rec'&&tr.includes(l.k))s.hp[l.k]=1;
+   if(s.sex==='F')nf++;else nm++;
    if(dexAdd(tr))newNames.push(nameOf(tr));born++;}
   S.stats.hatched+=born;
-  log('l_hatch',{dam:c.damLabel.split(' ')[0],sire:c.sireLabel.split(' ')[0],born,dead},'good');
+  log('l_hatch',{dam:c.damLabel.split(' ')[0],sire:c.sireLabel.split(' ')[0],born,dead,nm,nf},'good');
   head.push(['h_born',{n:born}]);
   newNames.forEach(n=>{log('l_newmorph',{n},'star');head.push(['h_new',{n}])});
   for(const k of vis)for(const pid of [c.sireId,c.damId]){const p=byId(pid);if(p&&!traitsOf(p.g).includes(k)&&(p.hp[k]||0)<1){p.hp[k]=1;log('l_proven',{c:code(p),g:TL[k]},'star')}}
@@ -201,7 +213,7 @@ function advance(){
  for(const f of S.snakes){if(!f.gravid)continue;f.gravid.layIn--;if(f.gravid.layIn>0)continue;
   const m=f.gravid.sire;const n=clamp(Math.round(2+(f.w-1300)/170+R()*2.5-1),2,11);
   const eggs=[];let slugs=0;for(let i=0;i<n;i++){if(R()<.88)eggs.push(breedGeno(m,f));else slugs++}
-  S.clutches.push({cid:Math.floor(R()*1e9),damId:f.id,sireId:m.id,damLabel:code(f)+' '+fullName(f),sireLabel:m.label,eggs,slugs,hatchIn:2,hp:childHp(m,f),gen:Math.max(f.gen,m.gen)+1});
+  S.clutches.push({cid:Math.floor(R()*1e9),damId:f.id,sireId:m.id,damLabel:code(f)+' '+fullName(f),sireLabel:m.label,eggs,slugs,hatchIn:INC_MONTHS,incTotal:INC_MONTHS,temp:TEMP_MID,hp:childHp(m,f),gen:Math.max(f.gen,m.gen)+1});
   S.stats.clutches++;
   log('l_laid',{c:code(f),n,good:eggs.length,slug:slugs},'good');head.push(['h_laid',{c:code(f),n:eggs.length}]);
   f.gravid=null;f.lastLaid=S.turn;f.w=Math.round(f.w*.72);}
@@ -263,6 +275,10 @@ const ACTIONS={
   S.money-=L.price;const s=addSnake(L.s);s.src={t:'market',turn:S.turn};S.market=S.market.filter(x=>x!==L);const nw=dexAdd(traitsOf(s.g));
   log('l_buy',{c:code(s),n:fullName(s),h:hetText(s),v:money(L.price)});if(nw)log('l_newmorph',{n:nameOf(traitsOf(s.g))},'star');return{}},
  clearlog(){S.log=[];return{toast:'t_logcleared'}},
+ incubate(a){const c=S.clutches.find(x=>x.cid===toId(a.cid));if(!c)fail('clutch_not_found');
+  if(!tempOpen(c))fail('temp_locked');
+  const tp=Number(a.temp);if(!Number.isFinite(tp)||tp<TEMP_MIN||tp>TEMP_MAX||Math.round(tp/TEMP_STEP)*TEMP_STEP!==tp)fail('bad_temp');
+  c.temp=tp;return{}},
  rack(){if(S.money<250)fail('not_enough_money');S.money-=250;S.racks++;log('l_rack',{cap:cap()});return{}},
  fulfill(a){const o=S.orders.find(x=>x.oid===toId(a.oid));if(!o)fail('order_gone');const s=mustSnake(a.sid);
   if(!matches(o).includes(s))fail('order_mismatch');
@@ -285,6 +301,7 @@ root.MorphCore={
  emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,
  mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,matches,
  monthlyCosts,previewNext,
+ INC_MONTHS,TEMP_MIN,TEMP_MAX,TEMP_MID,TEMP_STEP,femaleChance,incTotal,tempOpen,tempMonthsLeft,
  newGame,advance,applyAction,syncDex,isState,ACTION_TYPES:Object.keys(ACTIONS)
 };
 })(typeof globalThis!=='undefined'?globalThis:this);
