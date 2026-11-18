@@ -81,6 +81,14 @@ dl{display:grid;grid-template-columns:130px 1fr;gap:4px 10px;margin:12px 0;font-
 .guide p,.guide li{color:#dcd4c0;max-width:72ch}
 .guide code{background:var(--panel2);padding:1px 6px;border-radius:5px}
 .kbd{font-size:12px;color:var(--mut)}
+.acct{display:flex;align-items:center;gap:7px;padding:7px 12px;border-radius:10px;white-space:nowrap}
+.acct small{color:var(--mut);font-size:11px;margin-left:2px}
+.acct.warnb{border-color:#7a3d34}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--mut)}.dot.saved{background:var(--good)}.dot.sync{background:var(--acc);animation:pulse 1s infinite}.dot.error,.dot.conflict{background:var(--bad)}
+@keyframes pulse{50%{opacity:.35}}
+.form{display:grid;gap:10px;margin-top:6px}.form label{display:grid;gap:4px;font-size:12.5px;color:var(--mut)}
+.msg{min-height:18px;font-size:13px}.msg .warn,.msg .ok{margin:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:560px){.grid2{grid-template-columns:1fr}}
 .empty{color:var(--mut);padding:30px;text-align:center;border:1px dashed var(--line);border-radius:14px}
 </style>
 </head>
@@ -90,6 +98,8 @@ dl{display:grid;grid-template-columns:130px 1fr;gap:4px 10px;margin:12px 0;font-
 <main><section id="view"></section><aside><div class="panel"><h3 style="margin-top:0">Catatan breeder</h3><ul class="log" id="log"></ul></div></aside></main>
 <div id="modal" class="hidden"></div>
 <div id="toast"></div>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 'use strict';
 /* ========= DATA GENETIKA ========= */
@@ -135,7 +145,8 @@ const dateTxt=()=>MONTHS[mi()]+' · Tahun '+yr();
 const inSeason=()=>[9,10,11,0,1,2].includes(mi());
 const cap=()=>S.racks*10;
 function log(t,k='info'){S.log.unshift({d:dateTxt(),t,k});if(S.log.length>150)S.log.length=150}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function save(){saveLocal();if(typeof Cloud!=='undefined')Cloud.queue()}
 function load(){try{const d=localStorage.getItem(KEY);if(d){S=JSON.parse(d);return !!(S&&S.snakes)}}catch(e){}return false}
 
 /* ========= GENETIKA ========= */
@@ -235,7 +246,7 @@ function matches(o){return S.snakes.filter(s=>{const tr=traitsOf(s.g);return o.t
 
 /* ========= GAME BARU ========= */
 function newGame(){
- S={turn:0,money:2000,racks:2,nextId:1,snakes:[],clutches:[],market:[],orders:[],dex:{},mm:{},log:[],event:null,stats:{hatched:0,sold:0,earned:0,clutches:0}};
+ S={v:1,owner:null,rev:0,turn:0,money:2000,racks:2,nextId:1,snakes:[],clutches:[],market:[],orders:[],dex:{},mm:{},log:[],event:null,stats:{hatched:0,sold:0,earned:0,clutches:0}};
  addSnake(newSnake({sex:'M',age:26,w:1080,g:G({pastel:[1,0]})}));
  addSnake(newSnake({sex:'M',age:14,w:690,g:G({albino:[1,1]}),hp:{albino:1}}));
  addSnake(newSnake({sex:'F',age:38,w:1880,g:G({albino:[1,0]}),hp:{albino:1}}));
@@ -245,6 +256,7 @@ function newGame(){
  refreshMarket();S.orders=[genOrder(),genOrder()];
  log('Selamat datang di MorphLab! Kamu mulai dengan 5 ekor ball python, $2.000 dan 2 rak (20 tub). Musim kawin mulai bulan depan (Okt–Mar).','star');
  SEL={m:null,f:null};
+ if(typeof Cloud!=='undefined'&&Cloud.user){S.owner=Cloud.user.id;S.rev=Cloud.base||0}
 }
 
 /* ========= MAJU SATU BULAN ========= */
@@ -400,7 +412,8 @@ function render(){
  <div class="stat ${S.money<0?'neg':''}"><span>Saldo</span><b>${money(S.money)}</b></div>
  <div class="stat"><span>Tub terpakai</span><b style="color:${S.snakes.length>cap()?'var(--bad)':'inherit'}">${S.snakes.length}/${cap()}</b></div>
  <div class="stat ${sea?'season':''}"><span>Musim</span><b>${sea?'Kawin 🌙':'Istirahat'}</b></div>
- <button class="pri" data-act="advance">Lanjut bulan ▶</button>`;
+ <span id="acct"></span><button class="pri" data-act="advance">Lanjut bulan ▶</button>`;
+ renderAcct();
  const T=[['koleksi','Koleksi',S.snakes.length],['breeding','Kawinkan'],['inkubator','Inkubator',S.clutches.length+S.snakes.filter(s=>s.gravid).length],['pasar','Pasar'],['pesanan','Pesanan',S.orders.length],['dex','Morph Dex',Object.keys(S.dex).length],['panduan','Panduan genetika']];
  $('tabs').innerHTML=T.map(([k,l,c])=>`<button class="${TAB===k?'on':''}" data-act="tab" data-tab="${k}">${l}${c!=null?`<span class="cnt">${c}</span>`:''}</button>`).join('');
  $('view').innerHTML=({koleksi:vKoleksi,breeding:vBreeding,inkubator:vInkubator,pasar:vPasar,pesanan:vPesanan,dex:vDex,panduan:vPanduan})[TAB]();
@@ -462,7 +475,7 @@ function vDex(){
  return `<h2>Morph Dex</h2><p class="sub">${found}/${TARGETS.length} morph target ditemukan · ${Object.keys(S.dex).length} morph total. Statistik: ${S.stats.clutches} clutch, ${S.stats.hatched} bayi menetas, ${S.stats.sold} ular terjual (${money(S.stats.earned)}).</p>
  <div class="grid">${TARGETS.map(t=>{const n=nameOf(t);return cell(t,!!S.dex[n],S.dex[n]&&S.dex[n].when)}).join('')}</div>
  ${extra.length?`<h3>Kombinasi lain yang kamu temukan</h3><div class="grid">${extra.map(k=>cell(S.dex[k].tr,true,S.dex[k].when)).join('')}</div>`:''}
- <h3>Simpan / ulang</h3><div class="toolbar"><button data-act="reset">Mulai game baru</button><span class="kbd">Progres tersimpan otomatis di browser ini.</span></div>`}
+ <h3>Simpan / ulang</h3><div class="toolbar"><button data-act="reset">Mulai game baru</button><span class="kbd">${Cloud.user?'Progres tersimpan otomatis di browser ini dan di akunmu (cloud).':'Progres tersimpan otomatis di browser ini. Masuk ke akun supaya tersimpan juga di cloud.'}</span></div>`}
 function vPanduan(){return `<div class="guide"><h2>Panduan genetika</h2><p class="sub">Game ini memakai pola pewarisan morph ball python seperti di dunia nyata (disederhanakan).</p>
 <h3>1. Resesif: Albino, Piebald, Clown, Axanthic</h3><p>Butuh <b>dua salinan</b> gen agar terlihat (visual). Ular dengan satu salinan disebut <b>het</b>: tampak normal, tapi membawa gen tersebut.</p>
 <ul><li>Visual × Normal → 100% bayi het (tampak normal)</li><li>Het × Het → 25% visual, dan bayi yang tampak normal = <b>66% pos het</b></li><li>Visual × Het → 50% visual, sisanya 100% het</li></ul>
@@ -474,8 +487,9 @@ function vPanduan(){return `<div class="guide"><h2>Panduan genetika</h2><p class
 <h3>6. Siklus breeding</h3><ul><li>Jantan siap kawin: umur ≥10 bulan dan berat ≥650 g. Bisa dipasangkan dengan maksimal 4 betina per bulan.</li><li>Betina siap kawin: umur ≥24 bulan dan berat ≥1.500 g, serta tidak bertelur dalam 8 bulan terakhir.</li><li>Musim kawin: Oktober–Maret. Peluang ovulasi ±55% per bulan, lalu bertelur ±2 bulan kemudian dan menetas ±2 bulan setelah itu.</li><li>Jumlah telur bergantung berat betina. ±12% telur adalah slug (tidak subur).</li><li>Betina turun ±28% berat setelah bertelur, jadi perlu waktu pulih.</li></ul>
 <h3>7. Ekonomi</h3><p>Harga tiap gen naik turun. Kalau kamu terus menjual morph yang sama, pasar jadi jenuh dan harganya turun. Betina lebih mahal, dan ular dewasa lebih mahal daripada hatchling. Jual cepat memberi 60% nilai langsung, sedangkan iklan memberi 100% nilai tapi butuh waktu.</p></div>`}
 
-function modal(h){const m=$('modal');m.innerHTML=`<div class="mbox">${h}</div>`;m.classList.remove('hidden')}
-function closeModal(){$('modal').classList.add('hidden');$('modal').innerHTML=''}
+let MODAL_LOCK=false;
+function modal(h,lock){MODAL_LOCK=!!lock;const m=$('modal');m.innerHTML=`<div class="mbox">${h}</div>`;m.classList.remove('hidden')}
+function closeModal(force){if(MODAL_LOCK&&!force)return;MODAL_LOCK=false;$('modal').classList.add('hidden');$('modal').innerHTML=''}
 function openSnake(id){const s=byId(id);if(!s)return;const tr=traitsOf(s.g),r=readyMsg(s);
  modal(`<img class="big" src="${thumb(tr,s.seed,true)}"><h2 style="margin-top:12px"><span class="sx ${s.sex}">${s.sex==='M'?'♂':'♀'}</span> ${esc(fullName(s))}</h2><div class="het">${esc(hetText(s))}</div>
  <dl><dt>Kode</dt><dd>${code(s)}</dd><dt>Umur · berat</dt><dd>${ageTxt(s.age)} · ${fmt(s.w)} g</dd><dt>Induk jantan</dt><dd>${esc(s.sire||'tidak diketahui (dibeli)')}</dd><dt>Induk betina</dt><dd>${esc(s.dam||'tidak diketahui (dibeli)')}</dd><dt>Generasi</dt><dd>F${s.gen}</dd><dt>Status kawin</dt><dd>${r?'⏳ '+esc(r):'✓ Siap kawin'}</dd><dt>Nilai pasar</dt><dd><b>${money(value(s))}</b></dd></dl>
@@ -484,6 +498,7 @@ function openSnake(id){const s=byId(id);if(!s)return;const tr=traitsOf(s.g),r=re
  ${s.gravid?'<p class="kbd">Betina bunting tidak bisa dijual sampai bertelur.</p>':''}`)}
 
 function act(a,id,el){
+ if(cloudAct(a,el))return;
  if(a==='tab'){TAB=el.dataset.tab}
  else if(a==='filter'){FILTER=el.dataset.v}
  else if(a==='advance'){advance()}
@@ -498,8 +513,152 @@ function act(a,id,el){
  else if(a==='rack'){if(S.money>=250){S.money-=250;S.racks++;log(`Membeli rak baru. Kapasitas sekarang ${cap()} tub.`)}}
  else if(a==='fulfill'){const o=S.orders.find(x=>x.oid===id);const sel=$('ord-'+id);const s=sel&&byId(+sel.value);if(o&&s&&o.tr.every(t=>traitsOf(s.g).includes(t))){S.money+=o.reward;S.stats.sold++;S.stats.earned+=o.reward;log(`📦 ${code(s)} ${fullName(s)} dikirim ke ${o.buyer}. Hadiah ${money(o.reward)}!`,'star');removeSnake(s);S.orders=S.orders.filter(x=>x!==o)}}
  else if(a==='reset'){modal(`<h2>Mulai game baru?</h2><p class="sub">Semua progres di browser ini akan dihapus.</p><div class="actions"><button class="pri" data-act="resetyes">Ya, mulai baru</button><button class="ghost" data-act="close">Batal</button></div>`);return}
- else if(a==='resetyes'){newGame();TAB='koleksi';closeModal()}
+ else if(a==='resetyes'){newGame();TAB='koleksi';closeModal(true)}
  save();render()}
+
+/* ========= CLOUD SAVE (Supabase) ========= */
+var Cloud={sb:null,user:null,profile:null,base:null,status:'off',err:'',timer:null,busy:false,again:false,pending:null,lastSaved:0,
+ init(){
+  const C=window.MORPHLAB_CONFIG||{};
+  if(!C.supabaseUrl||!C.supabasePublishableKey){this.status='off';return}
+  if(!window.supabase||!window.supabase.createClient){this.status='nolib';renderAcct();return}
+  try{this.sb=window.supabase.createClient(C.supabaseUrl,C.supabasePublishableKey)}catch(e){this.status='nolib';renderAcct();return}
+  this.status='guest';renderAcct();
+  // Jangan panggil Supabase langsung di dalam callback ini (bisa deadlock) — tunda dengan setTimeout.
+  this.sb.auth.onAuthStateChange((ev,session)=>{
+   if(ev==='PASSWORD_RECOVERY')setTimeout(showSetPassword,0);
+   const u=session&&session.user;
+   if(u&&(!this.user||this.user.id!==u.id)){this.user=u;setTimeout(()=>this.onLogin(),0)}
+   else if(!u&&this.user){this.user=null;this.base=null;this.profile=null;this.status='guest';setTimeout(render,0)}
+  });
+ },
+ async onLogin(){
+  this.status='sync';this.err='';renderAcct();
+  try{
+   await this.ensureProfile();
+   const{data:row,error}=await this.sb.from('saves').select('data,rev,game_turn,updated_at').eq('user_id',this.user.id).maybeSingle();
+   if(error)throw error;
+   const uid=this.user.id,valid=row&&row.data&&Array.isArray(row.data.snakes);
+   if(!valid){
+    if(S.owner&&S.owner!==uid)newGame();           // save milik akun lain di browser ini → mulai baru
+    this.base=row?row.rev:null;S.owner=uid;S.rev=this.base||0;
+    log('☁️ Akun tersambung. Progres di perangkat ini sekarang tersimpan juga di cloud.','star');
+    saveLocal();render();await this.push();return}
+   if(S.owner===uid&&(S.rev||0)===row.rev){this.base=row.rev;this.status='saved';render();this.queue(300);return}
+   const fresh=!S.owner&&S.turn===0;
+   if(fresh||(S.owner===uid&&(S.rev||0)<row.rev)||(S.owner&&S.owner!==uid)){this.useCloud(row);return}
+   this.base=row.rev;this.pending=row;this.status='conflict';renderAcct();showConflict(row,'login');
+  }catch(e){this.fail(e)}
+ },
+ useCloud(row){
+  S=row.data;S.owner=this.user.id;S.rev=row.rev;S.snakes.forEach(s=>{s.hp=s.hp||{}});
+  this.base=row.rev;this.status='saved';this.pending=null;SEL={m:null,f:null};
+  saveLocal();closeModal(true);render();toast('☁️ Save dari akunmu dimuat: <b>'+dateTxt()+'</b>');
+ },
+ useLocal(){this.base=this.pending?this.pending.rev:this.base;this.pending=null;this.status='sync';closeModal(true);renderAcct();this.push()},
+ async ensureProfile(){
+  const{data,error}=await this.sb.from('profiles').select('username').eq('id',this.user.id).maybeSingle();
+  if(error)throw error;
+  if(data){this.profile=data;return}
+  const want=(this.user.user_metadata||{}).username;
+  if(want){const r=await this.sb.from('profiles').insert({id:this.user.id,username:want}).select('username').single();if(!r.error){this.profile=r.data;return}}
+  setTimeout(()=>showUsername(want?'Username <b>'+esc(want)+'</b> sudah dipakai pemain lain. Pilih yang lain.':''),0);
+ },
+ async setUsername(name){
+  const r=await this.sb.from('profiles').insert({id:this.user.id,username:name}).select('username').single();
+  if(r.error){if(r.error.code==='23505')return 'Username itu sudah dipakai. Coba yang lain.';if(r.error.code==='23514')return 'Username hanya boleh huruf, angka, dan _ (3–20 karakter).';return r.error.message}
+  this.profile=r.data;renderAcct();return ''},
+ queue(ms){if(!this.user||this.status==='conflict')return;clearTimeout(this.timer);this.timer=setTimeout(()=>{this.timer=null;this.push()},ms==null?1500:ms)},
+ flush(){if(this.timer){clearTimeout(this.timer);this.timer=null;return this.push()}},
+ async push(){
+  if(!this.user||this.status==='conflict')return;
+  if(this.busy){this.again=true;return}
+  this.busy=true;this.status='sync';renderAcct();
+  try{
+   const base=this.base,nr=(base||0)+1,uid=this.user.id;S.owner=uid;
+   const data=JSON.parse(JSON.stringify(S));data.rev=nr;
+   let res;
+   if(base==null){res=await this.sb.from('saves').insert({user_id:uid,data,game_turn:S.turn,rev:nr}).select('rev');
+    if(res.error&&res.error.code==='23505'){this.busy=false;return this.conflict()}}
+   else res=await this.sb.from('saves').update({data,game_turn:S.turn,rev:nr}).eq('user_id',uid).eq('rev',base).select('rev');
+   if(res.error)throw res.error;
+   if(!res.data||!res.data.length){this.busy=false;return this.conflict()}
+   this.base=nr;S.rev=nr;saveLocal();this.status='saved';this.err='';this.lastSaved=Date.now();
+  }catch(e){this.busy=false;this.again=false;return this.fail(e)}
+  this.busy=false;renderAcct();
+  if(this.again){this.again=false;this.queue(300)}
+ },
+ async conflict(){
+  try{const{data:row,error}=await this.sb.from('saves').select('data,rev,game_turn,updated_at').eq('user_id',this.user.id).maybeSingle();if(error)throw error;
+   if(!row){this.base=null;return this.push()}
+   this.pending=row;this.status='conflict';renderAcct();showConflict(row,'device')}catch(e){this.fail(e)}
+ },
+ fail(e){console.warn('Cloud save gagal:',e);this.status='error';this.err=(e&&e.message)||String(e);renderAcct();clearTimeout(this.retry);this.retry=setTimeout(()=>{if(this.status==='error')this.queue(0)},15000)},
+ async logout(){try{await this.flush()}catch(e){}await this.sb.auth.signOut();this.user=null;this.base=null;this.profile=null;this.status='guest';newGame();saveLocal();closeModal(true);TAB='koleksi';render();toast('Kamu sudah keluar. Progresmu aman tersimpan di akun.')}
+};
+const URL_HERE=()=>location.origin+location.pathname;
+function renderAcct(){const el=$('acct');if(!el)return;const c=Cloud;let h='';
+ if(c.status==='nolib')h=`<button class="acct warnb" data-act="acctinfo" title="Library Supabase gagal dimuat">⚠️ Cloud tidak tersedia</button>`;
+ else if(c.status==='guest')h=`<button class="acct" data-act="login">☁️ Masuk / Daftar</button>`;
+ else if(c.user){const st={sync:'Menyimpan…',saved:'Tersimpan',error:'Gagal sync',conflict:'Perlu dipilih'}[c.status]||'';
+  h=`<button class="acct ${c.status==='error'||c.status==='conflict'?'warnb':''}" data-act="account"><span class="dot ${c.status}"></span>${esc(c.profile?c.profile.username:(c.user.email||'Akun'))}<small>${st}</small></button>`}
+ el.innerHTML=h}
+function summary(d){return `${MONTHS[(8+d.turn)%12]} · Tahun ${1+Math.floor((8+d.turn)/12)}<br>${money(d.money)} · ${d.snakes.length} ular · ${Object.keys(d.dex||{}).length} morph di Dex`}
+function showConflict(row,why){modal(`<h2>Pilih save yang dipakai</h2><p class="sub">${why==='login'?'Akunmu sudah punya save di cloud, dan perangkat ini juga punya progres yang berbeda.':'Save di akunmu baru saja diubah dari perangkat atau tab lain.'} Save yang tidak dipilih akan ditimpa.</p>
+ <div class="grid2"><div class="panel"><h3 style="margin-top:0">☁️ Save di akun</h3><p>${summary(row.data)}</p><button class="pri" data-act="usecloud">Pakai save akun</button></div>
+ <div class="panel"><h3 style="margin-top:0">💻 Perangkat ini</h3><p>${summary(S)}</p><button data-act="uselocal">Pakai save ini</button></div></div>`,true)}
+function showAuth(mode,msg){mode=mode||'login';
+ modal(`<h2>${mode==='login'?'Masuk':'Daftar akun'}</h2><p class="sub">Simpan progres di cloud supaya bisa lanjut main dari perangkat mana pun.${mode==='signup'?' Username dipakai sebagai nama publikmu (nanti juga untuk trading) dan tidak bisa diganti.':''}</p>
+ <div class="toolbar"><button class="chip ${mode==='login'?'on':''}" data-act="authmode" data-v="login">Masuk</button><button class="chip ${mode==='signup'?'on':''}" data-act="authmode" data-v="signup">Daftar</button></div>
+ <form data-form="${mode}" class="form" novalidate>
+ ${mode==='signup'?'<label>Username<input name="username" maxlength="20" autocomplete="username" placeholder="3–20 karakter: huruf, angka, _"></label>':''}
+ <label>Email<input name="email" type="email" autocomplete="email" placeholder="nama@email.com"></label>
+ <label>Password<input name="password" type="password" autocomplete="${mode==='login'?'current-password':'new-password'}" placeholder="${mode==='login'?'':'minimal 6 karakter'}"></label>
+ <div class="msg">${msg||''}</div>
+ <div class="actions"><button class="pri" type="submit">${mode==='login'?'Masuk':'Buat akun'}</button>${mode==='login'?'<button type="button" class="ghost" data-act="forgot">Lupa password?</button>':''}<button type="button" class="ghost" data-act="close">Batal</button></div></form>`)}
+function showUsername(msg){modal(`<h2>Pilih username</h2><p class="sub">Username jadi nama publikmu di MorphLab dan nanti dipakai untuk trading. Tidak bisa diganti setelah dibuat.</p>
+ <form data-form="username" class="form" novalidate><label>Username<input name="username" maxlength="20" placeholder="3–20 karakter: huruf, angka, _"></label><div class="msg">${msg||''}</div><div class="actions"><button class="pri" type="submit">Simpan username</button></div></form>`,true)}
+function showSetPassword(){modal(`<h2>Buat password baru</h2><form data-form="setpw" class="form" novalidate><label>Password baru<input name="password" type="password" autocomplete="new-password" placeholder="minimal 6 karakter"></label><div class="msg"></div><div class="actions"><button class="pri" type="submit">Simpan password</button></div></form>`,true)}
+function showAccount(){const c=Cloud;const st={sync:'Sedang menyimpan…',saved:'Tersimpan'+(c.lastSaved?' '+new Date(c.lastSaved).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}):''),error:'Gagal sync: '+esc(c.err)+'. Dicoba lagi otomatis.',conflict:'Menunggu pilihan save'}[c.status]||'';
+ modal(`<h2>Akun</h2><dl><dt>Username</dt><dd>${c.profile?esc(c.profile.username):'<i>belum dipilih</i>'}</dd><dt>Email</dt><dd>${esc(c.user.email||'')}</dd><dt>Status cloud</dt><dd>${st}</dd><dt>Versi save</dt><dd>#${c.base||0}</dd></dl>
+ <div class="actions"><button class="pri" data-act="syncnow">Simpan sekarang</button>${c.profile?'':'<button data-act="pickname">Pilih username</button>'}<button data-act="logout">Keluar</button><button class="ghost" data-act="close">Tutup</button></div>`)}
+const AUTH_ERR=m=>{m=String(m||'');if(/invalid login/i.test(m))return 'Email atau password salah.';if(/not confirmed/i.test(m))return 'Email belum dikonfirmasi. Buka link di email pendaftaranmu dulu.';if(/rate limit|too many/i.test(m))return 'Terlalu banyak percobaan. Tunggu sebentar lalu coba lagi.';if(/already registered|already exists/i.test(m))return 'Email itu sudah terdaftar. Silakan masuk.';if(/password/i.test(m)&&/6|short|weak/i.test(m))return 'Password terlalu lemah (minimal 6 karakter).';return esc(m)};
+async function handleForm(kind,f){
+ const v=n=>{const i=f.querySelector(`[name="${n}"]`);return i?i.value.trim():''};const msg=h=>{f.querySelector('.msg').innerHTML=h};
+ const btn=f.querySelector('button[type=submit]');const sb=Cloud.sb;if(!sb&&kind!=='none')return;
+ const email=v('email'),pw=f.querySelector('[name=password]')?f.querySelector('[name=password]').value:'',un=v('username');
+ if(kind==='signup'&&!/^[A-Za-z0-9_]{3,20}$/.test(un))return msg('<span class="warn">Username 3–20 karakter, hanya huruf, angka, dan _.</span>');
+ if(kind==='username'&&!/^[A-Za-z0-9_]{3,20}$/.test(un))return msg('<span class="warn">Username 3–20 karakter, hanya huruf, angka, dan _.</span>');
+ if((kind==='login'||kind==='signup')&&!/^\S+@\S+\.\S+$/.test(email))return msg('<span class="warn">Masukkan email yang valid.</span>');
+ if((kind==='login'||kind==='signup'||kind==='setpw')&&pw.length<6)return msg('<span class="warn">Password minimal 6 karakter.</span>');
+ btn.disabled=true;msg('<span class="kbd">Memproses…</span>');
+ try{
+  if(kind==='login'){const{error}=await sb.auth.signInWithPassword({email,password:pw});if(error)throw error;closeModal(true);toast('Berhasil masuk. Menyinkronkan save…')}
+  else if(kind==='signup'){const{data,error}=await sb.auth.signUp({email,password:pw,options:{data:{username:un},emailRedirectTo:URL_HERE()}});if(error)throw error;
+   if(data.user&&Array.isArray(data.user.identities)&&data.user.identities.length===0)return msg('<span class="warn">Email itu sudah terdaftar. Silakan masuk.</span>'),btn.disabled=false;
+   if(data.session){closeModal(true);toast('Akun dibuat! Menyinkronkan save…')}
+   else msg(`<span class="ok">Akun dibuat. Cek email <b>${esc(email)}</b> dan klik link konfirmasi, lalu kembali ke halaman ini untuk masuk.</span>`)}
+  else if(kind==='username'){const e=await Cloud.setUsername(un);if(e)throw new Error(e);closeModal(true);toast('Username <b>'+esc(un)+'</b> tersimpan.')}
+  else if(kind==='setpw'){const{error}=await sb.auth.updateUser({password:pw});if(error)throw error;closeModal(true);toast('Password baru tersimpan.')}
+ }catch(e){msg('<span class="warn">'+AUTH_ERR(e.message||e)+'</span>')}
+ btn.disabled=false}
+function cloudAct(a,el){
+ const map={
+  login:()=>showAuth('login'),
+  authmode:()=>showAuth(el.dataset.v),
+  account:()=>showAccount(),
+  acctinfo:()=>modal(`<h2>Cloud save tidak tersedia</h2><p class="sub">Library Supabase gagal dimuat (koneksi internet atau pemblokir iklan). Game tetap jalan dan progres tersimpan di browser ini. Muat ulang halaman untuk mencoba lagi.</p><div class="actions"><button class="ghost" data-act="close">Tutup</button></div>`),
+  usecloud:()=>Cloud.useCloud(Cloud.pending),
+  uselocal:()=>Cloud.useLocal(),
+  syncnow:()=>{Cloud.queue(0);closeModal()},
+  pickname:()=>showUsername(''),
+  logout:()=>Cloud.logout(),
+  forgot:async()=>{const f=el.closest('form');const email=f.querySelector('[name=email]').value.trim();const m=f.querySelector('.msg');
+   if(!/^\S+@\S+\.\S+$/.test(email)){m.innerHTML='<span class="warn">Isi email dulu, lalu klik "Lupa password?" lagi.</span>';return}
+   const{error}=await Cloud.sb.auth.resetPasswordForEmail(email,{redirectTo:URL_HERE()});
+   m.innerHTML=error?'<span class="warn">'+AUTH_ERR(error.message)+'</span>':`<span class="ok">Link reset password dikirim ke <b>${esc(email)}</b>.</span>`}
+ };
+ if(!map[a])return false;map[a]();return true}
 
 function boot(){
  if(!load())newGame();
@@ -511,6 +670,9 @@ function boot(){
  document.addEventListener('change',e=>{const t=e.target;
   if(t.id==='selM'){SEL.m=+t.value;render()}else if(t.id==='selF'){SEL.f=+t.value;render()}else if(t.id==='sort'){SORT=t.value;render()}});
  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+ document.addEventListener('submit',e=>{const f=e.target.closest('form[data-form]');if(!f)return;e.preventDefault();handleForm(f.dataset.form,f)});
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')Cloud.flush()});
+ Cloud.init();
  render();
 }
 if(typeof window!=='undefined'&&window.document&&!window.__TEST__)boot();

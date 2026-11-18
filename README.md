@@ -6,6 +6,8 @@ Game simulasi breeding ball python berbasis web, dengan genetika morph yang meng
 
 Buka `index.html` di browser. Tidak perlu install apa pun. Progres tersimpan otomatis di `localStorage` browser.
 
+Kalau Supabase sudah dikonfigurasi, pemain bisa **daftar dan masuk** untuk menyimpan progres di cloud dan melanjutkan dari perangkat lain. Panduannya ada di [SETUP-SUPABASE.md](SETUP-SUPABASE.md).
+
 Bisa juga dimainkan online lewat GitHub Pages: **Settings → Pages → Deploy from a branch → `main` / root**.
 
 ## Fitur
@@ -24,9 +26,17 @@ Bisa juga dimainkan online lewat GitHub Pages: **Settings → Pages → Deploy f
 
 ## Struktur
 
-Saat ini semuanya ada di satu file `index.html` (HTML + CSS + JavaScript) supaya mudah dibuka dan di-hosting.
+| File | Isi |
+|---|---|
+| `index.html` | Seluruh game (HTML + CSS + JavaScript) |
+| `config.js` | URL & publishable key Supabase (kosong = mode offline) |
+| `supabase/schema.sql` | Tabel `profiles` & `saves` dengan Row Level Security |
+| `SETUP-SUPABASE.md` | Panduan menyiapkan login & cloud save |
 
 ## Rencana
+
+- [x] Login & cloud save (Supabase)
+- [ ] Trading antar pemain (divalidasi di server)
 
 - [ ] Spesies baru (leopard gecko, bearded dragon, corn snake)
 - [ ] Perawatan & kesehatan (suhu, kelembapan, shedding, mogok makan)
