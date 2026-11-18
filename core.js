@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:13,date:'2026-11-19'};
+const VERSION={v:14,date:'2026-11-19'};
 const BUYER_COUNT=8;      // jumlah nama pembeli di kamus bahasa
 
 /* ========= DATA GENETIKA ========= */
@@ -42,9 +42,9 @@ const fmt=n=>Math.round(n).toLocaleString('en-US');
 const mi=()=>(8+S.turn)%12;
 const yr=()=>1+Math.floor((8+S.turn)/12);
 const cap=()=>S.racks*10;
-// Harga rak naik 2× setiap pembelian: rak ke-3 $250, ke-4 $500, ke-5 $1.000, dst. (2 rak pertama gratis dari awal)
-const RACK_BASE=250,START_RACKS=2;
-const rackPrice=()=>RACK_BASE*Math.pow(2,Math.max(0,S.racks-START_RACKS));
+// Harga rak naik 4× setiap pembelian: rak ke-3 $250, ke-4 $1.000, ke-5 $4.000, dst. (2 rak pertama gratis dari awal)
+const RACK_BASE=250,RACK_MULT=4,START_RACKS=2;
+const rackPrice=()=>RACK_BASE*Math.pow(RACK_MULT,Math.max(0,S.racks-START_RACKS));
 // Catatan disimpan sebagai kunci + parameter supaya ikut berganti bahasa.
 // Catatan breeder maksimal LOG_MAX entri: entri baru masuk di atas, yang paling lama terhapus.
 const LOG_MAX=50;
@@ -320,7 +320,7 @@ root.MorphCore={
  VERSION,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,POOL,BUYER_COUNT,
  R,pick,clamp,money,fmt,
  use(s){S=s},state(){return S},
- mi,yr,cap,log,rackPrice,
+ mi,yr,cap,log,rackPrice,RACK_MULT,
  emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,
  SPECIES,OLD_WARN,maxAge,lifeLeft,
  mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,matches,
