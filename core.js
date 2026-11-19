@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:21,date:'2026-11-19'};
+const VERSION={v:22,date:'2026-11-19'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -123,8 +123,8 @@ const rint=([a,b])=>a+Math.floor(R()*(b-a+1));
 const mi=()=>(8+S.turn)%12;
 const yr=()=>1+Math.floor((8+S.turn)/12);
 const cap=()=>S.racks*10;
-// Harga rak naik 8× setiap pembelian: rak ke-3 $250, ke-4 $2.000, ke-5 $16.000, dst. (2 rak pertama gratis dari awal)
-const RACK_BASE=250,RACK_MULT=8,START_RACKS=2;
+// Harga rak naik 2× setiap pembelian: rak ke-3 $25.000, ke-4 $50.000, ke-5 $100.000, dst. (2 rak pertama gratis dari awal)
+const RACK_BASE=25000,RACK_MULT=2,START_RACKS=2;
 const rackPrice=()=>RACK_BASE*Math.pow(RACK_MULT,Math.max(0,S.racks-START_RACKS));
 // Catatan disimpan sebagai kunci + parameter supaya ikut berganti bahasa.
 // Catatan breeder maksimal LOG_MAX entri: entri baru masuk di atas, yang paling lama terhapus.
