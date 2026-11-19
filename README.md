@@ -40,6 +40,7 @@ Bisa juga dimainkan online lewat GitHub Pages: **Settings → Pages → Deploy f
 | `supabase/schema.sql` | Tabel `profiles` & `saves` dengan Row Level Security |
 | `supabase/functions/game/` | Edge Function mode online (`index.ts`, `handler.js`, salinan `core.js`) |
 | `scripts/sync-core.sh` | Menyalin `core.js` ke Edge Function |
+| `scripts/sim-economy.cjs` | Simulasi ekonomi: bot memainkan ratusan game untuk menguji keseimbangan harga |
 | `supabase/social.sql` | Teman, chat, trading (escrow) + fungsi server & realtime |
 | `assets/` | Logo, favicon, dan ikon aplikasi |
 | `SETUP-SUPABASE.md` | Panduan menyiapkan login & cloud save |

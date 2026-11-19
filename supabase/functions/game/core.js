@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:25,date:'2026-11-19'};
+const VERSION={v:26,date:'2026-11-19'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -123,8 +123,8 @@ const rint=([a,b])=>a+Math.floor(R()*(b-a+1));
 const mi=()=>(8+S.turn)%12;
 const yr=()=>1+Math.floor((8+S.turn)/12);
 const cap=()=>S.racks*10;
-// Harga rak naik 2× setiap pembelian: rak ke-3 $25.000, ke-4 $50.000, ke-5 $100.000, dst. (2 rak pertama gratis dari awal)
-const RACK_BASE=25000,RACK_MULT=2,START_RACKS=2;
+// Harga rak naik 2× setiap pembelian: rak ke-3 $10.000, ke-4 $20.000, ke-5 $40.000, dst. (2 rak pertama gratis dari awal)
+const RACK_BASE=10000,RACK_MULT=2,START_RACKS=2;
 const rackPrice=()=>RACK_BASE*Math.pow(RACK_MULT,Math.max(0,S.racks-START_RACKS));
 // Catatan disimpan sebagai kunci + parameter supaya ikut berganti bahasa.
 // Catatan breeder maksimal LOG_MAX entri: entri baru masuk di atas, yang paling lama terhapus.
@@ -367,13 +367,13 @@ function matches(o){const sp=spOf(o);return S.snakes.filter(s=>{const tr=traitsO
 
 /* ========= GAME BARU ========= */
 function newGame(){
- S={v:2,rev:0,turn:0,money:2000,racks:2,nextId:1,snakes:[],clutches:[],broods:[],market:[],orders:[],dex:{},mm:{},log:[],event:null,stats:{hatched:0,sold:0,earned:0,clutches:0}};
+ S={v:2,rev:0,turn:0,money:5000,racks:2,nextId:1,snakes:[],clutches:[],broods:[],market:[],orders:[],dex:{},mm:{},log:[],event:null,stats:{hatched:0,sold:0,earned:0,clutches:0}};
  // Ular awal: sepasang yang sudah cukup umur untuk langsung dikawinkan
  addSnake(newSnake({sex:'M',age:14,w:760,g:G({albino:[1,0]}),hp:{albino:1}}));   // jantan Normal het Albino
  addSnake(newSnake({sex:'F',age:30,w:1750,g:G({albino:[1,1]}),hp:{albino:1}}));   // betina Albino
  S.snakes.forEach(s=>{s.src={t:'starter',turn:0};dexAdd(traitsOf(s.g),'ball')});
  refreshMarket();S.orders=[genOrder(),genOrder()];
- log('l_welcome',{v:money(2000)},'star');
+ log('l_welcome',{v:money(5000)},'star');
  return S;
 }
 
