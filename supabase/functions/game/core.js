@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:29,date:'2026-11-20'};
+const VERSION={v:30,date:'2026-11-20'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -358,9 +358,9 @@ function genOrder(){const x=orderSpec();const o={oid:Math.floor(R()*1e9),tr:x.tr
 /* ========= REPUTASI & PEMBELI BESAR =========
    Reputasi hanya bertambah dari pesanan: pesanan biasa +1, pesanan pembeli besar +3 (uang tetap dibayar).
    Level: naik ke level 2 butuh 10, ke level 3 butuh 20 lagi (total 30), ke level 4 butuh 30 lagi (total 60), dst.
-   Mulai level 3 muncul pembeli besar: 1 pesanan berisi 2 hewan berbeda, dikirim sekaligus, dibayar 150% nilai hewan.
+   Mulai level 2 muncul pembeli besar: 1 pesanan berisi 2 hewan berbeda, dikirim sekaligus, dibayar 150% nilai hewan.
    Maks. 3 pesanan biasa + 1 pesanan pembeli besar. */
-const REP_ORDER=1,REP_BIG=3,BIG_LEVEL=3,ORDER_PREMIUM_BIG=1.5,MAX_SMALL=3;
+const REP_ORDER=1,REP_BIG=3,BIG_LEVEL=2,ORDER_PREMIUM_BIG=1.5,MAX_SMALL=3;
 const repNeed=L=>5*L*(L-1);                        // total reputasi untuk mencapai level L (1→0, 2→10, 3→30, 4→60 …)
 function repLevel(r){let L=1;while(repNeed(L+1)<=(r||0))L++;return L}
 const isBig=o=>!!(o&&o.big);
