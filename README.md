@@ -65,7 +65,6 @@ Sudah selesai:
 Berikutnya:
 
 - [ ] Reputasi breeder & achievement: membuka spesies, pembeli besar, dan gelar di profil
-- [ ] Riwayat clutch & statistik breeder (hasil vs peluang, "Proven breeder")
 - [ ] Papan peringkat global
 - [ ] Event berkala & kompetisi morph
 - [ ] Pasar antarpemain (tidak hanya antar teman)
