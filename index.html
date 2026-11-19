@@ -159,9 +159,7 @@ button.sm{padding:4px 10px;font-size:12.5px}
 .mbox:has(.tb){max-width:860px}
 .gated nav,.gated aside{display:none}.gated main{grid-template-columns:minmax(0,1fr);max-width:860px}
 .gate{padding:26px}.gate h2{font-size:26px}
-.gate-morphs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
-@media(max-width:560px){.gate-morphs{grid-template-columns:repeat(2,1fr)}}
-.gate-morphs figure{margin:0}.gate-morphs figcaption{font-size:12.5px;color:var(--mut);margin-top:4px;text-align:center}
+.gate-logo{display:block;width:min(340px,78%);height:auto;margin:2px auto 20px}
 .gate-f{list-style:none;padding:0;margin:0 0 6px;display:grid;gap:6px;color:#dcd4c0}
 .gchat .chatlog{max-height:460px;min-height:300px}.bub .gname{font-size:11.5px;font-weight:700;color:var(--acc);margin-bottom:2px}.bub.me .gname{color:var(--mut)}
 .origin{font-size:11.5px;color:#c9b98f;margin-top:2px}.origin .linkbtn{color:inherit}
@@ -979,14 +977,12 @@ function showPreview(){const p=previewNext();const row=(ic,k,v,cls)=>`<tr class=
  <div class="actions"><button class="pri" data-act="preview_go">${t('advance')}</button><button class="ghost" data-act="close">${t('close')}</button></div>`)}
 
 /* ========= HALAMAN MASUK (wajib login) ========= */
-const GATE_MORPHS=[['pastel','spider'],['bel'],['albino'],['piebald'],['banana','clown'],['ivory']];
 function vGate(){
  const st=Cloud.status;
  if(st==='off'||st==='nolib')return `<div class="gate panel"><h2>${t('gate_down_h')}</h2><p class="sub">${t('gate_down')}</p><div class="actions"><button class="pri" data-act="gate_reload">${t('gate_reload')}</button></div></div>`;
  if(st==='checking'||(Cloud.user&&st==='sync'))return `<div class="gate panel"><p class="sub" style="margin:0">⏳ ${t('gate_loading')}</p></div>`;
  if(Cloud.user&&st==='error')return `<div class="gate panel"><h2>${t('gate_err_h')}</h2><p class="warn">${esc(errText(Cloud.err))}</p><div class="actions"><button class="pri" data-act="gate_retry">${t('gate_retry')}</button><button class="ghost" data-act="logout">${t('ac_logout')}</button></div></div>`;
- return `<div class="gate panel"><h2>${t('gate_title')}</h2><p class="sub">${t('gate_sub')}</p>
- <div class="gate-morphs">${GATE_MORPHS.map(tr=>{const n=nameOf(tr);return `<figure><img class="snk" src="${thumb(tr,strHash(n))}" alt="${esc(n)}"><figcaption>${esc(n)}</figcaption></figure>`}).join('')}</div>
+ return `<div class="gate panel"><img class="gate-logo" src="assets/logo-full.png" width="968" height="704" alt="Morph Lab — Exotic Breeder Sim"><h2>${t('gate_title')}</h2><p class="sub">${t('gate_sub')}</p>
  <ul class="gate-f">${[1,2,3,4].map(i=>`<li>${t('gate_f'+i)}</li>`).join('')}</ul>
  <div class="actions"><button class="pri" data-act="login">${t('gate_login')}</button><button data-act="signup">${t('gate_signup')}</button></div><p class="kbd">${t('gate_note')}</p></div>`}
 function renderGate(){
