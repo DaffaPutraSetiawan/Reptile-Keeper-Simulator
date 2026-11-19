@@ -37,6 +37,8 @@ Game **wajib login**. Setiap aksi dikirim ke server (Edge Function `game`), yang
 - **Gambar hewan prosedural** yang dibuat dari genetika tiap hewan
 - **Teman, chat & trading**: tambah teman lewat username, chat real-time & global chat, profil dengan etalase, dan tukar hewan/uang dengan sistem escrow yang dijalankan server. Riwayat pemilik hewan (origin keeper) ikut tercatat.
 - **Papan peringkat global** (di tab Global): kekayaan, Morph Dex, hewan termahal (per spesies), breeder produktif, dan pesanan. Ada top 50, posisi kamu, dan filter teman saja.
+- **Moderasi chat global**: pemain bisa melaporkan pesan (spam, kasar, penipuan trade, lainnya). Kata kasar otomatis disensor jadi ★★★ dan pesan yang sama tidak bisa dikirim lebih dari 3× dalam 5 menit. Admin bisa menghapus pesan dan membisukan pemain di chat global (1 jam, 24 jam, 7 hari, atau selamanya, dengan alasan yang terlihat oleh pemain).
+- **Tab Admin** (hanya untuk admin): ringkasan angka pemain, chat, trade & laporan, antrean laporan chat, daftar pemain yang dibisukan, dan log tindakan admin.
 - **Laporan bug**: pemain melapor dengan judul, deskripsi, kategori, dan 1–3 screenshot. Semua pemain bisa membaca & berkomentar; admin mengubah status, membalas, dan menghapus. Pelapor mendapat notifikasi saat ada balasan.
 - **Dua bahasa: Indonesia & Inggris**, bisa diganti kapan saja. Bahasa awal mengikuti bahasa browser, lalu pilihan pemain diingat.
 - **3 tema warna** (Terrarium, Hutan Hujan, Samudra Malam) di Pengaturan
@@ -53,12 +55,13 @@ Game **wajib login**. Setiap aksi dikirim ke server (Edge Function `game`), yang
 | `supabase/social.sql` | Teman, chat, global chat, profil, trading (escrow) + fungsi server & realtime |
 | `supabase/bugs.sql` | Laporan bug, komentar, admin, dan bucket Storage untuk screenshot |
 | `supabase/leaderboard.sql` | Papan peringkat global (kolom `saves.rank` & fungsi `get_leaderboard`) |
+| `supabase/moderation.sql` | Moderasi chat global (laporan, bisu, sensor kata), log & ringkasan admin |
 | `scripts/sync-core.sh` | Menyalin `core.js` ke Edge Function |
 | `scripts/sim-economy.cjs` | Simulasi ekonomi: bot memainkan ratusan game untuk menguji keseimbangan harga |
 | `assets/` | Logo, favicon, dan ikon aplikasi |
 | `SETUP-SUPABASE.md` | Panduan menyiapkan login, database, Storage, dan Edge Function |
 
-Urutan menjalankan SQL di Supabase: `schema.sql` → `social.sql` → `bugs.sql` → `leaderboard.sql`, lalu deploy Edge Function `game`.
+Urutan menjalankan SQL di Supabase: `schema.sql` → `social.sql` → `bugs.sql` → `leaderboard.sql` → `moderation.sql`, lalu deploy Edge Function `game`.
 
 ## Rencana
 
@@ -73,6 +76,7 @@ Sudah selesai:
 - [x] Misi pemula (tutorial)
 - [x] Laporan bug dengan komentar & panel admin
 - [x] Papan peringkat global (sepanjang masa)
+- [x] Moderasi chat global & ringkasan admin
 
 Berikutnya:
 

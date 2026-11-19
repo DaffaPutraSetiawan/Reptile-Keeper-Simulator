@@ -487,6 +487,10 @@ begin
   if (select count(*) from public.global_messages where sender = me and created_at > now() - interval '1 minute') >= 10 then
     raise exception 'rate_limited';
   end if;
+  -- Moderasi (moderation.sql): cek bisu, pesan berulang, sensor kata kasar. Dilewati kalau file itu belum dijalankan.
+  if to_regprocedure('public._chat_guard(uuid,text)') is not null then
+    execute 'select public._chat_guard($1, $2)' into p_body using me, p_body;
+  end if;
   insert into public.global_messages (sender, username, body) values (me, v_name, p_body) returning * into m;
   -- simpan hanya 50 pesan terakhir: yang lebih lama dihapus
   select id into v_cut from public.global_messages order by id desc offset 50 limit 1;

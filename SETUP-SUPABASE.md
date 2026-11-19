@@ -118,6 +118,22 @@ Aturan yang dijalankan server:
 
 Angka peringkat (kekayaan, Morph Dex, hewan termahal per spesies, bayi menetas, pesanan) dihitung oleh Edge Function `game` setiap kali save disimpan, jadi tidak bisa dipalsukan dari browser. Pemain lama otomatis masuk papan peringkat saat login berikutnya.
 
+## 10. Moderasi chat & tab Admin
+
+1. Buka **SQL Editor → New query**.
+2. Salin seluruh isi [`supabase/moderation.sql`](supabase/moderation.sql), tempel, lalu klik **Run**. Jalankan **setelah** `bugs.sql` (admin memakai tabel `admins` yang sama).
+
+- Pemain bisa melaporkan pesan di chat global. Isi pesan disalin ke laporan, karena chat global hanya menyimpan 50 pesan terakhir.
+- Admin melihat tab **Admin**: ringkasan angka, antrean laporan, pemain yang dibisukan, dan log tindakan. Dari tab itu atau langsung dari chat, admin bisa menghapus pesan dan membisukan pemain di chat global (chat pribadi tidak terpengaruh).
+- Kata yang disensor ada di tabel `chat_banned_words` dan bisa diubah tanpa deploy ulang:
+  ```sql
+  insert into public.chat_banned_words (word) values ('katabaru') on conflict do nothing;
+  delete from public.chat_banned_words where word = 'kata';
+  select word from public.chat_banned_words order by word;
+  ```
+  Huruf a–z saja, minimal 3 huruf. Huruf berulang dan angka/simbol pengganti (a→4/@, i→1/!, e→3, o→0, s→5/$) ikut tertangkap; hanya kata utuh yang disensor.
+- Pembersihan otomatis saat admin membuka tab Admin: laporan chat yang sudah ditutup > 90 hari, statistik chat > 30 hari, dan log admin > 1 tahun.
+
 ## Catatan keamanan
 
 - **Save online hanya bisa diubah server**: Edge Function `game` dan fungsi trading di `social.sql`. Mengubah uang atau ular lewat DevTools hanya mengubah tampilan di layar sendiri, dan akan kembali ke angka server setelah aksi berikutnya.

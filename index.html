@@ -161,7 +161,13 @@ button.sm{padding:4px 10px;font-size:12.5px}
 .gate{padding:26px}.gate h2{font-size:26px}
 .gate-logo{display:block;width:min(340px,78%);height:auto;margin:2px auto 20px}
 .gate-f{list-style:none;padding:0;margin:0 0 6px;display:grid;gap:6px;color:#dcd4c0}
-.gchat .chatlog{max-height:460px;min-height:300px}.bub .gname{font-size:11.5px;font-weight:700;color:var(--acc);margin-bottom:2px}.bub.me .gname{color:var(--mut)}
+.gchat .chatlog{max-height:460px;min-height:300px}.bub .gname{display:flex;align-items:center;gap:6px}.gacts{margin-left:auto;display:inline-flex;gap:2px}
+.gact{background:none;border:0;padding:0 4px;font-size:12px;line-height:1.4;color:var(--mut);cursor:pointer;opacity:.55;border-radius:6px}.gact:hover{opacity:1;background:var(--hover)}.gact.done{cursor:default;opacity:.7}
+.bub:hover .gact{opacity:.9}.bub.grq{max-width:100%;margin:8px 0;align-self:stretch}
+.gmuted{border-top:1px solid var(--line);padding:12px 14px;background:color-mix(in srgb,var(--bad) 12%,transparent);font-size:13px;display:flex;flex-direction:column;gap:3px}
+.grreasons{display:grid;grid-template-columns:1fr 1fr;gap:6px}label.rad{display:flex;flex-direction:row!important;align-items:center;gap:7px;cursor:pointer;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 10px}label.rad input{width:auto;margin:0}
+.modstats{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin:6px 0 16px}.modstats .stat{min-width:0;padding:9px 12px}
+.modrep{padding:10px 14px;display:flex;flex-direction:column;gap:6px}.modrep .actions{margin-top:2px}.modlog{padding:7px 2px;border-bottom:1px solid var(--line);font-size:13px;overflow-wrap:anywhere}.bub .gname{font-size:11.5px;font-weight:700;color:var(--acc);margin-bottom:2px}.bub.me .gname{color:var(--mut)}
 .origin{font-size:11.5px;color:#c9b98f;margin-top:2px}.origin .linkbtn{color:inherit}
 .linkbtn{background:none;border:0;padding:0;color:inherit;font:inherit;font-weight:inherit;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}.linkbtn:hover{color:var(--acc)}
 .prof .profhead{display:flex;gap:14px;align-items:center}.prof h2{margin:0 0 2px}
@@ -386,6 +392,16 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  set_title:'Pengaturan',set_lang:'Bahasa',set_theme:'Tema warna',th_terra:'Terrarium',th_terra_d:'Cokelat hangat & amber (bawaan)',th_forest:'Hutan Hujan',th_forest_d:'Hijau gelap & zamrud',th_ocean:'Samudra Malam',th_ocean_d:'Biru tua & biru langit',
  pv_open:'Lihat perkiraan saldo bulan depan',pv_h:'Perkiraan saldo bulan depan',pv_sub:'Biaya ini dipotong otomatis saat kamu menekan “Lanjut bulan”.',pv_now:'Saldo sekarang',pv_food:p=>`Pakan · ${p.n} ekor`,pv_util:p=>`Listrik & rak · ${p.r} rak × $8`,pv_over:p=>`Space darurat · ${p.n} ekor di atas kapasitas (${p.c}) × $15`,pv_total:'Total pengeluaran',pv_after:'Perkiraan saldo',pv_formula:'Pakan per hewan: $2 (ball python) atau $1 (leopard gecko) + $1 per 250 g berat (dihitung dari berat setelah tumbuh bulan depan).',pv_debt:'⚠️ Saldo akan minus! Jual, iklankan, atau kirim hewan ke pesanan dulu.',pv_n_born:p=>`Termasuk ${p.n} bayi yang akan menetas (bisa kurang kalau ada telur yang mati).`,pv_n_lay:p=>`${p.n} betina akan bertelur, beratnya turun ±28% sehingga pakannya lebih murah.`,pv_n_foodx:'Harga pakan sedang naik +50% (event bulan ini).',pv_n_listed:p=>`Belum termasuk uang dari ${p.n} hewan yang diiklankan kalau terjual.`,pv_n_old:p=>`${p.n} hewan akan mati karena tua bulan depan, jadi tidak dihitung biaya pakannya.`,pv_n_random:'Ini perkiraan: pertumbuhan & event baru bersifat acak.',
  tab_teman:'Teman',tab_global:'Global',gc_sub:p=>`Ngobrol dengan semua pemain Morph Lab. Hanya ${p.n} pesan terakhir yang disimpan; pesan yang lebih lama terhapus otomatis.`,gc_ph:'Tulis pesan untuk semua pemain…',gc_empty:'Belum ada pesan. Jadilah yang pertama menyapa!',e_empty_message:'Pesan masih kosong.',e_message_too_long:'Pesan terlalu panjang.',busy:'Tunggu sebentar, sedang memproses…',
+ tab_admin:'Admin',mod_sub:'Hanya terlihat oleh admin. Laporan chat global, pemain yang dibisukan, dan catatan semua tindakan moderasi.',mod_reload:'Muat ulang',
+ ms_players:'Pemain',ms_new:p=>`+${p.a} (24 jam) · +${p.b} (7 hari)`,ms_active24:'Aktif 24 jam',ms_active7:'Aktif 7 hari',ms_msgs:'Chat global 24 jam',ms_msgs7:p=>`${p.n} dalam 7 hari`,ms_trades:'Trade 7 hari',ms_trades_ok:p=>`${p.n} diterima`,ms_reports:'Laporan chat menunggu',ms_mutes:'Pemain dibisukan',ms_bugs:'Bug belum selesai',ms_bugs_sm:p=>`${p.a} baru · ${p.b} ditinjau`,
+ mod_reports:'Laporan chat global',mod_open:'Menunggu',mod_hist:'Riwayat',mod_no_reports:'Tidak ada laporan yang menunggu. 🎉',mod_no_hist:'Belum ada riwayat laporan.',mod_mutes:'Sedang dibisukan',mod_no_mutes:'Tidak ada pemain yang sedang dibisukan.',mod_log:'Log tindakan admin',mod_no_log:'Belum ada tindakan.',
+ mod_del:'Hapus pesan',mod_sure:'Yakin?',mod_mute:'Bisukan',mod_unmute:'Buka bisu',mod_deleted:'Pesan dihapus dari chat global.',mod_muted:'Pemain dibisukan.',mod_purged:p=>`${p.n} pesannya ikut dihapus.`,mod_resolved:'Laporan ditutup.',mod_unmuted:'Bisu dibuka.',
+ mr_n:p=>`${p.n} laporan`,mr_live:'Pesan masih ada di chat',mr_gone:'Pesan sudah tidak ada di chat',mr_muted:'pengirim sedang dibisukan',mr_st_actioned:'✓ Ditindak',mr_st_dismissed:'✕ Tidak melanggar',mr_act:'Ditindak',mr_dis:'Tidak melanggar',
+ mu_h:p=>`Bisukan ${p.u}`,mu_sub:'Pemain ini tidak bisa mengirim pesan di chat global selama waktu yang dipilih. Ia akan melihat alasannya. Chat pribadi dengan teman tidak terpengaruh.',mu_dur:'Lama',mu_1h:'1 jam',mu_24h:'24 jam',mu_7d:'7 hari',mu_perm:'Selamanya',mu_reason:'Alasan (wajib, terlihat oleh pemain)',mu_reason_ph:'Mis. spam berulang, kata kasar ke pemain lain',mu_purge:'Hapus juga semua pesannya yang masih ada di chat global',mu_until:p=>`sampai ${p.d}`,mu_forever:'selamanya',mu_by:p=>`oleh ${p.u} · ${p.d}`,
+ ml_delete_msg:'menghapus pesan milik',ml_mute:'membisukan',ml_unmute:'membuka bisu',ml_report_actioned:'menindak laporan terhadap',ml_report_dismissed:'menyatakan tidak melanggar: laporan terhadap',
+ gr_btn:'Laporkan pesan ini',gr_done:'Sudah kamu laporkan',gr_h:'Laporkan pesan',gr_sub:'Laporan dikirim ke admin dan tidak terlihat oleh pemain lain. Isi pesan disimpan bersama laporan.',gr_note:'Catatan (opsional)',gr_note_ph:'Tambahkan keterangan untuk admin…',gr_send:'Kirim laporan',gr_pick:'Pilih alasannya dulu.',gr_sent:'Laporan terkirim. Terima kasih!',
+ grr_spam:'Spam',grr_abusive:'Kasar / menghina',grr_scam:'Penipuan trade',grr_other:'Lainnya',gm_h:p=>`Kamu dibisukan di chat global ${p.w}.`,gm_reason:'Alasan',
+ e_muted:'Kamu sedang dibisukan di chat global.',e_duplicate_message:'Pesan yang sama sudah dikirim 3 kali dalam 5 menit.',e_cannot_report_self:'Tidak bisa melaporkan pesan sendiri.',e_already_reported:'Kamu sudah melaporkan pesan ini.',e_msg_not_found:'Pesan sudah tidak ada di chat.',e_bad_reason:'Alasan tidak dikenal.',e_note_too_long:'Catatan maksimal 300 karakter.',e_report_limit:'Batas 10 laporan per 24 jam tercapai.',e_cannot_mute_admin:'Admin tidak bisa dibisukan.',e_bad_duration:'Lama bisu tidak dikenal.',e_reason_required:'Alasan wajib diisi (minimal 3 karakter).',e_not_muted:'Pemain ini tidak sedang dibisukan.',e_report_not_found:'Laporan sudah ditutup.',e_bad_status:'Status tidak dikenal.',
  so_login:'Masuk ke akun untuk menambah teman, chat, dan trading.',so_login_btn:'☁️ Masuk / Daftar',
  so_offline:'Fitur teman butuh koneksi ke server. Periksa koneksi internet lalu muat ulang halaman.',
  so_needname:'Pilih username dulu supaya teman bisa menemukanmu.',
@@ -627,6 +643,16 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  set_title:'Settings',set_lang:'Language',set_theme:'Color theme',th_terra:'Terrarium',th_terra_d:'Warm brown & amber (default)',th_forest:'Rainforest',th_forest_d:'Deep green & emerald',th_ocean:'Night Ocean',th_ocean_d:'Navy & sky blue',
  pv_open:'See next month’s balance forecast',pv_h:'Next month’s balance forecast',pv_sub:'These costs are deducted automatically when you press “Next month”.',pv_now:'Current balance',pv_food:p=>`Feeders · ${p.n} ${p.n===1?'animal':'animals'}`,pv_util:p=>`Power & racks · ${p.r} ${p.r===1?'rack':'racks'} × $8`,pv_over:p=>`Emergency space · ${p.n} over capacity (${p.c}) × $15`,pv_total:'Total costs',pv_after:'Expected balance',pv_formula:'Feeders per animal: $2 (ball python) or $1 (leopard gecko) + $1 per 250 g of body weight (using next month’s weight after growth).',pv_debt:'⚠️ Your balance will go negative! Sell, list, or ship animals to orders first.',pv_n_born:p=>`Includes ${p.n} ${p.n===1?'hatchling':'hatchlings'} due to hatch (could be fewer if an egg fails).`,pv_n_lay:p=>`${p.n} ${p.n===1?'female':'females'} will lay eggs and lose ~28% of their weight, so feeding them costs less.`,pv_n_foodx:'Feeder prices are up +50% (this month’s event).',pv_n_listed:p=>`Doesn’t include money from ${p.n} listed ${p.n===1?'animal':'animals'} if they sell.`,pv_n_old:p=>`${p.n} ${p.n===1?'animal':'animals'} will die of old age next month, so they aren’t counted in feeder costs.`,pv_n_random:'This is an estimate: growth and new events are random.',
  tab_teman:'Friends',tab_global:'Global',gc_sub:p=>`Chat with every Morph Lab player. Only the last ${p.n} messages are kept; older ones are deleted automatically.`,gc_ph:'Write a message to everyone…',gc_empty:'No messages yet. Be the first to say hi!',e_empty_message:'The message is empty.',e_message_too_long:'The message is too long.',busy:'One moment, still working…',
+ tab_admin:'Admin',mod_sub:'Only visible to admins. Global chat reports, muted players, and a log of every moderation action.',mod_reload:'Reload',
+ ms_players:'Players',ms_new:p=>`+${p.a} (24 h) · +${p.b} (7 days)`,ms_active24:'Active 24 h',ms_active7:'Active 7 days',ms_msgs:'Global chat 24 h',ms_msgs7:p=>`${p.n} in 7 days`,ms_trades:'Trades 7 days',ms_trades_ok:p=>`${p.n} accepted`,ms_reports:'Chat reports waiting',ms_mutes:'Muted players',ms_bugs:'Open bugs',ms_bugs_sm:p=>`${p.a} new · ${p.b} in review`,
+ mod_reports:'Global chat reports',mod_open:'Waiting',mod_hist:'History',mod_no_reports:'No reports waiting. 🎉',mod_no_hist:'No report history yet.',mod_mutes:'Currently muted',mod_no_mutes:'No players are muted.',mod_log:'Admin action log',mod_no_log:'No actions yet.',
+ mod_del:'Delete message',mod_sure:'Sure?',mod_mute:'Mute',mod_unmute:'Unmute',mod_deleted:'Message deleted from global chat.',mod_muted:'Player muted.',mod_purged:p=>`${p.n} of their messages were deleted too.`,mod_resolved:'Report closed.',mod_unmuted:'Player unmuted.',
+ mr_n:p=>`${p.n} report${p.n===1?'':'s'}`,mr_live:'Message is still in the chat',mr_gone:'Message is no longer in the chat',mr_muted:'sender is muted',mr_st_actioned:'✓ Actioned',mr_st_dismissed:'✕ Not a violation',mr_act:'Actioned',mr_dis:'Not a violation',
+ mu_h:p=>`Mute ${p.u}`,mu_sub:'This player can’t post in global chat for the chosen time and will see the reason. Private chats with friends aren’t affected.',mu_dur:'Duration',mu_1h:'1 hour',mu_24h:'24 hours',mu_7d:'7 days',mu_perm:'Permanent',mu_reason:'Reason (required, shown to the player)',mu_reason_ph:'E.g. repeated spam, insulting other players',mu_purge:'Also delete all their messages still in global chat',mu_until:p=>`until ${p.d}`,mu_forever:'permanently',mu_by:p=>`by ${p.u} · ${p.d}`,
+ ml_delete_msg:'deleted a message by',ml_mute:'muted',ml_unmute:'unmuted',ml_report_actioned:'actioned a report against',ml_report_dismissed:'dismissed a report against',
+ gr_btn:'Report this message',gr_done:'You reported this',gr_h:'Report message',gr_sub:'Reports go to the admin and aren’t visible to other players. The message text is saved with the report.',gr_note:'Note (optional)',gr_note_ph:'Add details for the admin…',gr_send:'Send report',gr_pick:'Pick a reason first.',gr_sent:'Report sent. Thank you!',
+ grr_spam:'Spam',grr_abusive:'Abusive / insulting',grr_scam:'Trade scam',grr_other:'Other',gm_h:p=>`You are muted in global chat ${p.w}.`,gm_reason:'Reason',
+ e_muted:'You are muted in global chat.',e_duplicate_message:'You already sent the same message 3 times in 5 minutes.',e_cannot_report_self:'You can’t report your own message.',e_already_reported:'You already reported this message.',e_msg_not_found:'The message is no longer in the chat.',e_bad_reason:'Unknown reason.',e_note_too_long:'The note can be at most 300 characters.',e_report_limit:'You reached the limit of 10 reports per 24 hours.',e_cannot_mute_admin:'Admins can’t be muted.',e_bad_duration:'Unknown mute duration.',e_reason_required:'A reason is required (at least 3 characters).',e_not_muted:'This player isn’t muted.',e_report_not_found:'The report is already closed.',e_bad_status:'Unknown status.',
  so_login:'Log in to add friends, chat and trade.',so_login_btn:'☁️ Log in / Sign up',
  so_offline:'Friends need a connection to the server. Check your internet connection and reload the page.',
  so_needname:'Choose a username first so friends can find you.',
@@ -946,7 +972,7 @@ function render(){
  <span id="acct"></span><button class="pri" data-act="advance">${t('advance')}</button>`;
  renderAcct();
  renderTabs();
- $('view').innerHTML=({koleksi:vKoleksi,breeding:vBreeding,inkubator:vInkubator,pasar:vPasar,pesanan:vPesanan,dex:vDex,teman:vTeman,global:vGlobal,panduan:vPanduan,bugs:vBugs})[TAB]();
+ $('view').innerHTML=({koleksi:vKoleksi,breeding:vBreeding,inkubator:vInkubator,pasar:vPasar,pesanan:vPesanan,dex:vDex,teman:vTeman,global:vGlobal,panduan:vPanduan,bugs:vBugs,admin:vAdmin})[TAB]();
  renderQuest();
  $('logh').textContent=t('log_title');
  $('logclr').textContent=t('log_clear');$('logclr').style.display=S.log.length?'':'none';
@@ -1155,7 +1181,7 @@ function act(a,id,el){
  if(cloudAct(a,el))return;
  if(a==='tab'&&el.dataset.tab==='teman'&&Social.ch)Social.refresh();
  switch(a){
-  case 'tab':TAB=el.dataset.tab;if(TAB==='bugs'){Bugs.loaded=false;Bugs.count()}if(TAB==='global'){if(Global.view==='chat')Global.unread=0;else Rank.load();Global.focus=false;if(!Global.loaded)Global.load()}break;
+  case 'tab':TAB=el.dataset.tab;if(TAB==='bugs'){Bugs.loaded=false;Bugs.count()}if(TAB==='admin')Mod.load();if(TAB==='global'){if(Global.view==='chat')Global.unread=0;else Rank.load();Global.focus=false;if(!Global.loaded)Global.load()}break;
   case 'lang':{const reopen=settingsOpen();setLang(el.dataset.v);if(reopen){render();showSettings();return}break}
   case 'filter':FILTER=el.dataset.v;break;
   case 'close':closeModal();return;
@@ -1182,6 +1208,15 @@ function act(a,id,el){
   case 'rk_sp':Rank.sp=el.dataset.v;Rank.load();return;
   case 'rk_fr':Rank.fr=el.dataset.v==='1';Rank.load();return;
   case 'rk_refresh':Rank.load(true);return;
+  case 'g_rep':Global.reportForm(id);return;
+  case 'g_del':Mod.delMsg(id,true);return;
+  case 'g_mute':Mod.muteForm(el.dataset.u,el.dataset.n);return;
+  case 'mod_del':Mod.delMsg(id,false);return;
+  case 'mod_res':Mod.call('admin_resolve_chat_report',{p_message:id,p_status:el.dataset.v},'mod_resolved');return;
+  case 'mod_unmute':Mod.call('admin_unmute',{p_user:el.dataset.u},'mod_unmuted');return;
+  case 'mod_hist':Mod.hist=el.dataset.v==='1';Mod.load();return;
+  case 'mod_more':Mod.more();return;
+  case 'mod_reload':Mod.load();return;
   case 'bug_new':Bugs.newForm();return;
   case 'bug_cancel':Bugs.files.forEach(x=>URL.revokeObjectURL(x.url));Bugs.files=[];closeModal(true);return;
   case 'bug_open':Bugs.open(id);return;
@@ -1472,26 +1507,120 @@ const errText=e=>{const m=String((e&&e.message)||e||'');const k=(m.match(/[a-z_]
 const hm=iso=>{try{return new Date(iso).toLocaleTimeString(LANG==='id'?'id-ID':'en-GB',{hour:'2-digit',minute:'2-digit'})}catch(e){return ''}};
 /* ========= GLOBAL CHAT ========= */
 const GLOBAL_MAX=50,GMSG_MAX=300;
-var Global={msgs:[],unread:0,loaded:false,draft:'',focus:false,view:'chat',
- reset(){this.msgs=[];this.unread=0;this.loaded=false;this.draft=''},
+var Global={msgs:[],unread:0,loaded:false,draft:'',focus:false,view:'chat',mute:null,reported:new Set(),armed:null,muteT:null,
+ reset(){this.msgs=[];this.unread=0;this.loaded=false;this.draft='';this.mute=null;this.reported=new Set();this.armed=null;clearTimeout(this.muteT)},
+ // Server = sumber kebenaran: pesan yang dihapus admin / tergeser keluar dari 50 terakhir ikut hilang di sini
  async load(){if(!Cloud.user||!Cloud.sb)return;const{data,error}=await Cloud.sb.rpc('get_global_messages');
   if(error){console.warn('global',error);return}
-  const known=new Set(this.msgs.map(m=>m.id));(data||[]).forEach(m=>{if(!known.has(m.id))this.msgs.push(m)});this.trim();this.loaded=true;this.paint()},
+  const list=data||[],top=list.length?list[list.length-1].id:0;this.msgs=list.concat(this.msgs.filter(m=>m.id>top));this.trim();this.loaded=true;this.paint()},
+ async loadMute(){if(!Cloud.user||!Cloud.sb)return;const{data,error}=await Cloud.sb.rpc('get_chat_mute');if(error)return;
+  const was=JSON.stringify(this.mute);this.mute=data||null;clearTimeout(this.muteT);
+  if(this.mute&&this.mute.until){const ms=Date.parse(this.mute.until)-Date.now();if(ms>0&&ms<2e9)this.muteT=setTimeout(()=>this.loadMute(),ms+1500)}
+  if(was!==JSON.stringify(this.mute)&&TAB==='global'&&this.view==='chat'&&!MODAL_LOCK)render()},
+ muted(){const m=this.mute;return !!m&&(!m.until||Date.parse(m.until)>Date.now())},
  trim(){this.msgs.sort((a,b)=>a.id-b.id);if(this.msgs.length>GLOBAL_MAX)this.msgs=this.msgs.slice(-GLOBAL_MAX)},
  onNew(m){if(!m||this.msgs.some(x=>x.id===m.id))return;this.msgs.push(m);this.trim();
   if((TAB!=='global'||this.view!=='chat')&&this.loaded&&Cloud.user&&m.sender!==Cloud.user.id)this.unread++;this.paint()},
+ onDel(id){if(!id||!this.msgs.some(x=>x.id===id))return;this.msgs=this.msgs.filter(x=>x.id!==id);this.paint()},
  html(){if(!this.loaded)return `<p class="kbd" style="text-align:center;margin:30px 0">${t('so_loading')}</p>`;
   if(!this.msgs.length)return `<p class="kbd" style="text-align:center;margin:30px 0">${t('gc_empty')}</p>`;
-  const me=Cloud.user&&Cloud.user.id;
-  return this.msgs.map(m=>{const mine=m.sender===me;return `<div class="bub ${mine?'me':''}"><div class="gname">${mine?t('so_you'):profLink(m.username)}</div><div>${esc(m.body)}</div><span>${hm(m.created_at)}</span></div>`}).join('')},
+  const me=Cloud.user&&Cloud.user.id,A=Bugs.admin;
+  return this.msgs.map(m=>{const mine=m.sender===me;
+   const acts=mine?'':A?`<button type="button" class="gact" data-act="g_del" data-id="${m.id}" title="${t('mod_del')}">${this.armed===m.id?t('mod_sure'):'🗑️'}</button><button type="button" class="gact" data-act="g_mute" data-u="${m.sender}" data-n="${esc(m.username)}" title="${t('mod_mute')}">🔇</button>`
+    :this.reported.has(m.id)?`<span class="gact done" title="${t('gr_done')}">⚑✓</span>`:`<button type="button" class="gact" data-act="g_rep" data-id="${m.id}" title="${t('gr_btn')}">⚑</button>`;
+   return `<div class="bub ${mine?'me':''}"><div class="gname">${mine?t('so_you'):profLink(m.username)}${acts?`<span class="gacts">${acts}</span>`:''}</div><div>${esc(m.body)}</div><span>${hm(m.created_at)}</span></div>`}).join('')},
  paint(){const el=$('glog');if(TAB==='global'&&el){const near=el.scrollHeight-el.scrollTop-el.clientHeight<80;el.innerHTML=this.html();if(near||this.focus)el.scrollTop=el.scrollHeight}else if(TAB==='global'&&!MODAL_LOCK)render();else renderTabs()},
  async send(f){const i=f.querySelector('[name=body]'),body=i.value.trim();if(!body)return;
   if(!Cloud.profile){toast(t('e_no_profile'));return}
   i.value='';this.draft='';this.focus=true;
   const{data,error}=await Cloud.sb.rpc('send_global_message',{p_body:body});
-  if(error){i.value=body;this.draft=body;toast(errText(error));return}
-  this.onNew(data)}
+  if(error){i.value=body;this.draft=body;toast(errText(error));if(/muted/.test(error.message||''))this.loadMute();return}
+  this.onNew(data)},
+ // ----- lapor pesan (pemain) -----
+ reportForm(id){const m=this.msgs.find(x=>x.id===id);if(!m)return;
+  modal(`<h2>⚑ ${t('gr_h')}</h2><p class="sub">${t('gr_sub')}</p>
+  <div class="bub grq"><div class="gname">${esc(m.username)}</div><div>${esc(m.body)}</div><span>${hm(m.created_at)}</span></div>
+  <form data-form="greport" class="bugform" novalidate><input type="hidden" name="id" value="${id}">
+   <div class="grreasons">${GR_REASONS.map(k=>`<label class="rad"><input type="radio" name="reason" value="${k}"> ${t('grr_'+k)}</label>`).join('')}</div>
+   <label>${t('gr_note')}<textarea name="note" rows="2" maxlength="300" placeholder="${t('gr_note_ph')}"></textarea></label>
+   <div class="msg" id="grmsg"></div>
+   <div class="actions"><button class="pri" type="submit">${t('gr_send')}</button><button class="ghost" type="button" data-act="close">${t('btn_cancel')}</button></div>
+  </form>`)},
+ async report(f){const id=+f.id.value,r=(f.querySelector('[name=reason]:checked')||{}).value;
+  if(!r){$('grmsg').innerHTML=`<div class="warn">${t('gr_pick')}</div>`;return}
+  const btn=f.querySelector('button[type=submit]');btn.disabled=true;
+  const{error}=await Cloud.sb.rpc('report_global_message',{p_id:id,p_reason:r,p_note:f.note.value.trim()});
+  btn.disabled=false;
+  if(error&&!/already_reported/.test(error.message||'')){$('grmsg').innerHTML=`<div class="warn">${errText(error)}</div>`;return}
+  this.reported.add(id);closeModal(true);toast(t(error?'e_already_reported':'gr_sent'));this.paint()}
 };
+const GR_REASONS=['spam','abusive','scam','other'];
+/* ========= MODERASI (admin) =========
+   Ringkasan angka, antrean laporan chat global, pemain yang dibisukan, dan log tindakan admin. */
+const MUTE_OPTS=[[1,'mu_1h'],[24,'mu_24h'],[168,'mu_7d'],[0,'mu_perm']];
+var Mod={sum:null,reports:[],hist:false,mutes:[],log:[],logMore:false,loaded:false,loading:false,open:0,armed:null,
+ reset(){this.sum=null;this.reports=[];this.hist=false;this.mutes=[];this.log=[];this.loaded=false;this.open=0;this.armed=null},
+ sb(){return Cloud.sb},
+ async count(){if(!Bugs.admin||!Cloud.user)return;const{data,error}=await this.sb().rpc('admin_list_chat_reports',{p_open:true});
+  if(error)return;const n=(data||[]).length;if(n!==this.open){this.open=n;renderTabs()}},
+ async load(){if(!Bugs.admin||this.loading)return;this.loading=true;
+  const sb=this.sb(),[a,b,c,d]=await Promise.all([sb.rpc('admin_summary'),sb.rpc('admin_list_chat_reports',{p_open:!this.hist}),sb.rpc('admin_list_mutes'),sb.rpc('admin_get_log',{p_before:null})]);
+  this.loading=false;const e=a.error||b.error||c.error||d.error;if(e){toast(errText(e));return}
+  this.sum=a.data;this.reports=b.data||[];this.mutes=c.data||[];this.log=d.data||[];this.logMore=this.log.length===30;this.loaded=true;
+  this.open=this.sum.reports_open;renderTabs();if(TAB==='admin'&&!MODAL_LOCK)render()},
+ async more(){const last=this.log[this.log.length-1];if(!last)return;const{data,error}=await this.sb().rpc('admin_get_log',{p_before:last.id});
+  if(error){toast(errText(error));return}this.log=this.log.concat(data||[]);this.logMore=(data||[]).length===30;render()},
+ async call(fn,args,ok){const{error}=await this.sb().rpc(fn,args);if(error){toast(errText(error));return false}if(ok)toast(t(ok));this.armed=null;await this.load();return true},
+ async delMsg(id,fromChat){
+  if(fromChat){if(Global.armed!==id){Global.armed=id;Global.paint();return}Global.armed=null}
+  else{if(this.armed!=='r'+id){this.armed='r'+id;render();return}this.armed=null}
+  const{error}=await this.sb().rpc('admin_delete_global_message',{p_id:id});
+  if(error){toast(errText(error));fromChat?Global.paint():render();return}
+  toast(t('mod_deleted'));Global.onDel(id);this.load()},
+ muteForm(uid,name){modal(`<h2>🔇 ${t('mu_h',{u:esc(name)})}</h2><p class="sub">${t('mu_sub')}</p>
+  <form data-form="gmute" class="bugform" novalidate><input type="hidden" name="uid" value="${esc(uid)}">
+   <label>${t('mu_dur')}<select name="dur">${MUTE_OPTS.map(([h,k])=>`<option value="${h}" ${h===24?'selected':''}>${t(k)}</option>`).join('')}</select></label>
+   <label>${t('mu_reason')}<textarea name="reason" rows="2" maxlength="300" placeholder="${t('mu_reason_ph')}"></textarea></label>
+   <label class="rad"><input type="checkbox" name="purge"> ${t('mu_purge')}</label>
+   <div class="msg" id="mumsg"></div>
+   <div class="actions"><button class="pri" type="submit">🔇 ${t('mod_mute')}</button><button class="ghost" type="button" data-act="close">${t('btn_cancel')}</button></div>
+  </form>`)},
+ async mute(f){const reason=f.reason.value.trim();if(reason.length<3){$('mumsg').innerHTML=`<div class="warn">${t('e_reason_required')}</div>`;return}
+  const h=+f.dur.value,btn=f.querySelector('button[type=submit]');btn.disabled=true;
+  const{data,error}=await this.sb().rpc('admin_mute',{p_user:f.uid.value,p_hours:h||null,p_reason:reason,p_purge:f.purge.checked});
+  btn.disabled=false;if(error){$('mumsg').innerHTML=`<div class="warn">${errText(error)}</div>`;return}
+  closeModal(true);toast(t('mod_muted')+(data&&data.purged?' '+t('mod_purged',{n:data.purged}):''));
+  if(data&&data.purged)Global.load();this.load()},
+ untilTxt(u){return u?t('mu_until',{d:dtm(u)}):t('mu_forever')},
+ logLine(l){const d=l.detail||{},who=x=>x?esc(x):`<i>${t('tr_gone')}</i>`;
+  const ex=l.action==='mute'?`${d.hours?t(MUTE_OPTS.find(o=>o[0]===d.hours)[1]):t('mu_perm')} · “${esc(d.reason||'')}”${d.purged?' · '+t('mod_purged',{n:d.purged}):''}`
+   :d.body!=null?`“${esc(d.body)}”`:'';
+  return `<div class="modlog"><span class="kbd">${dtm(l.created_at)}</span> <b>${who(l.admin_name)}</b> ${t('ml_'+l.action)} <b>${who(l.target_name)}</b>${ex?`<div class="kbd">${ex}</div>`:''}</div>`}
+};
+function vAdmin(){const M=Mod;if(!Bugs.admin)return `<div class="empty">${t('e_not_admin')}</div>`;
+ if(!M.loaded){if(!M.loading)M.load();return `<h2>🛡️ ${t('tab_admin')}</h2><p class="kbd" style="text-align:center;margin:30px 0">${t('so_loading')}</p>`}
+ const s=M.sum,bg=s.bugs||{},st=(lbl,v,sm)=>`<div class="stat"><span>${lbl}</span><b>${fmt(v)}</b>${sm?`<small>${sm}</small>`:''}</div>`;
+ const cards=`<div class="modstats">${st(t('ms_players'),s.players,t('ms_new',{a:fmt(s.new_24h),b:fmt(s.new_7d)}))}${st(t('ms_active24'),s.active_24h)}${st(t('ms_active7'),s.active_7d)}
+  ${st(t('ms_msgs'),s.msgs_24h,t('ms_msgs7',{n:fmt(s.msgs_7d)}))}${st(t('ms_trades'),s.trades_7d,t('ms_trades_ok',{n:fmt(s.trades_ok_7d)}))}
+  ${st(t('ms_reports'),s.reports_open)}${st(t('ms_mutes'),s.mutes)}${st(t('ms_bugs'),(bg.new||0)+(bg.review||0),t('ms_bugs_sm',{a:fmt(bg.new||0),b:fmt(bg.review||0)}))}</div>`;
+ const rep=r=>{const live=r.live&&!M.hist,reasons=[...new Set(r.reports.map(x=>x.reason))].map(k=>`<span class="tag">${t('grr_'+k)}</span>`).join(' ');
+  return `<div class="panel modrep"><div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:6px"><span>${r.sender_name?profLink(r.sender_name):`<i>${t('tr_gone')}</i>`} <span class="kbd">${dtm(r.msg_at)}</span></span><span>${reasons} <span class="tag a">${t('mr_n',{n:r.n})}</span></span></div>
+   <div class="bub grq"><div>${esc(r.body)}</div></div>
+   <div class="kbd">${r.reports.map(x=>`${esc(x.by||'—')}: ${t('grr_'+x.reason)}${x.note?` — “${esc(x.note)}”`:''}`).join('<br>')}</div>
+   <div class="kbd">${r.live?t('mr_live'):t('mr_gone')}${r.muted?' · 🔇 '+t('mr_muted'):''}</div>
+   ${M.hist?`<div class="kbd">${t('mr_st_'+r.status)} · ${esc(r.resolved_by||'—')} · ${dtm(r.resolved_at)}</div>`
+   :`<div class="actions">${live?`<button class="ghost danger sm" data-act="mod_del" data-id="${r.message_id}">${M.armed==='r'+r.message_id?t('mod_sure'):'🗑️ '+t('mod_del')}</button>`:''}${!r.muted&&r.sender?`<button class="ghost sm" data-act="g_mute" data-u="${r.sender}" data-n="${esc(r.sender_name)}">🔇 ${t('mod_mute')}</button>`:''}<button class="ghost sm" data-act="mod_res" data-id="${r.message_id}" data-v="actioned">✓ ${t('mr_act')}</button><button class="ghost sm" data-act="mod_res" data-id="${r.message_id}" data-v="dismissed">✕ ${t('mr_dis')}</button></div>`}</div>`};
+ const mutes=M.mutes.length?M.mutes.map(m=>`<div class="panel modrep"><div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:6px"><b>${m.username?profLink(m.username):`<i>${t('tr_gone')}</i>`}</b><span class="tag a">${M.untilTxt(m.until)}</span></div>
+   <div class="kbd">“${esc(m.reason)}” · ${t('mu_by',{u:esc(m.by||'—'),d:dtm(m.at)})}</div><div class="actions"><button class="ghost sm" data-act="mod_unmute" data-u="${m.user_id}">🔊 ${t('mod_unmute')}</button></div></div>`).join('')
+  :`<p class="kbd">${t('mod_no_mutes')}</p>`;
+ return `<h2>🛡️ ${t('tab_admin')}</h2><p class="sub">${t('mod_sub')}</p>
+ <div class="toolbar"><button class="ghost sm" data-act="mod_reload">🔄 ${t('mod_reload')}</button></div>${cards}
+ <h3>⚑ ${t('mod_reports')}</h3>
+ <div class="toolbar"><button class="chip ${!M.hist?'on':''}" data-act="mod_hist" data-v="0">${t('mod_open')}${s.reports_open?` <span class="cnt hot">${s.reports_open}</span>`:''}</button><button class="chip ${M.hist?'on':''}" data-act="mod_hist" data-v="1">${t('mod_hist')}</button></div>
+ ${M.reports.length?`<div class="buglist">${M.reports.map(rep).join('')}</div>`:`<div class="empty">${t(M.hist?'mod_no_hist':'mod_no_reports')}</div>`}
+ <h3>🔇 ${t('mod_mutes')}</h3>${mutes}
+ <h3>📜 ${t('mod_log')}</h3>${M.log.length?M.log.map(l=>M.logLine(l)).join(''):`<p class="kbd">${t('mod_no_log')}</p>`}
+ ${M.logMore?`<div class="actions" style="justify-content:center"><button class="ghost" data-act="mod_more">${t('bug_more')}</button></div>`:''}`}
 /* ========= LAPORAN BUG =========
    Semua pemain melihat semua laporan & bisa berkomentar; hanya admin yang mengubah status, membalas,
    menghapus komentar/laporan. Gambar disimpan di Supabase Storage (bucket privat "bug-reports"). */
@@ -1501,7 +1630,7 @@ const dtm=iso=>{try{return new Date(iso).toLocaleString(LANG==='id'?'id-ID':'en-
 var Bugs={list:[],loaded:false,loading:false,more:false,mine:false,st:'',cat:'',unread:0,admin:false,files:[],cur:null,armed:null,cleaned:false,
  reset(){this.list=[];this.loaded=false;this.unread=0;this.admin=false;this.files=[];this.cur=null;this.armed=null;this.cleaned=false},
  sb(){return Cloud.sb},
- async init(){const{data}=await this.sb().rpc('is_admin');this.admin=!!data;this.count()},
+ async init(){const{data}=await this.sb().rpc('is_admin');this.admin=!!data;this.count();if(this.admin){renderTabs();Mod.count();Global.paint()}},
  async count(){if(!Cloud.user)return;const{data,error}=await this.sb().rpc('bug_unread_count');if(!error){this.unread=data||0;renderTabs()}},
  async load(more){if(!Cloud.user||this.loading)return;this.loading=true;
   const last=more&&this.list.length?this.list[this.list.length-1].id:null;
@@ -1625,7 +1754,8 @@ function vGlobal(){
  if(Global.view==='rank')return `<h2>🌐 ${t('tab_global')}</h2>${sub}<p class="sub">${t('rk_sub')}</p>${Rank.html()}`;
  let h=`<h2>🌐 ${t('tab_global')}</h2>${sub}<p class="sub">${t('gc_sub',{n:GLOBAL_MAX})}</p>`;
  return h+`<div class="panel gchat"><div class="chatlog" id="glog">${Global.html()}</div>
- ${Cloud.profile?`<form data-form="gchat" class="row chatin" novalidate><input id="gchatin" name="body" maxlength="${GMSG_MAX}" autocomplete="off" placeholder="${t('gc_ph')}" value="${esc(Global.draft)}"><button class="pri" type="submit">${t('so_send')}</button></form>`
+ ${Cloud.profile&&Global.muted()?`<div class="gmuted">🔇 <b>${t('gm_h',{w:Mod.untilTxt(Global.mute.until)})}</b><div>${t('gm_reason')}: “${esc(Global.mute.reason)}”</div></div>`
+  :Cloud.profile?`<form data-form="gchat" class="row chatin" novalidate><input id="gchatin" name="body" maxlength="${GMSG_MAX}" autocomplete="off" placeholder="${t('gc_ph')}" value="${esc(Global.draft)}"><button class="pri" type="submit">${t('so_send')}</button></form>`
   :`<div class="empty" style="border:none">${t('so_needname')}<div class="actions" style="justify-content:center"><button class="pri" data-act="pickname">${t('ac_pick')}</button></div></div>`}</div>`}
 
 var Social={data:null,open:null,msgs:[],draft:'',chatFocus:false,ch:null,timer:null,claiming:false,seen:null,
@@ -1640,12 +1770,14 @@ var Social={data:null,open:null,msgs:[],draft:'',chatFocus:false,ch:null,timer:n
    .on('postgres_changes',{event:'*',schema:'public',table:'trades'},()=>this.refresh())
    .on('postgres_changes',{event:'INSERT',schema:'public',table:'deliveries',filter:'user_id=eq.'+uid},()=>this.claim())
    .on('postgres_changes',{event:'INSERT',schema:'public',table:'global_messages'},p=>Global.onNew(p.new))
+   .on('postgres_changes',{event:'DELETE',schema:'public',table:'global_messages'},p=>Global.onDel(p.old&&p.old.id))
+   .on('postgres_changes',{event:'*',schema:'public',table:'chat_mutes',filter:'user_id=eq.'+uid},()=>Global.loadMute())
    .subscribe();
-  Global.load();Bugs.init();
-  this.timer=setInterval(()=>{this.refresh();Bugs.count();if(TAB==='global')Global.load()},45000);   // cadangan kalau realtime terputus
+  Global.load();Global.loadMute();Bugs.init();
+  this.timer=setInterval(()=>{this.refresh();Bugs.count();Mod.count();Global.loadMute();if(TAB==='global')Global.load()},45000);   // cadangan kalau realtime terputus
   this.refresh();
  },
- stop(){if(this.ch&&Cloud.sb)try{Cloud.sb.removeChannel(this.ch)}catch(e){}this.ch=null;Global.reset();Bugs.reset();clearInterval(this.timer);this.data=null;this.open=null;this.msgs=[];this.seen=null},
+ stop(){if(this.ch&&Cloud.sb)try{Cloud.sb.removeChannel(this.ch)}catch(e){}this.ch=null;Global.reset();Bugs.reset();Mod.reset();clearInterval(this.timer);this.data=null;this.open=null;this.msgs=[];this.seen=null},
  badge(){const d=this.data;if(!d)return 0;return d.friends.reduce((a,f)=>a+(f.unread||0),0)+d.incoming.length+d.trades.filter(x=>x.dir==='in'&&x.status==='pending').length},
  friend(id){return this.data&&this.data.friends.find(f=>f.id===id)},
  async refresh(){
@@ -1688,7 +1820,7 @@ var Social={data:null,open:null,msgs:[],draft:'',chatFocus:false,ch:null,timer:n
  }
 };
 function renderTabs(){if(!S||!Cloud.user||!$('tabs'))return;
- const T=[['koleksi',S.snakes.length],['breeding'],['inkubator',S.clutches.length+S.snakes.filter(s=>s.gravid).length+(S.broods||[]).length],['pasar'],['pesanan',S.orders.length],['dex',Object.keys(S.dex).length],['teman',Social.badge()||null,true],['global',Global.unread||null,true],['panduan'],['bugs',Bugs.unread||null,true]];
+ const T=[['koleksi',S.snakes.length],['breeding'],['inkubator',S.clutches.length+S.snakes.filter(s=>s.gravid).length+(S.broods||[]).length],['pasar'],['pesanan',S.orders.length],['dex',Object.keys(S.dex).length],['teman',Social.badge()||null,true],['global',Global.unread||null,true],['panduan'],['bugs',Bugs.unread||null,true]].concat(Bugs.admin?[['admin',Mod.open||null,true]]:[]);
  $('tabs').innerHTML=T.map(([k,c,hot])=>`<button class="${TAB===k?'on':''}" data-act="tab" data-tab="${k}">${t('tab_'+k)}${c!=null?`<span class="cnt${hot?' hot':''}">${c}</span>`:''}</button>`).join('')}
 
 function miniList(arr,money_,owner){const items=(arr||[]).map(s=>{const tr=traitsOf(s.g);return `<div class="mini-row"><img class="mini" src="${thumb(tr,s.seed,false,spOfG(s.g))}" alt=""><div><div>${sexIcon(s.sex)} ${esc(nameOf(tr,s.g))}</div><div class="het">${esc(hetText(s))}</div><div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g · ${money(value(s))}</div>${owner===undefined?'':originLine(s,owner)}</div></div>`});
@@ -1822,7 +1954,7 @@ function boot(){
   if(el.id==='selM'){SEL.m=+el.value;render()}else if(el.id==='selF'){SEL.f=+el.value;render()}else if(el.id==='sort'){SORT=el.value;render()}});
  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
  document.addEventListener('submit',e=>{const f=e.target.closest('form[data-form]');if(!f)return;e.preventDefault();
-  const k=f.dataset.form;if(k==='gchat'){Global.send(f);return}if(k==='bug'){Bugs.submit(f);return}if(k==='bugc'){Bugs.comment(f);return}if(k==='bugadm'){Bugs.adminSave(f);return}if(k==='addfriend'||k==='chat')guarded(()=>socialForm(k,f));else if(k.startsWith('dz_'))dangerGo(k.slice(3),f);else if(k==='profile')saveProfile(f);else handleForm(k,f)});
+  const k=f.dataset.form;if(k==='gchat'){Global.send(f);return}if(k==='greport'){Global.report(f);return}if(k==='gmute'){Mod.mute(f);return}if(k==='bug'){Bugs.submit(f);return}if(k==='bugc'){Bugs.comment(f);return}if(k==='bugadm'){Bugs.adminSave(f);return}if(k==='addfriend'||k==='chat')guarded(()=>socialForm(k,f));else if(k.startsWith('dz_'))dangerGo(k.slice(3),f);else if(k==='profile')saveProfile(f);else handleForm(k,f)});
  document.addEventListener('input',e=>{const el=e.target;
   if(el.form&&el.form.dataset.form==='profile'&&Profile.edit){
    if(el.name==='bio'){Profile.edit.bio=el.value;const c=$('biocnt');if(c)c.textContent=el.value.length+'/'+BIO_MAX}
