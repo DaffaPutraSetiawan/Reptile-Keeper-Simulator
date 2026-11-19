@@ -57,7 +57,7 @@ async function run(body, uid, db) {
     const state = row.data;
     const result = C.applyAction(state, action);   // melempar Error(kode) kalau aksi tidak sah
     state.rev = row.rev + 1;
-    if (await db.update(uid, state, row.rev)) return { state, rev: state.rev, head: result.head || null, toast: result.toast || null };
+    if (await db.update(uid, state, row.rev)) return { state, rev: state.rev, head: result.head || null, toast: result.toast || null, quests: result.quests || null };
     // save berubah di tengah jalan (mis. trade diterima): baca ulang dan ulangi aksinya
   }
   throw new Error('busy_retry');

@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:26,date:'2026-11-19'};
+const VERSION={v:27,date:'2026-11-19'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -365,9 +365,29 @@ const ORDER_PREMIUM=1.25;
 const orderPay=(o,s)=>Math.max(o.reward,Math.ceil(value(s)*ORDER_PREMIUM/5)*5);   // dibulatkan ke atas: selalu ≥125%
 function matches(o){const sp=spOf(o);return S.snakes.filter(s=>{const tr=traitsOf(s.g);return spOf(s)===sp&&o.tr.every(t=>hasTrait(s,tr,t))&&(!o.sex||s.sex===o.sex)&&!s.gravid&&!s.listed})}
 
+/* ========= MISI PEMULA ========= */
+// Daftar misi tutorial. Dicek server setelah setiap aksi (urutan bebas); misi yang syaratnya terpenuhi langsung
+// selesai dan hadiahnya masuk ke saldo. S.quest = {d: [misi selesai], hide: 1 kalau panel disembunyikan}.
+// S.qf = penanda kejadian yang tidak tercatat di statistik (mis. pernah mengatur suhu inkubator).
+const QUESTS=[
+ {k:'pair',r:100,tab:'breeding',ok:()=>S.snakes.some(s=>s.pairedWith||s.gravid)||S.stats.clutches>0},
+ {k:'lay',r:150,ok:()=>S.stats.clutches>0},
+ {k:'temp',r:100,tab:'inkubator',ok:()=>!!(S.qf&&S.qf.temp)},
+ {k:'hatch',r:200,tab:'inkubator',ok:()=>S.stats.hatched>0},
+ {k:'sell',r:150,tab:'koleksi',ok:()=>S.stats.sold>0},
+ {k:'order',r:250,tab:'pesanan',ok:()=>(S.stats.orders||0)>0},
+ {k:'dex',r:250,tab:'dex',ok:()=>Object.keys(S.dex||{}).length>=4},
+ {k:'species',r:300,tab:'pasar',ok:()=>new Set(S.snakes.map(spOf)).size>=2},
+ {k:'rack',r:500,tab:'pasar',ok:()=>S.racks>=3},
+];
+function checkQuests(){if(!S.quest||!Array.isArray(S.quest.d))S.quest={d:[]};const done=[];
+ for(const q of QUESTS){if(S.quest.d.includes(q.k)||!q.ok())continue;
+  S.quest.d.push(q.k);S.money+=q.r;log('l_quest',{q:q.k,v:money(q.r)},'star');done.push(q.k)}
+ return done}
+
 /* ========= GAME BARU ========= */
 function newGame(){
- S={v:2,rev:0,turn:0,money:5000,racks:2,nextId:1,snakes:[],clutches:[],broods:[],market:[],orders:[],dex:{},mm:{},log:[],event:null,stats:{hatched:0,sold:0,earned:0,clutches:0}};
+ S={v:2,rev:0,turn:0,money:5000,racks:2,nextId:1,quest:{d:[]},snakes:[],clutches:[],broods:[],market:[],orders:[],dex:{},mm:{},log:[],event:null,stats:{hatched:0,sold:0,earned:0,clutches:0}};
  // Ular awal: sepasang yang sudah cukup umur untuk langsung dikawinkan
  addSnake(newSnake({sex:'M',age:14,w:760,g:G({albino:[1,0]}),hp:{albino:1}}));   // jantan Normal het Albino
  addSnake(newSnake({sex:'F',age:30,w:1750,g:G({albino:[1,1]}),hp:{albino:1}}));   // betina Albino
@@ -537,6 +557,7 @@ const ACTIONS={
   S.money-=price;const s=addSnake(makeMarketSnake(L,a.age,a.sex));s.src={t:'market',turn:S.turn};const nw=dexAdd(traitsOf(s.g),spOf(s));   // listing tetap ada: bisa dibeli lagi
   log('l_buy',{c:code(s),n:fullName(s),h:hetText(s),v:money(price)});if(nw)log('l_newmorph',{n:nameOf(traitsOf(s.g),null,spOf(s))},'star');return{}},
  clearlog(){S.log=[];return{toast:'t_logcleared'}},
+ quest_hide(){if(!S.quest)S.quest={d:[]};S.quest.hide=1;return{}},
  brood(a){const b=S.broods.find(x=>x.bid===toId(a.bid));if(!b)fail('brood_gone');
   if(!Array.isArray(a.keep)||a.keep.length>SPECIES[b.sp].brood)fail('bad_action');
   const keep=a.keep.map(toId);if(new Set(keep).size!==keep.length||keep.some(i=>i<0||i>=b.items.length))fail('bad_action');
@@ -544,18 +565,20 @@ const ACTIONS={
  incubate(a){const c=S.clutches.find(x=>x.cid===toId(a.cid));if(!c)fail('clutch_not_found');
   if(!tempOpen(c))fail('temp_locked');
   const tp=Number(a.temp);if(!validTemp(tp,spOf(c)))fail('bad_temp');
-  c.temp=tp;return{}},
+  c.temp=tp;S.qf=S.qf||{};S.qf.temp=1;return{}},
  rack(){const price=rackPrice();if(S.money<price)fail('not_enough_money');S.money-=price;S.racks++;log('l_rack',{cap:cap(),v:money(price)});return{}},
  fulfill(a){const o=S.orders.find(x=>x.oid===toId(a.oid));if(!o)fail('order_gone');const s=mustSnake(a.sid);
   if(!matches(o).includes(s))fail('order_mismatch');
-  const pay=orderPay(o,s);S.money+=pay;S.stats.sold++;S.stats.earned+=pay;log('l_fulfill',{c:code(s),n:fullName(s),bi:o.bi,b:o.buyer,r:money(pay)},'star');
+  const pay=orderPay(o,s);S.money+=pay;S.stats.sold++;S.stats.earned+=pay;S.stats.orders=(S.stats.orders||0)+1;log('l_fulfill',{c:code(s),n:fullName(s),bi:o.bi,b:o.buyer,r:money(pay)},'star');
   removeSnake(s);S.orders=S.orders.filter(x=>x!==o);return{}},
 };
 // Jalankan satu aksi pada state (state diubah langsung). Melempar Error(kode) kalau tidak sah.
 function applyAction(state,a){
  if(!a||typeof a!=='object'||typeof a.type!=='string'||!Object.prototype.hasOwnProperty.call(ACTIONS,a.type))fail('bad_action');
  S=state;if(!Array.isArray(S.broods))S.broods=[];syncDex();trimLog();ensureMarket();
- return ACTIONS[a.type](a)||{};
+ const res=ACTIONS[a.type](a)||{};
+ const q=checkQuests();if(q.length)res.quests=q;
+ return res;
 }
 function isState(x){return !!(x&&typeof x==='object'&&Array.isArray(x.snakes)&&typeof x.turn==='number'&&typeof x.money==='number')}
 
@@ -572,6 +595,7 @@ root.MorphCore={
  monthlyCosts,previewNext,
  MARKET_SIZE,MARKET_EVERY,BUY_MULT,MARKET_POOL,listingTraits,marketBase,marketPrice,marketLeft,refreshMarket,ensureMarket,marketOk,makeMarketSnake,
  INC_MONTHS,TEMP_MIN,TEMP_MAX,TEMP_MID,TEMP_STEP,tempRange,femaleChance,incTotal,tempOpen,tempMonthsLeft,validTemp,
+ QUESTS,checkQuests,
  newGame,advance,applyAction,syncDex,isState,ACTION_TYPES:Object.keys(ACTIONS)
 };
 })(typeof globalThis!=='undefined'?globalThis:this);

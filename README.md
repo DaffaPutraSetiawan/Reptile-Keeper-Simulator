@@ -2,7 +2,7 @@
 
 ![Morph Lab — Exotic Breeder Sim](assets/logo.png)
 
-Game simulasi breeding ball python berbasis web, dengan genetika morph yang mengikuti pola pewarisan di dunia nyata.
+Game simulasi breeding hewan eksotis berbasis web: **ball python, leopard gecko, dan axolotl**, dengan genetika morph yang mengikuti pola pewarisan di dunia nyata.
 
 ## Cara main
 
@@ -16,19 +16,21 @@ Bisa juga dimainkan online lewat GitHub Pages: **Settings → Pages → Deploy f
 
 ## Fitur
 
-- **12 gen ball python**
-  - Resesif: Albino, Piebald, Clown, Axanthic
-  - Co-dominan dengan bentuk super: Pastel, Enchi, Yellow Belly (→ Ivory), Cinnamon, Banana
-  - Dominan: Spider, Pinstripe
-  - Kompleks BEL: Mojave + Lesser → Blue-Eyed Leucistic
-- **Sistem het & pos het**: bayi dari het × het tercatat 66% pos het, dan induk "terbukti het" setelah menghasilkan anak visual
+- **3 spesies**, masing-masing dengan genetika, siklus breeding, dan panduan sendiri
+  - **Ball python** (12 gen): resesif Albino, Piebald, Clown, Axanthic · co-dominan dengan bentuk super Pastel, Enchi, Yellow Belly (→ Ivory), Cinnamon, Banana · dominan Spider, Pinstripe · kompleks BEL (Mojave + Lesser)
+  - **Leopard gecko** (12 gen): tiga strain albino (Tremper, Bell, Rainwater), Eclipse, Blizzard, Murphy Patternless, Marble Eye, Mack Snow, Giant, Lemon Frost, Enigma, White & Yellow · 4–6 clutch dari sekali kawin · suhu inkubasi menentukan jenis kelamin (termasuk pola "hot female")
+  - **Axolotl** (7 gen): Leucistic, Albino, Melanoid, Axanthic, Copper, GFP, RFP · sampai 100 telur per clutch; pilih maksimal 3 bayi, sisanya otomatis dijual
+- **Sistem het & pos het**: peluang het dihitung otomatis, dan induk "terbukti het" setelah menghasilkan anak visual
 - **Tabel peluang keturunan** untuk setiap pasangan
-- **Siklus breeding bulanan**: kawin kapan saja asal cukup umur (jantan ≥10 bln, betina ≥24 bln), ovulasi, jumlah telur, slug, inkubasi, masa pemulihan betina
-- **Ekonomi**: biaya pakan & rak, harga pasar yang naik turun dan bisa jenuh, iklan, event, pesanan pembeli
-- **Morph Dex** dengan 32 morph target (Bumblebee, Killer Bee, Lemon Blast, Spinner, Snow, dan lainnya)
-- **Gambar ular prosedural** yang dibuat dari genetika tiap ular
-- **Teman, chat & trading**: tambah teman lewat username, chat real-time, dan tukar ular/uang dengan sistem escrow yang dijalankan server (lihat SETUP-SUPABASE.md)
-- **Dua bahasa: Indonesia & Inggris**, bisa diganti kapan saja lewat tombol ID / EN di header. Bahasa awal mengikuti bahasa browser, lalu pilihan pemain diingat.
+- **Siklus breeding bulanan**: umur minimal kawin, ovulasi, jumlah telur dipengaruhi berat, telur tidak subur, inkubasi dengan pengaturan suhu, masa pemulihan betina, batas umur
+- **Silsilah 3 generasi** di setiap hewan (ikut pindah saat trade)
+- **Kawin sedarah (inbreeding)**: koefisien inbreeding dihitung dari leluhur 5 generasi. Ada peringatan sebelum memasangkan kerabat, dan efeknya nyata: telur tidak subur, gagal menetas, pertumbuhan lebih lambat, dan ovulasi lebih jarang
+- **Ekonomi**: biaya pakan & rak, harga pasar yang naik turun dan bisa jenuh, pasar tiap spesies, iklan, jual cepat, event, dan pesanan pembeli (membayar hadiah atau 125% nilai hewan)
+- **Misi pemula** sebagai tutorial, dengan hadiah uang
+- **Morph Dex** per spesies, berisi morph target dan kombinasi terkenal (Bumblebee, Killer Bee, RAPTOR, White Albino, dan lainnya)
+- **Gambar hewan prosedural** yang dibuat dari genetika tiap hewan
+- **Teman, chat & trading**: tambah teman lewat username, chat real-time & global chat, profil dengan etalase, dan tukar hewan/uang dengan sistem escrow yang dijalankan server. Riwayat pemilik hewan (origin keeper) ikut tercatat.
+- **Dua bahasa: Indonesia & Inggris**, bisa diganti kapan saja. Bahasa awal mengikuti bahasa browser, lalu pilihan pemain diingat.
 
 ## Struktur
 
@@ -47,11 +49,23 @@ Bisa juga dimainkan online lewat GitHub Pages: **Settings → Pages → Deploy f
 
 ## Rencana
 
+Sudah selesai:
+
 - [x] Login & cloud save (Supabase)
 - [x] Teman, chat & trading antar teman (escrow, divalidasi server)
 - [x] Mode online server-authoritative (breeding & ekonomi dihitung server)
+- [x] Spesies baru: leopard gecko & axolotl
+- [x] Silsilah 3 generasi & kawin sedarah
+- [x] Penyeimbangan ekonomi dengan simulasi (`scripts/sim-economy.cjs`)
+- [x] Misi pemula (tutorial)
 
-- [ ] Spesies baru (leopard gecko, bearded dragon, corn snake)
+Berikutnya:
+
+- [ ] Reputasi breeder & achievement: membuka spesies, pembeli besar, dan gelar di profil
+- [ ] Riwayat clutch & statistik breeder (hasil vs peluang, "Proven breeder")
+- [ ] Papan peringkat global
+- [ ] Event berkala & kompetisi morph
+- [ ] Pasar antarpemain (tidak hanya antar teman)
+- [ ] Spesies berikutnya (corn snake atau bearded dragon) & sifat line-bred (poligenik)
 - [ ] Perawatan & kesehatan (suhu, kelembapan, shedding, mogok makan)
-- [ ] Silsilah & riwayat clutch
-- [ ] Progres, misi, dan achievement
+- [ ] Versi aplikasi (PWA)

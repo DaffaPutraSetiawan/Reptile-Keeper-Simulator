@@ -95,6 +95,10 @@ dl{display:grid;grid-template-columns:130px 1fr;gap:4px 10px;margin:12px 0;font-
 .guide code{background:var(--panel2);padding:1px 6px;border-radius:5px}
 .kbd{font-size:12px;color:var(--mut)}
 .inbwarn{background:color-mix(in srgb,var(--bad) 12%,transparent);border:1px solid color-mix(in srgb,var(--bad) 45%,transparent);border-radius:12px;padding:10px 12px;margin-top:12px;font-size:13px}.inbwarn b{color:var(--bad)}.inbwarn div{margin-top:4px;color:var(--text)}
+.quest{border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:12px}.quest .qh{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.qbar{height:6px;border-radius:4px;background:var(--panel3);margin:8px 0;overflow:hidden}.qbar i{display:block;height:100%;background:var(--acc)}
+.qcur{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px}.qcur .kbd{margin:3px 0 6px}.qcur .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.quest details{margin-top:8px;font-size:12.5px}.quest summary{cursor:pointer;color:var(--mut)}.quest ul{list-style:none;padding:0;margin:6px 0 0}.quest li{padding:2px 0;display:flex;justify-content:space-between;gap:8px}.quest li.ok{color:var(--mut);text-decoration:line-through}
 .advlist{max-height:280px;overflow:auto;padding:6px 12px}
 .pedh{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:4px;font-size:11.5px;color:var(--mut)}
 .ped{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,auto);gap:6px;margin:4px 0 12px}
@@ -175,7 +179,7 @@ button.danger{background:var(--bad);border-color:var(--bad);color:#1b0a07;font-w
 <body>
 <header><h1 class="brand"><img src="assets/logo.png" alt="Morph Lab — Exotic Breeder Sim" width="243" height="56"></h1><div id="hdr"></div></header>
 <nav id="tabs"></nav>
-<main><section id="view"></section><aside><div class="panel"><div class="logh"><h3 id="logh"></h3><button class="ghost sm" id="logclr" data-act="clearlog"></button></div><ul class="log" id="log"></ul></div></aside></main>
+<main><section id="view"></section><aside><div class="panel"><div id="questp"></div><div class="logh"><h3 id="logh"></h3><button class="ghost sm" id="logclr" data-act="clearlog"></button></div><ul class="log" id="log"></ul></div></aside></main>
 <div id="modal" class="hidden"></div>
 <div id="toast"></div>
 <script src="config.js"></script>
@@ -185,7 +189,7 @@ button.danger{background:var(--bad);border-color:var(--bad);color:#1b0a07;font-w
 'use strict';
 /* ========= LOGIKA INTI (core.js, sama dengan yang dipakai server) ========= */
 const Core=window.MorphCore;
-const {relation,inbOf,INB_SLUG,INB_DEAD,pedParents,orderPay,broodSnake,broodValue,SPECIES,SPECIES_LIST,spOf,spOfG,spOfTr,lociOf,isRec,tempRange,dexKey,maxAge,lifeLeft,OLD_WARN,rackPrice,RACK_MULT,marketOk,marketBase,marketPrice,marketLeft,listingTraits,BUY_MULT,previewNext,TEMP_MIN,TEMP_MAX,TEMP_STEP,TEMP_MID,femaleChance,tempOpen,tempMonthsLeft,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches}=Core;
+const {QUESTS,relation,inbOf,INB_SLUG,INB_DEAD,pedParents,orderPay,broodSnake,broodValue,SPECIES,SPECIES_LIST,spOf,spOfG,spOfTr,lociOf,isRec,tempRange,dexKey,maxAge,lifeLeft,OLD_WARN,rackPrice,RACK_MULT,marketOk,marketBase,marketPrice,marketLeft,listingTraits,BUY_MULT,previewNext,TEMP_MIN,TEMP_MAX,TEMP_STEP,TEMP_MID,femaleChance,tempOpen,tempMonthsLeft,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches}=Core;
 
 /* ========= UTIL ========= */
 const lerp=(a,b,t)=>a.map((x,i)=>x+(b[i]-x)*t);
@@ -298,7 +302,19 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  dex_found:p=>'Ditemukan '+p.d,dex_notfound:'Belum ditemukan',
  dex_sub:p=>`${p.f}/${p.t} morph target ditemukan · ${p.n} morph total. Statistik: ${p.c} clutch, ${p.h} bayi menetas, ${p.s} hewan terjual (${p.e}).`,
  dex_extra:'Kombinasi lain yang kamu temukan',save_h:'Simpan / ulang',newgame:'Mulai game baru',
- save_cloud:'Progres dihitung dan disimpan di server, jadi aman dari kecurangan dan bisa dilanjutkan dari perangkat mana pun.', d_code:'Kode',d_agew:'Umur · berat',adv_q:'Lanjut ke bulan berikutnya?',adv_sub:p=>`Masih ada ${p.n} betina yang siap dikawinkan tapi belum dipasangkan. Kalau lanjut sekarang, kesempatan kawin bulan ini terlewat.`,adv_pair:'Kawinkan',adv_yes:'Ya, lanjut bulan',
+ save_cloud:'Progres dihitung dan disimpan di server, jadi aman dari kecurangan dan bisa dilanjutkan dari perangkat mana pun.', d_code:'Kode',d_agew:'Umur · berat',quest_h:'Misi pemula',quest_all:'Semua misi',quest_go:'Buka',quest_reward:p=>`Hadiah ${p.v}`,quest_hide:'Sembunyikan',
+ quest_done_h:'🎉 Semua misi pemula selesai!',quest_done_p:'Kamu sudah menguasai dasar-dasar Morph Lab. Selamat breeding!',
+ t_quest:p=>`🎯 Misi selesai: ${p.n} (+${p.v})`,l_quest:p=>`🎯 Misi selesai: ${t('qn_'+p.q)} — hadiah ${p.v} masuk ke saldo.`,
+ qn_pair:'Kawinkan pasangan pertama',qh_pair:'Buka tab Kawinkan, pilih jantan & betina yang siap, lalu tekan "Pasangkan bulan ini".',
+ qn_lay:'Dapatkan clutch pertama',qh_lay:'Tekan Lanjut bulan. Setelah kawin, betina bisa bunting lalu bertelur 1–2 bulan kemudian.',
+ qn_temp:'Atur suhu inkubator',qh_temp:'Di tab Inkubator, ubah suhu clutch di awal inkubasi untuk mengatur peluang anak jantan/betina.',
+ qn_hatch:'Tetaskan bayi pertama',qh_hatch:'Lanjut bulan sampai telur di inkubator menetas.',
+ qn_sell:'Jual hewan pertama',qh_sell:'Klik hewan di Koleksi, lalu iklankan atau jual cepat.',
+ qn_order:'Penuhi pesanan pembeli',qh_order:'Buka tab Pesanan dan kirim hewan yang cocok. Pembeli membayar hadiah atau 125% nilai hewan.',
+ qn_dex:'Catat 4 morph di Morph Dex',qh_dex:'Kawinkan gen yang berbeda atau beli hewan bergen baru di Pasar. Setiap morph baru tercatat otomatis.',
+ qn_species:'Pelihara spesies kedua',qh_species:'Beli leopard gecko atau axolotl di Pasar. Keduanya berkembang biak lebih cepat dari ball python.',
+ qn_rack:'Beli rak ketiga',qh_rack:'Tombol beli rak ada di tab Pasar. Rak baru menambah 10 space.',
+ adv_q:'Lanjut ke bulan berikutnya?',adv_sub:p=>`Masih ada ${p.n} betina yang siap dikawinkan tapi belum dipasangkan. Kalau lanjut sekarang, kesempatan kawin bulan ini terlewat.`,adv_pair:'Kawinkan',adv_yes:'Ya, lanjut bulan',
  rel_parent:'induk × anak',rel_full:'saudara kandung',rel_grand:'kakek/nenek × cucu',rel_half:'saudara tiri',rel_uncle:'paman/bibi × keponakan',rel_cousin:'sepupu',rel_far:'kerabat jauh',
  inb_h:p=>`Kawin sedarah: ${p.r} — inbreeding anak ${p.f}`,inb_opt:p=>`sedarah ${p.f}`,inb_q:'Tetap kawinkan kerabat?',inb_yes:'Ya, tetap kawinkan',
  inb_eff:p=>`Telur tidak subur +${p.s} dan gagal menetas +${p.d}. Anaknya tumbuh ${p.g} lebih lambat, dan anak betinanya ${p.o} lebih jarang ovulasi.`,
@@ -503,7 +519,19 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  dex_sub:p=>`${p.f}/${p.t} target morphs found · ${p.n} morphs total. Stats: ${p.c} clutches, ${p.h} hatchlings, ${p.s} animals sold (${p.e}).`,
  dex_extra:'Other combos you discovered',save_h:'Save / restart',newgame:'Start a new game',
  save_cloud:'Progress is calculated and saved on the server, so it can’t be cheated and you can continue on any device.',
- d_code:'ID',d_agew:'Age · weight',adv_q:'Advance to next month?',adv_sub:p=>`${p.n} ${p.n===1?'female is':'females are'} ready to breed but not paired yet. If you continue now, this month’s breeding chance is skipped.`,adv_pair:'Pair',adv_yes:'Yes, next month',
+ d_code:'ID',d_agew:'Age · weight',quest_h:'Starter missions',quest_all:'All missions',quest_go:'Open',quest_reward:p=>`Reward ${p.v}`,quest_hide:'Hide',
+ quest_done_h:'🎉 All starter missions complete!',quest_done_p:'You’ve mastered the basics of Morph Lab. Happy breeding!',
+ t_quest:p=>`🎯 Mission complete: ${p.n} (+${p.v})`,l_quest:p=>`🎯 Mission complete: ${t('qn_'+p.q)} — ${p.v} added to your balance.`,
+ qn_pair:'Pair your first couple',qh_pair:'Open the Breeding tab, pick a ready male & female, then press "Pair this month".',
+ qn_lay:'Get your first clutch',qh_lay:'Press Next month. After pairing, the female may become gravid and lay eggs 1–2 months later.',
+ qn_temp:'Set the incubator temperature',qh_temp:'In the Incubator tab, change a clutch’s temperature early in incubation to steer the male/female odds.',
+ qn_hatch:'Hatch your first babies',qh_hatch:'Keep advancing months until the eggs in the incubator hatch.',
+ qn_sell:'Sell your first animal',qh_sell:'Click an animal in your Collection, then list it or quick-sell it.',
+ qn_order:'Fill a buyer order',qh_order:'Open the Orders tab and ship a matching animal. Buyers pay the reward or 125% of the animal’s value.',
+ qn_dex:'Record 4 morphs in the Morph Dex',qh_dex:'Pair different genes or buy animals with new genes at the Market. Each new morph is recorded automatically.',
+ qn_species:'Keep a second species',qh_species:'Buy a leopard gecko or axolotl at the Market. Both breed faster than ball pythons.',
+ qn_rack:'Buy your third rack',qh_rack:'The rack button is in the Market tab. Each new rack adds 10 spaces.',
+ adv_q:'Advance to next month?',adv_sub:p=>`${p.n} ${p.n===1?'female is':'females are'} ready to breed but not paired yet. If you continue now, this month’s breeding chance is skipped.`,adv_pair:'Pair',adv_yes:'Yes, next month',
  rel_parent:'parent × offspring',rel_full:'full siblings',rel_grand:'grandparent × grandchild',rel_half:'half siblings',rel_uncle:'uncle/aunt × niece/nephew',rel_cousin:'cousins',rel_far:'distant relatives',
  inb_h:p=>`Inbreeding: ${p.r} — offspring inbreeding ${p.f}`,inb_opt:p=>`related ${p.f}`,inb_q:'Pair related animals anyway?',inb_yes:'Yes, pair them anyway',
  inb_eff:p=>`Infertile eggs +${p.s} and failed hatches +${p.d}. The babies grow ${p.g} slower, and their daughters ovulate ${p.o} less often.`,
@@ -838,6 +866,15 @@ function tags(s){const o=[];
 function card(s){const tr=traitsOf(s.g);return `<div class="card click" data-open="${s.id}"><img class="snk" src="${thumb(tr,s.seed,false,spOfG(s.g))}" alt="${esc(fullName(s))}"><div class="nm">${sexIcon(s.sex)} ${esc(fullName(s))}</div><div class="het">${esc(hetText(s))}</div><div class="meta">${s.nick?esc(s.nick)+' · ':''}${code(s)} · ${ageTxt(s.age)} · ${fmt(s.w)} g</div><div class="tags">${tags(s)}</div><div class="val">${money(value(s))}</div></div>`}
 function logLine(l){const d=l.m?dateOf(l.w):l.d;const txt=l.m?t(l.m,l.p):l.t;return `<li class="${l.k}"><span class="d">${esc(d)}</span>${esc(txt)}</li>`}
 
+// Panel misi pemula (di atas Catatan breeder): misi berikutnya + daftar semua misi.
+function renderQuest(){const el=$('questp');if(!el)return;const q=S.quest||{d:[]};
+ if(q.hide){el.innerHTML='';return}
+ const d=q.d||[],n=QUESTS.filter(x=>d.includes(x.k)).length,cur=QUESTS.find(x=>!d.includes(x.k));
+ const list=`<details><summary>${t('quest_all')}</summary><ul>${QUESTS.map(x=>`<li class="${d.includes(x.k)?'ok':''}"><span>${d.includes(x.k)?'✓':'○'} ${esc(t('qn_'+x.k))}</span><span>${money(x.r)}</span></li>`).join('')}</ul></details>`;
+ el.innerHTML=`<div class="quest"><div class="qh"><b>🎯 ${t('quest_h')}</b><span class="kbd">${n}/${QUESTS.length}</span></div><div class="qbar"><i style="width:${n/QUESTS.length*100}%"></i></div>
+ ${cur?`<div class="qcur" id="qcur"><b>${esc(t('qn_'+cur.k))}</b><div class="kbd">${esc(t('qh_'+cur.k))}</div><div class="row"><span class="tag a">${t('quest_reward',{v:money(cur.r)})}</span>${cur.tab?`<button class="ghost sm" data-act="quest_go" data-v="${cur.tab}">${t('quest_go')}</button>`:''}</div></div>`
+  :`<div class="qcur" id="qcur"><b>${t('quest_done_h')}</b><div class="kbd">${t('quest_done_p')}</div><div class="row"><span></span><button class="ghost sm" data-act="quest_hide">${t('quest_hide')}</button></div></div>`}
+ ${list}</div>`}
 function render(){
  if(!Cloud.user||!S){renderGate();return}
  document.body.classList.remove('gated');
@@ -848,6 +885,7 @@ function render(){
  renderAcct();
  renderTabs();
  $('view').innerHTML=({koleksi:vKoleksi,breeding:vBreeding,inkubator:vInkubator,pasar:vPasar,pesanan:vPesanan,dex:vDex,teman:vTeman,global:vGlobal,panduan:vPanduan})[TAB]();
+ renderQuest();
  $('logh').textContent=t('log_title');
  $('logclr').textContent=t('log_clear');$('logclr').style.display=S.log.length?'':'none';
  $('log').innerHTML=S.log.length?S.log.slice(0,50).map(logLine).join(''):`<li class="info" style="border:0">${esc(t('log_empty'))}</li>`;
@@ -1031,7 +1069,7 @@ function openSnake(id){const s=byId(id);if(!s)return;const tr=traitsOf(s.g),r=re
  ${s.gravid?`<p class="kbd">${t('gravid_nosale')}</p>`:''}`)}
 
 const SOCIAL_ACTS=new Set(['openchat','fr_accept','fr_decline','fr_remove','fr_remove_yes','tr_new','tb_close','tr_send','tr_accept','tr_accept_yes','tr_decline','tr_cancel']);
-const FREE_ACTS=new Set(['bs_inc','bs_dec','spf','brsp','dexsp','guidesp','mk_sex','settings','theme','preview','profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
+const FREE_ACTS=new Set(['quest_go','bs_inc','bs_dec','spf','brsp','dexsp','guidesp','mk_sex','settings','theme','preview','profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
 // Jalankan aksi game: dikirim ke server (Edge Function "game") yang menghitung hasilnya.
 async function game(a){
  if(!Cloud.user||!S)return null;
@@ -1041,7 +1079,9 @@ async function game(a){
   if(e.message!=='busy')try{await Cloud.reload()}catch(_){}
   render();return null}
  render();
- if(a.type==='advance')toast(`<b>${dateTxt()}</b>${r.head&&r.head.length?' — '+esc(r.head.slice(0,3).map(h=>t(h[0],h[1])).join(' · ')):esc(t('h_quiet'))}`);
+ const qd=(r.quests||[]).map(k=>{const q=QUESTS.find(x=>x.k===k);return q?t('t_quest',{n:t('qn_'+k),v:money(q.r)}):''}).filter(Boolean).join(' · ');
+ if(a.type==='advance')toast(`<b>${dateTxt()}</b>${r.head&&r.head.length?' — '+esc(r.head.slice(0,3).map(h=>t(h[0],h[1])).join(' · ')):esc(t('h_quiet'))}${qd?'<br>'+esc(qd):''}`);
+ else if(qd)toast(esc(qd));
  else if(r.toast)toast(t(r.toast));
  return r}
 const GATE_ACTS=new Set(['settings','theme','dz_open','dz_next','lang','login','signup','authmode','close','togglepw','forgot','acctinfo','gate_retry','gate_reload','logout','account','pickname']);
@@ -1076,6 +1116,8 @@ function act(a,id,el){
    modal(`<h2>🐣 ${t('adv_q')}</h2><p class="sub">${t('adv_sub',{n:L.length})}</p><div class="panel advlist">${L.map(f=>`<div class="row" style="justify-content:space-between;padding:4px 0"><span>${SP_ICON[spOf(f)]} ${sexIcon('F')} ${code(f)} ${esc(fullName(f))}</span><button class="ghost" data-act="tobreed" data-id="${f.id}">${t('adv_pair')}</button></div>`).join('')}</div>
    <div class="actions"><button class="pri" data-act="advyes">${t('adv_yes')}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`);return}
   case 'advyes':closeModal();game({type:'advance'});return;
+  case 'quest_go':TAB=el.dataset.v;break;
+  case 'quest_hide':game({type:'quest_hide'});return;
   case 'preview':showPreview();return;
   case 'preview_go':closeModal();game({type:'advance'});return;
   case 'nick':{const name=$('nick').value;closeModal();game({type:'nick',id,name});return}
