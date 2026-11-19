@@ -95,6 +95,7 @@ dl{display:grid;grid-template-columns:130px 1fr;gap:4px 10px;margin:12px 0;font-
 .guide code{background:var(--panel2);padding:1px 6px;border-radius:5px}
 .kbd{font-size:12px;color:var(--mut)}
 .inbwarn{background:color-mix(in srgb,var(--bad) 12%,transparent);border:1px solid color-mix(in srgb,var(--bad) 45%,transparent);border-radius:12px;padding:10px 12px;margin-top:12px;font-size:13px}.inbwarn b{color:var(--bad)}.inbwarn div{margin-top:4px;color:var(--text)}
+.advlist{max-height:280px;overflow:auto;padding:6px 12px}
 .pedh{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:4px;font-size:11.5px;color:var(--mut)}
 .ped{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,auto);gap:6px;margin:4px 0 12px}
 .pbox{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:6px 8px;font-size:12px;align-self:center;min-width:0;overflow-wrap:anywhere}
@@ -297,7 +298,8 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  dex_found:p=>'Ditemukan '+p.d,dex_notfound:'Belum ditemukan',
  dex_sub:p=>`${p.f}/${p.t} morph target ditemukan · ${p.n} morph total. Statistik: ${p.c} clutch, ${p.h} bayi menetas, ${p.s} hewan terjual (${p.e}).`,
  dex_extra:'Kombinasi lain yang kamu temukan',save_h:'Simpan / ulang',newgame:'Mulai game baru',
- save_cloud:'Progres dihitung dan disimpan di server, jadi aman dari kecurangan dan bisa dilanjutkan dari perangkat mana pun.', d_code:'Kode',d_agew:'Umur · berat',rel_parent:'induk × anak',rel_full:'saudara kandung',rel_grand:'kakek/nenek × cucu',rel_half:'saudara tiri',rel_uncle:'paman/bibi × keponakan',rel_cousin:'sepupu',rel_far:'kerabat jauh',
+ save_cloud:'Progres dihitung dan disimpan di server, jadi aman dari kecurangan dan bisa dilanjutkan dari perangkat mana pun.', d_code:'Kode',d_agew:'Umur · berat',adv_q:'Lanjut ke bulan berikutnya?',adv_sub:p=>`Masih ada ${p.n} betina yang siap dikawinkan tapi belum dipasangkan. Kalau lanjut sekarang, kesempatan kawin bulan ini terlewat.`,adv_pair:'Kawinkan',adv_yes:'Ya, lanjut bulan',
+ rel_parent:'induk × anak',rel_full:'saudara kandung',rel_grand:'kakek/nenek × cucu',rel_half:'saudara tiri',rel_uncle:'paman/bibi × keponakan',rel_cousin:'sepupu',rel_far:'kerabat jauh',
  inb_h:p=>`Kawin sedarah: ${p.r} — inbreeding anak ${p.f}`,inb_opt:p=>`sedarah ${p.f}`,inb_q:'Tetap kawinkan kerabat?',inb_yes:'Ya, tetap kawinkan',
  inb_eff:p=>`Telur tidak subur +${p.s} dan gagal menetas +${p.d}. Anaknya tumbuh ${p.g} lebih lambat, dan anak betinanya ${p.o} lebih jarang ovulasi.`,
  inb_self_h:p=>`Hewan ini hasil kawin sedarah (inbreeding ${p.f})`,inb_self_m:p=>`Tumbuh ${p.g} lebih lambat dari biasanya.`,inb_self_f:p=>`Tumbuh ${p.g} lebih lambat dan ${p.o} lebih jarang ovulasi setelah dikawinkan.`,inb_none:'Inbreeding 0% (tidak tercatat kawin sedarah)',
@@ -501,7 +503,8 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  dex_sub:p=>`${p.f}/${p.t} target morphs found · ${p.n} morphs total. Stats: ${p.c} clutches, ${p.h} hatchlings, ${p.s} animals sold (${p.e}).`,
  dex_extra:'Other combos you discovered',save_h:'Save / restart',newgame:'Start a new game',
  save_cloud:'Progress is calculated and saved on the server, so it can’t be cheated and you can continue on any device.',
- d_code:'ID',d_agew:'Age · weight',rel_parent:'parent × offspring',rel_full:'full siblings',rel_grand:'grandparent × grandchild',rel_half:'half siblings',rel_uncle:'uncle/aunt × niece/nephew',rel_cousin:'cousins',rel_far:'distant relatives',
+ d_code:'ID',d_agew:'Age · weight',adv_q:'Advance to next month?',adv_sub:p=>`${p.n} ${p.n===1?'female is':'females are'} ready to breed but not paired yet. If you continue now, this month’s breeding chance is skipped.`,adv_pair:'Pair',adv_yes:'Yes, next month',
+ rel_parent:'parent × offspring',rel_full:'full siblings',rel_grand:'grandparent × grandchild',rel_half:'half siblings',rel_uncle:'uncle/aunt × niece/nephew',rel_cousin:'cousins',rel_far:'distant relatives',
  inb_h:p=>`Inbreeding: ${p.r} — offspring inbreeding ${p.f}`,inb_opt:p=>`related ${p.f}`,inb_q:'Pair related animals anyway?',inb_yes:'Yes, pair them anyway',
  inb_eff:p=>`Infertile eggs +${p.s} and failed hatches +${p.d}. The babies grow ${p.g} slower, and their daughters ovulate ${p.o} less often.`,
  inb_self_h:p=>`This animal is inbred (inbreeding ${p.f})`,inb_self_m:p=>`Grows ${p.g} slower than normal.`,inb_self_f:p=>`Grows ${p.g} slower and ovulates ${p.o} less often after pairing.`,inb_none:'Inbreeding 0% (no recorded inbreeding)',
@@ -900,6 +903,8 @@ function vKoleksi(){
 const pct=x=>(Math.round(x*10000)/100).toLocaleString(LANG==='id'?'id-ID':'en-US')+'%';
 // Teks efek kawin sedarah untuk koefisien F (sama dengan rumus di core.js)
 const inbEff=F=>t('inb_eff',{s:pct(INB_SLUG*F),d:pct(INB_DEAD*F),g:pct(F/2),o:pct(F)});
+// Betina yang masih bisa dikawinkan bulan ini: siap kawin, belum dipasangkan, dan ada jantan siap dari spesies yang sama.
+function breedableFemales(){return S.snakes.filter(f=>f.sex==='F'&&!femaleReady(f)&&!f.pairedWith&&S.snakes.some(m=>m.sex==='M'&&spOf(m)===spOf(f)&&!maleReady(m)))}
 function snakeOpt(s,other){const r=readyMsg(s),rel=other&&relation(s.sex==='M'?s:other,s.sex==='M'?other:s);return `<option value="${s.id}" ${(SEL.m===s.id||SEL.f===s.id)?'selected':''}>${code(s)} — ${esc(fullName(s))}${hetText(s)?' ('+esc(hetText(s))+')':''}${r?' ⏳':' ✓'}${rel?' ⚠️ '+t('inb_opt',{f:pct(rel.F)}):''}</option>`}
 function vBreeding(){
  const M=S.snakes.filter(s=>s.sex==='M'&&spOf(s)===BRSP),F=S.snakes.filter(s=>s.sex==='F'&&spOf(s)===BRSP);
@@ -1067,7 +1072,10 @@ function act(a,id,el){
   case 'clearlog':modal(`<h2>${t('log_clear_h')}</h2><p class="sub">${t('log_clear_q')}</p><div class="actions"><button class="danger" data-act="clearlogyes">${t('log_clear_yes')}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`);return;
   case 'clearlogyes':closeModal();game({type:'clearlog'});return;
   // aksi game (divalidasi ulang oleh core / server)
-  case 'advance':game({type:'advance'});return;
+  case 'advance':{const L=breedableFemales();if(!L.length){game({type:'advance'});return}
+   modal(`<h2>🐣 ${t('adv_q')}</h2><p class="sub">${t('adv_sub',{n:L.length})}</p><div class="panel advlist">${L.map(f=>`<div class="row" style="justify-content:space-between;padding:4px 0"><span>${SP_ICON[spOf(f)]} ${sexIcon('F')} ${code(f)} ${esc(fullName(f))}</span><button class="ghost" data-act="tobreed" data-id="${f.id}">${t('adv_pair')}</button></div>`).join('')}</div>
+   <div class="actions"><button class="pri" data-act="advyes">${t('adv_yes')}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`);return}
+  case 'advyes':closeModal();game({type:'advance'});return;
   case 'preview':showPreview();return;
   case 'preview_go':closeModal();game({type:'advance'});return;
   case 'nick':{const name=$('nick').value;closeModal();game({type:'nick',id,name});return}
