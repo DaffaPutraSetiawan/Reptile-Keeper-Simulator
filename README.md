@@ -1,6 +1,6 @@
 # Reptile Keeper Simulator — Morph Lab
 
-![Morph Lab — Reptile Breeder Sim](assets/logo.png)
+![Morph Lab — Exotic Breeder Sim](assets/logo.png)
 
 Game simulasi breeding ball python berbasis web, dengan genetika morph yang mengikuti pola pewarisan di dunia nyata.
 
