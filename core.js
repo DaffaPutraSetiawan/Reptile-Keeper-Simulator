@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:15,date:'2026-11-19'};
+const VERSION={v:16,date:'2026-11-19'};
 const BUYER_COUNT=8;      // jumlah nama pembeli di kamus bahasa
 
 /* ========= DATA GENETIKA ========= */
@@ -57,15 +57,17 @@ const ALLT=Object.keys(TL);
 //  fAge/mAge: umur minimal kawin · recover: jeda bulan setelah bertelur · ovul: peluang ovulasi setelah kawin
 //  layIn: bulan dari ovulasi sampai bertelur · K/r: pertumbuhan logistik (H = bayi yang belum diketahui kelaminnya)
 //  wBonus: [berat awal, pembagi] untuk bonus harga dari berat · inc: lama inkubasi · temp: pilihan suhu inkubator
+//  clutches: jumlah clutch dari sekali kawin (betina menyimpan sperma) · minLayW: musim bertelur berhenti lebih awal
+//  kalau berat betina turun di bawah angka ini · slugStep: tambahan peluang telur tidak subur di tiap clutch berikutnya
 const SPECIES={
- ball:{code:'BP',loci:BALL_LOCI,maxAge:360,base:40,fAge:24,mAge:10,recover:8,ovul:.55,layIn:2,slug:.12,layLoss:.72,gravidLoss:.99,
+ ball:{code:'BP',loci:BALL_LOCI,maxAge:360,base:40,fAge:24,mAge:10,recover:8,ovul:.55,layIn:2,slug:.12,layLoss:.72,gravidLoss:.99,clutches:[1,1],minLayW:0,slugStep:0,
   K:{F:2300,M:1400,H:1850},r:{F:.14,M:.18,H:.16},hatchW:[55,95],wBonus:[80,1100],foodBase:2,inc:2,
   temp:{min:29,max:33,mid:31,step:.5},
   eggs:f=>clamp(Math.round(2+(f.w-1300)/170+R()*2.5-1),2,11),
   mk:{baby:{a:[1,3],w:[70,180]},F:{a:[24,30],w:[1500,1900]},M:{a:[10,16],w:[550,900]}},
   pool:[['normal',8],['pastel',10],['mojave',6],['lesser',6],['enchi',6],['yb',7],['cinnamon',6],['banana',4],['spider',6],['pinstripe',6],['albino',5],['piebald',4],['clown',3],['axanthic',4]],
   orderBase:['pastel','spider','albino','enchi'],orderSkip:['bel','superbanana','supercinnamon']},
- leo:{code:'LG',loci:LEO_LOCI,maxAge:240,base:25,fAge:10,mAge:9,recover:2,ovul:.7,layIn:1,slug:.1,layLoss:.9,gravidLoss:1,
+ leo:{code:'LG',loci:LEO_LOCI,maxAge:240,base:25,fAge:10,mAge:9,recover:3,ovul:.7,layIn:1,slug:.1,layLoss:.94,gravidLoss:1,clutches:[4,6],minLayW:40,slugStep:.04,
   K:{F:65,M:75,H:70},r:{F:.4,M:.4,H:.4},hatchW:[3,5],wBonus:[4,40],foodBase:1,inc:2,
   temp:{min:26,max:34,mid:30,step:.5},
   eggs:()=>R()<.1?1:2,
@@ -287,9 +289,9 @@ function monthlyCosts(snakes,racks,ev){
 function previewNext(){
  const ev=S.event||{};let born=0,laying=0;
  const alive=S.snakes.filter(s=>s.age+1<maxAge(s)),dying=S.snakes.length-alive.length;
- const list=alive.map(s=>({sp:spOf(s),w:s.w,sex:s.sex,g:s.g,gravid:s.gravid?{layIn:s.gravid.layIn}:null,pairs:s.pairs||0}));
+ const list=alive.map(s=>({sp:spOf(s),w:s.w,sex:s.sex,g:s.g,gravid:s.gravid?{layIn:s.gravid.layIn,more:(s.gravid.no||1)<(s.gravid.tot||1)}:null,pairs:s.pairs||0}));
  for(const c of S.clutches)if(c.hatchIn<=1){const sp=spOf(c),hw=SPECIES[sp].hatchW,n=Math.round(c.eggs.length*0.96);born+=n;for(let i=0;i<n;i++)list.push({sp,w:(hw[0]+hw[1])/2,sex:'H',g:null,gravid:null,pairs:0})}
- for(const s of list){if(s.gravid&&s.gravid.layIn<=1){s.w=Math.round(s.w*SPECIES[s.sp].layLoss);s.gravid=null;laying++}}
+ for(const s of list){if(s.gravid&&s.gravid.layIn<=1){const P=SPECIES[s.sp];s.w=Math.round(s.w*P.layLoss);laying++;s.gravid=s.gravid.more&&s.w>=P.minLayW?{layIn:1}:null}}
  for(const s of list){if(s.sex==='M'&&s.pairs)s.w=Math.round(s.w*(1-.015*s.pairs))}
  for(const s of list){if(s.gravid){s.w=Math.round(s.w*SPECIES[s.sp].gravidLoss);continue}s.w=growW(s.sp,s.sex,s.w,s.g,1)}
  const c=monthlyCosts(list,S.racks,ev);
@@ -319,19 +321,22 @@ function advance(){
   for(const k of vis)for(const pid of [c.sireId,c.damId]){const p=byId(pid);if(p&&!traitsOf(p.g).includes(k)&&(p.hp[k]||0)<1){p.hp[k]=1;log('l_proven',{c:code(p),g:TL[k]},'star')}}
   S.clutches=S.clutches.filter(x=>x!==c);
  }
- // 2. bertelur
+ // 2. bertelur. Leopard gecko: sekali kawin menghasilkan beberapa clutch berturut-turut (1 clutch per bulan),
+ //    sampai jatah clutch musim itu habis atau berat betina terlalu rendah; setelah itu betina istirahat.
  for(const f of S.snakes){if(!f.gravid)continue;f.gravid.layIn--;if(f.gravid.layIn>0)continue;
-  const sp=spOf(f),P=SPECIES[sp];
-  const m=f.gravid.sire;const n=P.eggs(f);
-  const eggs=[];let slugs=0;for(let i=0;i<n;i++){if(R()>=P.slug)eggs.push(breedGeno(m,f));else slugs++}
+  const sp=spOf(f),P=SPECIES[sp],no=f.gravid.no||1,tot=f.gravid.tot||1;
+  const m=f.gravid.sire;const n=P.eggs(f),slugP=P.slug+P.slugStep*(no-1);
+  const eggs=[];let slugs=0;for(let i=0;i<n;i++){if(R()>=slugP)eggs.push(breedGeno(m,f));else slugs++}
   const c={cid:Math.floor(R()*1e9),damId:f.id,sireId:m.id,damLabel:code(f)+' '+fullName(f),sireLabel:m.label,eggs,slugs,hatchIn:P.inc,incTotal:P.inc,temp:P.temp.mid,hp:childHp(m,f),gen:Math.max(f.gen,m.gen)+1};
   if(sp!=='ball')c.sp=sp;S.clutches.push(c);
   S.stats.clutches++;
-  log('l_laid',{c:code(f),n,good:eggs.length,slug:slugs},'good');head.push(['h_laid',{c:code(f),n:eggs.length}]);
-  f.gravid=null;f.lastLaid=S.turn;f.w=Math.round(f.w*P.layLoss);}
+  log('l_laid',tot>1?{c:code(f),n,good:eggs.length,slug:slugs,no,tot}:{c:code(f),n,good:eggs.length,slug:slugs},'good');head.push(['h_laid',{c:code(f),n:eggs.length}]);
+  f.lastLaid=S.turn;f.w=Math.round(f.w*P.layLoss);
+  if(no<tot&&f.w>=P.minLayW)f.gravid={sire:m,layIn:1,no:no+1,tot};
+  else{f.gravid=null;if(no<tot)log('l_season_light',{c:code(f),n:no},'info');else if(tot>1)log('l_season_end',{c:code(f),n:tot,r:P.recover},'info')}}
  // 3. ovulasi dari perkawinan bulan lalu
  for(const f of S.snakes){if(!f.pairedWith)continue;const m=byId(f.pairedWith),P=SPECIES[spOf(f)];
-  if(m&&R()<P.ovul){f.gravid={sire:snap(m),layIn:P.layIn};log('l_ovul',{f:code(f),m:code(m),n:P.layIn},'good');head.push(['h_gravid',{c:code(f)}])}
+  if(m&&R()<P.ovul){f.gravid={sire:snap(m),layIn:P.layIn,no:1,tot:rint(P.clutches)};log('l_ovul',{f:code(f),m:code(m),n:P.layIn},'good');head.push(['h_gravid',{c:code(f)}])}
   else log('l_noovul',{f:code(f)},'info');
   f.pairedWith=null}
  S.snakes.forEach(s=>{if(s.sex==='M'&&s.pairs){s.w=Math.round(s.w*(1-.015*s.pairs));s.pairs=0}});
