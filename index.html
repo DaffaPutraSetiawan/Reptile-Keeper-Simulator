@@ -1120,7 +1120,7 @@ function openSnake(id){const s=byId(id);if(!s)return;const tr=traitsOf(s.g),r=re
  ${s.gravid?`<p class="kbd">${t('gravid_nosale')}</p>`:''}`)}
 
 const SOCIAL_ACTS=new Set(['openchat','fr_accept','fr_decline','fr_remove','fr_remove_yes','tr_new','tb_close','tr_send','tr_accept','tr_accept_yes','tr_decline','tr_cancel']);
-const FREE_ACTS=new Set(['quest_go','bug_new','bug_open','bug_mine','bug_more','bug_rmimg','bug_delc','bug_del','bs_inc','bs_dec','spf','brsp','dexsp','guidesp','mk_sex','settings','theme','preview','profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
+const FREE_ACTS=new Set(['quest_go','bug_new','bug_cancel','bug_open','bug_mine','bug_more','bug_rmimg','bug_delc','bug_del','bs_inc','bs_dec','spf','brsp','dexsp','guidesp','mk_sex','settings','theme','preview','profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
 // Jalankan aksi game: dikirim ke server (Edge Function "game") yang menghitung hasilnya.
 async function game(a){
  if(!Cloud.user||!S)return null;
@@ -1169,6 +1169,7 @@ function act(a,id,el){
   case 'advyes':closeModal();game({type:'advance'});return;
   case 'quest_go':TAB=el.dataset.v;break;
   case 'bug_new':Bugs.newForm();return;
+  case 'bug_cancel':Bugs.files.forEach(x=>URL.revokeObjectURL(x.url));Bugs.files=[];closeModal(true);return;
   case 'bug_open':Bugs.open(id);return;
   case 'bug_mine':Bugs.mine=el.dataset.v==='1';Bugs.loaded=false;Bugs.load();break;
   case 'bug_more':Bugs.load(true);return;
@@ -1531,7 +1532,7 @@ var Bugs={list:[],loaded:false,loading:false,more:false,mine:false,st:'',cat:'',
    <div id="bugprev" class="bugprev"></div>
    <p class="kbd">ℹ️ ${t('bug_auto')}</p>
    <div class="msg" id="bugmsg"></div>
-   <div class="actions"><button class="pri" type="submit">${t('bug_send')}</button><button class="ghost" type="button" data-act="close">${t('btn_cancel')}</button></div>
+   <div class="actions"><button class="pri" type="submit">${t('bug_send')}</button><button class="ghost" type="button" data-act="bug_cancel">${t('btn_cancel')}</button></div>
   </form>`,true)},
  addFiles(list){const msg=[];for(const f of list){if(this.files.length>=BUG_MAX_IMG){msg.push(t('e_bug_img_max'));break}
    if(!BUG_TYPES.includes(f.type)){msg.push(t('e_bug_img_type',{n:f.name}));continue}
