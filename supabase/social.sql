@@ -535,6 +535,8 @@ begin
       'snakes', jsonb_array_length(coalesce(v_data -> 'snakes', '[]'::jsonb)),
       'morphs', (select count(*) from jsonb_object_keys(coalesce(v_data -> 'dex', '{}'::jsonb))),
       'hatched', coalesce((v_data -> 'stats' ->> 'hatched')::int, 0),
+      -- reputasi breeder (save lama tanpa 'rep': sama dengan jumlah pesanan yang dipenuhi)
+      'rep', coalesce((v_data ->> 'rep')::int, (v_data -> 'stats' ->> 'orders')::int, 0),
       'friends', (select count(*) from public.friendships where status = 'accepted' and p.id in (requester, addressee))),
     'showcase', coalesce((
       select jsonb_agg(public._public_snake(e) order by array_position(p.showcase, (e ->> 'id')::int))
