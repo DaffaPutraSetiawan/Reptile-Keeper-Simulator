@@ -6,13 +6,18 @@ Game simulasi breeding hewan eksotis berbasis web: **ball python, leopard gecko,
 
 ## Cara main
 
-Buka game lewat GitHub Pages, lalu masuk atau daftar.
+Buka game lewat GitHub Pages, lalu daftar gratis dengan email dan pilih username.
 
-Game **wajib login** (daftar gratis dengan email). Setiap aksi dikirim ke server (Edge Function `game`), yang menghitung hasil breeding, pasar, dan uang. Save tidak bisa diubah dari browser, jadi aman dari kecurangan, bisa dilanjutkan dari perangkat mana pun, dan dipakai untuk trading.
+1. Kamu mulai dengan **$5.000**, **2 rak (20 space)**, dan sepasang ball python: jantan Normal het Albino dan betina Albino yang langsung bisa dikawinkan.
+2. **Kawinkan** pasangan di tab Kawinkan. Tabel peluang menunjukkan morph apa saja yang mungkin keluar.
+3. Tekan **Lanjut bulan**. Betina bisa ovulasi, bertelur, lalu telurnya menetas di **Inkubator**. Suhu inkubasi mengatur peluang anak jantan/betina.
+4. **Jual** hewan lewat iklan, jual cepat, atau kirim ke **pembeli** di tab Pesanan (paling untung).
+5. Kumpulkan morph di **Morph Dex**, beli gen baru di **Pasar**, buka spesies lain, dan beli rak tambahan ($10.000, lalu naik 2× setiap pembelian).
+6. Ikuti **Misi pemula** di samping layar untuk panduan langkah demi langkah.
 
-Panduan menyiapkan server ada di [SETUP-SUPABASE.md](SETUP-SUPABASE.md).
+Game **wajib login**. Setiap aksi dikirim ke server (Edge Function `game`), yang menghitung hasil breeding, pasar, dan uang. Save tidak bisa diubah dari browser, jadi aman dari kecurangan, bisa dilanjutkan dari perangkat mana pun, dan dipakai untuk trading serta papan peringkat.
 
-Bisa juga dimainkan online lewat GitHub Pages: **Settings → Pages → Deploy from a branch → `main` / root**.
+**Hosting:** game ini berupa halaman statis, jadi bisa dijalankan lewat GitHub Pages (**Settings → Pages → Deploy from a branch → `main` / root**). Panduan menyiapkan server Supabase ada di [SETUP-SUPABASE.md](SETUP-SUPABASE.md).
 
 ## Fitur
 
@@ -25,31 +30,35 @@ Bisa juga dimainkan online lewat GitHub Pages: **Settings → Pages → Deploy f
 - **Siklus breeding bulanan**: umur minimal kawin, ovulasi, jumlah telur dipengaruhi berat, telur tidak subur, inkubasi dengan pengaturan suhu, masa pemulihan betina, batas umur
 - **Silsilah 3 generasi** di setiap hewan (ikut pindah saat trade)
 - **Kawin sedarah (inbreeding)**: koefisien inbreeding dihitung dari leluhur 5 generasi. Ada peringatan sebelum memasangkan kerabat, dan efeknya nyata: telur tidak subur, gagal menetas, pertumbuhan lebih lambat, dan ovulasi lebih jarang
-- **Ekonomi**: biaya pakan & rak, harga pasar yang naik turun dan bisa jenuh, pasar tiap spesies, iklan, jual cepat, event, dan pesanan pembeli (membayar hadiah atau 125% nilai hewan)
-- **Misi pemula** sebagai tutorial, dengan hadiah uang
+- **Ekonomi**: biaya pakan & rak, harga pasar yang naik turun dan bisa jenuh, pasar tiap spesies (bayi 10× / siap kawin 20× harga dasar), iklan, jual cepat, event, pesanan pembeli (membayar hadiah atau 125% nilai hewan), dan **pratinjau saldo bulan depan**. Keseimbangannya diuji dengan simulasi ratusan game.
+- **Misi pemula** sebagai tutorial (9 misi, hadiah total $2.000)
+- **Konfirmasi Lanjut bulan** kalau masih ada betina yang bisa dikawinkan
 - **Morph Dex** per spesies, berisi morph target dan kombinasi terkenal (Bumblebee, Killer Bee, RAPTOR, White Albino, dan lainnya)
 - **Gambar hewan prosedural** yang dibuat dari genetika tiap hewan
 - **Teman, chat & trading**: tambah teman lewat username, chat real-time & global chat, profil dengan etalase, dan tukar hewan/uang dengan sistem escrow yang dijalankan server. Riwayat pemilik hewan (origin keeper) ikut tercatat.
 - **Papan peringkat global** (di tab Global): kekayaan, Morph Dex, hewan termahal (per spesies), breeder produktif, dan pesanan. Ada top 50, posisi kamu, dan filter teman saja.
 - **Laporan bug**: pemain melapor dengan judul, deskripsi, kategori, dan 1–3 screenshot. Semua pemain bisa membaca & berkomentar; admin mengubah status, membalas, dan menghapus. Pelapor mendapat notifikasi saat ada balasan.
 - **Dua bahasa: Indonesia & Inggris**, bisa diganti kapan saja. Bahasa awal mengikuti bahasa browser, lalu pilihan pemain diingat.
+- **3 tema warna** (Terrarium, Hutan Hujan, Samudra Malam) di Pengaturan
 
 ## Struktur
 
 | File | Isi |
 |---|---|
 | `index.html` | Tampilan game (HTML + CSS + JavaScript) |
-| `core.js` | Logika inti game (genetika, ekonomi, aksi); dihitung di server, dipakai browser untuk tampilan |
+| `core.js` | Logika inti game (genetika, ekonomi, aksi, misi, angka peringkat); dihitung di server, dipakai browser untuk tampilan |
 | `config.js` | URL & publishable key Supabase |
+| `supabase/functions/game/` | Edge Function `game` (`index.ts`, `handler.js`, salinan `core.js`) |
 | `supabase/schema.sql` | Tabel `profiles` & `saves` dengan Row Level Security |
-| `supabase/functions/game/` | Edge Function mode online (`index.ts`, `handler.js`, salinan `core.js`) |
+| `supabase/social.sql` | Teman, chat, global chat, profil, trading (escrow) + fungsi server & realtime |
+| `supabase/bugs.sql` | Laporan bug, komentar, admin, dan bucket Storage untuk screenshot |
+| `supabase/leaderboard.sql` | Papan peringkat global (kolom `saves.rank` & fungsi `get_leaderboard`) |
 | `scripts/sync-core.sh` | Menyalin `core.js` ke Edge Function |
 | `scripts/sim-economy.cjs` | Simulasi ekonomi: bot memainkan ratusan game untuk menguji keseimbangan harga |
-| `supabase/leaderboard.sql` | Papan peringkat global (kolom `saves.rank` & fungsi `get_leaderboard`) |
-| `supabase/bugs.sql` | Laporan bug, komentar, admin, dan bucket Storage untuk screenshot |
-| `supabase/social.sql` | Teman, chat, trading (escrow) + fungsi server & realtime |
 | `assets/` | Logo, favicon, dan ikon aplikasi |
-| `SETUP-SUPABASE.md` | Panduan menyiapkan login & cloud save |
+| `SETUP-SUPABASE.md` | Panduan menyiapkan login, database, Storage, dan Edge Function |
+
+Urutan menjalankan SQL di Supabase: `schema.sql` → `social.sql` → `bugs.sql` → `leaderboard.sql`, lalu deploy Edge Function `game`.
 
 ## Rencana
 
