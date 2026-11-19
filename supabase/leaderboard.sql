@@ -4,7 +4,7 @@
 -- jadi tidak bisa dipalsukan dari browser. Jalankan SETELAH schema.sql dan social.sql. Aman dijalankan ulang.
 --
 -- Kategori: wealth (uang + nilai hewan), dex (jumlah morph), top (hewan termahal, bisa per spesies),
---           hatched (bayi menetas), orders (pesanan dipenuhi).
+--           hatched (bayi menetas), orders (pesanan dipenuhi), rep (reputasi breeder).
 -- =====================================================================
 
 alter table public.saves add column if not exists rank jsonb;
@@ -24,7 +24,7 @@ create trigger saves_rank_dex_at before insert or update of rank on public.saves
   for each row execute function public._rank_dex_at();
 
 -- Papan peringkat: 50 teratas + posisi pemain yang meminta.
---   p_category: wealth | dex | top | hatched | orders
+--   p_category: wealth | dex | top | hatched | orders | rep
 --   p_friends : true = hanya teman (dan diri sendiri)
 --   p_species : untuk kategori top: null (semua spesies) | ball | leo | axo
 create or replace function public.get_leaderboard(p_category text, p_friends boolean default false,
@@ -32,7 +32,7 @@ create or replace function public.get_leaderboard(p_category text, p_friends boo
 returns jsonb language plpgsql stable security definer set search_path = '' as $$
 declare me uuid := public._me(); v jsonb;
 begin
-  if p_category is null or p_category not in ('wealth', 'dex', 'top', 'hatched', 'orders') then
+  if p_category is null or p_category not in ('wealth', 'dex', 'top', 'hatched', 'orders', 'rep') then
     raise exception 'bad_category'; end if;
   if p_species is not null and p_species not in ('ball', 'leo', 'axo') then raise exception 'bad_species'; end if;
   with base as (
@@ -53,6 +53,8 @@ begin
         when 'dex'     then (b.r ->> 'dex')::numeric
         when 'hatched' then (b.r ->> 'hatched')::numeric
         when 'orders'  then (b.r ->> 'orders')::numeric
+        -- save yang belum disimpan ulang sejak v29 belum punya 'rep': reputasinya sama dengan jumlah pesanan
+        when 'rep'     then coalesce(b.r ->> 'rep', b.r ->> 'orders')::numeric
         else (b.animal ->> 'v')::numeric end as score
       from base b
   ), ranked as (

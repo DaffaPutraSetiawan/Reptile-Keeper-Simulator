@@ -116,7 +116,7 @@ Aturan yang dijalankan server:
 1. Buka **SQL Editor → New query**.
 2. Salin seluruh isi [`supabase/leaderboard.sql`](supabase/leaderboard.sql), tempel, lalu klik **Run**. Jalankan **sebelum** men-deploy Edge Function `game` versi 28 ke atas, karena fungsi itu menulis ke kolom `saves.rank`.
 
-Angka peringkat (kekayaan, Morph Dex, hewan termahal per spesies, bayi menetas, pesanan) dihitung oleh Edge Function `game` setiap kali save disimpan, jadi tidak bisa dipalsukan dari browser. Pemain lama otomatis masuk papan peringkat saat login berikutnya.
+Angka peringkat (kekayaan, Morph Dex, hewan termahal per spesies, bayi menetas, pesanan, reputasi) dihitung oleh Edge Function `game` setiap kali save disimpan, jadi tidak bisa dipalsukan dari browser. Pemain lama otomatis masuk papan peringkat saat login berikutnya. Kategori reputasi butuh `leaderboard.sql` versi terbaru (jalankan ulang file itu; aman dijalankan ulang).
 
 ## 10. Moderasi chat & tab Admin
 

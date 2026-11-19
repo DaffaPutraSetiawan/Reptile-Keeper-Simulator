@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:28,date:'2026-11-19'};
+const VERSION={v:29,date:'2026-11-20'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -340,7 +340,7 @@ function ensureMarket(){if(marketOk())return;
  for(const sp of SPECIES_LIST)if(!spMarketOk(sp))fillMarket(sp)}
 function makeMarketSnake(L,age,sex){const sp=spOf(L),{g,hp}=listingGeno(L.gene,sp),M=SPECIES[sp].mk[age==='baby'?'baby':sex];
  const s=newSnake({sex,age:rint(M.a),w:rint(M.w),g,hp});if(sp!=='ball')s.sp=sp;return s}
-function genOrder(){
+function orderSpec(){
  // pesanan untuk spesies lain lebih sering muncul kalau pemain memeliharanya
  let sp='ball';for(const x of SPECIES_LIST)if(x!=='ball'&&R()<(S.snakes.some(s=>spOf(s)===x)?.35:.1)){sp=x;break}
  const P=SPECIES[sp];
@@ -353,7 +353,28 @@ function genOrder(){
  tr.sort((a,b)=>ALLT.indexOf(a)-ALLT.indexOf(b));
  const sex=R()<.4?'F':R()<.3?'M':null;
  const reward=Math.round((baseValue(tr,sp)*(sex==='F'?1.35:1)*2.1+P.orderBonus)/5)*5;
- const o={oid:Math.floor(R()*1e9),tr,sex,reward,left:8+Math.floor(R()*7),bi:Math.floor(R()*BUYER_COUNT)};if(sp!=='ball')o.sp=sp;return o}
+ const o={tr,sex,reward};if(sp!=='ball')o.sp=sp;return o}
+function genOrder(){const x=orderSpec();const o={oid:Math.floor(R()*1e9),tr:x.tr,sex:x.sex,reward:x.reward,left:8+Math.floor(R()*7),bi:Math.floor(R()*BUYER_COUNT)};if(x.sp)o.sp=x.sp;return o}
+/* ========= REPUTASI & PEMBELI BESAR =========
+   Reputasi hanya bertambah dari pesanan: pesanan biasa +1, pesanan pembeli besar +3 (uang tetap dibayar).
+   Level: naik ke level 2 butuh 10, ke level 3 butuh 20 lagi (total 30), ke level 4 butuh 30 lagi (total 60), dst.
+   Mulai level 3 muncul pembeli besar: 1 pesanan berisi 2 hewan berbeda, dikirim sekaligus, dibayar 150% nilai hewan.
+   Maks. 3 pesanan biasa + 1 pesanan pembeli besar. */
+const REP_ORDER=1,REP_BIG=3,BIG_LEVEL=3,ORDER_PREMIUM_BIG=1.5,MAX_SMALL=3;
+const repNeed=L=>5*L*(L-1);                        // total reputasi untuk mencapai level L (1→0, 2→10, 3→30, 4→60 …)
+function repLevel(r){let L=1;while(repNeed(L+1)<=(r||0))L++;return L}
+const isBig=o=>!!(o&&o.big);
+const orderSig=x=>(x.sp||'ball')+'|'+x.tr.join('+')+'|'+(x.sex||'');
+function genBigOrder(){const a=orderSpec();let b=orderSpec(),n=0;while(orderSig(b)===orderSig(a)&&n++<20)b=orderSpec();
+ if(orderSig(b)===orderSig(a))return null;
+ const reward=Math.round((a.reward+b.reward)*1.2/5)*5;
+ return{oid:Math.floor(R()*1e9),big:1,items:[a,b],reward,left:10+Math.floor(R()*7),bi:Math.floor(R()*BUYER_COUNT)}}
+// Nama singkat isi pesanan (untuk catatan): "♀ Albino" atau "♀ Albino + Pastel"
+const orderLabel=o=>(isBig(o)?o.items:[o]).map(x=>(x.sex?(x.sex==='F'?'♀ ':'♂ '):'')+nameOf(x.tr)).join(' + ');
+// Bayaran pembeli besar: hadiah tetap, atau 150% nilai kedua hewan kalau itu lebih tinggi (dibulatkan ke atas).
+const bigPay=(o,list)=>Math.max(o.reward,Math.ceil(list.reduce((a,s)=>a+value(s),0)*ORDER_PREMIUM_BIG/5)*5);
+function addRep(n){const before=repLevel(S.rep);S.rep=(S.rep||0)+n;const L=repLevel(S.rep);
+ if(L>before)log(L===BIG_LEVEL?'l_replevel_big':'l_replevel',{l:L},'star');return L>before?L:0}
 // Bentuk super ikut memenuhi pesanan gen aslinya (Super Cinnamon untuk pesanan Cinnamon, Ivory untuk Yellow Belly, dst.);
 // BEL memenuhi pesanan Mojave/Lesser kalau membawa alel itu. Pesanan bentuk super tetap butuh bentuk super.
 const SUPER_OF={};for(const sp of SPECIES_LIST)for(const l of SPECIES[sp].loci)if(l.sk)SUPER_OF[l.k]=l.sk;
@@ -363,7 +384,7 @@ function hasTrait(s,tr,t){if(tr.includes(t))return true;if(SUPER_OF[t]&&tr.inclu
 // Dengan begitu mengirim ke pembeli selalu lebih untung daripada iklan (100% nilai) dan jual cepat (60%).
 const ORDER_PREMIUM=1.25;
 const orderPay=(o,s)=>Math.max(o.reward,Math.ceil(value(s)*ORDER_PREMIUM/5)*5);   // dibulatkan ke atas: selalu ≥125%
-function matches(o){const sp=spOf(o);return S.snakes.filter(s=>{const tr=traitsOf(s.g);return spOf(s)===sp&&o.tr.every(t=>hasTrait(s,tr,t))&&(!o.sex||s.sex===o.sex)&&!s.gravid&&!s.listed})}
+function matches(o){if(isBig(o))return[];const sp=spOf(o);return S.snakes.filter(s=>{const tr=traitsOf(s.g);return spOf(s)===sp&&o.tr.every(t=>hasTrait(s,tr,t))&&(!o.sex||s.sex===o.sex)&&!s.gravid&&!s.listed})}
 
 /* ========= MISI PEMULA ========= */
 // Daftar misi tutorial. Dicek server setelah setiap aksi (urutan bebas); misi yang syaratnya terpenuhi langsung
@@ -393,12 +414,12 @@ function rankStats(st){const prev=S;S=st;try{
  let nw=st.money;const top={};
  for(const s of st.snakes){const v=value(s),sp=spOf(s);nw+=v;
   if(!top[sp]||v>top[sp].v)top[sp]={v,n:fullName(s),c:code(s),x:s.sex,tr:traitsOf(s.g),k:s.seed,nick:s.nick||''}}
- return{turn:st.turn,nw:Math.round(nw),dex:Object.keys(st.dex||{}).length,hatched:(st.stats&&st.stats.hatched)||0,orders:(st.stats&&st.stats.orders)||0,top}
+ return{turn:st.turn,nw:Math.round(nw),dex:Object.keys(st.dex||{}).length,hatched:(st.stats&&st.stats.hatched)||0,orders:(st.stats&&st.stats.orders)||0,rep:typeof st.rep==='number'?st.rep:((st.stats&&st.stats.orders)||0),top}
 }finally{S=prev}}
 
 /* ========= GAME BARU ========= */
 function newGame(){
- S={v:2,rev:0,turn:0,money:5000,racks:2,nextId:1,quest:{d:[]},snakes:[],clutches:[],broods:[],market:[],orders:[],dex:{},mm:{},log:[],event:null,stats:{hatched:0,sold:0,earned:0,clutches:0}};
+ S={v:2,rev:0,turn:0,money:5000,racks:2,nextId:1,quest:{d:[]},snakes:[],clutches:[],broods:[],market:[],orders:[],dex:{},mm:{},log:[],event:null,stats:{hatched:0,sold:0,earned:0,clutches:0},rep:0};
  // Ular awal: sepasang yang sudah cukup umur untuk langsung dikawinkan
  addSnake(newSnake({sex:'M',age:14,w:760,g:G({albino:[1,0]}),hp:{albino:1}}));   // jantan Normal het Albino
  addSnake(newSnake({sex:'F',age:30,w:1750,g:G({albino:[1,1]}),hp:{albino:1}}));   // betina Albino
@@ -522,8 +543,9 @@ function advance(){
  S.money-=total;
  log('l_costs',{food:money(food),util:money(util),over:over?money(over):''},over?'bad':'info');
  // 7. pesanan
- for(const o of S.orders.slice()){o.left--;if(o.left<=0){S.orders=S.orders.filter(x=>x!==o);log('l_orderexp',{bi:o.bi,b:o.buyer,n:nameOf(o.tr)},'bad')}}
- if(S.orders.length<3&&R()<.5){const o=genOrder();S.orders.push(o);log('l_ordernew',{bi:o.bi,sx:o.sex?(o.sex==='F'?'♀ ':'♂ '):'',n:nameOf(o.tr),r:money(o.reward)},'star')}
+ for(const o of S.orders.slice()){o.left--;if(o.left<=0){S.orders=S.orders.filter(x=>x!==o);log('l_orderexp',{bi:o.bi,b:o.buyer,n:orderLabel(o)},'bad')}}
+ if(S.orders.filter(o=>!isBig(o)).length<MAX_SMALL&&R()<.5){const o=genOrder();S.orders.push(o);log('l_ordernew',{bi:o.bi,sx:'',n:orderLabel(o),r:money(o.reward)},'star')}
+ if(repLevel(S.rep)>=BIG_LEVEL&&!S.orders.some(isBig)&&R()<.4){const o=genBigOrder();if(o){S.orders.push(o);log('l_ordernew',{bi:o.bi,sx:'',n:orderLabel(o),r:money(o.reward)},'star')}}
  // 8. pasar
  ALLT.forEach(t=>{S.mm[t]=clamp(mm(t)+(1-mm(t))*.06+(R()-.5)*.05,.5,1.6)});
  ensureMarket();if(S.turn-S.marketAt>=MARKET_EVERY)refreshMarket();
@@ -578,15 +600,25 @@ const ACTIONS={
   const tp=Number(a.temp);if(!validTemp(tp,spOf(c)))fail('bad_temp');
   c.temp=tp;S.qf=S.qf||{};S.qf.temp=1;return{}},
  rack(){const price=rackPrice();if(S.money<price)fail('not_enough_money');S.money-=price;S.racks++;log('l_rack',{cap:cap(),v:money(price)});return{}},
- fulfill(a){const o=S.orders.find(x=>x.oid===toId(a.oid));if(!o)fail('order_gone');const s=mustSnake(a.sid);
+ fulfill(a){const o=S.orders.find(x=>x.oid===toId(a.oid));if(!o)fail('order_gone');
+  if(isBig(o))return bigFulfill(o,a);
+  const s=mustSnake(a.sid);
   if(!matches(o).includes(s))fail('order_mismatch');
-  const pay=orderPay(o,s);S.money+=pay;S.stats.sold++;S.stats.earned+=pay;S.stats.orders=(S.stats.orders||0)+1;log('l_fulfill',{c:code(s),n:fullName(s),bi:o.bi,b:o.buyer,r:money(pay)},'star');
-  removeSnake(s);S.orders=S.orders.filter(x=>x!==o);return{}},
+  const pay=orderPay(o,s);S.money+=pay;S.stats.sold++;S.stats.earned+=pay;S.stats.orders=(S.stats.orders||0)+1;log('l_fulfill',{c:code(s),n:fullName(s),bi:o.bi,b:o.buyer,r:money(pay),rp:REP_ORDER},'star');
+  removeSnake(s);S.orders=S.orders.filter(x=>x!==o);addRep(REP_ORDER);return{}},
 };
+// Pembeli besar: a.sids = [id hewan untuk permintaan 1, id hewan untuk permintaan 2], dikirim sekaligus.
+function bigFulfill(o,a){const ids=Array.isArray(a.sids)?a.sids:[];if(ids.length!==2)fail('order_mismatch');
+ const list=ids.map(id=>mustSnake(id));if(list[0]===list[1])fail('order_same_animal');
+ o.items.forEach((x,i)=>{if(!matches(x).includes(list[i]))fail('order_mismatch')});
+ const pay=bigPay(o,list);S.money+=pay;S.stats.sold+=2;S.stats.earned+=pay;S.stats.orders=(S.stats.orders||0)+1;S.stats.big=(S.stats.big||0)+1;
+ log('l_fulfill_big',{c:list.map(code).join(' + '),bi:o.bi,r:money(pay),rp:REP_BIG},'star');
+ list.forEach(removeSnake);S.orders=S.orders.filter(x=>x!==o);addRep(REP_BIG);return{}}
 // Jalankan satu aksi pada state (state diubah langsung). Melempar Error(kode) kalau tidak sah.
 function applyAction(state,a){
  if(!a||typeof a!=='object'||typeof a.type!=='string'||!Object.prototype.hasOwnProperty.call(ACTIONS,a.type))fail('bad_action');
- S=state;if(!Array.isArray(S.broods))S.broods=[];syncDex();trimLog();ensureMarket();
+ S=state;if(!Array.isArray(S.broods))S.broods=[];if(typeof S.rep!=='number')S.rep=(S.stats&&S.stats.orders)||0;   // save lama: reputasi = pesanan yang sudah dipenuhi
+ syncDex();trimLog();ensureMarket();
  const res=ACTIONS[a.type](a)||{};
  const q=checkQuests();if(q.length)res.quests=q;
  return res;
@@ -602,7 +634,7 @@ root.MorphCore={
  emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,
  OLD_WARN,maxAge,lifeLeft,sizeMult,kOf,growW,
  pedNode,pedParents,labelNode,ancRec,kinship,relation,inbOf,INB_SLUG,INB_DEAD,HATCH_DEAD,
- mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,dexKey,matches,ORDER_PREMIUM,orderPay,
+ mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,dexKey,matches,ORDER_PREMIUM,orderPay,REP_ORDER,REP_BIG,BIG_LEVEL,ORDER_PREMIUM_BIG,MAX_SMALL,repNeed,repLevel,isBig,genBigOrder,bigPay,orderLabel,
  monthlyCosts,previewNext,
  MARKET_SIZE,MARKET_EVERY,BUY_MULT,MARKET_POOL,listingTraits,marketBase,marketPrice,marketLeft,refreshMarket,ensureMarket,marketOk,makeMarketSnake,
  INC_MONTHS,TEMP_MIN,TEMP_MAX,TEMP_MID,TEMP_STEP,tempRange,femaleChance,incTotal,tempOpen,tempMonthsLeft,validTemp,

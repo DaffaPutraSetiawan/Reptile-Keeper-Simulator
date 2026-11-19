@@ -48,6 +48,9 @@ h3{font-family:Fraunces,serif;font-weight:600;font-size:16px;margin:18px 0 8px}
 .chip{padding:5px 11px;border-radius:20px;font-size:13px}
 .chip.on{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:12px}
+.reppanel{padding:10px 14px;margin:0 0 14px;display:flex;flex-direction:column;gap:6px}.repbar{height:8px;border-radius:6px;background:var(--panel2);overflow:hidden}.repbar i{display:block;height:100%;background:var(--acc);border-radius:6px}
+.card.bigorder{grid-column:span 2;display:flex;flex-direction:column;gap:8px}.bigitem{display:grid;grid-template-columns:150px 1fr;gap:10px;align-items:center}.bigitem select{margin-top:6px}
+@media (max-width:520px){.card.bigorder{grid-column:auto}.bigitem{grid-template-columns:1fr}}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px;transition:transform .12s,border-color .12s;position:relative}
 .card.click{cursor:pointer}.card.click:hover{transform:translateY(-2px);border-color:var(--line2)}
 .snk{width:100%;aspect-ratio:320/148;display:block;border-radius:10px;background:radial-gradient(120% 90% at 50% 40%,var(--img1) 0,var(--img2) 75%)}
@@ -205,7 +208,7 @@ button.danger{background:var(--bad);border-color:var(--bad);color:#1b0a07;font-w
 'use strict';
 /* ========= LOGIKA INTI (core.js, sama dengan yang dipakai server) ========= */
 const Core=window.MorphCore;
-const {QUESTS,relation,inbOf,INB_SLUG,INB_DEAD,pedParents,orderPay,broodSnake,broodValue,SPECIES,SPECIES_LIST,spOf,spOfG,spOfTr,lociOf,isRec,tempRange,dexKey,maxAge,lifeLeft,OLD_WARN,rackPrice,RACK_MULT,marketOk,marketBase,marketPrice,marketLeft,listingTraits,BUY_MULT,previewNext,TEMP_MIN,TEMP_MAX,TEMP_STEP,TEMP_MID,femaleChance,tempOpen,tempMonthsLeft,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches}=Core;
+const {QUESTS,relation,inbOf,INB_SLUG,INB_DEAD,pedParents,orderPay,broodSnake,broodValue,SPECIES,SPECIES_LIST,spOf,spOfG,spOfTr,lociOf,isRec,tempRange,dexKey,maxAge,lifeLeft,OLD_WARN,rackPrice,RACK_MULT,marketOk,marketBase,marketPrice,marketLeft,listingTraits,BUY_MULT,previewNext,TEMP_MIN,TEMP_MAX,TEMP_STEP,TEMP_MID,femaleChance,tempOpen,tempMonthsLeft,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches,repLevel,repNeed,isBig,bigPay,REP_ORDER,REP_BIG,BIG_LEVEL}=Core;
 
 /* ========= UTIL ========= */
 const lerp=(a,b,t)=>a.map((x,i)=>x+(b[i]-x)*t);
@@ -245,7 +248,7 @@ id:{
  l_paired:p=>`${p.m} dipasangkan dengan ${p.f}. Hasil ovulasi terlihat bulan depan.`,
  l_buy:p=>`🛒 Membeli ${p.c} ${p.n}${p.h?' '+p.h:''} seharga ${p.v}.`,
  l_rack:p=>`Membeli rak baru${p.v?' seharga '+p.v:''}. Kapasitas sekarang ${p.cap} space.`,
- l_fulfill:p=>`📦 ${p.c} ${p.n} dikirim ke ${buyerName(p)}. Hadiah ${p.r}!`,
+ l_fulfill:p=>`📦 ${p.c} ${p.n} dikirim ke ${buyerName(p)}. Hadiah ${p.r}!${p.rp?` ⭐ +${p.rp} reputasi.`:''}`,l_fulfill_big:p=>`📦📦 ${p.c} dikirim ke ${buyerName(p)}. Hadiah ${p.r}! ⭐ +${p.rp} reputasi.`,l_replevel:p=>`⭐ Reputasi naik ke level ${p.l}!`,l_replevel_big:p=>`⭐ Reputasi naik ke level ${p.l}! Pembeli besar mulai datang: pesanan 2 hewan sekaligus, dibayar 150% nilai hewan.`,
  l_cloud:'☁️ Akun tersambung. Progres di perangkat ini sekarang tersimpan juga di cloud.',
  // event
  ev_expo:'Expo hewan eksotis bulan ini! Iklan 2× lebih cepat laku.',
@@ -312,7 +315,7 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  mk_sub2:'Pasar menjual 3 hewan per spesies, masing-masing dengan gen tunggal (atau Normal) yang berbeda-beda. Beli sebanyak yang kamu mau: pilih jenis kelamin, lalu beli sebagai bayi (10× harga dasar) atau siap kawin (20× harga dasar).',mk_reset:p=>`Stok berganti dalam ${p.n} turn`,mk_base:p=>`harga dasar ${p.v}`,mk_kind_one:'Gen tunggal',mk_kind_rec:'Gen tunggal (resesif, visual)',mk_kind_normal:'Tanpa gen',mk_f:'Betina',mk_m:'Jantan',mk_baby:'Bayi',mk_baby_d:'1–3 bulan · 70–180 g',mk_adult:'Siap kawin',mk_adult_f:'2 th+ · ±1,5–1,9 kg · bisa langsung dikawinkan',mk_adult_m:'10 bln+ · ±550–900 g · bisa langsung dikawinkan',
  rack_btn:p=>`Beli rak baru (+10 space) · ${p.v}`,rack_h:'Beli rak baru?',rack_q:p=>`Kamu akan membeli 1 rak seharga <b>${p.v}</b>. Kapasitas naik dari ${p.c} menjadi ${p.n} space.`,rack_price:'Harga rak',rack_after:'Saldo setelah beli',rack_n_next:p=>`Harga rak naik 2× setiap pembelian: rak berikutnya ${p.v}.`,rack_n_util:'Setiap rak menambah biaya listrik $8/bulan.',rack_yes:p=>`Ya, beli · ${p.v}`,rack_note:p=>`Kapasitas sekarang ${p.n} space. Lewat kapasitas kena biaya space darurat $15/ekor/bulan.`,buy:'Beli',
  // pesanan
- ord_h:'Pesanan pembeli',ord_sub:'Pembeli membayar hadiah pesanan, atau 125% dari nilai hewan yang kamu kirim kalau itu lebih tinggi, langsung saat dikirim. Jadi mengirim ke pembeli selalu lebih untung daripada iklan atau jual cepat. Hewan yang dikirim harus punya semua gen visual yang diminta; gen tambahan boleh, dan bentuk super juga memenuhi gen aslinya (mis. Super Cinnamon untuk Cinnamon).',ord_min:'minimal · atau 125% nilai hewan',ord_pay:p=>`dibayar ${p.v}`,
+ ord_h:'Pesanan pembeli',ord_sub:'Pembeli membayar hadiah pesanan, atau 125% dari nilai hewan yang kamu kirim kalau itu lebih tinggi, langsung saat dikirim. Jadi mengirim ke pembeli selalu lebih untung daripada iklan atau jual cepat. Hewan yang dikirim harus punya semua gen visual yang diminta; gen tambahan boleh, dan bentuk super juga memenuhi gen aslinya (mis. Super Cinnamon untuk Cinnamon).',ord_min:'minimal · atau 125% nilai hewan',ord_min_big:'minimal · atau 150% nilai kedua hewan. Kedua hewan dikirim sekaligus.',ord_ship_big:'Kirim kedua hewan',e_order_same_animal:'Pilih dua hewan yang berbeda.',rep_h:p=>`Reputasi ${p.r} · Level ${p.l}`,rep_next:p=>`${p.n} lagi ke level ${p.l}`,rep_big_on:'Pembeli besar sudah terbuka: kadang ada pesanan 2 hewan sekaligus (⭐ +3, dibayar 150%).',rep_big_off:p=>`Reputasi bertambah dari pesanan yang dipenuhi (⭐ +1). Level ${p.l} membuka pembeli besar (${p.n} lagi).`,t_rep:p=>`⭐ +${p.n} reputasi (total ${p.r}).`,t_replevel:p=>`⭐ Reputasi naik ke level ${p.l}!`,t_replevel_big:p=>`⭐ Level ${p.l}! Pembeli besar mulai datang ke tab Pesanan.`,rk_rep:'Reputasi',rk_d_rep:'Reputasi breeder: +1 per pesanan, +3 per pesanan pembeli besar.',rk_u_rep:'reputasi',rk_lv:p=>`Lv ${p.l}`,ord_pay:p=>`dibayar ${p.v}`,
  ord_empty:'Belum ada pesanan. Pesanan baru muncul seiring waktu.',ord_left:p=>`sisa ${p.n} bulan`,ord_reward:p=>`Hadiah ${p.v}`,ord_ship:'Kirim ke pembeli',ord_nomatch:'Belum ada hewan yang cocok di koleksimu.',
  // dex
  dex_found:p=>'Ditemukan '+p.d,dex_notfound:'Belum ditemukan',
@@ -321,7 +324,7 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  save_cloud:'Progres dihitung dan disimpan di server, jadi aman dari kecurangan dan bisa dilanjutkan dari perangkat mana pun.', d_code:'Kode',d_agew:'Umur · berat',gv_chat:'Chat',gv_rank:'Peringkat',rk_sub:'Papan peringkat sepanjang masa. Angka dihitung server setiap kali kamu bermain; turn ditampilkan supaya kamu bisa membandingkan dengan pemain di tahap yang sama.',
  rk_wealth:'Kekayaan',rk_dex:'Morph Dex',rk_top:'Hewan termahal',rk_hatched:'Breeder produktif',rk_orders:'Pesanan',rk_allsp:'Semua spesies',rk_all:'Semua pemain',rk_friends:'Teman saja',rk_refresh:'Muat ulang',
  rk_d_wealth:'Uang + nilai seluruh koleksi hewan.',rk_d_dex:'Jumlah morph yang tercatat di Morph Dex (semua spesies). Kalau seri, yang lebih dulu mencapainya ada di atas.',rk_d_top:'Hewan bernilai tertinggi yang sedang dimiliki tiap pemain.',rk_d_hatched:'Total bayi yang berhasil menetas.',rk_d_orders:'Total pesanan pembeli yang dipenuhi.',
- rk_player:'Pemain',rk_animal:'Hewan',rk_turn:'Turn',rk_score_wealth:'Kekayaan',rk_score_dex:'Morph',rk_score_top:'Nilai',rk_score_hatched:'Bayi',rk_score_orders:'Pesanan',
+ rk_player:'Pemain',rk_animal:'Hewan',rk_turn:'Turn',rk_score_wealth:'Kekayaan',rk_score_dex:'Morph',rk_score_top:'Nilai',rk_score_hatched:'Bayi',rk_score_orders:'Pesanan',rk_score_rep:'Reputasi',
  rk_u_dex:'morph',rk_u_hatched:'bayi',rk_u_orders:'pesanan',rk_me:p=>`Posisi kamu: #${p.p} dari ${p.n} pemain.`,rk_me_none:'Kamu belum masuk papan peringkat ini.',rk_me_none_sp:'Kamu belum memelihara spesies ini.',
  rk_empty:'Belum ada pemain di papan peringkat ini.',rk_empty_fr:'Belum ada teman di papan peringkat ini.',
  tab_bugs:'Laporan bug',bug_sub:'Temukan bug? Laporkan di sini. Semua pemain bisa melihat laporan dan memberi masukan lewat komentar; admin akan menanggapi dan mengubah statusnya.',
@@ -507,7 +510,7 @@ en:{
  l_paired:p=>`${p.m} paired with ${p.f}. You’ll know next month whether she ovulated.`,
  l_buy:p=>`🛒 Bought ${p.c} ${p.n}${p.h?' '+p.h:''} for ${p.v}.`,
  l_rack:p=>`Bought a new rack${p.v?' for '+p.v:''}. Capacity is now ${p.cap} spaces.`,
- l_fulfill:p=>`📦 ${p.c} ${p.n} shipped to ${buyerName(p)}. Reward ${p.r}!`,
+ l_fulfill:p=>`📦 ${p.c} ${p.n} shipped to ${buyerName(p)}. Reward ${p.r}!${p.rp?` ⭐ +${p.rp} reputation.`:''}`,l_fulfill_big:p=>`📦📦 ${p.c} shipped to ${buyerName(p)}. Reward ${p.r}! ⭐ +${p.rp} reputation.`,l_replevel:p=>`⭐ Reputation reached level ${p.l}!`,l_replevel_big:p=>`⭐ Reputation reached level ${p.l}! Big buyers start coming: orders for 2 animals at once, paying 150% of their value.`,
  l_cloud:'☁️ Account connected. Progress on this device is now also saved to the cloud.',
  ev_expo:'Exotic animal expo this month! Listings sell twice as fast.',
  ev_flood:p=>`The market is flooded with ${p.g}; prices are down 20%.`,
@@ -565,7 +568,7 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  mk_sub:'Sellers restock every month. Het claims from sellers are always honest, but "pos het" means it isn’t certain.',
  mk_sub2:'The market sells 3 animals per species, each with a different single gene (or Normal). Buy as many as you like: pick a sex, then buy as a baby (10× base price) or breeding-ready (20× base price).',mk_reset:p=>`Restocks in ${p.n} ${p.n===1?'turn':'turns'}`,mk_base:p=>`base price ${p.v}`,mk_kind_one:'Single gene',mk_kind_rec:'Single gene (recessive, visual)',mk_kind_normal:'No genes',mk_f:'Female',mk_m:'Male',mk_baby:'Baby',mk_baby_d:'1–3 months · 70–180 g',mk_adult:'Breeding-ready',mk_adult_f:'2 yr+ · ~1.5–1.9 kg · can be paired right away',mk_adult_m:'10 mo+ · ~550–900 g · can be paired right away',
  rack_btn:p=>`Buy a new rack (+10 spaces) · ${p.v}`,rack_h:'Buy a new rack?',rack_q:p=>`You’re about to buy 1 rack for <b>${p.v}</b>. Capacity goes from ${p.c} to ${p.n} spaces.`,rack_price:'Rack price',rack_after:'Balance after buying',rack_n_next:p=>`Rack prices double with every purchase: the next one costs ${p.v}.`,rack_n_util:'Each rack adds $8/month in power costs.',rack_yes:p=>`Yes, buy · ${p.v}`,rack_note:p=>`Current capacity: ${p.n} spaces. Going over capacity costs $15 per animal per month for emergency space.`,buy:'Buy',
- ord_h:'Buyer orders',ord_sub:'Buyers pay the order reward, or 125% of the value of the animal you ship if that’s higher, right when you ship. So shipping to a buyer always beats listing or quick selling. The animal you ship must show every requested visual gene; extra genes are fine, and a super form also covers its base gene (e.g. Super Cinnamon for Cinnamon).',ord_min:'minimum · or 125% of the animal’s value',ord_pay:p=>`pays ${p.v}`,
+ ord_h:'Buyer orders',ord_sub:'Buyers pay the order reward, or 125% of the value of the animal you ship if that’s higher, right when you ship. So shipping to a buyer always beats listing or quick selling. The animal you ship must show every requested visual gene; extra genes are fine, and a super form also covers its base gene (e.g. Super Cinnamon for Cinnamon).',ord_min:'minimum · or 125% of the animal’s value',ord_min_big:'minimum · or 150% of both animals’ value. Both animals ship together.',ord_ship_big:'Ship both animals',e_order_same_animal:'Pick two different animals.',rep_h:p=>`Reputation ${p.r} · Level ${p.l}`,rep_next:p=>`${p.n} more to level ${p.l}`,rep_big_on:'Big buyers are unlocked: sometimes an order asks for 2 animals at once (⭐ +3, pays 150%).',rep_big_off:p=>`Reputation grows with every order you fill (⭐ +1). Level ${p.l} unlocks big buyers (${p.n} to go).`,t_rep:p=>`⭐ +${p.n} reputation (total ${p.r}).`,t_replevel:p=>`⭐ Reputation reached level ${p.l}!`,t_replevel_big:p=>`⭐ Level ${p.l}! Big buyers now visit the Orders tab.`,rk_rep:'Reputation',rk_d_rep:'Breeder reputation: +1 per order, +3 per big-buyer order.',rk_u_rep:'reputation',rk_lv:p=>`Lv ${p.l}`,ord_pay:p=>`pays ${p.v}`,
  ord_empty:'No orders yet. New orders appear over time.',ord_left:p=>`${p.n} ${p.n===1?'month':'months'} left`,ord_reward:p=>`Reward ${p.v}`,ord_ship:'Ship to buyer',ord_nomatch:'No matching animal in your collection yet.',
  dex_found:p=>'Found '+p.d,dex_notfound:'Not found yet',
  dex_sub:p=>`${p.f}/${p.t} target morphs found · ${p.n} morphs total. Stats: ${p.c} clutches, ${p.h} hatchlings, ${p.s} animals sold (${p.e}).`,
@@ -574,7 +577,7 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  d_code:'ID',d_agew:'Age · weight',gv_chat:'Chat',gv_rank:'Leaderboard',rk_sub:'All-time leaderboard. Scores are calculated by the server every time you play; turns are shown so you can compare yourself with players at the same stage.',
  rk_wealth:'Wealth',rk_dex:'Morph Dex',rk_top:'Most valuable animal',rk_hatched:'Most productive',rk_orders:'Orders',rk_allsp:'All species',rk_all:'All players',rk_friends:'Friends only',rk_refresh:'Refresh',
  rk_d_wealth:'Money + the value of the whole collection.',rk_d_dex:'Number of morphs recorded in the Morph Dex (all species). Ties go to whoever reached it first.',rk_d_top:'Each player’s most valuable animal they currently own.',rk_d_hatched:'Total babies successfully hatched.',rk_d_orders:'Total buyer orders filled.',
- rk_player:'Player',rk_animal:'Animal',rk_turn:'Turn',rk_score_wealth:'Wealth',rk_score_dex:'Morphs',rk_score_top:'Value',rk_score_hatched:'Babies',rk_score_orders:'Orders',
+ rk_player:'Player',rk_animal:'Animal',rk_turn:'Turn',rk_score_wealth:'Wealth',rk_score_dex:'Morphs',rk_score_top:'Value',rk_score_hatched:'Babies',rk_score_orders:'Orders',rk_score_rep:'Reputation',
  rk_u_dex:'morphs',rk_u_hatched:'babies',rk_u_orders:'orders',rk_me:p=>`Your position: #${p.p} of ${p.n} players.`,rk_me_none:'You’re not on this leaderboard yet.',rk_me_none_sp:'You don’t keep this species yet.',
  rk_empty:'No players on this leaderboard yet.',rk_empty_fr:'None of your friends are on this leaderboard yet.',
  tab_bugs:'Bug reports',bug_sub:'Found a bug? Report it here. Every player can read reports and add feedback in the comments; the admin will respond and update the status.',
@@ -1098,10 +1101,23 @@ function vPasar(){
  return h}
 const SP_ICON={ball:'🐍',leo:'🦎',axo:'💧'};
 const mkRange=(sp,k)=>{const M=SPECIES[sp].mk[k];const w=v=>v>=1000?(v/1000).toLocaleString(LANG==='id'?'id-ID':'en-US',{maximumFractionDigits:1})+' kg':v+' g';return `${ageTxt(M.a[0])}–${ageTxt(M.a[1])} · ${w(M.w[0])}–${w(M.w[1])}`};
+function repPanel(){const r=S.rep||0,L=repLevel(r),lo=repNeed(L),hi=repNeed(L+1),pc=Math.round((r-lo)/(hi-lo)*100);
+ return `<div class="panel reppanel"><div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:6px"><b>⭐ ${t('rep_h',{r:fmt(r),l:L})}</b><span class="kbd">${t('rep_next',{n:fmt(hi-r),l:L+1})}</span></div>
+  <div class="repbar"><i style="width:${pc}%"></i></div>
+  <div class="kbd">${L>=BIG_LEVEL?t('rep_big_on'):t('rep_big_off',{l:BIG_LEVEL,n:fmt(repNeed(BIG_LEVEL)-r)})}</div></div>`}
+function ordOptions(list,o,sel){return list.slice().sort((a,b)=>value(a)-value(b)).map(s=>`<option value="${s.id}" ${s.id===sel?'selected':''}>${code(s)} ${esc(fullName(s))}${o?' — '+t('ord_pay',{v:money(orderPay(o,s))}):''}</option>`).join('')}
+function bigCard(o){const ms=o.items.map(x=>matches(x));
+ const d0=ms[0].length?ms[0].slice().sort((a,b)=>value(a)-value(b))[0].id:null,c1=ms[1].slice().sort((a,b)=>value(a)-value(b)),d1=(c1.find(s=>s.id!==d0)||c1[0]||{}).id;
+ const ok=ms[0].length&&ms[1].length&&(ms[0].length+ms[1].length>2||ms[0][0]!==ms[1][0]);
+ const item=(x,i)=>{const n=nameOf(x.tr);return `<div class="bigitem"><img class="snk" src="${thumb(x.tr,strHash(n),false,spOf(x))}"><div><div class="nm">${x.sex?sexIcon(x.sex)+' ':''}${esc(n)}</div>
+  ${ms[i].length?`<select id="ord-${o.oid}-${i}">${ordOptions(ms[i],null,i?d1:d0)}</select>`:`<div class="kbd">${t('ord_nomatch')}</div>`}</div></div>`};
+ return `<div class="card bigorder"><div class="meta">${esc(buyerName(o))} · ${t('ord_left',{n:o.left})}</div>${o.items.map(item).join('')}
+  <div class="val">${t('ord_reward',{v:money(o.reward)})} · <span class="tag a">⭐ +${REP_BIG}</span></div><div class="kbd">${t('ord_min_big')}</div>
+  ${ok?`<button class="pri" style="margin-top:8px;width:100%" data-act="fulfill" data-id="${o.oid}">${t('ord_ship_big')}</button>`:''}</div>`}
 function vPesanan(){
- let h=`<h2>${t('ord_h')}</h2><p class="sub">${t('ord_sub')}</p>`;
+ let h=`<h2>${t('ord_h')}</h2><p class="sub">${t('ord_sub')}</p>${repPanel()}`;
  if(!S.orders.length)return h+`<div class="empty">${t('ord_empty')}</div>`;
- return h+`<div class="grid">${S.orders.map(o=>{const ms=matches(o);const n=nameOf(o.tr);return `<div class="card"><img class="snk" src="${thumb(o.tr,strHash(n),false,spOf(o))}"><div class="nm">${o.sex?sexIcon(o.sex)+' ':''}${esc(n)}</div><div class="meta">${esc(buyerName(o))} · ${t('ord_left',{n:o.left})}</div><div class="val">${t('ord_reward',{v:money(o.reward)})}</div><div class="kbd">${t('ord_min')}</div>${ms.length?`<select id="ord-${o.oid}" style="margin-top:8px">${ms.slice().sort((a,b)=>value(a)-value(b)).map(s=>`<option value="${s.id}">${code(s)} ${esc(fullName(s))} — ${t('ord_pay',{v:money(orderPay(o,s))})}</option>`).join('')}</select><button class="pri" style="margin-top:8px;width:100%" data-act="fulfill" data-id="${o.oid}">${t('ord_ship')}</button>`:`<div class="kbd" style="margin-top:8px">${t('ord_nomatch')}</div>`}</div>`}).join('')}</div>`}
+ return h+`<div class="grid">${S.orders.map(o=>{if(isBig(o))return bigCard(o);const ms=matches(o);const n=nameOf(o.tr);return `<div class="card"><img class="snk" src="${thumb(o.tr,strHash(n),false,spOf(o))}"><div class="nm">${o.sex?sexIcon(o.sex)+' ':''}${esc(n)}</div><div class="meta">${esc(buyerName(o))} · ${t('ord_left',{n:o.left})}</div><div class="val">${t('ord_reward',{v:money(o.reward)})} · <span class="tag">⭐ +${REP_ORDER}</span></div><div class="kbd">${t('ord_min')}</div>${ms.length?`<select id="ord-${o.oid}" style="margin-top:8px">${ordOptions(ms,o)}</select><button class="pri" style="margin-top:8px;width:100%" data-act="fulfill" data-id="${o.oid}">${t('ord_ship')}</button>`:`<div class="kbd" style="margin-top:8px">${t('ord_nomatch')}</div>`}</div>`}).join('')}</div>`}
 const TARGETS=[['pastel'],['superpastel'],['mojave'],['lesser'],['bel'],['enchi'],['superenchi'],['yb'],['ivory'],['cinnamon'],['supercinnamon'],['banana'],['superbanana'],['spider'],['pinstripe'],['albino'],['piebald'],['clown'],['axanthic'],['pastel','spider'],['superpastel','spider'],['pastel','pinstripe'],['spider','pinstripe'],['pastel','spider','pinstripe'],['albino','axanthic'],['pastel','albino'],['spider','albino'],['enchi','pastel'],['pastel','clown'],['banana','clown'],['piebald','albino'],['enchi','yb']];
 // Target Morph Dex leopard gecko: 15 gen + 10 kombinasi bernama
 const TARGETS_LEO=[['tremper'],['bell'],['rainwater'],['eclipse'],['blizzard'],['murphy'],['marble'],['macksnow'],['supersnow'],['giant'],['supergiant'],['lemonfrost'],['superlemonfrost'],['enigma'],['wy'],
@@ -1159,6 +1175,7 @@ const FREE_ACTS=new Set(['quest_go','gview','rk_cat','rk_sp','rk_fr','rk_refresh
 // Jalankan aksi game: dikirim ke server (Edge Function "game") yang menghitung hasilnya.
 async function game(a){
  if(!Cloud.user||!S)return null;
+ const rep0=typeof S.rep==='number'?S.rep:null;
  let r;try{r=await Online.act(a)}catch(e){toast(errText(e));
   // aksi ditolak: tampilkan lagi data asli dari server (buang perubahan di layar yang tidak sah)
   if(e.message==='no_save'){try{await Online.act({type:'init'});toast(t('t_reset'));render();return null}catch(_){}}
@@ -1169,6 +1186,7 @@ async function game(a){
  if(a.type==='advance')toast(`<b>${dateTxt()}</b>${r.head&&r.head.length?' — '+esc(r.head.slice(0,3).map(h=>t(h[0],h[1])).join(' · ')):esc(t('h_quiet'))}${qd?'<br>'+esc(qd):''}`);
  else if(qd)toast(esc(qd));
  else if(r.toast)toast(t(r.toast));
+ if(rep0!=null&&S&&S.rep>rep0){const L=repLevel(S.rep);toast(L>repLevel(rep0)?t(L===BIG_LEVEL?'t_replevel_big':'t_replevel',{l:L}):t('t_rep',{n:S.rep-rep0,r:fmt(S.rep)}))}
  return r}
 const GATE_ACTS=new Set(['settings','theme','dz_open','dz_next','lang','login','signup','authmode','close','togglepw','forgot','acctinfo','gate_retry','gate_reload','logout','account','pickname']);
 function act(a,id,el){
@@ -1243,7 +1261,10 @@ function act(a,id,el){
    <ul class="pvnotes"><li>${t('rack_n_next',{v:money(p*RACK_MULT)})}</li><li>${t('rack_n_util')}</li></ul>
    <div class="actions"><button class="pri" data-act="rackyes">${t('rack_yes',{v:money(p)})}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`);return}
   case 'rackyes':closeModal();game({type:'rack'});return;
-  case 'fulfill':{const sel=$('ord-'+id);if(sel)game({type:'fulfill',oid:id,sid:+sel.value});return}
+  case 'fulfill':{const o=S.orders.find(x=>x.oid===id);if(!o)return;
+   if(isBig(o)){const a=$('ord-'+id+'-0'),b=$('ord-'+id+'-1');if(!a||!b)return;if(a.value===b.value){toast(t('e_order_same_animal'));return}
+    game({type:'fulfill',oid:id,sids:[+a.value,+b.value]});return}
+   const sel=$('ord-'+id);if(sel)game({type:'fulfill',oid:id,sid:+sel.value});return}
  }
  render()}
 
@@ -1724,14 +1745,14 @@ function vBugs(){const B=Bugs;if(!B.loaded&&!B.loading)B.load();
   <select id="bugcat" style="width:auto"><option value="">${t('bug_all_cat')}</option>${BUG_CATS.map(k=>`<option value="${k}" ${B.cat===k?'selected':''}>${t('bcat_'+k)}</option>`).join('')}</select></div>
  ${!B.loaded?`<p class="kbd" style="text-align:center;margin:30px 0">${t('so_loading')}</p>`:B.list.length?`<div class="buglist">${B.list.map(row).join('')}</div>${B.more?`<div class="actions" style="justify-content:center"><button class="ghost" data-act="bug_more">${t('bug_more')}</button></div>`:''}`:`<div class="empty">${t(B.mine?'bug_empty_mine':'bug_empty')}</div>`}`}
 // Papan peringkat global (sepanjang masa): angka dihitung server setiap kali save disimpan.
-const RANK_CATS=[['wealth','💰'],['dex','📖'],['top','✨'],['hatched','🐣'],['orders','📦']];
+const RANK_CATS=[['wealth','💰'],['dex','📖'],['top','✨'],['hatched','🐣'],['orders','📦'],['rep','⭐']];
 var Rank={cat:'wealth',sp:'',fr:false,data:{},loading:false,
  key(){return this.cat+'|'+(this.cat==='top'?this.sp:'')+'|'+this.fr},
  async load(force){if(!Cloud.user)return;const k=this.key(),c=this.data[k];if(!force&&c&&Date.now()-c.t<30000){if(TAB==='global')render();return}
   this.loading=true;if(TAB==='global'&&Global.view==='rank')render();
   const{data,error}=await Cloud.sb.rpc('get_leaderboard',{p_category:this.cat,p_friends:this.fr,p_species:this.cat==='top'&&this.sp?this.sp:null});
   this.loading=false;if(error){toast(errText(error));return}this.data[k]={t:Date.now(),d:data};if(TAB==='global'&&Global.view==='rank')render()},
- score(r){return (this.cat==='wealth'||this.cat==='top')?money(r.score):fmt(r.score)+' '+t('rk_u_'+this.cat)},
+ score(r){return (this.cat==='wealth'||this.cat==='top')?money(r.score):this.cat==='rep'?`${fmt(r.score)} ⭐ · ${t('rk_lv',{l:repLevel(r.score)})}`:fmt(r.score)+' '+t('rk_u_'+this.cat)},
  row(r){const medal=['🥇','🥈','🥉'][r.pos-1]||'#'+r.pos,a=r.animal;
   return `<tr class="${r.me?'me':''}"><td class="pos">${medal}</td><td>${r.me?`<b>${esc(r.user)}</b> <span class="tag a">${t('so_you')}</span>`:profLink(r.user)}</td>
    ${this.cat==='top'?`<td><div class="rkan"><img class="mini" src="${thumb(a.tr||[],a.k||1,false,a.sp)}" alt=""><div>${SP_ICON[a.sp]||''} ${a.x?sexIcon(a.x)+' ':''}${esc(a.n)}${a.nick?` <span class="kbd">"${esc(a.nick)}"</span>`:''}</div></div></td>`:''}

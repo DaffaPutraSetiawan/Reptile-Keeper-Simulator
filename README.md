@@ -36,7 +36,8 @@ Game **wajib login**. Setiap aksi dikirim ke server (Edge Function `game`), yang
 - **Morph Dex** per spesies, berisi morph target dan kombinasi terkenal (Bumblebee, Killer Bee, RAPTOR, White Albino, dan lainnya)
 - **Gambar hewan prosedural** yang dibuat dari genetika tiap hewan
 - **Teman, chat & trading**: tambah teman lewat username, chat real-time & global chat, profil dengan etalase, dan tukar hewan/uang dengan sistem escrow yang dijalankan server. Riwayat pemilik hewan (origin keeper) ikut tercatat.
-- **Papan peringkat global** (di tab Global): kekayaan, Morph Dex, hewan termahal (per spesies), breeder produktif, dan pesanan. Ada top 50, posisi kamu, dan filter teman saja.
+- **Reputasi breeder**: setiap pesanan yang dipenuhi memberi ⭐ +1 reputasi (uang tetap dibayar). Level naik di 10, 30, 60, 100 … reputasi (kebutuhan tiap level bertambah 10). Mulai level 3 datang **pembeli besar**: pesanan 2 hewan berbeda yang dikirim sekaligus, dibayar hadiah atau 150% nilai kedua hewan, dan memberi ⭐ +3. Maksimal 3 pesanan biasa + 1 pesanan pembeli besar.
+- **Papan peringkat global** (di tab Global): kekayaan, Morph Dex, hewan termahal (per spesies), breeder produktif, pesanan, dan reputasi. Ada top 50, posisi kamu, dan filter teman saja.
 - **Moderasi chat global**: pemain bisa melaporkan pesan (spam, kasar, penipuan trade, lainnya). Kata kasar otomatis disensor jadi ★★★ dan pesan yang sama tidak bisa dikirim lebih dari 3× dalam 5 menit. Admin bisa menghapus pesan dan membisukan pemain di chat global (1 jam, 24 jam, 7 hari, atau selamanya, dengan alasan yang terlihat oleh pemain).
 - **Tab Admin** (hanya untuk admin): ringkasan angka pemain, chat, trade & laporan, antrean laporan chat, daftar pemain yang dibisukan, dan log tindakan admin.
 - **Laporan bug**: pemain melapor dengan judul, deskripsi, kategori, dan 1–3 screenshot. Semua pemain bisa membaca & berkomentar; admin mengubah status, membalas, dan menghapus. Pelapor mendapat notifikasi saat ada balasan.
@@ -77,10 +78,11 @@ Sudah selesai:
 - [x] Laporan bug dengan komentar & panel admin
 - [x] Papan peringkat global (sepanjang masa)
 - [x] Moderasi chat global & ringkasan admin
+- [x] Reputasi breeder & pembeli besar
 
 Berikutnya:
 
-- [ ] Reputasi breeder & achievement: membuka spesies, pembeli besar, dan gelar di profil
+- [ ] Achievement & gelar di profil
 - [ ] Peringkat musiman
 - [ ] Event berkala & kompetisi morph
 - [ ] Pasar antarpemain (tidak hanya antar teman)
