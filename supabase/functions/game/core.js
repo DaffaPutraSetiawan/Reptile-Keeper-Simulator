@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:22,date:'2026-11-19'};
+const VERSION={v:23,date:'2026-11-19'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -244,8 +244,8 @@ function grow(s){const sp=spOf(s);if(s.gravid){s.w=Math.round(s.w*SPECIES[sp].gr
 
 /* ========= PASAR & PESANAN ========= */
 // Pasar: tiap spesies punya 3 hewan bergen tunggal (atau Normal), gennya tidak boleh sama, stok berganti tiap 50 turn.
-// Tiap hewan di pasar bisa dibeli berkali-kali: bayi (5× harga dasar) atau siap kawin (10× harga dasar), ♂ atau ♀.
-const MARKET_SIZE=3,MARKET_EVERY=50,BUY_MULT={baby:5,adult:10};
+// Tiap hewan di pasar bisa dibeli berkali-kali: bayi (10× harga dasar) atau siap kawin (20× harga dasar), ♂ atau ♀.
+const MARKET_SIZE=3,MARKET_EVERY=50,BUY_MULT={baby:10,adult:20};
 const MARKET_POOL=SPECIES.ball.pool;
 const POOL=MARKET_POOL;
 function wpick(pool){const tot=pool.reduce((a,b)=>a+b[1],0);let r=R()*tot;for(const p of pool){r-=p[1];if(r<=0)return p[0]}return pool[0][0]}
