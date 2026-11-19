@@ -94,6 +94,7 @@ dl{display:grid;grid-template-columns:130px 1fr;gap:4px 10px;margin:12px 0;font-
 .guide p,.guide li{color:#dcd4c0;max-width:72ch}
 .guide code{background:var(--panel2);padding:1px 6px;border-radius:5px}
 .kbd{font-size:12px;color:var(--mut)}
+.inbwarn{background:color-mix(in srgb,var(--bad) 12%,transparent);border:1px solid color-mix(in srgb,var(--bad) 45%,transparent);border-radius:12px;padding:10px 12px;margin-top:12px;font-size:13px}.inbwarn b{color:var(--bad)}.inbwarn div{margin-top:4px;color:var(--text)}
 .pedh{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:4px;font-size:11.5px;color:var(--mut)}
 .ped{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,auto);gap:6px;margin:4px 0 12px}
 .pbox{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:6px 8px;font-size:12px;align-self:center;min-width:0;overflow-wrap:anywhere}
@@ -183,7 +184,7 @@ button.danger{background:var(--bad);border-color:var(--bad);color:#1b0a07;font-w
 'use strict';
 /* ========= LOGIKA INTI (core.js, sama dengan yang dipakai server) ========= */
 const Core=window.MorphCore;
-const {pedParents,orderPay,broodSnake,broodValue,SPECIES,SPECIES_LIST,spOf,spOfG,spOfTr,lociOf,isRec,tempRange,dexKey,maxAge,lifeLeft,OLD_WARN,rackPrice,RACK_MULT,marketOk,marketBase,marketPrice,marketLeft,listingTraits,BUY_MULT,previewNext,TEMP_MIN,TEMP_MAX,TEMP_STEP,TEMP_MID,femaleChance,tempOpen,tempMonthsLeft,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches}=Core;
+const {relation,inbOf,INB_SLUG,INB_DEAD,pedParents,orderPay,broodSnake,broodValue,SPECIES,SPECIES_LIST,spOf,spOfG,spOfTr,lociOf,isRec,tempRange,dexKey,maxAge,lifeLeft,OLD_WARN,rackPrice,RACK_MULT,marketOk,marketBase,marketPrice,marketLeft,listingTraits,BUY_MULT,previewNext,TEMP_MIN,TEMP_MAX,TEMP_STEP,TEMP_MID,femaleChance,tempOpen,tempMonthsLeft,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches}=Core;
 
 /* ========= UTIL ========= */
 const lerp=(a,b,t)=>a.map((x,i)=>x+(b[i]-x)*t);
@@ -296,7 +297,12 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  dex_found:p=>'Ditemukan '+p.d,dex_notfound:'Belum ditemukan',
  dex_sub:p=>`${p.f}/${p.t} morph target ditemukan · ${p.n} morph total. Statistik: ${p.c} clutch, ${p.h} bayi menetas, ${p.s} hewan terjual (${p.e}).`,
  dex_extra:'Kombinasi lain yang kamu temukan',save_h:'Simpan / ulang',newgame:'Mulai game baru',
- save_cloud:'Progres dihitung dan disimpan di server, jadi aman dari kecurangan dan bisa dilanjutkan dari perangkat mana pun.', d_code:'Kode',d_agew:'Umur · berat',ped_h:'Silsilah',ped_c0:'Hewan ini',ped_c1:'Induk',ped_c2:'Kakek & nenek',ped_unk:'Tidak diketahui',ped_open:'Buka hewan ini',ped_note:'Kode yang tertulis adalah kode saat anak lahir. Kotak berbingkai bisa diklik karena hewannya masih milikmu.',d_status:'Status kawin',d_value:'Nilai pasar',
+ save_cloud:'Progres dihitung dan disimpan di server, jadi aman dari kecurangan dan bisa dilanjutkan dari perangkat mana pun.', d_code:'Kode',d_agew:'Umur · berat',rel_parent:'induk × anak',rel_full:'saudara kandung',rel_grand:'kakek/nenek × cucu',rel_half:'saudara tiri',rel_uncle:'paman/bibi × keponakan',rel_cousin:'sepupu',rel_far:'kerabat jauh',
+ inb_h:p=>`Kawin sedarah: ${p.r} — inbreeding anak ${p.f}`,inb_opt:p=>`sedarah ${p.f}`,inb_q:'Tetap kawinkan kerabat?',inb_yes:'Ya, tetap kawinkan',
+ inb_eff:p=>`Telur tidak subur +${p.s} dan gagal menetas +${p.d}. Anaknya tumbuh ${p.g} lebih lambat, dan anak betinanya ${p.o} lebih jarang ovulasi.`,
+ inb_self_h:p=>`Hewan ini hasil kawin sedarah (inbreeding ${p.f})`,inb_self_m:p=>`Tumbuh ${p.g} lebih lambat dari biasanya.`,inb_self_f:p=>`Tumbuh ${p.g} lebih lambat dan ${p.o} lebih jarang ovulasi setelah dikawinkan.`,inb_none:'Inbreeding 0% (tidak tercatat kawin sedarah)',
+ gd_inb:'Kawin sedarah',gd_inb_v:'Kalau induknya berkerabat, telur tidak subur & gagal menetas masing-masing naik 0,8 × F (F = inbreeding anak, mis. 25% untuk saudara kandung atau induk × anak). Hewan inbred tumbuh lebih lambat dan betinanya lebih jarang ovulasi.',
+ ped_h:'Silsilah',ped_c0:'Hewan ini',ped_c1:'Induk',ped_c2:'Kakek & nenek',ped_unk:'Tidak diketahui',ped_open:'Buka hewan ini',ped_note:'Kode yang tertulis adalah kode saat anak lahir. Kotak berbingkai bisa diklik karena hewannya masih milikmu.',d_status:'Status kawin',d_value:'Nilai pasar',
  nick_ph:'Nama panggilan',save:'Simpan',unlist:'Batalkan iklan',list:p=>'Iklankan · '+p.v,quick:p=>'Jual cepat · '+p.v,plan:'Rencanakan kawin',close:'Tutup',gravid_nosale:'Betina bunting tidak bisa dijual sampai bertelur.',
  // mulai ulang
  btn_cancel:'Batal',
@@ -495,7 +501,12 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  dex_sub:p=>`${p.f}/${p.t} target morphs found · ${p.n} morphs total. Stats: ${p.c} clutches, ${p.h} hatchlings, ${p.s} animals sold (${p.e}).`,
  dex_extra:'Other combos you discovered',save_h:'Save / restart',newgame:'Start a new game',
  save_cloud:'Progress is calculated and saved on the server, so it can’t be cheated and you can continue on any device.',
- d_code:'ID',d_agew:'Age · weight',ped_h:'Pedigree',ped_c0:'This animal',ped_c1:'Parents',ped_c2:'Grandparents',ped_unk:'Unknown',ped_open:'Open this animal',ped_note:'IDs shown are the IDs at the time of hatching. Outlined boxes can be clicked because you still own that animal.',d_status:'Breeding status',d_value:'Market value',
+ d_code:'ID',d_agew:'Age · weight',rel_parent:'parent × offspring',rel_full:'full siblings',rel_grand:'grandparent × grandchild',rel_half:'half siblings',rel_uncle:'uncle/aunt × niece/nephew',rel_cousin:'cousins',rel_far:'distant relatives',
+ inb_h:p=>`Inbreeding: ${p.r} — offspring inbreeding ${p.f}`,inb_opt:p=>`related ${p.f}`,inb_q:'Pair related animals anyway?',inb_yes:'Yes, pair them anyway',
+ inb_eff:p=>`Infertile eggs +${p.s} and failed hatches +${p.d}. The babies grow ${p.g} slower, and their daughters ovulate ${p.o} less often.`,
+ inb_self_h:p=>`This animal is inbred (inbreeding ${p.f})`,inb_self_m:p=>`Grows ${p.g} slower than normal.`,inb_self_f:p=>`Grows ${p.g} slower and ovulates ${p.o} less often after pairing.`,inb_none:'Inbreeding 0% (no recorded inbreeding)',
+ gd_inb:'Inbreeding',gd_inb_v:'If the parents are related, infertile eggs and failed hatches each rise by 0.8 × F (F = offspring inbreeding, e.g. 25% for full siblings or parent × offspring). Inbred animals grow slower and inbred females ovulate less often.',
+ ped_h:'Pedigree',ped_c0:'This animal',ped_c1:'Parents',ped_c2:'Grandparents',ped_unk:'Unknown',ped_open:'Open this animal',ped_note:'IDs shown are the IDs at the time of hatching. Outlined boxes can be clicked because you still own that animal.',d_status:'Breeding status',d_value:'Market value',
  nick_ph:'Nickname',save:'Save',unlist:'Cancel listing',list:p=>'List for sale · '+p.v,quick:p=>'Quick sell · '+p.v,plan:'Plan a pairing',close:'Close',gravid_nosale:'Gravid females can’t be sold until they lay.',
  btn_cancel:'Cancel',
  acct_nolib:'⚠️ Cloud unavailable',acct_nolib_t:'The Supabase library failed to load',acct_login:'☁️ Log in / Sign up',acct_default:'Account',
@@ -886,7 +897,10 @@ function vKoleksi(){
  ${spChips(SPF,'spf',true)}<div class="toolbar">${['all','M','F','ready','listed'].map(k=>`<button class="chip ${FILTER===k?'on':''}" data-act="filter" data-v="${k}">${t('f_'+k)}</button>`).join('')}
  <span style="margin-left:auto" class="kbd">${t('sort_by')}</span><select id="sort" style="width:auto">${['val','age','new'].map(k=>`<option value="${k}" ${SORT===k?'selected':''}>${t('sort_'+k)}</option>`).join('')}</select></div>
  ${L.length?`<div class="grid">${L.map(card).join('')}</div>`:`<div class="empty">${t('col_empty')}</div>`}`}
-function snakeOpt(s){const r=readyMsg(s);return `<option value="${s.id}" ${(SEL.m===s.id||SEL.f===s.id)?'selected':''}>${code(s)} — ${esc(fullName(s))}${hetText(s)?' ('+esc(hetText(s))+')':''}${r?' ⏳':' ✓'}</option>`}
+const pct=x=>(Math.round(x*10000)/100).toLocaleString(LANG==='id'?'id-ID':'en-US')+'%';
+// Teks efek kawin sedarah untuk koefisien F (sama dengan rumus di core.js)
+const inbEff=F=>t('inb_eff',{s:pct(INB_SLUG*F),d:pct(INB_DEAD*F),g:pct(F/2),o:pct(F)});
+function snakeOpt(s,other){const r=readyMsg(s),rel=other&&relation(s.sex==='M'?s:other,s.sex==='M'?other:s);return `<option value="${s.id}" ${(SEL.m===s.id||SEL.f===s.id)?'selected':''}>${code(s)} — ${esc(fullName(s))}${hetText(s)?' ('+esc(hetText(s))+')':''}${r?' ⏳':' ✓'}${rel?' ⚠️ '+t('inb_opt',{f:pct(rel.F)}):''}</option>`}
 function vBreeding(){
  const M=S.snakes.filter(s=>s.sex==='M'&&spOf(s)===BRSP),F=S.snakes.filter(s=>s.sex==='F'&&spOf(s)===BRSP);
  if(!M.find(s=>s.id===SEL.m))SEL.m=(M.find(s=>!maleReady(s))||M[0]||{}).id||null;
@@ -896,8 +910,10 @@ function vBreeding(){
  if(!m||!f)return html+`<div class="empty">${t('br_need')}</div>`;
  const rm=maleReady(m),rf=femaleReady(f);
  const can=!rm&&!rf&&!f.pairedWith;
- const box=(s,list,id,r)=>`<div class="panel"><select id="${id}">${list.map(snakeOpt).join('')}</select><img class="snk" style="margin-top:10px" src="${thumb(traitsOf(s.g),s.seed,false,spOfG(s.g))}"><div class="nm">${sexIcon(s.sex)} ${esc(fullName(s))}</div><div class="het">${esc(hetText(s))}</div><div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g</div>${r?`<div class="warn">⏳ ${t(r)}</div>`:`<div class="ok">${t('ready_ok')}</div>`}</div>`;
- html+=`<div class="pair">${box(m,M,'selM',rm)}<div class="x">×</div>${box(f,F,'selF',rf||(f.pairedWith?'r_paired':''))}</div>
+ const box=(s,list,id,r,o)=>`<div class="panel"><select id="${id}">${list.map(x=>snakeOpt(x,o)).join('')}</select><img class="snk" style="margin-top:10px" src="${thumb(traitsOf(s.g),s.seed,false,spOfG(s.g))}"><div class="nm">${sexIcon(s.sex)} ${esc(fullName(s))}</div><div class="het">${esc(hetText(s))}</div><div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g</div>${r?`<div class="warn">⏳ ${t(r)}</div>`:`<div class="ok">${t('ready_ok')}</div>`}</div>`;
+ const rel=relation(m,f);
+ html+=`<div class="pair">${box(m,M,'selM',rm,f)}<div class="x">×</div>${box(f,F,'selF',rf||(f.pairedWith?'r_paired':''),m)}</div>
+ ${rel?`<div class="inbwarn" id="inbwarn">⚠️ <b>${t('inb_h',{r:t(rel.r),f:pct(rel.F)})}</b><div>${inbEff(rel.F)}</div></div>`:''}
  <div class="toolbar" style="margin-top:12px"><button class="pri" data-act="pair" ${can?'':'disabled'}>${t('pair_btn')}</button></div>`;
  const od=odds(m,f);const hp=childHp(m,f);
  const ev=od.reduce((a,o)=>a+o.p*baseValue(o.tr,BRSP),0)*1.175,LC=lociOf(f.g);
@@ -985,7 +1001,7 @@ function guideFacts(sp){const P=SPECIES[sp],gw=v=>v>=1000?(v/1000).toLocaleStrin
  ${row('gd_life',ageTxt(P.maxAge))}${row('gd_mature',t('gd_mature_v',{m:ageTxt(P.mAge),f:ageTxt(P.fAge)}))}
  ${row('gd_ovul','±'+Math.round(P.ovul*100)+'%')}${row('gd_lay',t('gd_lay_v',{n:P.layIn,more:P.clutches[1]>1}))}${row('gd_eggs',t('gd_eggs_'+sp))}${P.brood?row('gd_brood',t('gd_brood_v',{k:P.brood})):''}
  ${row('gd_recover',t('gd_recover_v',{n:P.recover}))}${row('gd_inc',t('gd_inc_v',{n:P.inc}))}
- ${row('gd_temp',P.temp?t('gd_temp_v',{a:fmtTemp(P.temp.min),b:fmtTemp(P.temp.max),m:fmtTemp(P.temp.mid)}):t('gd_temp_none'))}${row('gd_food',t('gd_food_v',{b:P.foodBase}))}
+ ${row('gd_temp',P.temp?t('gd_temp_v',{a:fmtTemp(P.temp.min),b:fmtTemp(P.temp.max),m:fmtTemp(P.temp.mid)}):t('gd_temp_none'))}${row('gd_food',t('gd_food_v',{b:P.foodBase}))}${row('gd_inb',t('gd_inb_v'))}
  </table></div>`}
 function vPanduan(){const sp=GUIDESP;return `<div class="guide"><h2>${SP_ICON[sp]} ${t('gd_h')}</h2><p class="sub">${t('gd_sub')}</p>${spChips(sp,'guidesp')}${guideFacts(sp)}${t('guide_'+sp)}</div>`}
 
@@ -1000,7 +1016,8 @@ function pedTree(s){const pp=pedParents(s),ps=pp.s||{},pd=pp.d||{};
  return `<h3 style="margin:14px 0 2px">🌳 ${t('ped_h')}</h3><div class="pedh"><span>${t('ped_c0')}</span><span>${t('ped_c1')}</span><span>${t('ped_c2')}</span></div>
  <div class="ped"><div class="pbox me p0"><b>${sexIcon(s.sex)} ${esc(code(s))}</b><div>${esc(fullName(s))}</div></div>
  ${pedBox(pp.s,'p1s')}${pedBox(pp.d,'p1d')}${pedBox(ps.s,'p2a')}${pedBox(ps.d,'p2b')}${pedBox(pd.s,'p2c')}${pedBox(pd.d,'p2d')}</div>
- <p class="kbd" style="margin-top:-6px">${t('ped_note')}</p>`}
+ <p class="kbd" style="margin-top:-6px">${t('ped_note')}</p>
+ ${inbOf(s)>0?`<div class="inbwarn" id="inbself">🧬 <b>${t('inb_self_h',{f:pct(inbOf(s))})}</b><div>${t(s.sex==='F'?'inb_self_f':'inb_self_m',{g:pct(inbOf(s)/2),o:pct(inbOf(s))})}</div></div>`:`<p class="kbd" id="inbself">🧬 ${t('inb_none')}</p>`}`}
 function openSnake(id){const s=byId(id);if(!s)return;const tr=traitsOf(s.g),r=readyMsg(s);
  modal(`<img class="big" src="${thumb(tr,s.seed,true,spOfG(s.g))}"><h2 style="margin-top:12px">${sexIcon(s.sex)} ${esc(fullName(s))}</h2><div class="het">${esc(hetText(s))}</div>
  <dl><dt>${t('d_species')}</dt><dd>${SP_ICON[spOf(s)]} ${t('sp_'+spOf(s))}</dd><dt>${t('d_code')}</dt><dd>${code(s)}</dd><dt>${t('d_agew')}</dt><dd>${ageTxt(s.age)} · ${fmt(s.w)} g</dd><dt>${t('d_life')}</dt><dd>${t('d_life_v',{max:ageTxt(maxAge(s)),left:ageTxt(lifeLeft(s))})}</dd><dt>${t('og_got')}</dt><dd>${srcTxt(s)}</dd><dt>${t('og_origin')}</dt><dd>${(o=>whoTxt(o.u)+` <span class="kbd">(${t(OG_HOW[o.how]||'og_unknown')})</span>`)(originOf(s,null))}</dd>${(s.keepers||[]).length?`<dt>${t('og_chain')}</dt><dd>${s.keepers.map(u=>profLink(u)).join(' → ')} → ${t('og_you')}</dd>`:''}<dt>${t('d_status')}</dt><dd>${r?'⏳ '+esc(t(r)):t('ready_ok')}</dd><dt>${t('d_value')}</dt><dd><b>${money(value(s))}</b></dd></dl>${pedTree(s)}
@@ -1056,7 +1073,10 @@ function act(a,id,el){
   case 'nick':{const name=$('nick').value;closeModal();game({type:'nick',id,name});return}
   case 'list':closeModal();game({type:'list',id});return;
   case 'quicksell':closeModal();game({type:'quicksell',id});return;
-  case 'pair':game({type:'pair',m:SEL.m,f:SEL.f});return;
+  case 'pair':{const rel=relation(byId(SEL.m),byId(SEL.f));if(!rel){game({type:'pair',m:SEL.m,f:SEL.f});return}
+   modal(`<h2>⚠️ ${t('inb_q')}</h2><p class="sub">${t('inb_h',{r:t(rel.r),f:pct(rel.F)})}</p><div class="inbwarn">${inbEff(rel.F)}</div>
+   <div class="actions"><button class="pri" data-act="pairyes">${t('inb_yes')}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`);return}
+  case 'pairyes':closeModal();game({type:'pair',m:SEL.m,f:SEL.f});return;
   case 'unpair':game({type:'unpair',f:id});return;
   case 'buy':game({type:'buy',lid:id,age:el.dataset.age,sex:MKSEX[id]||'F'});return;
   case 'mk_sex':MKSEX[id]=el.dataset.v;break;
