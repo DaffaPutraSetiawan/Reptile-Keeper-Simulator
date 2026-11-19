@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:20,date:'2026-11-19'};
+const VERSION={v:21,date:'2026-11-19'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -244,8 +244,8 @@ function grow(s){const sp=spOf(s);if(s.gravid){s.w=Math.round(s.w*SPECIES[sp].gr
 
 /* ========= PASAR & PESANAN ========= */
 // Pasar: tiap spesies punya 3 hewan bergen tunggal (atau Normal), gennya tidak boleh sama, stok berganti tiap 50 turn.
-// Tiap hewan di pasar bisa dibeli berkali-kali: bayi (2× harga dasar) atau siap kawin (4× harga dasar), ♂ atau ♀.
-const MARKET_SIZE=3,MARKET_EVERY=50,BUY_MULT={baby:2,adult:4};
+// Tiap hewan di pasar bisa dibeli berkali-kali: bayi (5× harga dasar) atau siap kawin (10× harga dasar), ♂ atau ♀.
+const MARKET_SIZE=3,MARKET_EVERY=50,BUY_MULT={baby:5,adult:10};
 const MARKET_POOL=SPECIES.ball.pool;
 const POOL=MARKET_POOL;
 function wpick(pool){const tot=pool.reduce((a,b)=>a+b[1],0);let r=R()*tot;for(const p of pool){r-=p[1];if(r<=0)return p[0]}return pool[0][0]}
@@ -290,7 +290,7 @@ function hasTrait(s,tr,t){if(tr.includes(t))return true;if(SUPER_OF[t]&&tr.inclu
 // Bayaran pesanan: hadiah tetap pesanan, atau ORDER_PREMIUM × nilai hewan yang dikirim kalau itu lebih tinggi.
 // Dengan begitu mengirim ke pembeli selalu lebih untung daripada iklan (100% nilai) dan jual cepat (60%).
 const ORDER_PREMIUM=1.25;
-const orderPay=(o,s)=>Math.max(o.reward,Math.round(value(s)*ORDER_PREMIUM/5)*5);
+const orderPay=(o,s)=>Math.max(o.reward,Math.ceil(value(s)*ORDER_PREMIUM/5)*5);   // dibulatkan ke atas: selalu ≥125%
 function matches(o){const sp=spOf(o);return S.snakes.filter(s=>{const tr=traitsOf(s.g);return spOf(s)===sp&&o.tr.every(t=>hasTrait(s,tr,t))&&(!o.sex||s.sex===o.sex)&&!s.gravid&&!s.listed})}
 
 /* ========= GAME BARU ========= */
