@@ -8,7 +8,8 @@ const MAX_RETRY = 4;
 /**
  * @param {object} body  isi request: { action: { type, ... } }
  * @param {string} uid   id pemain yang sudah diverifikasi
- * @param {object} db    { load(uid) -> {data, rev} | null, insert(uid, data) -> bool, update(uid, data, oldRev) -> bool,
+ * @param {object} db    { load(uid) -> {data, rev, rank} | null, insert(uid, data, rank) -> bool, update(uid, data, oldRev, rank) -> bool,
+ *                         (rank = angka papan peringkat dari C.rankStats, disimpan di kolom saves.rank)
  *                         beforeReset(uid) -> void }
  * @returns {Promise<object>} { state, rev, head?, toast? }  (melempar Error(kode) kalau gagal)
  */
@@ -36,19 +37,20 @@ async function run(body, uid, db) {
       if (action.type === 'init' && valid) {
         // Save lama dengan format pasar lama: ubah sekali ke pasar baru lalu simpan.
         C.use(row.data);
-        if (C.marketOk()) return { state: row.data, rev: row.rev };
+        // save tanpa angka peringkat (pemain lama) ikut disimpan ulang supaya langsung masuk papan peringkat
+        if (C.marketOk() && row.rank) return { state: row.data, rev: row.rev };
         C.ensureMarket();
         row.data.rev = row.rev + 1;
-        if (await db.update(uid, row.data, row.rev)) return { state: row.data, rev: row.data.rev };
+        if (await db.update(uid, row.data, row.rev, C.rankStats(row.data))) return { state: row.data, rev: row.data.rev };
         continue;
       }
       const fresh = C.newGame();
       if (row) {
         fresh.rev = row.rev + 1;
-        if (await db.update(uid, fresh, row.rev)) return { state: fresh, rev: fresh.rev, toast: action.type === 'reset' ? 't_reset' : null };
+        if (await db.update(uid, fresh, row.rev, C.rankStats(fresh))) return { state: fresh, rev: fresh.rev, toast: action.type === 'reset' ? 't_reset' : null };
       } else {
         fresh.rev = 1;
-        if (await db.insert(uid, fresh)) return { state: fresh, rev: 1 };
+        if (await db.insert(uid, fresh, C.rankStats(fresh))) return { state: fresh, rev: 1 };
       }
       continue; // ada perubahan bersamaan, ulangi
     }
@@ -57,7 +59,7 @@ async function run(body, uid, db) {
     const state = row.data;
     const result = C.applyAction(state, action);   // melempar Error(kode) kalau aksi tidak sah
     state.rev = row.rev + 1;
-    if (await db.update(uid, state, row.rev)) return { state, rev: state.rev, head: result.head || null, toast: result.toast || null, quests: result.quests || null };
+    if (await db.update(uid, state, row.rev, C.rankStats(state))) return { state, rev: state.rev, head: result.head || null, toast: result.toast || null, quests: result.quests || null };
     // save berubah di tengah jalan (mis. trade diterima): baca ulang dan ulangi aksinya
   }
   throw new Error('busy_retry');

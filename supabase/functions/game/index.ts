@@ -23,12 +23,12 @@ const json = (obj: unknown) => new Response(JSON.stringify(obj), { headers: { ..
 // Akses database dengan kunci server. Hanya baris milik pemain yang memanggil yang disentuh.
 const db = {
   async load(uid: string) {
-    const { data, error } = await admin.from('saves').select('data, rev').eq('user_id', uid).maybeSingle();
+    const { data, error } = await admin.from('saves').select('data, rev, rank').eq('user_id', uid).maybeSingle();
     if (error) throw new Error('db_error');
     return data;
   },
-  async insert(uid: string, state: Record<string, unknown>) {
-    const { error } = await admin.from('saves').insert({ user_id: uid, data: state, game_turn: state.turn, rev: 1 });
+  async insert(uid: string, state: Record<string, unknown>, rank: unknown) {
+    const { error } = await admin.from('saves').insert({ user_id: uid, data: state, game_turn: state.turn, rev: 1, rank });
     if (error) { if (error.code === '23505') return false; throw new Error('db_error'); }
     return true;
   },
@@ -36,9 +36,9 @@ const db = {
     const { error } = await admin.rpc('_reset_account', { p_user: uid });
     if (error) throw new Error('db_error');
   },
-  async update(uid: string, state: Record<string, unknown>, oldRev: number) {
+  async update(uid: string, state: Record<string, unknown>, oldRev: number, rank: unknown) {
     const { data, error } = await admin.from('saves')
-      .update({ data: state, game_turn: state.turn, rev: oldRev + 1 })
+      .update({ data: state, game_turn: state.turn, rev: oldRev + 1, rank })
       .eq('user_id', uid).eq('rev', oldRev).select('rev');
     if (error) throw new Error('db_error');
     return !!(data && data.length);

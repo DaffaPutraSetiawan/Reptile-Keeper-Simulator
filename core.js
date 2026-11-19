@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:27,date:'2026-11-19'};
+const VERSION={v:28,date:'2026-11-19'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -385,6 +385,17 @@ function checkQuests(){if(!S.quest||!Array.isArray(S.quest.d))S.quest={d:[]};con
   S.quest.d.push(q.k);S.money+=q.r;log('l_quest',{q:q.k,v:money(q.r)},'star');done.push(q.k)}
  return done}
 
+/* ========= PAPAN PERINGKAT ========= */
+// Angka peringkat pemain, dihitung server setiap kali save disimpan (tidak bisa dipalsukan dari browser).
+//  nw = kekayaan (uang + nilai semua hewan) · dex = jumlah morph di Morph Dex · hatched = total bayi menetas
+//  orders = pesanan dipenuhi · top = hewan termahal per spesies (untuk ditampilkan, tanpa het tersembunyi)
+function rankStats(st){const prev=S;S=st;try{
+ let nw=st.money;const top={};
+ for(const s of st.snakes){const v=value(s),sp=spOf(s);nw+=v;
+  if(!top[sp]||v>top[sp].v)top[sp]={v,n:fullName(s),c:code(s),x:s.sex,tr:traitsOf(s.g),k:s.seed,nick:s.nick||''}}
+ return{turn:st.turn,nw:Math.round(nw),dex:Object.keys(st.dex||{}).length,hatched:(st.stats&&st.stats.hatched)||0,orders:(st.stats&&st.stats.orders)||0,top}
+}finally{S=prev}}
+
 /* ========= GAME BARU ========= */
 function newGame(){
  S={v:2,rev:0,turn:0,money:5000,racks:2,nextId:1,quest:{d:[]},snakes:[],clutches:[],broods:[],market:[],orders:[],dex:{},mm:{},log:[],event:null,stats:{hatched:0,sold:0,earned:0,clutches:0}};
@@ -595,7 +606,7 @@ root.MorphCore={
  monthlyCosts,previewNext,
  MARKET_SIZE,MARKET_EVERY,BUY_MULT,MARKET_POOL,listingTraits,marketBase,marketPrice,marketLeft,refreshMarket,ensureMarket,marketOk,makeMarketSnake,
  INC_MONTHS,TEMP_MIN,TEMP_MAX,TEMP_MID,TEMP_STEP,tempRange,femaleChance,incTotal,tempOpen,tempMonthsLeft,validTemp,
- QUESTS,checkQuests,
+ QUESTS,checkQuests,rankStats,
  newGame,advance,applyAction,syncDex,isState,ACTION_TYPES:Object.keys(ACTIONS)
 };
 })(typeof globalThis!=='undefined'?globalThis:this);

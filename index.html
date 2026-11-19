@@ -94,6 +94,7 @@ dl{display:grid;grid-template-columns:130px 1fr;gap:4px 10px;margin:12px 0;font-
 .guide p,.guide li{color:#dcd4c0;max-width:72ch}
 .guide code{background:var(--panel2);padding:1px 6px;border-radius:5px}
 .kbd{font-size:12px;color:var(--mut)}
+.gsub{margin-top:-4px}.rank table{width:100%}.rank td.pos{width:48px;font-weight:700}.rank tr.me td{background:color-mix(in srgb,var(--acc) 12%,transparent)}.rank tr.gap td{text-align:center;color:var(--mut)}.rkan{display:flex;align-items:center;gap:8px}.rkan img.mini{width:72px}
 .buglist{display:flex;flex-direction:column;gap:8px}.bugrow{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px;cursor:pointer}.bugrow:hover{background:var(--hover)}
 .bugrow .bt b{overflow-wrap:anywhere}.bugrow .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--bad);margin-right:6px;vertical-align:middle}
 .bst{font-size:11px;padding:2px 8px;border-radius:20px;border:1px solid var(--line);background:var(--panel2);white-space:nowrap}.bst.new{color:var(--text)}.bst.review{color:var(--acc);border-color:#7a5b22}.bst.fixed{color:var(--good);border-color:var(--good)}.bst.rejected{color:var(--bad);border-color:var(--bad)}.bst.duplicate{color:var(--mut)}
@@ -313,7 +314,13 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  dex_found:p=>'Ditemukan '+p.d,dex_notfound:'Belum ditemukan',
  dex_sub:p=>`${p.f}/${p.t} morph target ditemukan · ${p.n} morph total. Statistik: ${p.c} clutch, ${p.h} bayi menetas, ${p.s} hewan terjual (${p.e}).`,
  dex_extra:'Kombinasi lain yang kamu temukan',save_h:'Simpan / ulang',newgame:'Mulai game baru',
- save_cloud:'Progres dihitung dan disimpan di server, jadi aman dari kecurangan dan bisa dilanjutkan dari perangkat mana pun.', d_code:'Kode',d_agew:'Umur · berat',tab_bugs:'Laporan bug',bug_sub:'Temukan bug? Laporkan di sini. Semua pemain bisa melihat laporan dan memberi masukan lewat komentar; admin akan menanggapi dan mengubah statusnya.',
+ save_cloud:'Progres dihitung dan disimpan di server, jadi aman dari kecurangan dan bisa dilanjutkan dari perangkat mana pun.', d_code:'Kode',d_agew:'Umur · berat',gv_chat:'Chat',gv_rank:'Peringkat',rk_sub:'Papan peringkat sepanjang masa. Angka dihitung server setiap kali kamu bermain; turn ditampilkan supaya kamu bisa membandingkan dengan pemain di tahap yang sama.',
+ rk_wealth:'Kekayaan',rk_dex:'Morph Dex',rk_top:'Hewan termahal',rk_hatched:'Breeder produktif',rk_orders:'Pesanan',rk_allsp:'Semua spesies',rk_all:'Semua pemain',rk_friends:'Teman saja',rk_refresh:'Muat ulang',
+ rk_d_wealth:'Uang + nilai seluruh koleksi hewan.',rk_d_dex:'Jumlah morph yang tercatat di Morph Dex (semua spesies). Kalau seri, yang lebih dulu mencapainya ada di atas.',rk_d_top:'Hewan bernilai tertinggi yang sedang dimiliki tiap pemain.',rk_d_hatched:'Total bayi yang berhasil menetas.',rk_d_orders:'Total pesanan pembeli yang dipenuhi.',
+ rk_player:'Pemain',rk_animal:'Hewan',rk_turn:'Turn',rk_score_wealth:'Kekayaan',rk_score_dex:'Morph',rk_score_top:'Nilai',rk_score_hatched:'Bayi',rk_score_orders:'Pesanan',
+ rk_u_dex:'morph',rk_u_hatched:'bayi',rk_u_orders:'pesanan',rk_me:p=>`Posisi kamu: #${p.p} dari ${p.n} pemain.`,rk_me_none:'Kamu belum masuk papan peringkat ini.',rk_me_none_sp:'Kamu belum memelihara spesies ini.',
+ rk_empty:'Belum ada pemain di papan peringkat ini.',rk_empty_fr:'Belum ada teman di papan peringkat ini.',
+ tab_bugs:'Laporan bug',bug_sub:'Temukan bug? Laporkan di sini. Semua pemain bisa melihat laporan dan memberi masukan lewat komentar; admin akan menanggapi dan mengubah statusnya.',
  bug_new:'Laporkan bug',bug_all:'Semua laporan',bug_mine:'Laporan saya',bug_all_st:'Semua status',bug_all_cat:'Semua kategori',bug_more:'Muat lebih banyak',
  bug_empty:'Belum ada laporan bug.',bug_empty_mine:'Kamu belum pernah melaporkan bug.',bug_by:p=>`oleh ${p.u} · ${p.d}`,bug_replied:'Dibalas admin',bug_admin:'Admin',
  bcat_gameplay:'Gameplay',bcat_performance:'Performa',bcat_visual:'Visual (gambar/UI)',bcat_text:'Teks',bcat_other:'Lainnya',
@@ -380,7 +387,7 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  set_about:'Tentang',ver_server:'Versi server game',ver_web:'Versi web',ver_ok:'Web & server sudah versi terbaru yang sama.',ver_old_web:'Halaman ini masih versi lama. Muat ulang (Ctrl+Shift+R) untuk memakai versi terbaru.',ver_old_server:'Server sedang diperbarui; versi web lebih baru dari server.',ver_reload:'Muat ulang halaman',
  set_title:'Pengaturan',set_lang:'Bahasa',set_theme:'Tema warna',th_terra:'Terrarium',th_terra_d:'Cokelat hangat & amber (bawaan)',th_forest:'Hutan Hujan',th_forest_d:'Hijau gelap & zamrud',th_ocean:'Samudra Malam',th_ocean_d:'Biru tua & biru langit',
  pv_open:'Lihat perkiraan saldo bulan depan',pv_h:'Perkiraan saldo bulan depan',pv_sub:'Biaya ini dipotong otomatis saat kamu menekan “Lanjut bulan”.',pv_now:'Saldo sekarang',pv_food:p=>`Pakan · ${p.n} ekor`,pv_util:p=>`Listrik & rak · ${p.r} rak × $8`,pv_over:p=>`Space darurat · ${p.n} ekor di atas kapasitas (${p.c}) × $15`,pv_total:'Total pengeluaran',pv_after:'Perkiraan saldo',pv_formula:'Pakan per hewan: $2 (ball python) atau $1 (leopard gecko) + $1 per 250 g berat (dihitung dari berat setelah tumbuh bulan depan).',pv_debt:'⚠️ Saldo akan minus! Jual, iklankan, atau kirim hewan ke pesanan dulu.',pv_n_born:p=>`Termasuk ${p.n} bayi yang akan menetas (bisa kurang kalau ada telur yang mati).`,pv_n_lay:p=>`${p.n} betina akan bertelur, beratnya turun ±28% sehingga pakannya lebih murah.`,pv_n_foodx:'Harga pakan sedang naik +50% (event bulan ini).',pv_n_listed:p=>`Belum termasuk uang dari ${p.n} hewan yang diiklankan kalau terjual.`,pv_n_old:p=>`${p.n} hewan akan mati karena tua bulan depan, jadi tidak dihitung biaya pakannya.`,pv_n_random:'Ini perkiraan: pertumbuhan & event baru bersifat acak.',
- tab_teman:'Teman',tab_global:'Global chat',gc_sub:p=>`Ngobrol dengan semua pemain Morph Lab. Hanya ${p.n} pesan terakhir yang disimpan; pesan yang lebih lama terhapus otomatis.`,gc_ph:'Tulis pesan untuk semua pemain…',gc_empty:'Belum ada pesan. Jadilah yang pertama menyapa!',e_empty_message:'Pesan masih kosong.',e_message_too_long:'Pesan terlalu panjang.',busy:'Tunggu sebentar, sedang memproses…',
+ tab_teman:'Teman',tab_global:'Global',gc_sub:p=>`Ngobrol dengan semua pemain Morph Lab. Hanya ${p.n} pesan terakhir yang disimpan; pesan yang lebih lama terhapus otomatis.`,gc_ph:'Tulis pesan untuk semua pemain…',gc_empty:'Belum ada pesan. Jadilah yang pertama menyapa!',e_empty_message:'Pesan masih kosong.',e_message_too_long:'Pesan terlalu panjang.',busy:'Tunggu sebentar, sedang memproses…',
  so_login:'Masuk ke akun untuk menambah teman, chat, dan trading.',so_login_btn:'☁️ Masuk / Daftar',
  so_offline:'Fitur teman butuh koneksi ke server. Periksa koneksi internet lalu muat ulang halaman.',
  so_needname:'Pilih username dulu supaya teman bisa menemukanmu.',
@@ -550,7 +557,13 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  dex_sub:p=>`${p.f}/${p.t} target morphs found · ${p.n} morphs total. Stats: ${p.c} clutches, ${p.h} hatchlings, ${p.s} animals sold (${p.e}).`,
  dex_extra:'Other combos you discovered',save_h:'Save / restart',newgame:'Start a new game',
  save_cloud:'Progress is calculated and saved on the server, so it can’t be cheated and you can continue on any device.',
- d_code:'ID',d_agew:'Age · weight',tab_bugs:'Bug reports',bug_sub:'Found a bug? Report it here. Every player can read reports and add feedback in the comments; the admin will respond and update the status.',
+ d_code:'ID',d_agew:'Age · weight',gv_chat:'Chat',gv_rank:'Leaderboard',rk_sub:'All-time leaderboard. Scores are calculated by the server every time you play; turns are shown so you can compare yourself with players at the same stage.',
+ rk_wealth:'Wealth',rk_dex:'Morph Dex',rk_top:'Most valuable animal',rk_hatched:'Most productive',rk_orders:'Orders',rk_allsp:'All species',rk_all:'All players',rk_friends:'Friends only',rk_refresh:'Refresh',
+ rk_d_wealth:'Money + the value of the whole collection.',rk_d_dex:'Number of morphs recorded in the Morph Dex (all species). Ties go to whoever reached it first.',rk_d_top:'Each player’s most valuable animal they currently own.',rk_d_hatched:'Total babies successfully hatched.',rk_d_orders:'Total buyer orders filled.',
+ rk_player:'Player',rk_animal:'Animal',rk_turn:'Turn',rk_score_wealth:'Wealth',rk_score_dex:'Morphs',rk_score_top:'Value',rk_score_hatched:'Babies',rk_score_orders:'Orders',
+ rk_u_dex:'morphs',rk_u_hatched:'babies',rk_u_orders:'orders',rk_me:p=>`Your position: #${p.p} of ${p.n} players.`,rk_me_none:'You’re not on this leaderboard yet.',rk_me_none_sp:'You don’t keep this species yet.',
+ rk_empty:'No players on this leaderboard yet.',rk_empty_fr:'None of your friends are on this leaderboard yet.',
+ tab_bugs:'Bug reports',bug_sub:'Found a bug? Report it here. Every player can read reports and add feedback in the comments; the admin will respond and update the status.',
  bug_new:'Report a bug',bug_all:'All reports',bug_mine:'My reports',bug_all_st:'All statuses',bug_all_cat:'All categories',bug_more:'Load more',
  bug_empty:'No bug reports yet.',bug_empty_mine:'You haven’t reported any bugs yet.',bug_by:p=>`by ${p.u} · ${p.d}`,bug_replied:'Admin replied',bug_admin:'Admin',
  bcat_gameplay:'Gameplay',bcat_performance:'Performance',bcat_visual:'Visual (image/UI)',bcat_text:'Text',bcat_other:'Others',
@@ -615,7 +628,7 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  set_about:'About',ver_server:'Game server version',ver_web:'Web version',ver_ok:'Web & server are on the same latest version.',ver_old_web:'This page is an older version. Reload (Ctrl+Shift+R) to get the latest.',ver_old_server:'The server is being updated; the web version is newer than the server.',ver_reload:'Reload page',
  set_title:'Settings',set_lang:'Language',set_theme:'Color theme',th_terra:'Terrarium',th_terra_d:'Warm brown & amber (default)',th_forest:'Rainforest',th_forest_d:'Deep green & emerald',th_ocean:'Night Ocean',th_ocean_d:'Navy & sky blue',
  pv_open:'See next month’s balance forecast',pv_h:'Next month’s balance forecast',pv_sub:'These costs are deducted automatically when you press “Next month”.',pv_now:'Current balance',pv_food:p=>`Feeders · ${p.n} ${p.n===1?'animal':'animals'}`,pv_util:p=>`Power & racks · ${p.r} ${p.r===1?'rack':'racks'} × $8`,pv_over:p=>`Emergency space · ${p.n} over capacity (${p.c}) × $15`,pv_total:'Total costs',pv_after:'Expected balance',pv_formula:'Feeders per animal: $2 (ball python) or $1 (leopard gecko) + $1 per 250 g of body weight (using next month’s weight after growth).',pv_debt:'⚠️ Your balance will go negative! Sell, list, or ship animals to orders first.',pv_n_born:p=>`Includes ${p.n} ${p.n===1?'hatchling':'hatchlings'} due to hatch (could be fewer if an egg fails).`,pv_n_lay:p=>`${p.n} ${p.n===1?'female':'females'} will lay eggs and lose ~28% of their weight, so feeding them costs less.`,pv_n_foodx:'Feeder prices are up +50% (this month’s event).',pv_n_listed:p=>`Doesn’t include money from ${p.n} listed ${p.n===1?'animal':'animals'} if they sell.`,pv_n_old:p=>`${p.n} ${p.n===1?'animal':'animals'} will die of old age next month, so they aren’t counted in feeder costs.`,pv_n_random:'This is an estimate: growth and new events are random.',
- tab_teman:'Friends',tab_global:'Global chat',gc_sub:p=>`Chat with every Morph Lab player. Only the last ${p.n} messages are kept; older ones are deleted automatically.`,gc_ph:'Write a message to everyone…',gc_empty:'No messages yet. Be the first to say hi!',e_empty_message:'The message is empty.',e_message_too_long:'The message is too long.',busy:'One moment, still working…',
+ tab_teman:'Friends',tab_global:'Global',gc_sub:p=>`Chat with every Morph Lab player. Only the last ${p.n} messages are kept; older ones are deleted automatically.`,gc_ph:'Write a message to everyone…',gc_empty:'No messages yet. Be the first to say hi!',e_empty_message:'The message is empty.',e_message_too_long:'The message is too long.',busy:'One moment, still working…',
  so_login:'Log in to add friends, chat and trade.',so_login_btn:'☁️ Log in / Sign up',
  so_offline:'Friends need a connection to the server. Check your internet connection and reload the page.',
  so_needname:'Choose a username first so friends can find you.',
@@ -1120,7 +1133,7 @@ function openSnake(id){const s=byId(id);if(!s)return;const tr=traitsOf(s.g),r=re
  ${s.gravid?`<p class="kbd">${t('gravid_nosale')}</p>`:''}`)}
 
 const SOCIAL_ACTS=new Set(['openchat','fr_accept','fr_decline','fr_remove','fr_remove_yes','tr_new','tb_close','tr_send','tr_accept','tr_accept_yes','tr_decline','tr_cancel']);
-const FREE_ACTS=new Set(['quest_go','bug_new','bug_cancel','bug_open','bug_mine','bug_more','bug_rmimg','bug_delc','bug_del','bs_inc','bs_dec','spf','brsp','dexsp','guidesp','mk_sex','settings','theme','preview','profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
+const FREE_ACTS=new Set(['quest_go','gview','rk_cat','rk_sp','rk_fr','rk_refresh','bug_new','bug_cancel','bug_open','bug_mine','bug_more','bug_rmimg','bug_delc','bug_del','bs_inc','bs_dec','spf','brsp','dexsp','guidesp','mk_sex','settings','theme','preview','profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
 // Jalankan aksi game: dikirim ke server (Edge Function "game") yang menghitung hasilnya.
 async function game(a){
  if(!Cloud.user||!S)return null;
@@ -1146,7 +1159,7 @@ function act(a,id,el){
  if(cloudAct(a,el))return;
  if(a==='tab'&&el.dataset.tab==='teman'&&Social.ch)Social.refresh();
  switch(a){
-  case 'tab':TAB=el.dataset.tab;if(TAB==='bugs'){Bugs.loaded=false;Bugs.count()}if(TAB==='global'){Global.unread=0;Global.focus=false;if(!Global.loaded)Global.load()}break;
+  case 'tab':TAB=el.dataset.tab;if(TAB==='bugs'){Bugs.loaded=false;Bugs.count()}if(TAB==='global'){if(Global.view==='chat')Global.unread=0;else Rank.load();Global.focus=false;if(!Global.loaded)Global.load()}break;
   case 'lang':{const reopen=settingsOpen();setLang(el.dataset.v);if(reopen){render();showSettings();return}break}
   case 'filter':FILTER=el.dataset.v;break;
   case 'close':closeModal();return;
@@ -1168,6 +1181,11 @@ function act(a,id,el){
    <div class="actions"><button class="pri" data-act="advyes">${t('adv_yes')}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`);return}
   case 'advyes':closeModal();game({type:'advance'});return;
   case 'quest_go':TAB=el.dataset.v;break;
+  case 'gview':Global.view=el.dataset.v;if(Global.view==='chat'){Global.unread=0;Global.focus=false}else Rank.load();break;
+  case 'rk_cat':Rank.cat=el.dataset.v;Rank.load();return;
+  case 'rk_sp':Rank.sp=el.dataset.v;Rank.load();return;
+  case 'rk_fr':Rank.fr=el.dataset.v==='1';Rank.load();return;
+  case 'rk_refresh':Rank.load(true);return;
   case 'bug_new':Bugs.newForm();return;
   case 'bug_cancel':Bugs.files.forEach(x=>URL.revokeObjectURL(x.url));Bugs.files=[];closeModal(true);return;
   case 'bug_open':Bugs.open(id);return;
@@ -1458,19 +1476,19 @@ const errText=e=>{const m=String((e&&e.message)||e||'');const k=(m.match(/[a-z_]
 const hm=iso=>{try{return new Date(iso).toLocaleTimeString(LANG==='id'?'id-ID':'en-GB',{hour:'2-digit',minute:'2-digit'})}catch(e){return ''}};
 /* ========= GLOBAL CHAT ========= */
 const GLOBAL_MAX=50,GMSG_MAX=300;
-var Global={msgs:[],unread:0,loaded:false,draft:'',focus:false,
+var Global={msgs:[],unread:0,loaded:false,draft:'',focus:false,view:'chat',
  reset(){this.msgs=[];this.unread=0;this.loaded=false;this.draft=''},
  async load(){if(!Cloud.user||!Cloud.sb)return;const{data,error}=await Cloud.sb.rpc('get_global_messages');
   if(error){console.warn('global',error);return}
   const known=new Set(this.msgs.map(m=>m.id));(data||[]).forEach(m=>{if(!known.has(m.id))this.msgs.push(m)});this.trim();this.loaded=true;this.paint()},
  trim(){this.msgs.sort((a,b)=>a.id-b.id);if(this.msgs.length>GLOBAL_MAX)this.msgs=this.msgs.slice(-GLOBAL_MAX)},
  onNew(m){if(!m||this.msgs.some(x=>x.id===m.id))return;this.msgs.push(m);this.trim();
-  if(TAB!=='global'&&this.loaded&&Cloud.user&&m.sender!==Cloud.user.id)this.unread++;this.paint()},
+  if((TAB!=='global'||this.view!=='chat')&&this.loaded&&Cloud.user&&m.sender!==Cloud.user.id)this.unread++;this.paint()},
  html(){if(!this.loaded)return `<p class="kbd" style="text-align:center;margin:30px 0">${t('so_loading')}</p>`;
   if(!this.msgs.length)return `<p class="kbd" style="text-align:center;margin:30px 0">${t('gc_empty')}</p>`;
   const me=Cloud.user&&Cloud.user.id;
   return this.msgs.map(m=>{const mine=m.sender===me;return `<div class="bub ${mine?'me':''}"><div class="gname">${mine?t('so_you'):profLink(m.username)}</div><div>${esc(m.body)}</div><span>${hm(m.created_at)}</span></div>`}).join('')},
- paint(){const el=$('glog');if(TAB==='global'&&el){const near=el.scrollHeight-el.scrollTop-el.clientHeight<80;el.innerHTML=this.html();if(near||this.focus)el.scrollTop=el.scrollHeight}else renderTabs()},
+ paint(){const el=$('glog');if(TAB==='global'&&el){const near=el.scrollHeight-el.scrollTop-el.clientHeight<80;el.innerHTML=this.html();if(near||this.focus)el.scrollTop=el.scrollHeight}else if(TAB==='global'&&!MODAL_LOCK)render();else renderTabs()},
  async send(f){const i=f.querySelector('[name=body]'),body=i.value.trim();if(!body)return;
   if(!Cloud.profile){toast(t('e_no_profile'));return}
   i.value='';this.draft='';this.focus=true;
@@ -1580,8 +1598,36 @@ function vBugs(){const B=Bugs;if(!B.loaded&&!B.loading)B.load();
   <select id="bugst" style="width:auto;margin-left:auto"><option value="">${t('bug_all_st')}</option>${BUG_ST.map(k=>`<option value="${k}" ${B.st===k?'selected':''}>${t('bst_'+k)}</option>`).join('')}</select>
   <select id="bugcat" style="width:auto"><option value="">${t('bug_all_cat')}</option>${BUG_CATS.map(k=>`<option value="${k}" ${B.cat===k?'selected':''}>${t('bcat_'+k)}</option>`).join('')}</select></div>
  ${!B.loaded?`<p class="kbd" style="text-align:center;margin:30px 0">${t('so_loading')}</p>`:B.list.length?`<div class="buglist">${B.list.map(row).join('')}</div>${B.more?`<div class="actions" style="justify-content:center"><button class="ghost" data-act="bug_more">${t('bug_more')}</button></div>`:''}`:`<div class="empty">${t(B.mine?'bug_empty_mine':'bug_empty')}</div>`}`}
+// Papan peringkat global (sepanjang masa): angka dihitung server setiap kali save disimpan.
+const RANK_CATS=[['wealth','💰'],['dex','📖'],['top','✨'],['hatched','🐣'],['orders','📦']];
+var Rank={cat:'wealth',sp:'',fr:false,data:{},loading:false,
+ key(){return this.cat+'|'+(this.cat==='top'?this.sp:'')+'|'+this.fr},
+ async load(force){if(!Cloud.user)return;const k=this.key(),c=this.data[k];if(!force&&c&&Date.now()-c.t<30000){if(TAB==='global')render();return}
+  this.loading=true;if(TAB==='global'&&Global.view==='rank')render();
+  const{data,error}=await Cloud.sb.rpc('get_leaderboard',{p_category:this.cat,p_friends:this.fr,p_species:this.cat==='top'&&this.sp?this.sp:null});
+  this.loading=false;if(error){toast(errText(error));return}this.data[k]={t:Date.now(),d:data};if(TAB==='global'&&Global.view==='rank')render()},
+ score(r){return (this.cat==='wealth'||this.cat==='top')?money(r.score):fmt(r.score)+' '+t('rk_u_'+this.cat)},
+ row(r){const medal=['🥇','🥈','🥉'][r.pos-1]||'#'+r.pos,a=r.animal;
+  return `<tr class="${r.me?'me':''}"><td class="pos">${medal}</td><td>${r.me?`<b>${esc(r.user)}</b> <span class="tag a">${t('so_you')}</span>`:profLink(r.user)}</td>
+   ${this.cat==='top'?`<td><div class="rkan"><img class="mini" src="${thumb(a.tr||[],a.k||1,false,a.sp)}" alt=""><div>${SP_ICON[a.sp]||''} ${a.x?sexIcon(a.x)+' ':''}${esc(a.n)}${a.nick?` <span class="kbd">"${esc(a.nick)}"</span>`:''}</div></div></td>`:''}
+   <td class="num kbd">${fmt(r.turn||0)}</td><td class="num"><b>${this.score(r)}</b></td></tr>`},
+ html(){const c=this.data[this.key()],d=c&&c.d;
+  const chips=`<div class="toolbar">${RANK_CATS.map(([k,ic])=>`<button class="chip ${this.cat===k?'on':''}" data-act="rk_cat" data-v="${k}">${ic} ${t('rk_'+k)}</button>`).join('')}</div>
+   ${this.cat==='top'?`<div class="toolbar">${['','ball','leo','axo'].map(sp=>`<button class="chip ${this.sp===sp?'on':''}" data-act="rk_sp" data-v="${sp}">${sp?SP_ICON[sp]+' '+t('sp_'+sp):t('rk_allsp')}</button>`).join('')}</div>`:''}
+   <div class="toolbar"><button class="chip ${!this.fr?'on':''}" data-act="rk_fr" data-v="0">🌐 ${t('rk_all')}</button><button class="chip ${this.fr?'on':''}" data-act="rk_fr" data-v="1">👥 ${t('rk_friends')}</button>
+    <button class="ghost sm" style="margin-left:auto" data-act="rk_refresh">↻ ${t('rk_refresh')}</button></div>
+   <p class="kbd">${t('rk_d_'+this.cat)}</p>`;
+  if(!d)return chips+`<p class="kbd" style="text-align:center;margin:30px 0">${t('so_loading')}</p>`;
+  if(!d.rows.length)return chips+`<div class="empty">${t(this.fr?'rk_empty_fr':'rk_empty')}</div>`;
+  const out=d.me&&!d.rows.some(r=>r.me);
+  return chips+`<div class="panel rank" style="padding:4px 8px"><table><tr><th>#</th><th>${t('rk_player')}</th>${this.cat==='top'?`<th>${t('rk_animal')}</th>`:''}<th class="num">${t('rk_turn')}</th><th class="num">${t('rk_score_'+this.cat)}</th></tr>
+   ${d.rows.map(r=>this.row(r)).join('')}${out?`<tr class="gap"><td colspan="5">⋯</td></tr>${this.row(d.me)}`:''}</table></div>
+   <p class="kbd" id="rkme">${d.me?t('rk_me',{p:d.me.pos,n:d.total}):t(this.cat==='top'&&this.sp?'rk_me_none_sp':'rk_me_none')}</p>`}
+};
 function vGlobal(){
- let h=`<h2>🌐 ${t('tab_global')}</h2><p class="sub">${t('gc_sub',{n:GLOBAL_MAX})}</p>`;
+ const sub=`<div class="toolbar gsub"><button class="chip ${Global.view==='chat'?'on':''}" data-act="gview" data-v="chat">💬 ${t('gv_chat')}${Global.unread&&Global.view!=='chat'?` <span class="cnt hot">${Global.unread}</span>`:''}</button><button class="chip ${Global.view==='rank'?'on':''}" data-act="gview" data-v="rank">🏆 ${t('gv_rank')}</button></div>`;
+ if(Global.view==='rank')return `<h2>🌐 ${t('tab_global')}</h2>${sub}<p class="sub">${t('rk_sub')}</p>${Rank.html()}`;
+ let h=`<h2>🌐 ${t('tab_global')}</h2>${sub}<p class="sub">${t('gc_sub',{n:GLOBAL_MAX})}</p>`;
  return h+`<div class="panel gchat"><div class="chatlog" id="glog">${Global.html()}</div>
  ${Cloud.profile?`<form data-form="gchat" class="row chatin" novalidate><input id="gchatin" name="body" maxlength="${GMSG_MAX}" autocomplete="off" placeholder="${t('gc_ph')}" value="${esc(Global.draft)}"><button class="pri" type="submit">${t('so_send')}</button></form>`
   :`<div class="empty" style="border:none">${t('so_needname')}<div class="actions" style="justify-content:center"><button class="pri" data-act="pickname">${t('ac_pick')}</button></div></div>`}</div>`}

@@ -111,6 +111,13 @@ Aturan yang dijalankan server:
 - Hanya admin yang bisa mengubah status, membalas, menghapus komentar, dan menghapus laporan.
 - Pembersihan: saat admin membuka tab Laporan bug, gambar dari laporan yang selesai lebih dari 90 hari dan gambar yatim (diunggah > 1 hari tapi tidak dipakai laporan) dihapus otomatis.
 
+## 9. Papan peringkat
+
+1. Buka **SQL Editor → New query**.
+2. Salin seluruh isi [`supabase/leaderboard.sql`](supabase/leaderboard.sql), tempel, lalu klik **Run**. Jalankan **sebelum** men-deploy Edge Function `game` versi 28 ke atas, karena fungsi itu menulis ke kolom `saves.rank`.
+
+Angka peringkat (kekayaan, Morph Dex, hewan termahal per spesies, bayi menetas, pesanan) dihitung oleh Edge Function `game` setiap kali save disimpan, jadi tidak bisa dipalsukan dari browser. Pemain lama otomatis masuk papan peringkat saat login berikutnya.
+
 ## Catatan keamanan
 
 - **Save online hanya bisa diubah server**: Edge Function `game` dan fungsi trading di `social.sql`. Mengubah uang atau ular lewat DevTools hanya mengubah tampilan di layar sendiri, dan akan kembali ke angka server setelah aksi berikutnya.
