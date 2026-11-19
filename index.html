@@ -94,6 +94,17 @@ dl{display:grid;grid-template-columns:130px 1fr;gap:4px 10px;margin:12px 0;font-
 .guide p,.guide li{color:#dcd4c0;max-width:72ch}
 .guide code{background:var(--panel2);padding:1px 6px;border-radius:5px}
 .kbd{font-size:12px;color:var(--mut)}
+.buglist{display:flex;flex-direction:column;gap:8px}.bugrow{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px;cursor:pointer}.bugrow:hover{background:var(--hover)}
+.bugrow .bt b{overflow-wrap:anywhere}.bugrow .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--bad);margin-right:6px;vertical-align:middle}
+.bst{font-size:11px;padding:2px 8px;border-radius:20px;border:1px solid var(--line);background:var(--panel2);white-space:nowrap}.bst.new{color:var(--text)}.bst.review{color:var(--acc);border-color:#7a5b22}.bst.fixed{color:var(--good);border-color:var(--good)}.bst.rejected{color:var(--bad);border-color:var(--bad)}.bst.duplicate{color:var(--mut)}
+.bugtext{white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0}.bugdet h2{overflow-wrap:anywhere}
+.bugimgs{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.bugimgs img{width:160px;height:110px;object-fit:cover;border-radius:8px;border:1px solid var(--line);display:block}
+.buginfo{font-size:12.5px;margin:6px 0}.buginfo summary{cursor:pointer;color:var(--mut)}.buginfo td{padding:2px 8px 2px 0;vertical-align:top;overflow-wrap:anywhere}.buginfo td:first-child{color:var(--mut);white-space:nowrap}
+.bugreply{background:color-mix(in srgb,var(--acc) 10%,transparent);border:1px solid color-mix(in srgb,var(--acc) 40%,transparent);border-radius:10px;padding:10px 12px;margin:10px 0}
+.bugadm{border:1px dashed var(--acc);border-radius:10px;padding:10px 12px;margin:10px 0;display:flex;flex-direction:column;gap:8px}
+.bugc{border-top:1px solid var(--line);padding:8px 0}.bugcf{display:flex;gap:8px;align-items:flex-end;margin-top:8px}.bugcf textarea{flex:1}
+.bugform{display:flex;flex-direction:column;gap:10px}.bugform label,.bugadm label{display:flex;flex-direction:column;gap:4px;font-size:13px}
+.bugprev{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.bp{display:flex;flex-direction:column;align-items:center;gap:2px}.bp img{width:96px;height:72px;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
 .inbwarn{background:color-mix(in srgb,var(--bad) 12%,transparent);border:1px solid color-mix(in srgb,var(--bad) 45%,transparent);border-radius:12px;padding:10px 12px;margin-top:12px;font-size:13px}.inbwarn b{color:var(--bad)}.inbwarn div{margin-top:4px;color:var(--text)}
 .quest{border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:12px}.quest .qh{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .qbar{height:6px;border-radius:4px;background:var(--panel3);margin:8px 0;overflow:hidden}.qbar i{display:block;height:100%;background:var(--acc)}
@@ -302,7 +313,27 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  dex_found:p=>'Ditemukan '+p.d,dex_notfound:'Belum ditemukan',
  dex_sub:p=>`${p.f}/${p.t} morph target ditemukan · ${p.n} morph total. Statistik: ${p.c} clutch, ${p.h} bayi menetas, ${p.s} hewan terjual (${p.e}).`,
  dex_extra:'Kombinasi lain yang kamu temukan',save_h:'Simpan / ulang',newgame:'Mulai game baru',
- save_cloud:'Progres dihitung dan disimpan di server, jadi aman dari kecurangan dan bisa dilanjutkan dari perangkat mana pun.', d_code:'Kode',d_agew:'Umur · berat',quest_h:'Misi pemula',quest_all:'Semua misi',quest_go:'Buka',quest_reward:p=>`Hadiah ${p.v}`,quest_hide:'Sembunyikan',
+ save_cloud:'Progres dihitung dan disimpan di server, jadi aman dari kecurangan dan bisa dilanjutkan dari perangkat mana pun.', d_code:'Kode',d_agew:'Umur · berat',tab_bugs:'Laporan bug',bug_sub:'Temukan bug? Laporkan di sini. Semua pemain bisa melihat laporan dan memberi masukan lewat komentar; admin akan menanggapi dan mengubah statusnya.',
+ bug_new:'Laporkan bug',bug_all:'Semua laporan',bug_mine:'Laporan saya',bug_all_st:'Semua status',bug_all_cat:'Semua kategori',bug_more:'Muat lebih banyak',
+ bug_empty:'Belum ada laporan bug.',bug_empty_mine:'Kamu belum pernah melaporkan bug.',bug_by:p=>`oleh ${p.u} · ${p.d}`,bug_replied:'Dibalas admin',bug_admin:'Admin',
+ bcat_gameplay:'Gameplay',bcat_performance:'Performa',bcat_visual:'Visual (gambar/UI)',bcat_text:'Teks',bcat_other:'Lainnya',
+ bst_new:'Baru',bst_review:'Sedang ditinjau',bst_fixed:'Diperbaiki',bst_rejected:'Ditolak',bst_duplicate:'Duplikat',
+ bug_new_h:'Laporkan bug',bug_new_sub:'Semua kolom wajib diisi. Jelaskan apa yang terjadi, apa yang seharusnya terjadi, dan langkah untuk mengulanginya.',
+ bug_title:'Judul laporan',bug_title_ph:'mis. Telur tidak menetas setelah 3 bulan',bug_cat:'Kategori',bug_cat_pick:'— pilih kategori —',
+ bug_desc:'Deskripsi',bug_desc_ph:'Apa yang terjadi? Apa yang seharusnya terjadi? Bagaimana cara mengulanginya?',
+ bug_img:'Gambar / screenshot (1–3 gambar, maks. 2 MB per gambar, JPG/PNG/WebP)',
+ bug_auto:'Info yang ikut terkirim otomatis: versi game & server, turn, jumlah hewan, bahasa, serta jenis perangkat/browser. Info perangkat hanya terlihat oleh kamu dan admin.',
+ bug_send:'Kirim laporan',bug_uploading:'Mengunggah gambar…',bug_sent:'🐞 Laporan terkirim. Terima kasih!',
+ bug_info:'Info perangkat & game',bug_purged:'Gambar laporan ini sudah dihapus otomatis (laporan selesai lebih dari 90 hari).',
+ bug_admin_h:'Tanggapan admin',bug_adm_h:'Panel admin',bug_status:'Status',bug_reply:'Balasan untuk pelapor',bug_adm_save:'Simpan status & balasan',
+ bug_del:'Hapus laporan',bug_del_sure:'Klik lagi untuk menghapus',bug_saved:'Status & balasan disimpan.',bug_deleted:'Laporan dihapus.',bug_c_deleted:'Komentar dihapus.',
+ bug_comments:p=>`Komentar (${p.n})`,bug_no_comments:'Belum ada komentar.',bug_c_ph:'Tulis masukan atau info tambahan…',bug_cleaned:p=>`🧹 ${p.n} gambar lama dihapus dari penyimpanan.`,
+ e_bug_title:'Judul laporan minimal 5 karakter.',e_bug_desc:'Deskripsi minimal 10 karakter.',e_bug_category:'Pilih kategori laporan.',e_bug_images:'Lampirkan 1–3 gambar (JPG/PNG/WebP, maks. 2 MB).',
+ e_bug_img_max:'Maksimal 3 gambar.',e_bug_img_type:p=>`${p.n}: hanya JPG, PNG, atau WebP.`,e_bug_img_size:p=>`${p.n}: ukuran lebih dari 2 MB.`,
+ e_bug_limit:'Kamu sudah mengirim 3 laporan dalam 24 jam terakhir. Coba lagi nanti.',e_bug_upload_limit:'Batas unggahan gambar tercapai (maks. 9 gambar per 24 jam).',
+ e_bug_comment:'Komentar tidak boleh kosong (maks. 1000 karakter).',e_bug_comment_limit:'Batas komentar tercapai (maks. 30 per 24 jam).',
+ e_bug_not_found:'Laporan tidak ditemukan (mungkin sudah dihapus).',e_bug_comment_not_found:'Komentar tidak ditemukan.',e_not_admin:'Hanya admin yang bisa melakukan ini.',e_bug_status:'Status tidak dikenal.',e_bug_reply:'Balasan terlalu panjang.',
+ quest_h:'Misi pemula',quest_all:'Semua misi',quest_go:'Buka',quest_reward:p=>`Hadiah ${p.v}`,quest_hide:'Sembunyikan',
  quest_done_h:'🎉 Semua misi pemula selesai!',quest_done_p:'Kamu sudah menguasai dasar-dasar Morph Lab. Selamat breeding!',
  t_quest:p=>`🎯 Misi selesai: ${p.n} (+${p.v})`,l_quest:p=>`🎯 Misi selesai: ${t('qn_'+p.q)} — hadiah ${p.v} masuk ke saldo.`,
  qn_pair:'Kawinkan pasangan pertama',qh_pair:'Buka tab Kawinkan, pilih jantan & betina yang siap, lalu tekan "Pasangkan bulan ini".',
@@ -519,7 +550,27 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  dex_sub:p=>`${p.f}/${p.t} target morphs found · ${p.n} morphs total. Stats: ${p.c} clutches, ${p.h} hatchlings, ${p.s} animals sold (${p.e}).`,
  dex_extra:'Other combos you discovered',save_h:'Save / restart',newgame:'Start a new game',
  save_cloud:'Progress is calculated and saved on the server, so it can’t be cheated and you can continue on any device.',
- d_code:'ID',d_agew:'Age · weight',quest_h:'Starter missions',quest_all:'All missions',quest_go:'Open',quest_reward:p=>`Reward ${p.v}`,quest_hide:'Hide',
+ d_code:'ID',d_agew:'Age · weight',tab_bugs:'Bug reports',bug_sub:'Found a bug? Report it here. Every player can read reports and add feedback in the comments; the admin will respond and update the status.',
+ bug_new:'Report a bug',bug_all:'All reports',bug_mine:'My reports',bug_all_st:'All statuses',bug_all_cat:'All categories',bug_more:'Load more',
+ bug_empty:'No bug reports yet.',bug_empty_mine:'You haven’t reported any bugs yet.',bug_by:p=>`by ${p.u} · ${p.d}`,bug_replied:'Admin replied',bug_admin:'Admin',
+ bcat_gameplay:'Gameplay',bcat_performance:'Performance',bcat_visual:'Visual (image/UI)',bcat_text:'Text',bcat_other:'Others',
+ bst_new:'New',bst_review:'In review',bst_fixed:'Fixed',bst_rejected:'Rejected',bst_duplicate:'Duplicate',
+ bug_new_h:'Report a bug',bug_new_sub:'All fields are required. Describe what happened, what should have happened, and the steps to reproduce it.',
+ bug_title:'Report title',bug_title_ph:'e.g. Eggs never hatch after 3 months',bug_cat:'Category',bug_cat_pick:'— choose a category —',
+ bug_desc:'Description',bug_desc_ph:'What happened? What should have happened? How can it be reproduced?',
+ bug_img:'Images / screenshots (1–3 images, max. 2 MB each, JPG/PNG/WebP)',
+ bug_auto:'Sent automatically: game & server version, turn, number of animals, language, and device/browser. Device info is only visible to you and the admin.',
+ bug_send:'Send report',bug_uploading:'Uploading images…',bug_sent:'🐞 Report sent. Thank you!',
+ bug_info:'Device & game info',bug_purged:'This report’s images were removed automatically (resolved more than 90 days ago).',
+ bug_admin_h:'Admin response',bug_adm_h:'Admin panel',bug_status:'Status',bug_reply:'Reply to the reporter',bug_adm_save:'Save status & reply',
+ bug_del:'Delete report',bug_del_sure:'Click again to delete',bug_saved:'Status & reply saved.',bug_deleted:'Report deleted.',bug_c_deleted:'Comment deleted.',
+ bug_comments:p=>`Comments (${p.n})`,bug_no_comments:'No comments yet.',bug_c_ph:'Write feedback or extra details…',bug_cleaned:p=>`🧹 ${p.n} old images removed from storage.`,
+ e_bug_title:'The title needs at least 5 characters.',e_bug_desc:'The description needs at least 10 characters.',e_bug_category:'Choose a report category.',e_bug_images:'Attach 1–3 images (JPG/PNG/WebP, max. 2 MB).',
+ e_bug_img_max:'Maximum 3 images.',e_bug_img_type:p=>`${p.n}: only JPG, PNG, or WebP.`,e_bug_img_size:p=>`${p.n}: larger than 2 MB.`,
+ e_bug_limit:'You’ve sent 3 reports in the last 24 hours. Please try again later.',e_bug_upload_limit:'Image upload limit reached (max. 9 images per 24 hours).',
+ e_bug_comment:'Comments can’t be empty (max. 1000 characters).',e_bug_comment_limit:'Comment limit reached (max. 30 per 24 hours).',
+ e_bug_not_found:'Report not found (it may have been deleted).',e_bug_comment_not_found:'Comment not found.',e_not_admin:'Only the admin can do this.',e_bug_status:'Unknown status.',e_bug_reply:'Reply is too long.',
+ quest_h:'Starter missions',quest_all:'All missions',quest_go:'Open',quest_reward:p=>`Reward ${p.v}`,quest_hide:'Hide',
  quest_done_h:'🎉 All starter missions complete!',quest_done_p:'You’ve mastered the basics of Morph Lab. Happy breeding!',
  t_quest:p=>`🎯 Mission complete: ${p.n} (+${p.v})`,l_quest:p=>`🎯 Mission complete: ${t('qn_'+p.q)} — ${p.v} added to your balance.`,
  qn_pair:'Pair your first couple',qh_pair:'Open the Breeding tab, pick a ready male & female, then press "Pair this month".',
@@ -884,7 +935,7 @@ function render(){
  <span id="acct"></span><button class="pri" data-act="advance">${t('advance')}</button>`;
  renderAcct();
  renderTabs();
- $('view').innerHTML=({koleksi:vKoleksi,breeding:vBreeding,inkubator:vInkubator,pasar:vPasar,pesanan:vPesanan,dex:vDex,teman:vTeman,global:vGlobal,panduan:vPanduan})[TAB]();
+ $('view').innerHTML=({koleksi:vKoleksi,breeding:vBreeding,inkubator:vInkubator,pasar:vPasar,pesanan:vPesanan,dex:vDex,teman:vTeman,global:vGlobal,panduan:vPanduan,bugs:vBugs})[TAB]();
  renderQuest();
  $('logh').textContent=t('log_title');
  $('logclr').textContent=t('log_clear');$('logclr').style.display=S.log.length?'':'none';
@@ -1069,7 +1120,7 @@ function openSnake(id){const s=byId(id);if(!s)return;const tr=traitsOf(s.g),r=re
  ${s.gravid?`<p class="kbd">${t('gravid_nosale')}</p>`:''}`)}
 
 const SOCIAL_ACTS=new Set(['openchat','fr_accept','fr_decline','fr_remove','fr_remove_yes','tr_new','tb_close','tr_send','tr_accept','tr_accept_yes','tr_decline','tr_cancel']);
-const FREE_ACTS=new Set(['quest_go','bs_inc','bs_dec','spf','brsp','dexsp','guidesp','mk_sex','settings','theme','preview','profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
+const FREE_ACTS=new Set(['quest_go','bug_new','bug_open','bug_mine','bug_more','bug_rmimg','bug_delc','bug_del','bs_inc','bs_dec','spf','brsp','dexsp','guidesp','mk_sex','settings','theme','preview','profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
 // Jalankan aksi game: dikirim ke server (Edge Function "game") yang menghitung hasilnya.
 async function game(a){
  if(!Cloud.user||!S)return null;
@@ -1095,7 +1146,7 @@ function act(a,id,el){
  if(cloudAct(a,el))return;
  if(a==='tab'&&el.dataset.tab==='teman'&&Social.ch)Social.refresh();
  switch(a){
-  case 'tab':TAB=el.dataset.tab;if(TAB==='global'){Global.unread=0;Global.focus=false;if(!Global.loaded)Global.load()}break;
+  case 'tab':TAB=el.dataset.tab;if(TAB==='bugs'){Bugs.loaded=false;Bugs.count()}if(TAB==='global'){Global.unread=0;Global.focus=false;if(!Global.loaded)Global.load()}break;
   case 'lang':{const reopen=settingsOpen();setLang(el.dataset.v);if(reopen){render();showSettings();return}break}
   case 'filter':FILTER=el.dataset.v;break;
   case 'close':closeModal();return;
@@ -1117,6 +1168,13 @@ function act(a,id,el){
    <div class="actions"><button class="pri" data-act="advyes">${t('adv_yes')}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`);return}
   case 'advyes':closeModal();game({type:'advance'});return;
   case 'quest_go':TAB=el.dataset.v;break;
+  case 'bug_new':Bugs.newForm();return;
+  case 'bug_open':Bugs.open(id);return;
+  case 'bug_mine':Bugs.mine=el.dataset.v==='1';Bugs.loaded=false;Bugs.load();break;
+  case 'bug_more':Bugs.load(true);return;
+  case 'bug_rmimg':{const x=Bugs.files.splice(id,1)[0];if(x)URL.revokeObjectURL(x.url);Bugs.paintFiles();return}
+  case 'bug_delc':Bugs.delComment(id);return;
+  case 'bug_del':Bugs.delReport();return;
   case 'quest_hide':game({type:'quest_hide'});return;
   case 'preview':showPreview();return;
   case 'preview_go':closeModal();game({type:'advance'});return;
@@ -1419,6 +1477,108 @@ var Global={msgs:[],unread:0,loaded:false,draft:'',focus:false,
   if(error){i.value=body;this.draft=body;toast(errText(error));return}
   this.onNew(data)}
 };
+/* ========= LAPORAN BUG =========
+   Semua pemain melihat semua laporan & bisa berkomentar; hanya admin yang mengubah status, membalas,
+   menghapus komentar/laporan. Gambar disimpan di Supabase Storage (bucket privat "bug-reports"). */
+const BUG_CATS=['gameplay','performance','visual','text','other'],BUG_ST=['new','review','fixed','rejected','duplicate'];
+const BUG_MAX_IMG=3,BUG_MAX_SIZE=2*1024*1024,BUG_TYPES=['image/jpeg','image/png','image/webp'];
+const dtm=iso=>{try{return new Date(iso).toLocaleString(LANG==='id'?'id-ID':'en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}catch(e){return ''}};
+var Bugs={list:[],loaded:false,loading:false,more:false,mine:false,st:'',cat:'',unread:0,admin:false,files:[],cur:null,armed:null,cleaned:false,
+ reset(){this.list=[];this.loaded=false;this.unread=0;this.admin=false;this.files=[];this.cur=null;this.armed=null;this.cleaned=false},
+ sb(){return Cloud.sb},
+ async init(){const{data}=await this.sb().rpc('is_admin');this.admin=!!data;this.count()},
+ async count(){if(!Cloud.user)return;const{data,error}=await this.sb().rpc('bug_unread_count');if(!error){this.unread=data||0;renderTabs()}},
+ async load(more){if(!Cloud.user||this.loading)return;this.loading=true;
+  const last=more&&this.list.length?this.list[this.list.length-1].id:null;
+  const{data,error}=await this.sb().rpc('list_bug_reports',{p_mine:this.mine,p_status:this.st||null,p_category:this.cat||null,p_before:last});
+  this.loading=false;if(error){toast(errText(error));return}
+  this.list=more?this.list.concat(data||[]):(data||[]);this.more=(data||[]).length===30;this.loaded=true;
+  if(this.admin&&!this.cleaned)this.cleanup();
+  if(TAB==='bugs')render()},
+ // gambar laporan yang sudah selesai > 90 hari & gambar yatim dihapus otomatis saat admin membuka tab ini
+ async cleanup(){this.cleaned=true;const{data,error}=await this.sb().rpc('admin_bug_cleanup');if(error||!data)return;
+  if(data.paths.length){const{error:e2}=await this.sb().storage.from('bug-reports').remove(data.paths);if(e2)return;toast(t('bug_cleaned',{n:data.paths.length}))}
+  if(data.ids.length)await this.sb().rpc('admin_bug_mark_purged',{p_ids:data.ids})},
+ async open(id){const{data,error}=await this.sb().rpc('get_bug_report',{p_id:id});if(error){toast(errText(error));return}
+  let urls={};if(data.images.length){const{data:u}=await this.sb().storage.from('bug-reports').createSignedUrls(data.images,3600);(u||[]).forEach(x=>{if(x.signedUrl)urls[x.path]=x.signedUrl})}
+  this.cur={...data,urls};this.armed=null;this.paintDetail();
+  const row=this.list.find(r=>r.id===id);if(row&&row.unread){row.unread=false;this.count()}},
+ who(u,del){return del?`<i>${t('tr_gone')}</i>`:profLink(u)},
+ paintDetail(){const d=this.cur;if(!d)return;const A=d.is_admin;
+  const imgs=d.images_purged?`<p class="kbd">🖼️ ${t('bug_purged')}</p>`:`<div class="bugimgs">${d.images.map(p=>d.urls[p]?`<a href="${esc(d.urls[p])}" target="_blank" rel="noopener"><img src="${esc(d.urls[p])}" alt=""></a>`:'').join('')}</div>`;
+  const info=d.info?`<details class="buginfo"><summary>${t('bug_info')}</summary><table>${Object.entries(d.info).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${esc(String(v))}</td></tr>`).join('')}</table></details>`:'';
+  const reply=(d.admin_reply||d.status!=='new')?`<div class="bugreply"><b>🛠️ ${t('bug_admin_h')}</b> ${this.stTag(d.status)}${d.admin_reply?`<div class="bugtext">${esc(d.admin_reply)}</div>`:''}${d.admin_at?`<div class="kbd">${dtm(d.admin_at)}</div>`:''}</div>`:'';
+  const adm=A?`<form data-form="bugadm" class="bugadm" novalidate><b>👑 ${t('bug_adm_h')}</b>
+   <label>${t('bug_status')}<select name="status">${BUG_ST.map(k=>`<option value="${k}" ${d.status===k?'selected':''}>${t('bst_'+k)}</option>`).join('')}</select></label>
+   <label>${t('bug_reply')}<textarea name="reply" rows="3" maxlength="2000">${esc(d.admin_reply)}</textarea></label>
+   <div class="actions"><button class="pri" type="submit">${t('bug_adm_save')}</button><button type="button" class="ghost danger" data-act="bug_del">${this.armed==='r'?t('bug_del_sure'):'🗑️ '+t('bug_del')}</button></div></form>`:'';
+  const cm=d.comments.map(c=>`<div class="bugc"><div class="row" style="justify-content:space-between"><span>${this.who(c.user,c.deleted_user)}${c.admin?` <span class="tag a">${t('bug_admin')}</span>`:''} <span class="kbd">${dtm(c.created_at)}</span></span>${A?`<button type="button" class="ghost sm" data-act="bug_delc" data-id="${c.id}">${this.armed==='c'+c.id?t('bug_del_sure'):'🗑️'}</button>`:''}</div><div class="bugtext">${esc(c.body)}</div></div>`).join('')||`<p class="kbd">${t('bug_no_comments')}</p>`;
+  modal(`<div class="bugdet"><h2>${esc(d.title)}</h2><div class="row" style="gap:6px;flex-wrap:wrap">${this.catTag(d.category)} ${this.stTag(d.status)}</div>
+   <p class="kbd">${t('bug_by',{u:this.who(d.user,d.deleted_user),d:dtm(d.created_at)})}</p>
+   <div class="bugtext">${esc(d.description)}</div>${imgs}${info}${reply}${adm}
+   <h3>💬 ${t('bug_comments',{n:d.comments.length})}</h3>${cm}
+   <form data-form="bugc" class="bugcf" novalidate><textarea name="body" rows="2" maxlength="1000" placeholder="${t('bug_c_ph')}"></textarea><button class="pri" type="submit">${t('so_send')}</button></form>
+   <div class="actions"><button class="ghost" data-act="close">${t('close')}</button></div></div>`)},
+ catTag(k){return `<span class="tag">${t('bcat_'+k)}</span>`},
+ stTag(k){return `<span class="bst ${k}">${t('bst_'+k)}</span>`},
+ // ----- formulir laporan baru -----
+ newForm(){this.files=[];modal(`<h2>🐞 ${t('bug_new_h')}</h2><p class="sub">${t('bug_new_sub')}</p>
+  <form data-form="bug" class="bugform" novalidate>
+   <label>${t('bug_title')}<input name="title" maxlength="100" placeholder="${t('bug_title_ph')}"></label>
+   <label>${t('bug_cat')}<select name="cat"><option value="">${t('bug_cat_pick')}</option>${BUG_CATS.map(k=>`<option value="${k}">${t('bcat_'+k)}</option>`).join('')}</select></label>
+   <label>${t('bug_desc')}<textarea name="desc" rows="5" maxlength="2000" placeholder="${t('bug_desc_ph')}"></textarea></label>
+   <label>${t('bug_img')}<input type="file" name="img" accept="${BUG_TYPES.join(',')}" multiple></label>
+   <div id="bugprev" class="bugprev"></div>
+   <p class="kbd">ℹ️ ${t('bug_auto')}</p>
+   <div class="msg" id="bugmsg"></div>
+   <div class="actions"><button class="pri" type="submit">${t('bug_send')}</button><button class="ghost" type="button" data-act="close">${t('btn_cancel')}</button></div>
+  </form>`,true)},
+ addFiles(list){const msg=[];for(const f of list){if(this.files.length>=BUG_MAX_IMG){msg.push(t('e_bug_img_max'));break}
+   if(!BUG_TYPES.includes(f.type)){msg.push(t('e_bug_img_type',{n:f.name}));continue}
+   if(f.size>BUG_MAX_SIZE){msg.push(t('e_bug_img_size',{n:f.name}));continue}
+   this.files.push({f,url:URL.createObjectURL(f)})}
+  this.paintFiles();$('bugmsg').innerHTML=msg.length?`<div class="warn">${msg.map(esc).join('<br>')}</div>`:''},
+ paintFiles(){const el=$('bugprev');if(!el)return;el.innerHTML=this.files.map((x,i)=>`<div class="bp"><img src="${x.url}" alt=""><span class="kbd">${x.f.size<1048576?Math.max(1,Math.round(x.f.size/1024))+' KB':(x.f.size/1048576).toFixed(2)+' MB'}</span><button type="button" class="ghost sm" data-act="bug_rmimg" data-id="${i}">✕</button></div>`).join('')+`<span class="kbd">${this.files.length}/${BUG_MAX_IMG}</span>`},
+ async submit(f){const title=f.title.value.trim(),desc=f.desc.value.trim(),cat=f.cat.value,m=$('bugmsg'),err=[];
+  if(title.length<5)err.push(t('e_bug_title'));if(desc.length<10)err.push(t('e_bug_desc'));if(!cat)err.push(t('e_bug_category'));if(!this.files.length)err.push(t('e_bug_images'));
+  if(err.length){m.innerHTML=`<div class="warn">${err.map(esc).join('<br>')}</div>`;return}
+  const btn=f.querySelector('button[type=submit]');btn.disabled=true;m.innerHTML=`<div class="kbd">${t('bug_uploading')}</div>`;
+  const uid=Cloud.user.id,paths=[];
+  try{
+   for(const [i,x] of this.files.entries()){const ext={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}[x.f.type];
+    const path=`${uid}/${Date.now()}-${i}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+    const{error}=await this.sb().storage.from('bug-reports').upload(path,x.f,{contentType:x.f.type,upsert:false});
+    if(error)throw new Error(/size|mime/i.test(error.message)?'bug_images':/security|policy/i.test(error.message)?'bug_upload_limit':error.message);
+    paths.push(path)}
+   const info={client:'v'+Core.VERSION.v,server:Online.server?'v'+Online.server.v:'',lang:LANG,ua:navigator.userAgent,screen:`${screen.width}x${screen.height}`};
+   const{data,error}=await this.sb().rpc('submit_bug_report',{p_title:title,p_description:desc,p_category:cat,p_images:paths,p_info:info});
+   if(error)throw error;
+   this.files=[];closeModal(true);toast(t('bug_sent'));this.mine=true;this.st='';this.cat='';TAB='bugs';await this.load();this.open(data)
+  }catch(e){btn.disabled=false;m.innerHTML=`<div class="warn">${esc(errText(e))}</div>`}},
+ async comment(f){const body=f.body.value.trim();if(!body||!this.cur)return;const b=f.querySelector('button');b.disabled=true;
+  const{error}=await this.sb().rpc('add_bug_comment',{p_id:this.cur.id,p_body:body});b.disabled=false;
+  if(error){toast(errText(error));return}await this.open(this.cur.id);this.bump(this.cur.id,1)},
+ async adminSave(f){const{error}=await this.sb().rpc('admin_update_bug',{p_id:this.cur.id,p_status:f.status.value,p_reply:f.reply.value});
+  if(error){toast(errText(error));return}toast(t('bug_saved'));await this.open(this.cur.id);const r=this.list.find(x=>x.id===this.cur.id);if(r){r.status=this.cur.status;r.replied=!!this.cur.admin_reply}if(TAB==='bugs')render()},
+ async delComment(id){if(this.armed!=='c'+id){this.armed='c'+id;this.paintDetail();return}
+  const{error}=await this.sb().rpc('admin_delete_bug_comment',{p_comment:id});if(error){toast(errText(error));return}
+  toast(t('bug_c_deleted'));await this.open(this.cur.id);this.bump(this.cur.id,-1)},
+ async delReport(){if(this.armed!=='r'){this.armed='r';this.paintDetail();return}
+  const id=this.cur.id;const{data,error}=await this.sb().rpc('admin_delete_bug',{p_id:id});if(error){toast(errText(error));return}
+  if(data&&data.length)await this.sb().storage.from('bug-reports').remove(data);
+  this.cur=null;closeModal(true);toast(t('bug_deleted'));this.list=this.list.filter(r=>r.id!==id);if(TAB==='bugs')render()},
+ bump(id,n){const r=this.list.find(x=>x.id===id);if(r){r.comments+=n;if(TAB==='bugs')render()}}
+};
+function vBugs(){const B=Bugs;if(!B.loaded&&!B.loading)B.load();
+ const row=r=>`<div class="bugrow" data-act="bug_open" data-id="${r.id}"><div class="bt">${r.unread?'<span class="dot"></span>':''}<b>${esc(r.title)}</b></div>
+  <div class="row" style="gap:6px;flex-wrap:wrap;margin-top:4px">${B.catTag(r.category)} ${B.stTag(r.status)}${r.replied?` <span class="tag a">🛠️ ${t('bug_replied')}</span>`:''}</div>
+  <div class="kbd" style="margin-top:4px">${t('bug_by',{u:r.deleted_user?t('tr_gone'):esc(r.user),d:dtm(r.created_at)})} · 💬 ${r.comments} · 🖼️ ${r.images}</div></div>`;
+ return `<h2>🐞 ${t('tab_bugs')}${B.admin?` <span class="tag a">👑 ${t('bug_admin')}</span>`:''}</h2><p class="sub">${t('bug_sub')}</p>
+ <div class="toolbar"><button class="pri" data-act="bug_new">＋ ${t('bug_new')}</button></div>
+ <div class="toolbar"><button class="chip ${!B.mine?'on':''}" data-act="bug_mine" data-v="0">${t('bug_all')}</button><button class="chip ${B.mine?'on':''}" data-act="bug_mine" data-v="1">${t('bug_mine')}${B.unread?` <span class="cnt hot">${B.unread}</span>`:''}</button>
+  <select id="bugst" style="width:auto;margin-left:auto"><option value="">${t('bug_all_st')}</option>${BUG_ST.map(k=>`<option value="${k}" ${B.st===k?'selected':''}>${t('bst_'+k)}</option>`).join('')}</select>
+  <select id="bugcat" style="width:auto"><option value="">${t('bug_all_cat')}</option>${BUG_CATS.map(k=>`<option value="${k}" ${B.cat===k?'selected':''}>${t('bcat_'+k)}</option>`).join('')}</select></div>
+ ${!B.loaded?`<p class="kbd" style="text-align:center;margin:30px 0">${t('so_loading')}</p>`:B.list.length?`<div class="buglist">${B.list.map(row).join('')}</div>${B.more?`<div class="actions" style="justify-content:center"><button class="ghost" data-act="bug_more">${t('bug_more')}</button></div>`:''}`:`<div class="empty">${t(B.mine?'bug_empty_mine':'bug_empty')}</div>`}`}
 function vGlobal(){
  let h=`<h2>🌐 ${t('tab_global')}</h2><p class="sub">${t('gc_sub',{n:GLOBAL_MAX})}</p>`;
  return h+`<div class="panel gchat"><div class="chatlog" id="glog">${Global.html()}</div>
@@ -1438,11 +1598,11 @@ var Social={data:null,open:null,msgs:[],draft:'',chatFocus:false,ch:null,timer:n
    .on('postgres_changes',{event:'INSERT',schema:'public',table:'deliveries',filter:'user_id=eq.'+uid},()=>this.claim())
    .on('postgres_changes',{event:'INSERT',schema:'public',table:'global_messages'},p=>Global.onNew(p.new))
    .subscribe();
-  Global.load();
-  this.timer=setInterval(()=>{this.refresh();if(TAB==='global')Global.load()},45000);   // cadangan kalau realtime terputus
+  Global.load();Bugs.init();
+  this.timer=setInterval(()=>{this.refresh();Bugs.count();if(TAB==='global')Global.load()},45000);   // cadangan kalau realtime terputus
   this.refresh();
  },
- stop(){if(this.ch&&Cloud.sb)try{Cloud.sb.removeChannel(this.ch)}catch(e){}this.ch=null;Global.reset();clearInterval(this.timer);this.data=null;this.open=null;this.msgs=[];this.seen=null},
+ stop(){if(this.ch&&Cloud.sb)try{Cloud.sb.removeChannel(this.ch)}catch(e){}this.ch=null;Global.reset();Bugs.reset();clearInterval(this.timer);this.data=null;this.open=null;this.msgs=[];this.seen=null},
  badge(){const d=this.data;if(!d)return 0;return d.friends.reduce((a,f)=>a+(f.unread||0),0)+d.incoming.length+d.trades.filter(x=>x.dir==='in'&&x.status==='pending').length},
  friend(id){return this.data&&this.data.friends.find(f=>f.id===id)},
  async refresh(){
@@ -1485,7 +1645,7 @@ var Social={data:null,open:null,msgs:[],draft:'',chatFocus:false,ch:null,timer:n
  }
 };
 function renderTabs(){if(!S||!Cloud.user||!$('tabs'))return;
- const T=[['koleksi',S.snakes.length],['breeding'],['inkubator',S.clutches.length+S.snakes.filter(s=>s.gravid).length+(S.broods||[]).length],['pasar'],['pesanan',S.orders.length],['dex',Object.keys(S.dex).length],['teman',Social.badge()||null,true],['global',Global.unread||null,true],['panduan']];
+ const T=[['koleksi',S.snakes.length],['breeding'],['inkubator',S.clutches.length+S.snakes.filter(s=>s.gravid).length+(S.broods||[]).length],['pasar'],['pesanan',S.orders.length],['dex',Object.keys(S.dex).length],['teman',Social.badge()||null,true],['global',Global.unread||null,true],['panduan'],['bugs',Bugs.unread||null,true]];
  $('tabs').innerHTML=T.map(([k,c,hot])=>`<button class="${TAB===k?'on':''}" data-act="tab" data-tab="${k}">${t('tab_'+k)}${c!=null?`<span class="cnt${hot?' hot':''}">${c}</span>`:''}</button>`).join('')}
 
 function miniList(arr,money_,owner){const items=(arr||[]).map(s=>{const tr=traitsOf(s.g);return `<div class="mini-row"><img class="mini" src="${thumb(tr,s.seed,false,spOfG(s.g))}" alt=""><div><div>${sexIcon(s.sex)} ${esc(nameOf(tr,s.g))}</div><div class="het">${esc(hetText(s))}</div><div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g · ${money(value(s))}</div>${owner===undefined?'':originLine(s,owner)}</div></div>`});
@@ -1612,12 +1772,14 @@ function boot(){
   const a=e.target.closest('[data-act]');if(a){act(a.dataset.act,+a.dataset.id,a);return}
   const o=e.target.closest('[data-open]');if(o)openSnake(+o.dataset.open)});
  document.addEventListener('change',e=>{const el=e.target;
+  if(el.id==='bugst'||el.id==='bugcat'){Bugs[el.id==='bugst'?'st':'cat']=el.value;Bugs.loaded=false;Bugs.load();return}
+  if(el.name==='img'&&el.form&&el.form.dataset.form==='bug'){Bugs.addFiles([...el.files]);el.value='';return}
   if(el.dataset&&el.dataset.tb&&TB){const set=TB[el.dataset.tb],id=+el.dataset.sid;el.checked?set.add(id):set.delete(id);TB.err='';
    const sc=[...document.querySelectorAll('#modal .tblist')].map(x=>x.scrollTop);paintTB();document.querySelectorAll('#modal .tblist').forEach((x,i)=>x.scrollTop=sc[i]||0);return}
   if(el.id==='selM'){SEL.m=+el.value;render()}else if(el.id==='selF'){SEL.f=+el.value;render()}else if(el.id==='sort'){SORT=el.value;render()}});
  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
  document.addEventListener('submit',e=>{const f=e.target.closest('form[data-form]');if(!f)return;e.preventDefault();
-  const k=f.dataset.form;if(k==='gchat'){Global.send(f);return}if(k==='addfriend'||k==='chat')guarded(()=>socialForm(k,f));else if(k.startsWith('dz_'))dangerGo(k.slice(3),f);else if(k==='profile')saveProfile(f);else handleForm(k,f)});
+  const k=f.dataset.form;if(k==='gchat'){Global.send(f);return}if(k==='bug'){Bugs.submit(f);return}if(k==='bugc'){Bugs.comment(f);return}if(k==='bugadm'){Bugs.adminSave(f);return}if(k==='addfriend'||k==='chat')guarded(()=>socialForm(k,f));else if(k.startsWith('dz_'))dangerGo(k.slice(3),f);else if(k==='profile')saveProfile(f);else handleForm(k,f)});
  document.addEventListener('input',e=>{const el=e.target;
   if(el.form&&el.form.dataset.form==='profile'&&Profile.edit){
    if(el.name==='bio'){Profile.edit.bio=el.value;const c=$('biocnt');if(c)c.textContent=el.value.length+'/'+BIO_MAX}

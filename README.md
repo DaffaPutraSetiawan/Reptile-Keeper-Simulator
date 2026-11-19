@@ -30,6 +30,7 @@ Bisa juga dimainkan online lewat GitHub Pages: **Settings → Pages → Deploy f
 - **Morph Dex** per spesies, berisi morph target dan kombinasi terkenal (Bumblebee, Killer Bee, RAPTOR, White Albino, dan lainnya)
 - **Gambar hewan prosedural** yang dibuat dari genetika tiap hewan
 - **Teman, chat & trading**: tambah teman lewat username, chat real-time & global chat, profil dengan etalase, dan tukar hewan/uang dengan sistem escrow yang dijalankan server. Riwayat pemilik hewan (origin keeper) ikut tercatat.
+- **Laporan bug**: pemain melapor dengan judul, deskripsi, kategori, dan 1–3 screenshot. Semua pemain bisa membaca & berkomentar; admin mengubah status, membalas, dan menghapus. Pelapor mendapat notifikasi saat ada balasan.
 - **Dua bahasa: Indonesia & Inggris**, bisa diganti kapan saja. Bahasa awal mengikuti bahasa browser, lalu pilihan pemain diingat.
 
 ## Struktur
@@ -43,6 +44,7 @@ Bisa juga dimainkan online lewat GitHub Pages: **Settings → Pages → Deploy f
 | `supabase/functions/game/` | Edge Function mode online (`index.ts`, `handler.js`, salinan `core.js`) |
 | `scripts/sync-core.sh` | Menyalin `core.js` ke Edge Function |
 | `scripts/sim-economy.cjs` | Simulasi ekonomi: bot memainkan ratusan game untuk menguji keseimbangan harga |
+| `supabase/bugs.sql` | Laporan bug, komentar, admin, dan bucket Storage untuk screenshot |
 | `supabase/social.sql` | Teman, chat, trading (escrow) + fungsi server & realtime |
 | `assets/` | Logo, favicon, dan ikon aplikasi |
 | `SETUP-SUPABASE.md` | Panduan menyiapkan login & cloud save |
@@ -58,6 +60,7 @@ Sudah selesai:
 - [x] Silsilah 3 generasi & kawin sedarah
 - [x] Penyeimbangan ekonomi dengan simulasi (`scripts/sim-economy.cjs`)
 - [x] Misi pemula (tutorial)
+- [x] Laporan bug dengan komentar & panel admin
 
 Berikutnya:
 

@@ -92,6 +92,25 @@ Saat pemain login, game berjalan dalam **mode online ("server-authoritative")**.
 
 Game hanya bisa dimainkan setelah login. Pengunjung yang belum login melihat halaman sambutan dengan tombol **Masuk** dan **Daftar**. Tidak ada mode offline, jadi tidak ada logika game yang berjalan bebas di browser.
 
+## 8. Laporan bug
+
+1. Buka **SQL Editor → New query**.
+2. Salin seluruh isi [`supabase/bugs.sql`](supabase/bugs.sql), tempel, lalu klik **Run**. Jalankan **setelah** `social.sql`. Skrip ini membuat tabel laporan & komentar, bucket Storage privat `bug-reports` (maks. 2 MB per gambar, JPG/PNG/WebP), dan policy-nya.
+3. Jadikan akunmu admin (ganti emailnya):
+
+   ```sql
+   insert into public.admins (user_id) select id from auth.users where lower(email) = 'email@contoh.com'
+   on conflict do nothing;
+   ```
+
+Aturan yang dijalankan server:
+
+- Semua pemain yang login bisa membaca semua laporan dan berkomentar. Info perangkat hanya terlihat oleh pelapor & admin.
+- Setiap laporan wajib punya judul, deskripsi, kategori, dan 1–3 gambar. Gambar dicek ulang di server (ada di Storage, milik pelapor, ≤ 2 MB, JPG/PNG/WebP).
+- Batas spam: 3 laporan dan 9 gambar per 24 jam, serta 30 komentar per 24 jam (admin tidak dibatasi).
+- Hanya admin yang bisa mengubah status, membalas, menghapus komentar, dan menghapus laporan.
+- Pembersihan: saat admin membuka tab Laporan bug, gambar dari laporan yang selesai lebih dari 90 hari dan gambar yatim (diunggah > 1 hari tapi tidak dipakai laporan) dihapus otomatis.
+
 ## Catatan keamanan
 
 - **Save online hanya bisa diubah server**: Edge Function `game` dan fungsi trading di `social.sql`. Mengubah uang atau ular lewat DevTools hanya mengubah tampilan di layar sendiri, dan akan kembali ke angka server setelah aksi berikutnya.
