@@ -8,8 +8,8 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:18,date:'2026-11-19'};
-const BUYER_COUNT=8;      // jumlah nama pembeli di kamus bahasa
+const VERSION={v:19,date:'2026-11-19'};
+const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
 // Kunci gen dibuat unik untuk semua spesies, jadi spesies sebuah genotipe bisa dikenali dari kuncinya.
@@ -282,7 +282,12 @@ function genOrder(){
  const sex=R()<.4?'F':R()<.3?'M':null;
  const reward=Math.round((baseValue(tr,sp)*(sex==='F'?1.35:1)*2.1+P.orderBonus)/5)*5;
  const o={oid:Math.floor(R()*1e9),tr,sex,reward,left:8+Math.floor(R()*7),bi:Math.floor(R()*BUYER_COUNT)};if(sp!=='ball')o.sp=sp;return o}
-function matches(o){const sp=spOf(o);return S.snakes.filter(s=>{const tr=traitsOf(s.g);return spOf(s)===sp&&o.tr.every(t=>tr.includes(t))&&(!o.sex||s.sex===o.sex)&&!s.gravid&&!s.listed})}
+// Bentuk super ikut memenuhi pesanan gen aslinya (Super Cinnamon untuk pesanan Cinnamon, Ivory untuk Yellow Belly, dst.);
+// BEL memenuhi pesanan Mojave/Lesser kalau membawa alel itu. Pesanan bentuk super tetap butuh bentuk super.
+const SUPER_OF={};for(const sp of SPECIES_LIST)for(const l of SPECIES[sp].loci)if(l.sk)SUPER_OF[l.k]=l.sk;
+function hasTrait(s,tr,t){if(tr.includes(t))return true;if(SUPER_OF[t]&&tr.includes(SUPER_OF[t]))return true;
+ if((t==='mojave'||t==='lesser')&&tr.includes('bel'))return s.g.bel.includes(t==='mojave'?1:2);return false}
+function matches(o){const sp=spOf(o);return S.snakes.filter(s=>{const tr=traitsOf(s.g);return spOf(s)===sp&&o.tr.every(t=>hasTrait(s,tr,t))&&(!o.sex||s.sex===o.sex)&&!s.gravid&&!s.listed})}
 
 /* ========= GAME BARU ========= */
 function newGame(){
