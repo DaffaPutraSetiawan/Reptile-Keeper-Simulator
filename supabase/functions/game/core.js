@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:19,date:'2026-11-19'};
+const VERSION={v:20,date:'2026-11-19'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -287,6 +287,10 @@ function genOrder(){
 const SUPER_OF={};for(const sp of SPECIES_LIST)for(const l of SPECIES[sp].loci)if(l.sk)SUPER_OF[l.k]=l.sk;
 function hasTrait(s,tr,t){if(tr.includes(t))return true;if(SUPER_OF[t]&&tr.includes(SUPER_OF[t]))return true;
  if((t==='mojave'||t==='lesser')&&tr.includes('bel'))return s.g.bel.includes(t==='mojave'?1:2);return false}
+// Bayaran pesanan: hadiah tetap pesanan, atau ORDER_PREMIUM × nilai hewan yang dikirim kalau itu lebih tinggi.
+// Dengan begitu mengirim ke pembeli selalu lebih untung daripada iklan (100% nilai) dan jual cepat (60%).
+const ORDER_PREMIUM=1.25;
+const orderPay=(o,s)=>Math.max(o.reward,Math.round(value(s)*ORDER_PREMIUM/5)*5);
 function matches(o){const sp=spOf(o);return S.snakes.filter(s=>{const tr=traitsOf(s.g);return spOf(s)===sp&&o.tr.every(t=>hasTrait(s,tr,t))&&(!o.sex||s.sex===o.sex)&&!s.gravid&&!s.listed})}
 
 /* ========= GAME BARU ========= */
@@ -471,7 +475,7 @@ const ACTIONS={
  rack(){const price=rackPrice();if(S.money<price)fail('not_enough_money');S.money-=price;S.racks++;log('l_rack',{cap:cap(),v:money(price)});return{}},
  fulfill(a){const o=S.orders.find(x=>x.oid===toId(a.oid));if(!o)fail('order_gone');const s=mustSnake(a.sid);
   if(!matches(o).includes(s))fail('order_mismatch');
-  S.money+=o.reward;S.stats.sold++;S.stats.earned+=o.reward;log('l_fulfill',{c:code(s),n:fullName(s),bi:o.bi,b:o.buyer,r:money(o.reward)},'star');
+  const pay=orderPay(o,s);S.money+=pay;S.stats.sold++;S.stats.earned+=pay;log('l_fulfill',{c:code(s),n:fullName(s),bi:o.bi,b:o.buyer,r:money(pay)},'star');
   removeSnake(s);S.orders=S.orders.filter(x=>x!==o);return{}},
 };
 // Jalankan satu aksi pada state (state diubah langsung). Melempar Error(kode) kalau tidak sah.
@@ -490,7 +494,7 @@ root.MorphCore={
  mi,yr,cap,log,rackPrice,RACK_MULT,
  emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,
  OLD_WARN,maxAge,lifeLeft,sizeMult,kOf,growW,
- mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,dexKey,matches,
+ mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,dexKey,matches,ORDER_PREMIUM,orderPay,
  monthlyCosts,previewNext,
  MARKET_SIZE,MARKET_EVERY,BUY_MULT,MARKET_POOL,listingTraits,marketBase,marketPrice,marketLeft,refreshMarket,ensureMarket,marketOk,makeMarketSnake,
  INC_MONTHS,TEMP_MIN,TEMP_MAX,TEMP_MID,TEMP_STEP,tempRange,femaleChance,incTotal,tempOpen,tempMonthsLeft,validTemp,
