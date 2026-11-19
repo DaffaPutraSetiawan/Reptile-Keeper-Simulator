@@ -94,6 +94,13 @@ dl{display:grid;grid-template-columns:130px 1fr;gap:4px 10px;margin:12px 0;font-
 .guide p,.guide li{color:#dcd4c0;max-width:72ch}
 .guide code{background:var(--panel2);padding:1px 6px;border-radius:5px}
 .kbd{font-size:12px;color:var(--mut)}
+.pedh{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:4px;font-size:11.5px;color:var(--mut)}
+.ped{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,auto);gap:6px;margin:4px 0 12px}
+.pbox{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:6px 8px;font-size:12px;align-self:center;min-width:0;overflow-wrap:anywhere}
+.pbox b{font-size:12px}.pbox .het{font-size:11px;min-height:0}.pbox.unk{opacity:.55;text-align:center}
+.pbox.own{cursor:pointer;border-color:var(--acc)}.pbox.own:hover{background:var(--hover)}.pbox.me{border-color:var(--acc);border-width:2px}
+.p0{grid-column:1;grid-row:1/5}.p1s{grid-column:2;grid-row:1/3}.p1d{grid-column:2;grid-row:3/5}
+.p2a{grid-column:3;grid-row:1}.p2b{grid-column:3;grid-row:2}.p2c{grid-column:3;grid-row:3}.p2d{grid-column:3;grid-row:4}
 .langsw{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
 .langsw button{border:none;border-radius:0;background:none;color:var(--mut);padding:7px 10px;font-weight:700;font-size:12.5px;letter-spacing:.04em}
 .langsw button.on{background:var(--acc);color:var(--onacc)}
@@ -176,7 +183,7 @@ button.danger{background:var(--bad);border-color:var(--bad);color:#1b0a07;font-w
 'use strict';
 /* ========= LOGIKA INTI (core.js, sama dengan yang dipakai server) ========= */
 const Core=window.MorphCore;
-const {orderPay,broodSnake,broodValue,SPECIES,SPECIES_LIST,spOf,spOfG,spOfTr,lociOf,isRec,tempRange,dexKey,maxAge,lifeLeft,OLD_WARN,rackPrice,RACK_MULT,marketOk,marketBase,marketPrice,marketLeft,listingTraits,BUY_MULT,previewNext,TEMP_MIN,TEMP_MAX,TEMP_STEP,TEMP_MID,femaleChance,tempOpen,tempMonthsLeft,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches}=Core;
+const {pedParents,orderPay,broodSnake,broodValue,SPECIES,SPECIES_LIST,spOf,spOfG,spOfTr,lociOf,isRec,tempRange,dexKey,maxAge,lifeLeft,OLD_WARN,rackPrice,RACK_MULT,marketOk,marketBase,marketPrice,marketLeft,listingTraits,BUY_MULT,previewNext,TEMP_MIN,TEMP_MAX,TEMP_STEP,TEMP_MID,femaleChance,tempOpen,tempMonthsLeft,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches}=Core;
 
 /* ========= UTIL ========= */
 const lerp=(a,b,t)=>a.map((x,i)=>x+(b[i]-x)*t);
@@ -289,7 +296,7 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  dex_found:p=>'Ditemukan '+p.d,dex_notfound:'Belum ditemukan',
  dex_sub:p=>`${p.f}/${p.t} morph target ditemukan · ${p.n} morph total. Statistik: ${p.c} clutch, ${p.h} bayi menetas, ${p.s} hewan terjual (${p.e}).`,
  dex_extra:'Kombinasi lain yang kamu temukan',save_h:'Simpan / ulang',newgame:'Mulai game baru',
- save_cloud:'Progres dihitung dan disimpan di server, jadi aman dari kecurangan dan bisa dilanjutkan dari perangkat mana pun.', d_code:'Kode',d_agew:'Umur · berat',d_sire:'Induk jantan',d_dam:'Induk betina',d_unknown:'tidak diketahui (dibeli)',d_status:'Status kawin',d_value:'Nilai pasar',
+ save_cloud:'Progres dihitung dan disimpan di server, jadi aman dari kecurangan dan bisa dilanjutkan dari perangkat mana pun.', d_code:'Kode',d_agew:'Umur · berat',ped_h:'Silsilah',ped_c0:'Hewan ini',ped_c1:'Induk',ped_c2:'Kakek & nenek',ped_unk:'Tidak diketahui',ped_open:'Buka hewan ini',ped_note:'Kode yang tertulis adalah kode saat anak lahir. Kotak berbingkai bisa diklik karena hewannya masih milikmu.',d_status:'Status kawin',d_value:'Nilai pasar',
  nick_ph:'Nama panggilan',save:'Simpan',unlist:'Batalkan iklan',list:p=>'Iklankan · '+p.v,quick:p=>'Jual cepat · '+p.v,plan:'Rencanakan kawin',close:'Tutup',gravid_nosale:'Betina bunting tidak bisa dijual sampai bertelur.',
  // mulai ulang
  btn_cancel:'Batal',
@@ -488,7 +495,7 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  dex_sub:p=>`${p.f}/${p.t} target morphs found · ${p.n} morphs total. Stats: ${p.c} clutches, ${p.h} hatchlings, ${p.s} animals sold (${p.e}).`,
  dex_extra:'Other combos you discovered',save_h:'Save / restart',newgame:'Start a new game',
  save_cloud:'Progress is calculated and saved on the server, so it can’t be cheated and you can continue on any device.',
- d_code:'ID',d_agew:'Age · weight',d_sire:'Sire',d_dam:'Dam',d_unknown:'unknown (purchased)',d_status:'Breeding status',d_value:'Market value',
+ d_code:'ID',d_agew:'Age · weight',ped_h:'Pedigree',ped_c0:'This animal',ped_c1:'Parents',ped_c2:'Grandparents',ped_unk:'Unknown',ped_open:'Open this animal',ped_note:'IDs shown are the IDs at the time of hatching. Outlined boxes can be clicked because you still own that animal.',d_status:'Breeding status',d_value:'Market value',
  nick_ph:'Nickname',save:'Save',unlist:'Cancel listing',list:p=>'List for sale · '+p.v,quick:p=>'Quick sell · '+p.v,plan:'Plan a pairing',close:'Close',gravid_nosale:'Gravid females can’t be sold until they lay.',
  btn_cancel:'Cancel',
  acct_nolib:'⚠️ Cloud unavailable',acct_nolib_t:'The Supabase library failed to load',acct_login:'☁️ Log in / Sign up',acct_default:'Account',
@@ -985,9 +992,18 @@ function vPanduan(){const sp=GUIDESP;return `<div class="guide"><h2>${SP_ICON[sp
 let MODAL_LOCK=false;
 function modal(h,lock){MODAL_LOCK=!!lock;const m=$('modal');m.innerHTML=`<div class="mbox">${h}</div>`;m.classList.remove('hidden')}
 function closeModal(force){if(MODAL_LOCK&&!force)return;MODAL_LOCK=false;$('modal').classList.add('hidden');$('modal').innerHTML=''}
+// Pohon silsilah 3 generasi: hewan ini, induk, kakek-nenek. Kotak induk yang masih kamu miliki bisa diklik.
+function pedBox(nd,cls){if(!nd)return `<div class="pbox unk ${cls}">${t('ped_unk')}</div>`;
+ const own=nd.k!=null&&S.snakes.find(x=>x.seed===nd.k);
+ return `<div class="pbox ${cls}${own?' own':''}"${own?` data-open="${own.id}" title="${t('ped_open')}"`:''}><b>${nd.x?sexIcon(nd.x)+' ':''}${esc(own?code(own):nd.c)}</b><div>${esc(nd.n||'?')}</div>${nd.h?`<div class="het">${esc(nd.h)}</div>`:''}</div>`}
+function pedTree(s){const pp=pedParents(s),ps=pp.s||{},pd=pp.d||{};
+ return `<h3 style="margin:14px 0 2px">🌳 ${t('ped_h')}</h3><div class="pedh"><span>${t('ped_c0')}</span><span>${t('ped_c1')}</span><span>${t('ped_c2')}</span></div>
+ <div class="ped"><div class="pbox me p0"><b>${sexIcon(s.sex)} ${esc(code(s))}</b><div>${esc(fullName(s))}</div></div>
+ ${pedBox(pp.s,'p1s')}${pedBox(pp.d,'p1d')}${pedBox(ps.s,'p2a')}${pedBox(ps.d,'p2b')}${pedBox(pd.s,'p2c')}${pedBox(pd.d,'p2d')}</div>
+ <p class="kbd" style="margin-top:-6px">${t('ped_note')}</p>`}
 function openSnake(id){const s=byId(id);if(!s)return;const tr=traitsOf(s.g),r=readyMsg(s);
  modal(`<img class="big" src="${thumb(tr,s.seed,true,spOfG(s.g))}"><h2 style="margin-top:12px">${sexIcon(s.sex)} ${esc(fullName(s))}</h2><div class="het">${esc(hetText(s))}</div>
- <dl><dt>${t('d_species')}</dt><dd>${SP_ICON[spOf(s)]} ${t('sp_'+spOf(s))}</dd><dt>${t('d_code')}</dt><dd>${code(s)}</dd><dt>${t('d_agew')}</dt><dd>${ageTxt(s.age)} · ${fmt(s.w)} g</dd><dt>${t('d_life')}</dt><dd>${t('d_life_v',{max:ageTxt(maxAge(s)),left:ageTxt(lifeLeft(s))})}</dd><dt>${t('d_sire')}</dt><dd>${esc(s.sire||t('d_unknown'))}</dd><dt>${t('d_dam')}</dt><dd>${esc(s.dam||t('d_unknown'))}</dd><dt>${t('og_got')}</dt><dd>${srcTxt(s)}</dd><dt>${t('og_origin')}</dt><dd>${(o=>whoTxt(o.u)+` <span class="kbd">(${t(OG_HOW[o.how]||'og_unknown')})</span>`)(originOf(s,null))}</dd>${(s.keepers||[]).length?`<dt>${t('og_chain')}</dt><dd>${s.keepers.map(u=>profLink(u)).join(' → ')} → ${t('og_you')}</dd>`:''}<dt>${t('d_status')}</dt><dd>${r?'⏳ '+esc(t(r)):t('ready_ok')}</dd><dt>${t('d_value')}</dt><dd><b>${money(value(s))}</b></dd></dl>
+ <dl><dt>${t('d_species')}</dt><dd>${SP_ICON[spOf(s)]} ${t('sp_'+spOf(s))}</dd><dt>${t('d_code')}</dt><dd>${code(s)}</dd><dt>${t('d_agew')}</dt><dd>${ageTxt(s.age)} · ${fmt(s.w)} g</dd><dt>${t('d_life')}</dt><dd>${t('d_life_v',{max:ageTxt(maxAge(s)),left:ageTxt(lifeLeft(s))})}</dd><dt>${t('og_got')}</dt><dd>${srcTxt(s)}</dd><dt>${t('og_origin')}</dt><dd>${(o=>whoTxt(o.u)+` <span class="kbd">(${t(OG_HOW[o.how]||'og_unknown')})</span>`)(originOf(s,null))}</dd>${(s.keepers||[]).length?`<dt>${t('og_chain')}</dt><dd>${s.keepers.map(u=>profLink(u)).join(' → ')} → ${t('og_you')}</dd>`:''}<dt>${t('d_status')}</dt><dd>${r?'⏳ '+esc(t(r)):t('ready_ok')}</dd><dt>${t('d_value')}</dt><dd><b>${money(value(s))}</b></dd></dl>${pedTree(s)}
  <div class="row"><input id="nick" maxlength="24" placeholder="${t('nick_ph')}" value="${esc(s.nick)}"><button data-act="nick" data-id="${s.id}">${t('save')}</button></div>
  <div class="actions"><button class="pri" data-act="list" data-id="${s.id}" ${s.gravid?'disabled':''}>${s.listed?t('unlist'):t('list',{v:money(value(s))})}</button><button data-act="quicksell" data-id="${s.id}" ${s.gravid?'disabled':''}>${t('quick',{v:money(value(s)*.6)})}</button><button data-act="tobreed" data-id="${s.id}">${t('plan')}</button><button class="ghost" data-act="close">${t('close')}</button></div>
  ${s.gravid?`<p class="kbd">${t('gravid_nosale')}</p>`:''}`)}

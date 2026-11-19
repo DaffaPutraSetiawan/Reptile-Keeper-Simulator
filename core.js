@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:23,date:'2026-11-19'};
+const VERSION={v:24,date:'2026-11-19'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -231,7 +231,19 @@ const lifeLeft=s=>Math.max(0,maxAge(s)-s.age);
 function femaleReady(s){const sp=spOf(s),P=SPECIES[sp];if(s.gravid)return 'r_gravid';if(s.age<P.fAge)return sp==='ball'?'r_fage':'r_fage_'+sp;if(S.turn-s.lastLaid<P.recover)return 'r_recover';if(s.listed)return 'r_listed';return ''}
 function maleReady(s){const sp=spOf(s);if(s.age<SPECIES[sp].mAge)return sp==='ball'?'r_mage':'r_mage_'+sp;if(s.pairs>=4)return 'r_mpairs';if(s.listed)return 'r_listed';return ''}
 const readyMsg=s=>s.sex==='M'?maleReady(s):femaleReady(s);
-function snap(s){return{id:s.id,g:JSON.parse(JSON.stringify(s.g)),hp:{...s.hp},label:code(s)+' '+fullName(s),gen:s.gen}}
+function snap(s){return{id:s.id,g:JSON.parse(JSON.stringify(s.g)),hp:{...s.hp},label:code(s)+' '+fullName(s),gen:s.gen,pn:pedNode(s)}}
+/* ========= SILSILAH ========= */
+// Setiap anak menyimpan ringkasan induknya di s.ped = {s: induk jantan, d: induk betina}, dan tiap induk membawa
+// ringkasan orang tuanya sendiri. Jadi pohon 3 generasi (hewan, induk, kakek-nenek) tetap utuh walaupun induknya
+// sudah dijual, mati, atau di-trade, dan ikut pindah saat hewannya di-trade.
+// Simpul: {k: seed hewan, c: kode saat itu, n: nama morph, x: kelamin, h: het (khusus induk), s/d: kakek & nenek}.
+// k dipakai untuk mengenali induk yang masih kamu miliki (id berganti saat trade, seed tidak).
+const pedLite=p=>p?{k:p.k,c:p.c,n:p.n,x:p.x}:null;
+// hewan lama tanpa s.ped: induknya hanya dikenal dari label teks, mis. "BP-0002 Pastel"
+function labelNode(l,x){if(!l||typeof l!=='string')return null;const i=l.indexOf(' ');return{c:i<0?l:l.slice(0,i),n:i<0?'':l.slice(i+1),x}}
+function pedParents(s){return s.ped?{s:s.ped.s||null,d:s.ped.d||null}:{s:labelNode(s.sire,'M'),d:labelNode(s.dam,'F')}}
+function pedNode(s){const o={k:s.seed,c:code(s),n:fullName(s),x:s.sex},h=hetText(s),pp=pedParents(s);if(h)o.h=h;
+ if(pp.s)o.s=pedLite(pp.s);if(pp.d)o.d=pedLite(pp.d);return o}
 function removeSnake(s){if(s.sex==='M')S.snakes.forEach(f=>{if(f.pairedWith===s.id)f.pairedWith=null});if(s.pairedWith){const m=byId(s.pairedWith);if(m)m.pairs=Math.max(0,m.pairs-1)}S.snakes=S.snakes.filter(x=>x!==s)}
 // Morph Dex: kunci ball python = nama morph (seperti dulu); spesies lain diberi awalan, mis. "leo:RAPTOR".
 const dexKey=(tr,sp)=>(sp&&sp!=='ball'?sp+':':'')+nameOf(tr,null,sp||spOfTr(tr));
@@ -351,7 +363,7 @@ function previewNext(){
 // sisanya otomatis dijual cepat (60% nilai). Brood yang belum dipilih saat "Lanjut bulan" diproses otomatis:
 // bayi yang paling bernilai disimpan.
 function broodSnake(b,it){const P=SPECIES[b.sp],o={sp:b.sp,sex:it.sex,age:0,w:P.hatchW[0],g:it.g,hp:{...b.hp},sire:b.sireLabel,dam:b.damLabel,gen:b.gen,src:{t:'bred',turn:b.turn}};
- const tr=traitsOf(it.g);for(const l of P.loci)if(l.t==='rec'&&tr.includes(l.k))o.hp[l.k]=1;return newSnake(o)}
+ if(b.ped)o.ped=b.ped;const tr=traitsOf(it.g);for(const l of P.loci)if(l.t==='rec'&&tr.includes(l.k))o.hp[l.k]=1;return newSnake(o)}
 const broodValue=(b,i)=>value(broodSnake(b,b.items[i]));
 function resolveBrood(b,keep,auto){const P=SPECIES[b.sp];let total=0,sold=0;const sat=new Set();
  b.items.forEach((it,i)=>{const s=broodSnake(b,it);if(keep.includes(i))addSnake(s);else{total+=Math.round(value(s)*.6);sold++;traitsOf(it.g).forEach(t=>sat.add(t))}});
@@ -372,11 +384,11 @@ function advance(){
   c.hatchIn--;if(c.hatchIn>0)continue;
   const sp=spOf(c),P=SPECIES[sp];
   let born=0,dead=0,nm=0,nf=0;const vis=new Set();const newNames=[];
-  const brood=P.brood?{bid:Math.floor(R()*1e9),sp,damLabel:c.damLabel,sireLabel:c.sireLabel,gen:c.gen,hp:{...c.hp},items:[],turn:S.turn}:null;
+  const brood=P.brood?{bid:Math.floor(R()*1e9),sp,damLabel:c.damLabel,sireLabel:c.sireLabel,gen:c.gen,hp:{...c.hp},items:[],turn:S.turn}:null;if(brood&&c.ped)brood.ped=c.ped;
   for(const g of c.eggs){if(R()<.04){dead++;continue}
    const sex=R()<femaleChance(c.temp,sp)?'F':'M';
    if(brood)brood.items.push({g,sex});
-   else{const o={sex,w:rint(P.hatchW),g,hp:{...c.hp},sire:c.sireLabel,dam:c.damLabel,gen:c.gen,src:{t:'bred',turn:S.turn}};if(sp!=='ball')o.sp=sp;
+   else{const o={sex,w:rint(P.hatchW),g,hp:{...c.hp},sire:c.sireLabel,dam:c.damLabel,gen:c.gen,src:{t:'bred',turn:S.turn}};if(sp!=='ball')o.sp=sp;if(c.ped)o.ped=c.ped;
     const s=addSnake(newSnake(o));const tr=traitsOf(g);for(const l of P.loci)if(l.t==='rec'&&tr.includes(l.k))s.hp[l.k]=1}
    const tr=traitsOf(g);tr.forEach(t=>{if(isRec(t))vis.add(t)});
    if(sex==='F')nf++;else nm++;
@@ -394,7 +406,7 @@ function advance(){
   const sp=spOf(f),P=SPECIES[sp],no=f.gravid.no||1,tot=f.gravid.tot||1;
   const m=f.gravid.sire;const n=P.eggs(f),slugP=P.slug+P.slugStep*(no-1);
   const eggs=[];let slugs=0;for(let i=0;i<n;i++){if(R()>=slugP)eggs.push(breedGeno(m,f));else slugs++}
-  const c={cid:Math.floor(R()*1e9),damId:f.id,sireId:m.id,damLabel:code(f)+' '+fullName(f),sireLabel:m.label,eggs,slugs,hatchIn:P.inc,incTotal:P.inc,temp:P.temp?P.temp.mid:null,hp:childHp(m,f),gen:Math.max(f.gen,m.gen)+1};
+  const c={cid:Math.floor(R()*1e9),damId:f.id,sireId:m.id,damLabel:code(f)+' '+fullName(f),sireLabel:m.label,eggs,slugs,hatchIn:P.inc,incTotal:P.inc,temp:P.temp?P.temp.mid:null,hp:childHp(m,f),gen:Math.max(f.gen,m.gen)+1,ped:{s:m.pn||labelNode(m.label,'M'),d:pedNode(f)}};
   if(sp!=='ball')c.sp=sp;S.clutches.push(c);
   S.stats.clutches++;
   log('l_laid',tot>1?{c:code(f),n,good:eggs.length,slug:slugs,m:P.inc,no,tot}:{c:code(f),n,good:eggs.length,slug:slugs,m:P.inc},'good');head.push(['h_laid',{c:code(f),n:eggs.length}]);
@@ -494,6 +506,7 @@ root.MorphCore={
  mi,yr,cap,log,rackPrice,RACK_MULT,
  emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,
  OLD_WARN,maxAge,lifeLeft,sizeMult,kOf,growW,
+ pedNode,pedParents,labelNode,
  mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,dexKey,matches,ORDER_PREMIUM,orderPay,
  monthlyCosts,previewNext,
  MARKET_SIZE,MARKET_EVERY,BUY_MULT,MARKET_POOL,listingTraits,marketBase,marketPrice,marketLeft,refreshMarket,ensureMarket,marketOk,makeMarketSnake,
