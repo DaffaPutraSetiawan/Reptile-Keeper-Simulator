@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:35,date:'2026-11-20'};
+const VERSION={v:36,date:'2026-11-20'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -401,6 +401,33 @@ const MKT_MIN=.5,MKT_MAX=100000000,MKT_DAYS=14;   // Pasar Pemain: harga minimal
 const orderPay=(o,s)=>Math.max(o.reward,Math.ceil(value(s)*ORDER_PREMIUM/5)*5);   // dibulatkan ke atas: selalu ≥125%
 function matches(o){if(isBig(o))return[];const sp=spOf(o);return S.snakes.filter(s=>{const tr=traitsOf(s.g);return spOf(s)===sp&&o.tr.every(t=>hasTrait(s,tr,t))&&(!o.sex||s.sex===o.sex)&&!s.gravid&&!s.listed})}
 
+/* ========= STATISTIK PRIBADI =========
+   S.ps (hanya untuk pemilik save, tampil di profil sendiri). Mulai dicatat sejak v36 (ps.since = turn pertama tercatat).
+    ch  = penjualan per saluran {order, big, ad, quick, brood, pmarket}: {n: jumlah hewan, v: uang}
+    ex  = pengeluaran {food, util, over, buy (toko NPC), pbuy (Pasar Pemain), rack}
+    mp  = uang per morph & kelamin {'sp|nama|M': {n, v}} (maks. MP_MAX, yang paling kecil dibuang)
+    hs  = bayi menetas per spesies · cl/laid/slug/dead = clutch, telur, telur tidak subur, gagal menetas
+    hist = titik bulanan {t: turn, m: uang, w: kekayaan bersih, n: jumlah hewan, e: event bulan itu} untuk HIST_MAX bulan terakhir;
+    hy  = ringkasan per tahun game untuk bulan yang lebih lama {y, m, w, n} (nilai akhir tahun) */
+const HIST_MAX=120,MP_MAX=150;
+function ps(){let p=S.ps;if(!p||typeof p!=='object'||Array.isArray(p))p=S.ps={};
+ if(typeof p.since!=='number')p.since=S.turn;
+ for(const k of ['ch','ex','mp','hs'])if(!p[k]||typeof p[k]!=='object'||Array.isArray(p[k]))p[k]={};
+ for(const k of ['cl','laid','slug','dead'])if(typeof p[k]!=='number')p[k]=0;
+ for(const k of ['hist','hy'])if(!Array.isArray(p[k]))p[k]=[];
+ const keys=Object.keys(p.mp);if(keys.length>MP_MAX){keys.sort((a,b)=>(p.mp[b].v||0)-(p.mp[a].v||0)).slice(MP_MAX).forEach(k=>delete p.mp[k])}
+ return p}
+function psCh(k,n,v){const c=ps().ch;const x=c[k]||(c[k]={n:0,v:0});x.n+=n;x.v+=Math.round(v)}
+function psEx(k,v){const e=ps().ex;e[k]=(e[k]||0)+Math.round(v)}
+const psKey=s=>spOf(s)+'|'+fullName(s)+'|'+s.sex;
+function psMorph(s,v){const m=ps().mp,k=psKey(s);const x=m[k]||(m[k]={n:0,v:0});x.n++;x.v+=Math.round(v)}
+function psSale(ch,s,v){psCh(ch,1,v);psMorph(s,v)}
+function netWorth(){let w=S.money;for(const s of S.snakes)w+=value(s);return Math.round(w)}
+function psPoint(e){const p=ps(),pt={t:S.turn,m:Math.round(S.money),w:netWorth(),n:S.snakes.length};if(e)pt.e=e;p.hist.push(pt);
+ while(p.hist.length>HIST_MAX){const o=p.hist.shift(),y=1+Math.floor((8+o.t)/12),l=p.hy[p.hy.length-1];
+  if(l&&l.y===y){l.m=o.m;l.w=o.w;l.n=o.n}else p.hy.push({y,m:o.m,w:o.w,n:o.n})}
+ if(p.hy.length>300)p.hy.splice(0,p.hy.length-300)}
+
 /* ========= MISI PEMULA ========= */
 // Daftar misi tutorial. Dicek server setelah setiap aksi (urutan bebas); misi yang syaratnya terpenuhi langsung
 // selesai dan hadiahnya masuk ke saldo. S.quest = {d: [misi selesai], hide: 1 kalau panel disembunyikan}.
@@ -493,7 +520,7 @@ function broodSnake(b,it){const P=SPECIES[b.sp],o={sp:b.sp,sex:it.sex,age:0,w:P.
  if(b.ped)o.ped=b.ped;if(b.ca)Object.assign(o,b.ca);const tr=traitsOf(it.g);for(const l of P.loci)if(l.t==='rec'&&tr.includes(l.k))o.hp[l.k]=1;return newSnake(o)}
 const broodValue=(b,i)=>value(broodSnake(b,b.items[i]));
 function resolveBrood(b,keep,auto){const P=SPECIES[b.sp];let total=0,sold=0;const sat=new Set();
- b.items.forEach((it,i)=>{const s=broodSnake(b,it);if(keep.includes(i))addSnake(s);else{total+=Math.round(value(s)*.6);sold++;traitsOf(it.g).forEach(t=>sat.add(t))}});
+ b.items.forEach((it,i)=>{const s=broodSnake(b,it);if(keep.includes(i))addSnake(s);else{const v=Math.round(value(s)*.6);total+=v;sold++;psSale('brood',s,v);traitsOf(it.g).forEach(t=>sat.add(t))}});
  sat.forEach(t=>S.mm[t]=mm(t)*.95);   // jual banyak sekaligus: harga morph itu sedikit turun (sekali per gen)
  S.money+=total;S.stats.sold+=sold;S.stats.earned+=total;S.broods=S.broods.filter(x=>x!==b);
  log(auto?'l_brood_auto':'l_brood_done',{d:b.damLabel.split(' ')[0],k:keep.length,n:sold,v:money(total)},'good');return{kept:keep.length,sold,total}}
@@ -501,7 +528,7 @@ function autoBrood(b){const P=SPECIES[b.sp];return b.items.map((_,i)=>[i,broodVa
 
 /* ========= MAJU SATU BULAN ========= */
 function advance(){
- const ev=S.event||{};const head=[];
+ const ev=S.event||{};const head=[];ps();
  if(!Array.isArray(S.broods))S.broods=[];
  // 0. brood axolotl yang belum dipilih bulan lalu: simpan yang paling bernilai, sisanya dijual
  for(const b of S.broods.slice())resolveBrood(b,autoBrood(b),true);
@@ -521,7 +548,7 @@ function advance(){
    const tr=traitsOf(g);tr.forEach(t=>{if(isRec(t))vis.add(t)});
    if(sex==='F')nf++;else nm++;
    if(dexAdd(tr,sp))newNames.push(nameOf(tr,null,sp));born++;}
-  S.stats.hatched+=born;
+  S.stats.hatched+=born;{const p=ps();p.hs[sp]=(p.hs[sp]||0)+born;p.dead+=dead}
   if(brood&&brood.items.length){S.broods.push(brood);log('l_brood',{dam:c.damLabel.split(' ')[0],sire:c.sireLabel.split(' ')[0],born,dead,nm,nf,k:P.brood},'star');head.push(['h_brood',{n:born,k:P.brood}])}
   else{log('l_hatch',{dam:c.damLabel.split(' ')[0],sire:c.sireLabel.split(' ')[0],born,dead,nm,nf},'good');head.push(['h_born',{n:born}])}
   newNames.forEach(n=>{log('l_newmorph',{n},'star');head.push(['h_new',{n}])});
@@ -536,7 +563,7 @@ function advance(){
   const eggs=[];let slugs=0;for(let i=0;i<n;i++){if(R()>=slugP)eggs.push(breedGeno(m,f));else slugs++}
   const c={cid:Math.floor(R()*1e9),damId:f.id,sireId:m.id,damLabel:code(f)+' '+fullName(f),sireLabel:m.label,eggs,slugs,hatchIn:P.inc,incTotal:P.inc,temp:P.temp?P.temp.mid:null,hp:childHp(m,f),gen:Math.max(f.gen,m.gen)+1,ped:{s:m.pn||labelNode(m.label,'M'),d:pedNode(f)},inb:F,ca:m.ar?childAnc(m.ar,ancRec(f),F):null};
   if(sp!=='ball')c.sp=sp;S.clutches.push(c);
-  S.stats.clutches++;
+  S.stats.clutches++;{const p=ps();p.cl++;p.laid+=n;p.slug+=slugs}
   log('l_laid',tot>1?{c:code(f),n,good:eggs.length,slug:slugs,m:P.inc,no,tot}:{c:code(f),n,good:eggs.length,slug:slugs,m:P.inc},'good');head.push(['h_laid',{c:code(f),n:eggs.length}]);
   f.lastLaid=S.turn;f.w=Math.round(f.w*P.layLoss);
   if(no<tot&&f.w>=P.minLayW)f.gravid={sire:m,layIn:1,no:no+1,tot,inb:F};   // F ikut ke clutch berikutnya
@@ -552,10 +579,10 @@ function advance(){
  // 4b. mati karena tua (betina yang sedang bunting ikut mati bersama telurnya)
  for(const s of S.snakes.slice())if(s.age>=maxAge(s)){log('l_oldage',{c:code(s),n:fullName(s),a:s.age,gr:s.gravid?1:0},'bad');head.push(['h_oldage',{c:code(s)}]);removeSnake(s)}
  // 5. iklan
- for(const s of S.snakes.slice()){if(!s.listed)continue;if(R()<(ev.expo?.7:.35)){const v=value(s);S.money+=v;S.stats.sold++;S.stats.earned+=v;traitsOf(s.g).forEach(t=>S.mm[t]=mm(t)*.97);log('l_soldad',{c:code(s),n:fullName(s),v:money(v)},'good');head.push(['h_sold',{c:code(s),v:money(v)}]);removeSnake(s)}}
+ for(const s of S.snakes.slice()){if(!s.listed)continue;if(R()<(ev.expo?.7:.35)){const v=value(s);S.money+=v;S.stats.sold++;S.stats.earned+=v;psSale('ad',s,v);traitsOf(s.g).forEach(t=>S.mm[t]=mm(t)*.97);log('l_soldad',{c:code(s),n:fullName(s),v:money(v)},'good');head.push(['h_sold',{c:code(s),v:money(v)}]);removeSnake(s)}}
  // 6. biaya
  const{food,util,over,total}=monthlyCosts(S.snakes,S.racks,ev);
- S.money-=total;
+ S.money-=total;psEx('food',food);psEx('util',util);if(over)psEx('over',over);
  log('l_costs',{food:money(food),util:money(util),over:over?money(over):''},over?'bad':'info');
  // 7. pesanan
  for(const o of S.orders.slice()){o.left--;if(o.left<=0){S.orders=S.orders.filter(x=>x!==o);log('l_orderexp',{bi:o.bi,b:o.buyer,n:orderLabel(o)},'bad')}}
@@ -572,6 +599,7 @@ function advance(){
   else S.event={food:1.5,e:'ev_food'};
   log('l_event',{e:S.event.e,g:S.event.g},'star')}
  if(S.money<0)log('l_debt',null,'bad');
+ psPoint(ev.e);
  return head;
 }
 
@@ -596,7 +624,7 @@ const ACTIONS={
   if(s.listed&&s.sex==='M'){S.snakes.forEach(f=>{if(f.pairedWith===s.id)f.pairedWith=null});s.pairs=0}
   log(s.listed?'l_listed':'l_unlisted',{c:code(s)});return{}},
  quicksell(a){const s=mustSnake(a.id);if(s.gravid)fail('gravid_locked');
-  const v=Math.round(value(s)*.6);S.money+=v;S.stats.sold++;S.stats.earned+=v;traitsOf(s.g).forEach(g=>S.mm[g]=mm(g)*.97);
+  const v=Math.round(value(s)*.6);S.money+=v;S.stats.sold++;S.stats.earned+=v;psSale('quick',s,v);traitsOf(s.g).forEach(g=>S.mm[g]=mm(g)*.97);
   log('l_quick',{c:code(s),n:fullName(s),v:money(v)},'good');removeSnake(s);return{}},
  // Aksi sekaligus dari tampilan daftar koleksi: op = 'list' (iklankan), 'unlist' (batalkan iklan), 'quicksell' (jual cepat 60%).
  // Semua hewan dicek dulu; kalau ada satu yang tidak sah, tidak ada yang diubah. Maks. 200 hewan per aksi.
@@ -604,7 +632,7 @@ const ACTIONS={
   if(!Array.isArray(a.ids)||!a.ids.length||a.ids.length>200)fail('bad_action');
   const ids=a.ids.map(toId);if(new Set(ids).size!==ids.length)fail('bad_action');
   const list=ids.map(mustSnake);if(list.some(s=>s.gravid))fail('gravid_locked');
-  if(op==='quicksell'){let tot=0;for(const s of list){const v=Math.round(value(s)*.6);tot+=v;S.money+=v;S.stats.sold++;S.stats.earned+=v;traitsOf(s.g).forEach(g=>S.mm[g]=mm(g)*.97);removeSnake(s)}
+  if(op==='quicksell'){let tot=0;for(const s of list){const v=Math.round(value(s)*.6);tot+=v;S.money+=v;S.stats.sold++;S.stats.earned+=v;psSale('quick',s,v);traitsOf(s.g).forEach(g=>S.mm[g]=mm(g)*.97);removeSnake(s)}
    log('l_bulk_sell',{n:list.length,v:money(tot)},'good');return{toast:'t_bulk_sell'}}
   let n=0;for(const s of list){const on=op==='list';if(s.listed===on)continue;s.listed=on;n++;
    if(on&&s.pairedWith){const m=byId(s.pairedWith);if(m)m.pairs=Math.max(0,m.pairs-1);s.pairedWith=null}
@@ -623,7 +651,7 @@ const ACTIONS={
  buy(a){const lid=toId(a.lid);const L=S.market.find(x=>x.lid===lid);if(!L)fail('listing_gone');
   if(!Object.prototype.hasOwnProperty.call(BUY_MULT,a.age)||(a.sex!=='M'&&a.sex!=='F'))fail('bad_action');
   const price=marketPrice(L,a.age);if(S.money<price)fail('not_enough_money');
-  S.money-=price;const s=addSnake(makeMarketSnake(L,a.age,a.sex));s.src={t:'market',turn:S.turn};const nw=dexAdd(traitsOf(s.g),spOf(s));   // listing tetap ada: bisa dibeli lagi
+  S.money-=price;psEx('buy',price);const s=addSnake(makeMarketSnake(L,a.age,a.sex));s.src={t:'market',turn:S.turn};const nw=dexAdd(traitsOf(s.g),spOf(s));   // listing tetap ada: bisa dibeli lagi
   log('l_buy',{c:code(s),n:fullName(s),h:hetText(s),v:money(price)});if(nw)log('l_newmorph',{n:nameOf(traitsOf(s.g),null,spOf(s))},'star');return{}},
  clearlog(){S.log=[];return{toast:'t_logcleared'}},
  quest_hide(){if(!S.quest)S.quest={d:[]};S.quest.hide=1;return{}},
@@ -635,26 +663,26 @@ const ACTIONS={
   if(!tempOpen(c))fail('temp_locked');
   const tp=Number(a.temp);if(!validTemp(tp,spOf(c)))fail('bad_temp');
   c.temp=tp;S.qf=S.qf||{};S.qf.temp=1;return{}},
- rack(){const price=rackPrice();if(S.money<price)fail('not_enough_money');S.money-=price;S.racks++;log('l_rack',{cap:cap(),v:money(price)});return{}},
+ rack(){const price=rackPrice();if(S.money<price)fail('not_enough_money');S.money-=price;S.racks++;psEx('rack',price);log('l_rack',{cap:cap(),v:money(price)});return{}},
  fulfill(a){const o=S.orders.find(x=>x.oid===toId(a.oid));if(!o)fail('order_gone');
   if(isBig(o))return bigFulfill(o,a);
   const s=mustSnake(a.sid);
   if(!matches(o).includes(s))fail('order_mismatch');
-  const pay=orderPay(o,s);S.money+=pay;S.stats.sold++;S.stats.earned+=pay;S.stats.orders=(S.stats.orders||0)+1;log('l_fulfill',{c:code(s),n:fullName(s),bi:o.bi,b:o.buyer,r:money(pay),rp:REP_ORDER},'star');
+  const pay=orderPay(o,s);S.money+=pay;psSale('order',s,pay);S.stats.sold++;S.stats.earned+=pay;S.stats.orders=(S.stats.orders||0)+1;log('l_fulfill',{c:code(s),n:fullName(s),bi:o.bi,b:o.buyer,r:money(pay),rp:REP_ORDER},'star');
   removeSnake(s);S.orders=S.orders.filter(x=>x!==o);addRep(REP_ORDER);return{}},
 };
 // Pembeli besar: a.sids = [id hewan untuk permintaan 1, id hewan untuk permintaan 2], dikirim sekaligus.
 function bigFulfill(o,a){const ids=Array.isArray(a.sids)?a.sids:[];if(ids.length!==2)fail('order_mismatch');
  const list=ids.map(id=>mustSnake(id));if(list[0]===list[1])fail('order_same_animal');
  o.items.forEach((x,i)=>{if(!matches(x).includes(list[i]))fail('order_mismatch')});
- const pay=bigPay(o,list);S.money+=pay;S.stats.sold+=2;S.stats.earned+=pay;S.stats.orders=(S.stats.orders||0)+1;S.stats.big=(S.stats.big||0)+1;
+ const pay=bigPay(o,list);S.money+=pay;{const tv=list.reduce((a,x)=>a+value(x),0)||1;psCh('big',2,0);list.forEach(x=>{psMorph(x,pay*value(x)/tv);ps().ch.big.v+=Math.round(pay*value(x)/tv)})}S.stats.sold+=2;S.stats.earned+=pay;S.stats.orders=(S.stats.orders||0)+1;S.stats.big=(S.stats.big||0)+1;
  log('l_fulfill_big',{c:list.map(code).join(' + '),bi:o.bi,r:money(pay),rp:REP_BIG},'star');
  list.forEach(removeSnake);S.orders=S.orders.filter(x=>x!==o);addRep(REP_BIG);return{}}
 // Jalankan satu aksi pada state (state diubah langsung). Melempar Error(kode) kalau tidak sah.
 function applyAction(state,a){
  if(!a||typeof a!=='object'||typeof a.type!=='string'||!Object.prototype.hasOwnProperty.call(ACTIONS,a.type))fail('bad_action');
  S=state;if(!Array.isArray(S.broods))S.broods=[];if(typeof S.rep!=='number')S.rep=(S.stats&&S.stats.orders)||0;   // save lama: reputasi = pesanan yang sudah dipenuhi
- syncDex();trimLog();ensureMarket();
+ syncDex();trimLog();ensureMarket();ps();
  if(!S.fx||!S.fx.inb){repairInb();S.fx=Object.assign(S.fx||{},{inb:1})}
  const res=ACTIONS[a.type](a)||{};
  const q=checkQuests();if(q.length)res.quests=q;
@@ -675,7 +703,7 @@ root.MorphCore={
  monthlyCosts,previewNext,
  MARKET_SIZE,MARKET_EVERY,BUY_MULT,MARKET_POOL,listingTraits,marketBase,marketPrice,marketLeft,refreshMarket,ensureMarket,marketOk,makeMarketSnake,
  INC_MONTHS,TEMP_MIN,TEMP_MAX,TEMP_MID,TEMP_STEP,tempRange,femaleChance,incTotal,tempOpen,tempMonthsLeft,validTemp,
- QUESTS,checkQuests,rankStats,
+ QUESTS,checkQuests,rankStats,HIST_MAX,MP_MAX,ps,netWorth,psKey,
  newGame,advance,applyAction,syncDex,isState,ACTION_TYPES:Object.keys(ACTIONS)
 };
 })(typeof globalThis!=='undefined'?globalThis:this);

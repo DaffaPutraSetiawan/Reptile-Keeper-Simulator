@@ -183,6 +183,17 @@ button.sm{padding:4px 10px;font-size:12.5px}
 .prof .profhead{display:flex;gap:14px;align-items:center}.profrep{font-size:13.5px;font-weight:700;color:var(--acc);margin:1px 0 3px}.prof h2{margin:0 0 2px}
 .avatar{width:64px;height:64px;border-radius:50%;overflow:hidden;flex:none;background:var(--panel3);border:2px solid var(--acc);display:grid;place-items:center}.avatar img{width:150%;height:150%;object-fit:cover}.avatar span{font-size:28px;font-weight:700;color:var(--acc)}
 .prof .bio{white-space:pre-line;margin:12px 0;line-height:1.5}
+.stats .mbox{}.pstats.st6{grid-template-columns:repeat(3,1fr)}.pstats.st6 b{font-size:15px}
+.stlegend{display:flex;gap:14px;font-size:12px;color:var(--mut);margin:2px 0 4px}.stlegend i,.sttip i{display:inline-block;width:10px;height:3px;border-radius:2px;vertical-align:middle;margin-right:5px}
+.stchart{position:relative;touch-action:pan-y}.stchart svg{width:100%;height:auto;display:block}.stchart text{fill:var(--mut);font-size:11px}.stchart text.stlab{fill:var(--text);font-size:11.5px}
+.stchart .stg{stroke:var(--line);stroke-width:1}.stchart .st0{stroke:var(--lineh);stroke-width:1}.stchart .stl{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.stchart .stx{stroke:var(--lineh);stroke-width:1;stroke-dasharray:3 3}.stchart .std{stroke:var(--panel);stroke-width:2}.stchart .stev{fill:var(--mut)}.stevk{color:var(--mut);font-size:10px;margin-right:3px}
+.sttip{position:absolute;pointer-events:none;background:var(--toast);border:1px solid var(--line);border-radius:10px;padding:7px 9px;font-size:12px;line-height:1.5;white-space:nowrap;z-index:2}
+.sttable{margin:6px 0 4px;font-size:12.5px}.sttable summary{cursor:pointer;color:var(--mut)}.sttable table{max-height:none}
+.stbars{display:flex;flex-direction:column;gap:6px;margin:6px 0}.stbar{display:grid;grid-template-columns:150px 1fr auto;gap:8px;align-items:center;font-size:12.5px}
+.stbar .tr{height:10px;background:var(--panel3);border-radius:4px;overflow:hidden}.stbar .tr span{display:block;height:100%;background:#3987e5;border-radius:0 4px 4px 0;min-width:0}.stbar .vl{color:var(--text);font-variant-numeric:tabular-nums;white-space:nowrap}
+.sttop{margin:6px 0;padding-left:22px;font-size:13px}.sttop li{margin:4px 0}
+@media (max-width:640px){.stbar{grid-template-columns:100px 1fr}.stbar .vl{grid-column:1/-1;font-size:11.5px;color:var(--mut)}}
 .pstats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:10px 0 4px}.pstats div{background:var(--panel3);border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}.pstats b{display:block;font-size:18px}.pstats span{font-size:11.5px;color:var(--mut)}
 .showcase{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}.sc-card{position:relative;background:var(--panel3);border:1px solid var(--line);border-radius:12px;padding:8px}.sc-card img{width:100%;border-radius:8px;display:block}.sc-name{font-weight:700;margin-top:6px;font-size:13.5px}.sc-card .meta,.sc-card .het{font-size:11.5px}.sc-val{font-weight:700;color:var(--acc);margin-top:4px;font-size:13px}.sc-rank{position:absolute;top:12px;left:12px;background:var(--acc);color:var(--onacc);font-weight:800;font-size:11px;border-radius:6px;padding:1px 6px}
 .pick{max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:4px}.form label.pickrow{display:flex;gap:10px;color:var(--fg,inherit);font-size:13px}.pickrow{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:8px;cursor:pointer}.pickrow:hover{background:var(--hover)}.pickrow.on{background:var(--accbg)}.pickrow input{width:auto;margin:0}.pickrow .ord{width:16px;font-weight:800;color:var(--acc);text-align:center}.pickrow .pk{display:flex;flex-direction:column;font-size:13px}.pickrow .meta{font-size:11.5px}
@@ -438,6 +449,16 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  tab_teman:'Teman',tab_global:'Global',gc_sub:p=>`Ngobrol dengan semua pemain Morph Lab. Hanya ${p.n} pesan terakhir yang disimpan; pesan yang lebih lama terhapus otomatis.`,gc_ph:'Tulis pesan untuk semua pemain…',gc_empty:'Belum ada pesan. Jadilah yang pertama menyapa!',e_empty_message:'Pesan masih kosong.',e_message_too_long:'Pesan terlalu panjang.',busy:'Tunggu sebentar, sedang memproses…',
  tab_admin:'Admin',mod_sub:'Hanya terlihat oleh admin. Laporan chat global, pemain yang dibisukan, dan catatan semua tindakan moderasi.',mod_reload:'Muat ulang',
  ms_players:'Pemain',ms_new:p=>`+${p.a} (24 jam) · +${p.b} (7 hari)`,ms_active24:'Aktif 24 jam',ms_active7:'Aktif 7 hari',ms_msgs:'Chat global 24 jam',ms_msgs7:p=>`${p.n} dalam 7 hari`,ms_trades:'Trade 7 hari',ms_trades_ok:p=>`${p.n} diterima`,ms_reports:'Laporan chat menunggu',ms_mutes:'Pemain dibisukan',ms_bugs:'Bug belum selesai',ms_bugs_sm:p=>`${p.a} baru · ${p.b} ditinjau`,
+ st_btn:'📊 Statistik saya',st_h:'📊 Statistik saya',st_sub:'Hanya kamu yang bisa melihat halaman ini.',st_since:p=>`Grafik, penjualan per saluran, morph, pengeluaran, dan rincian breeding dihitung sejak bulan ke-${p.t} (Tahun ${p.y}).`,
+ st_nw:'Kekayaan bersih',st_money:'Uang',st_coll:'Nilai koleksi',st_animals:'Hewan',st_months:'Bulan dimainkan',st_rep:'Reputasi',
+ st_chart:'Uang & kekayaan bersih',st_r12:'12 bulan',st_r60:'5 tahun',st_rall:'Semua',st_nodata:'Belum cukup data. Tekan Lanjut bulan beberapa kali dulu.',
+ st_month:p=>`Bulan ke-${p.t} · Tahun ${p.y}`,st_yearend:p=>`Akhir Tahun ${p.y}`,st_year:p=>`Th ${p.y}`,st_table:'Lihat sebagai tabel',st_when:'Waktu',st_n:'Hewan',st_ev:'Event',
+ stev_ev_expo:'Expo',stev_ev_flood:'Pasar kebanjiran',stev_ev_trend:'Morph lagi tren',stev_ev_food:'Harga pakan naik',
+ st_breed:'🥚 Breeding',st_hatched:'Bayi menetas (total)',st_clutches:'Clutch (total)',st_eggs:'Rata-rata telur per clutch',st_slug:'Telur tidak subur',st_dead:'Gagal menetas',st_hs:'Menetas per spesies',st_dexyr:'Morph baru di Morph Dex per tahun',
+ st_sales:'💰 Penjualan per saluran',st_sold_all:p=>`Total sepanjang permainan: ${p.n} hewan terjual · ${p.v}`,st_ch_v:p=>`${p.v} · ${p.n} hewan`,
+ ch_order:'Pesanan',ch_big:'Pembeli besar',ch_ad:'Iklan',ch_quick:'Jual cepat',ch_brood:'Brood axolotl (otomatis)',ch_pmarket:'Pasar Pemain',
+ st_top:'🏆 Morph paling menguntungkan',st_top_v:p=>`${p.v} dari ${p.n} hewan`,
+ st_ex:'🧾 Pengeluaran',ex_food:'Pakan',ex_util:'Listrik & rak',ex_over:'Space darurat',ex_buy:'Beli hewan (toko NPC)',ex_pbuy:'Beli hewan (Pasar Pemain)',ex_rack:'Beli rak',st_ex_total:'Total',st_ex_avg:'Rata-rata per bulan',st_none:'Belum ada.',
  mkt_h:'Pasar Pemain',mkt_active:p=>`Sedang dijual (${p.n})`,mkt_sold:p=>`Terjual (7 hari: ${p.n})`,mkt_none:'Tidak ada jualan.',mkt_more:'Muat lebih banyak',
  mkt_hi:'⚠️ > 5× nilai',mkt_pair:'🔁 Pasangan berulang',mkt_fr:'👥 Berteman',mkt_ex:'🚫 Tidak dihitung di riwayat harga',mkt_val:p=>`nilai ${p.v}`,
  mkt_down:'⬇️ Turunkan',mkt_exclude:'🚫 Keluarkan dari riwayat harga',mkt_include:'↩️ Masukkan lagi ke riwayat',
@@ -733,6 +754,16 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  tab_teman:'Friends',tab_global:'Global',gc_sub:p=>`Chat with every Morph Lab player. Only the last ${p.n} messages are kept; older ones are deleted automatically.`,gc_ph:'Write a message to everyone…',gc_empty:'No messages yet. Be the first to say hi!',e_empty_message:'The message is empty.',e_message_too_long:'The message is too long.',busy:'One moment, still working…',
  tab_admin:'Admin',mod_sub:'Only visible to admins. Global chat reports, muted players, and a log of every moderation action.',mod_reload:'Reload',
  ms_players:'Players',ms_new:p=>`+${p.a} (24 h) · +${p.b} (7 days)`,ms_active24:'Active 24 h',ms_active7:'Active 7 days',ms_msgs:'Global chat 24 h',ms_msgs7:p=>`${p.n} in 7 days`,ms_trades:'Trades 7 days',ms_trades_ok:p=>`${p.n} accepted`,ms_reports:'Chat reports waiting',ms_mutes:'Muted players',ms_bugs:'Open bugs',ms_bugs_sm:p=>`${p.a} new · ${p.b} in review`,
+ st_btn:'📊 My statistics',st_h:'📊 My statistics',st_sub:'Only you can see this page.',st_since:p=>`Charts, sales per channel, morphs, expenses and breeding details are counted from month ${p.t} (Year ${p.y}).`,
+ st_nw:'Net worth',st_money:'Money',st_coll:'Collection value',st_animals:'Animals',st_months:'Months played',st_rep:'Reputation',
+ st_chart:'Money & net worth',st_r12:'12 months',st_r60:'5 years',st_rall:'All',st_nodata:'Not enough data yet. Press Next month a few times first.',
+ st_month:p=>`Month ${p.t} · Year ${p.y}`,st_yearend:p=>`End of Year ${p.y}`,st_year:p=>`Yr ${p.y}`,st_table:'Show as a table',st_when:'When',st_n:'Animals',st_ev:'Event',
+ stev_ev_expo:'Expo',stev_ev_flood:'Market flooded',stev_ev_trend:'Morph trending',stev_ev_food:'Feed prices up',
+ st_breed:'🥚 Breeding',st_hatched:'Babies hatched (total)',st_clutches:'Clutches (total)',st_eggs:'Average eggs per clutch',st_slug:'Infertile eggs',st_dead:'Failed to hatch',st_hs:'Hatched per species',st_dexyr:'New Morph Dex entries per year',
+ st_sales:'💰 Sales per channel',st_sold_all:p=>`All-time total: ${p.n} animals sold · ${p.v}`,st_ch_v:p=>`${p.v} · ${p.n} animals`,
+ ch_order:'Orders',ch_big:'Big buyers',ch_ad:'Ads',ch_quick:'Quick sale',ch_brood:'Axolotl brood (automatic)',ch_pmarket:'Player market',
+ st_top:'🏆 Most profitable morphs',st_top_v:p=>`${p.v} from ${p.n} animals`,
+ st_ex:'🧾 Expenses',ex_food:'Feed',ex_util:'Power & racks',ex_over:'Emergency space',ex_buy:'Buying animals (NPC shop)',ex_pbuy:'Buying animals (player market)',ex_rack:'Buying racks',st_ex_total:'Total',st_ex_avg:'Average per month',st_none:'None yet.',
  mkt_h:'Player market',mkt_active:p=>`For sale (${p.n})`,mkt_sold:p=>`Sold (7 days: ${p.n})`,mkt_none:'No listings.',mkt_more:'Load more',
  mkt_hi:'⚠️ > 5× value',mkt_pair:'🔁 Repeated pair',mkt_fr:'👥 Friends',mkt_ex:'🚫 Not counted in price history',mkt_val:p=>`value ${p.v}`,
  mkt_down:'⬇️ Take down',mkt_exclude:'🚫 Exclude from price history',mkt_include:'↩️ Include in price history again',
@@ -1468,7 +1499,7 @@ function openSnake(id){const s=byId(id);if(!s)return;const tr=traitsOf(s.g),r=re
  ${s.gravid?`<p class="kbd">${t('gravid_nosale')}</p>`:pmBlocked(s)?`<p class="kbd">${t('pm_blocked')}</p>`:''}`)}
 
 const SOCIAL_ACTS=new Set(['openchat','fr_accept','fr_decline','fr_remove','fr_remove_yes','tr_new','tb_close','tr_send','tr_send_yes','tb_back','tr_accept','tr_accept_yes','tr_decline','tr_cancel']);
-const FREE_ACTS=new Set(['pm_view','pm_sp','pm_sex','pm_refresh','pm_buy','pm_cancel','quest_go','col_sex','col_dir','col_view','col_reset','col_selnone','pl_open','pl_g','pl_sex','pl_clear','pl_pick','gview','rk_cat','rk_sp','rk_fr','rk_refresh','bug_new','bug_cancel','bug_open','bug_mine','bug_more','bug_rmimg','bug_delc','bug_del','bs_inc','bs_dec','spf','brsp','dexsp','guidesp','mk_sex','settings','theme','preview','profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
+const FREE_ACTS=new Set(['prof_stats','st_range','pm_view','pm_sp','pm_sex','pm_refresh','pm_buy','pm_cancel','quest_go','col_sex','col_dir','col_view','col_reset','col_selnone','pl_open','pl_g','pl_sex','pl_clear','pl_pick','gview','rk_cat','rk_sp','rk_fr','rk_refresh','bug_new','bug_cancel','bug_open','bug_mine','bug_more','bug_rmimg','bug_delc','bug_del','bs_inc','bs_dec','spf','brsp','dexsp','guidesp','mk_sex','settings','theme','preview','profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
 // Jalankan aksi game: dikirim ke server (Edge Function "game") yang menghitung hasilnya.
 async function game(a){
  if(!Cloud.user||!S)return null;
@@ -1801,7 +1832,7 @@ async function openProfile(u){u=String(u||'').trim();if(!u)return;
 function showProfile(p){Profile.cur=p;const self=p.relation==='self',st=p.stats;
  const tiles=[['pf_turn',st.turn],['pf_snakes',st.snakes],['pf_morphs',st.morphs],['pf_hatched',st.hatched],['pf_friends',st.friends]];
  const U=esc(p.username);let btns='';
- if(self)btns=`<button class="pri" data-act="prof_edit">✏️ ${t('pf_edit')}</button>`;
+ if(self)btns=`<button class="pri" data-act="prof_edit">✏️ ${t('pf_edit')}</button><button data-act="prof_stats">${t('st_btn')}</button>`;
  else if(p.relation==='none')btns=`<button class="pri" data-act="prof_add" data-u="${U}">➕ ${t('pf_add')}</button>`;
  else if(p.relation==='pending_out')btns=`<button disabled>⏳ ${t('pf_sent')}</button>`;
  else if(p.relation==='pending_in')btns=`<button class="pri" data-act="prof_add" data-u="${U}">👋 ${t('pf_accept')}</button>`;
@@ -1828,12 +1859,82 @@ async function saveProfile(f){const e=Profile.edit;const m=f.querySelector('.msg
  btn.disabled=true;const{data,error}=await Cloud.sb.rpc('update_profile',{p_bio:e.bio,p_showcase:e.sel});btn.disabled=false;
  if(error){m.innerHTML=`<span class="warn">${errText(error)}</span>`;return}
  Profile.edit=null;showProfile(data);toast(t('t_prof_saved'))}
+/* ========= STATISTIK PRIBADI (profil sendiri) =========
+   Data dari S.ps (dicatat server sejak v36). Warna seri: slot 1 biru (kekayaan bersih), slot 2 oranye (uang) —
+   palet referensi yang lolos uji CVD & kontras di ketiga tema. */
+var StatV={range:12,pts:[]};
+const ST_CH=['order','big','ad','quick','brood','pmarket'],ST_EX=['food','util','over','buy','pbuy','rack'];
+const stYear=tn=>1+Math.floor((8+tn)/12);
+const kfmt=v=>{const a=Math.abs(v),sg=v<0?'-':'';return a>=1e6?sg+'$'+(a/1e6).toFixed(a>=1e7?0:1)+'M':a>=1e3?sg+'$'+Math.round(a/1e3)+'k':sg+'$'+Math.round(a)};
+function stPoints(){const p=S.ps||{},h=(p.hist||[]).map(x=>({lbl:t('st_month',{t:x.t,y:stYear(x.t)}),y:stYear(x.t),m:x.m,w:x.w,n:x.n,e:x.e}));
+ if(StatV.range===12)return h.slice(-12);if(StatV.range===60)return h.slice(-60);
+ return (p.hy||[]).map(x=>({lbl:t('st_yearend',{y:x.y}),y:x.y,m:x.m,w:x.w,n:x.n})).concat(h)}
+function stTicks(lo,hi){const raw=(hi-lo)/4,mag=Math.pow(10,Math.floor(Math.log10(raw||1))),st=[1,2,2.5,5,10].map(k=>k*mag).find(k=>k>=raw)||raw;
+ const a=Math.floor(lo/st)*st,o=[];for(let v=a;v<=hi+st*.001;v+=st)o.push(v);return o}
+function stChart(pts){const n=pts.length;if(n<2)return `<p class="kbd">${t('st_nodata')}</p>`;
+ const W=600,H=230,L=52,R=104,T=16,B=26,vals=pts.flatMap(p=>[p.m,p.w]);let lo=Math.min(...vals),hi=Math.max(...vals);if(hi-lo<Math.max(100,Math.abs(hi)*.02)){lo-=Math.max(50,Math.abs(hi)*.01);hi+=Math.max(50,Math.abs(hi)*.01)}
+ const ticks=stTicks(lo,hi);lo=Math.min(lo,ticks[0]);hi=Math.max(hi,ticks[ticks.length-1]);
+ const X=i=>L+i*(W-L-R)/(n-1),Y=v=>T+(hi-v)*(H-T-B)/(hi-lo),path=k=>pts.map((p,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(p[k]).toFixed(1)).join('');
+ let xl='',last=-1,every=Math.max(1,Math.ceil(new Set(pts.map(p=>p.y)).size/6)),seen=0;
+ pts.forEach((p,i)=>{if(p.y!==last){if(seen%every===0)xl+=`<text x="${X(i).toFixed(1)}" y="${H-8}" text-anchor="middle">${t('st_year',{y:p.y})}</text>`;seen++;last=p.y}});
+ const ev=pts.map((p,i)=>p.e?`<circle cx="${X(i).toFixed(1)}" cy="${T-8}" r="3" class="stev"><title>${esc(p.lbl)} · ${esc(t('stev_'+p.e))}</title></circle>`:'').join('');
+ const end=k=>Y(pts[n-1][k]),gap=Math.abs(end('w')-end('m'))<14?(end('w')<end('m')?-7:7):0;
+ return `<div class="stlegend"><span><i style="background:#3987e5"></i>${t('st_nw')}</span><span><i style="background:#d95926"></i>${t('st_money')}</span>${pts.some(p=>p.e)?`<span><b class="stevk">●</b> ${t('st_ev')}</span>`:''}</div>
+ <div class="stchart" data-n="${n}" data-l="${L}" data-r="${R}" data-w="${W}"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${t('st_chart')}">
+  ${ticks.map(v=>`<line x1="${L}" x2="${W-R}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}" class="${v===0?'st0':'stg'}"/><text x="${L-6}" y="${(Y(v)+4).toFixed(1)}" text-anchor="end">${kfmt(v)}</text>`).join('')}
+  ${xl}${ev}
+  <path d="${path('w')}" class="stl" stroke="#3987e5"/><path d="${path('m')}" class="stl" stroke="#d95926"/>
+  <text x="${W-R+6}" y="${(end('w')+4-gap).toFixed(1)}" class="stlab">${t('st_nw')}</text><text x="${W-R+6}" y="${(end('m')+4+gap).toFixed(1)}" class="stlab">${t('st_money')}</text>
+  <line class="stx" x1="0" x2="0" y1="${T}" y2="${H-B}" style="display:none"/>
+  <circle class="std w" r="4" fill="#3987e5" style="display:none"/><circle class="std m" r="4" fill="#d95926" style="display:none"/>
+ </svg><div class="sttip" style="display:none"></div></div>
+ <details class="sttable"><summary>${t('st_table')}</summary><table class="pv"><tr><td><b>${t('st_when')}</b></td><td class="num"><b>${t('st_money')}</b></td><td class="num"><b>${t('st_nw')}</b></td><td class="num"><b>${t('st_n')}</b></td></tr>
+  ${pts.slice().reverse().map(p=>`<tr><td>${esc(p.lbl)}${p.e?` · ${esc(t('stev_'+p.e))}`:''}</td><td class="num">${money(p.m)}</td><td class="num">${money(p.w)}</td><td class="num">${fmt(p.n)}</td></tr>`).join('')}</table></details>`}
+// crosshair + tooltip: titik terdekat di bawah kursor/jari
+function stHover(c,e){const pts=StatV.pts,n=+c.dataset.n,svg=c.querySelector('svg');if(!svg||n<2)return;
+ const r=svg.getBoundingClientRect(),W=+c.dataset.w,L=+c.dataset.l,R=+c.dataset.r,x=(e.clientX-r.left)*W/r.width,i=Math.max(0,Math.min(n-1,Math.round((x-L)/((W-L-R)/(n-1)))));
+ const p=pts[i];if(!p)return;const px=L+i*(W-L-R)/(n-1),pw=svg.querySelector('path[stroke="#3987e5"]'),pm=svg.querySelector('path[stroke="#d95926"]');
+ const yOf=(path,k)=>{const seg=path.getAttribute('d').split(/[ML]/).filter(Boolean)[i];return seg?+seg.split(' ')[1]:0};
+ const ln=svg.querySelector('.stx');ln.setAttribute('x1',px);ln.setAttribute('x2',px);ln.style.display='';
+ for(const [cls,path] of [['w',pw],['m',pm]]){const d=svg.querySelector('.std.'+cls);d.setAttribute('cx',px);d.setAttribute('cy',yOf(path));d.style.display=''}
+ const tip=c.querySelector('.sttip');tip.innerHTML=`<b>${esc(p.lbl)}</b>${p.e?`<div class="kbd">${esc(t('stev_'+p.e))}</div>`:''}<div><i style="background:#3987e5"></i>${t('st_nw')} <b>${money(p.w)}</b></div><div><i style="background:#d95926"></i>${t('st_money')} <b>${money(p.m)}</b></div><div class="kbd">${t('st_n')}: ${fmt(p.n)}</div>`;
+ tip.style.display='';const cw=c.clientWidth,left=px*r.width/W;tip.style.left=Math.min(Math.max(0,left+12),cw-tip.offsetWidth)+'px';tip.style.top='6px'}
+function stHide(c){c.querySelectorAll('.stx,.std,.sttip').forEach(x=>x.style.display='none')}
+function stBars(rows){const mx=Math.max(1,...rows.map(r=>r.v));
+ return `<div class="stbars">${rows.map(r=>`<div class="stbar" title="${esc(r.lbl)}: ${esc(r.txt)}"><span class="lb">${r.lbl}</span><span class="tr"><span style="width:${(r.v/mx*100).toFixed(1)}%"></span></span><span class="vl">${r.txt}</span></div>`).join('')}</div>`}
+function showStats(){if(!S)return;const p=S.ps||{},ch=p.ch||{},ex=p.ex||{},hs=p.hs||{},since=typeof p.since==='number'?p.since:S.turn;
+ StatV.pts=stPoints();const coll=S.snakes.reduce((a,s)=>a+value(s),0),nw=Math.round(S.money+coll),pct=(a,b)=>b>0?(a/b*100).toFixed(1).replace('.',LANG==='id'?',':'.')+'%':'–';
+ const tiles=[[t('st_nw'),money(nw)],[t('st_money'),money(S.money)],[t('st_coll'),money(coll)],[t('st_animals'),`${fmt(S.snakes.length)} / ${fmt(cap())}`],[t('st_months'),fmt(S.turn)],[t('st_rep'),`⭐ Lv ${repLevel(S.rep||0)}`]];
+ const hsum=SPECIES_LIST.reduce((a,sp)=>a+(hs[sp]||0),0);
+ const dexY={};for(const k in S.dex||{}){const w=S.dex[k]&&S.dex[k].wt;if(typeof w==='number'){const y=stYear(w);dexY[y]=(dexY[y]||0)+1}}
+ const dexRows=Object.keys(dexY).map(Number).sort((a,b)=>a-b).slice(-10).map(y=>({lbl:t('st_year',{y}),v:dexY[y],txt:fmt(dexY[y])}));
+ const chRows=ST_CH.map(k=>({lbl:t('ch_'+k),v:(ch[k]||{}).v||0,txt:t('st_ch_v',{v:money((ch[k]||{}).v||0),n:fmt((ch[k]||{}).n||0)})}));
+ const top=Object.entries(p.mp||{}).sort((a,b)=>b[1].v-a[1].v).slice(0,5);
+ const months=Math.max(1,S.turn-since),exTot=ST_EX.reduce((a,k)=>a+(ex[k]||0),0);
+ const rng=[[12,'st_r12'],[60,'st_r60'],[0,'st_rall']];
+ modal(`<div class="stats"><h2>${t('st_h')}</h2><p class="sub">${t('st_sub')}${since>0?' '+t('st_since',{t:since,y:stYear(since)}):''}</p>
+ <div class="pstats st6">${tiles.map(([k,v])=>`<div><b>${v}</b><span>${k}</span></div>`).join('')}</div>
+ <h3>📈 ${t('st_chart')}</h3><div class="toolbar">${rng.map(([v,k])=>`<button class="chip ${(StatV.range||0)===v?'on':''}" data-act="st_range" data-v="${v}">${t(k)}</button>`).join('')}</div>
+ ${stChart(StatV.pts)}
+ <h3>${t('st_breed')}</h3>
+ <dl><dt>${t('st_hatched')}</dt><dd>${fmt(S.stats.hatched||0)}</dd><dt>${t('st_clutches')}</dt><dd>${fmt(S.stats.clutches||0)}</dd>
+  <dt>${t('st_eggs')}</dt><dd>${p.cl?(p.laid/p.cl).toFixed(1).replace('.',LANG==='id'?',':'.'):'–'}</dd><dt>${t('st_slug')}</dt><dd>${pct(p.slug||0,p.laid||0)}</dd><dt>${t('st_dead')}</dt><dd>${pct(p.dead||0,(p.dead||0)+hsum)}</dd>
+  <dt>${t('st_hs')}</dt><dd>${SPECIES_LIST.map(sp=>`${SP_ICON[sp]} ${fmt(hs[sp]||0)}`).join(' · ')}</dd></dl>
+ <div class="lbl">${t('st_dexyr')}</div>${dexRows.length?stBars(dexRows):`<p class="kbd">${t('st_none')}</p>`}
+ <h3>${t('st_sales')}</h3><p class="kbd">${t('st_sold_all',{n:fmt(S.stats.sold||0),v:money(S.stats.earned||0)})}</p>${stBars(chRows)}
+ <h3>${t('st_top')}</h3>${top.length?`<ol class="sttop">${top.map(([k,x])=>{const [sp,nm,sx]=k.split('|');return `<li>${SP_ICON[sp]||''} ${sexIcon(sx)} <b>${esc(nm)}</b> <span class="kbd">${t('st_top_v',{v:money(x.v),n:fmt(x.n)})}</span></li>`}).join('')}</ol>`:`<p class="kbd">${t('st_none')}</p>`}
+ <h3>${t('st_ex')}</h3><table class="pv"><tr><td></td><td class="num"><b>${t('st_ex_total')}</b></td><td class="num"><b>${t('st_ex_avg')}</b></td></tr>
+  ${ST_EX.map(k=>`<tr><td>${t('ex_'+k)}</td><td class="num">${money(ex[k]||0)}</td><td class="num">${money((ex[k]||0)/months)}</td></tr>`).join('')}
+  <tr class="sum"><td>${t('st_ex_total')}</td><td class="num">${money(exTot)}</td><td class="num">${money(exTot/months)}</td></tr></table>
+ <div class="actions"><button class="ghost" data-act="prof_back">← ${t('pf_title')}</button><button class="ghost" data-act="close">${t('close')}</button></div></div>`)}
 async function profileAct(a,el){
  switch(a){
   case 'profile':return openProfile(el.dataset.u);
   case 'profile_me':return Cloud.profile&&openProfile(Cloud.profile.username);
   case 'profile_lookup':{const i=el.closest('form').querySelector('[name=username]');const u=i.value.trim();if(!u){i.focus();return}return openProfile(u)}
   case 'prof_edit':return showProfileEdit();
+  case 'prof_stats':return showStats();
+  case 'st_range':StatV.range=+el.dataset.v;return showStats();
   case 'prof_back':Profile.edit=null;return showProfile(Profile.cur);
   case 'prof_auto':Profile.edit.sel=S.snakes.slice().sort((x,y)=>value(y)-value(x)).slice(0,SHOW_MAX).map(s=>s.id);return paintProfileEdit();
   case 'prof_clear':Profile.edit.sel=[];return paintProfileEdit();
@@ -1842,7 +1943,7 @@ async function profileAct(a,el){
    if(error){el.disabled=false;toast(errText(error));return}
    toast(t('so_r_'+data,{u:esc(u)}));Social.refresh();return openProfile(u)}
  }}
-const PROFILE_ACTS=new Set(['profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','prof_add']);
+const PROFILE_ACTS=new Set(['prof_stats','st_range','profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','prof_add']);
 
 /* ========= TEMAN, CHAT & TRADING ========= */
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -2334,6 +2435,9 @@ async function socialForm(kind,f){
 
 function boot(){
  setLang(LANG);
+ // grafik statistik: crosshair + tooltip (mouse & sentuh)
+ document.addEventListener('pointermove',e=>{const c=e.target.closest&&e.target.closest('.stchart');if(c)stHover(c,e);else document.querySelectorAll('.stchart').forEach(stHide)});
+ document.addEventListener('pointerdown',e=>{const c=e.target.closest&&e.target.closest('.stchart');if(c)stHover(c,e)});
  document.addEventListener('click',e=>{
   if(e.target.id==='modal'){closeModal();return}
   const a=e.target.closest('[data-act]');if(a){act(a.dataset.act,+a.dataset.id,a);return}

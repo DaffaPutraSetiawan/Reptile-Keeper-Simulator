@@ -281,6 +281,23 @@ begin
   return jsonb_set(p_data, '{money}', to_jsonb(v));
 end $$;
 
+-- Statistik pribadi (S.ps di core.js): tambah angka ke p_kind ('ch' penjualan per saluran / 'mp' per morph: {n, v};
+-- 'ex' pengeluaran: angka). Dipakai untuk kejadian yang terjadi di database (Pasar Pemain).
+create or replace function public._ps_add(p_data jsonb, p_kind text, p_key text, p_n numeric, p_v numeric)
+returns jsonb language plpgsql immutable set search_path = '' as $$
+declare v_ps jsonb := p_data -> 'ps'; v_g jsonb;
+begin
+  if v_ps is null or jsonb_typeof(v_ps) <> 'object' then v_ps := jsonb_build_object('since', coalesce((p_data ->> 'turn')::int, 0)); end if;
+  v_g := case when jsonb_typeof(v_ps -> p_kind) = 'object' then v_ps -> p_kind else '{}'::jsonb end;
+  if p_kind = 'ex' then
+    v_g := v_g || jsonb_build_object(p_key, coalesce((v_g ->> p_key)::numeric, 0) + round(p_v));
+  else
+    v_g := v_g || jsonb_build_object(p_key, jsonb_build_object('n', coalesce((v_g -> p_key ->> 'n')::numeric, 0) + p_n,
+                                                              'v', coalesce((v_g -> p_key ->> 'v')::numeric, 0) + round(p_v)));
+  end if;
+  return jsonb_set(p_data, '{ps}', v_ps || jsonb_build_object(p_kind, v_g));
+end $$;
+
 -- Tambah catatan ke log save (format kunci + parameter yang dipakai game).
 create or replace function public._push_log(p_data jsonb, p_key text, p_params jsonb, p_kind text default 'star')
 returns jsonb language plpgsql set search_path = '' as $$
@@ -674,6 +691,11 @@ begin
     v_data := public._add_money(v_data, d.money);
     if d.log is not null then
       v_data := public._push_log(v_data, d.log ->> 'm', d.log -> 'p', 'star');
+      -- uang hasil Pasar Pemain ikut tercatat di statistik pribadi penjual
+      if d.log ->> 'm' = 'l_mkt_sold' then
+        v_data := public._ps_add(v_data, 'ch', 'pmarket', 1, d.money);
+        if d.log -> 'p' ? 'k' then v_data := public._ps_add(v_data, 'mp', d.log -> 'p' ->> 'k', 1, d.money); end if;
+      end if;
     end if;
     update public.deliveries set claimed_at = now() where id = d.id;
     n := n + 1;

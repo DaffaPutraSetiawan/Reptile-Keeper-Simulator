@@ -202,6 +202,7 @@ begin
   if v_me is null then raise exception 'no_profile'; end if;
   v_save := public._lock_save(me, p_expected_rev);
   v_data := public._add_money(v_save.data, -l.price);           -- 'not_enough_money' kalau kurang
+  v_data := public._ps_add(v_data, 'ex', 'pbuy', 1, l.price);   -- statistik pribadi pembeli
   select snake into v_snake from public.market_escrow where listing_id = l.id;
   if v_snake is null then raise exception 'listing_closed'; end if;
   v_turn := coalesce((v_data ->> 'turn')::int, 0);
@@ -212,7 +213,8 @@ begin
   if l.seller is not null then
     insert into public.deliveries (user_id, snakes, money, log)
     values (l.seller, '[]'::jsonb, l.price,
-            jsonb_build_object('m', 'l_mkt_sold', 'p', jsonb_build_object('c', l.code, 'n', l.name, 'u', v_me, 'p', l.price)));
+            jsonb_build_object('m', 'l_mkt_sold', 'p', jsonb_build_object('c', l.code, 'n', l.name, 'u', v_me, 'p', l.price,
+              'k', l.sp || '|' || l.name || '|' || l.sex)));   -- k = kunci morph untuk statistik pribadi penjual
   end if;
   update public.market_listings set status = 'sold', buyer = me, buyer_name = v_me, resolved_at = now() where id = l.id;
   delete from public.market_escrow where listing_id = l.id;
