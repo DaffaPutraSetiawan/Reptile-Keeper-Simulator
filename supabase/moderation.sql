@@ -78,7 +78,8 @@ create table if not exists public.admin_log (
   id          bigint generated always as identity primary key,
   admin_id    uuid references auth.users (id) on delete set null,
   admin_name  text not null default '',
-  action      text not null check (action in ('delete_msg', 'mute', 'unmute', 'report_actioned', 'report_dismissed')),
+  action      text not null check (action in ('delete_msg', 'mute', 'unmute', 'report_actioned', 'report_dismissed',
+                                                 'mkt_takedown', 'mkt_exclude', 'mkt_include')),   -- mkt_*: market.sql
   target_id   uuid references auth.users (id) on delete set null,
   target_name text not null default '',
   detail      jsonb not null default '{}',

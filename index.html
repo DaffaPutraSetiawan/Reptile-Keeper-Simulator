@@ -321,7 +321,7 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  pms_sold:p=>`✅ Terjual ke ${p.u}`,pms_cancelled:'✖ Dibatalkan',pms_expired:'↩️ Tidak laku (kembali)',
  t_mkt_listed:'🏪 Hewan dipasang di Pasar Pemain.',t_mkt_bought:p=>`🎉 ${p.n} masuk ke koleksimu!`,t_mkt_cancelled:'Jualan dibatalkan. Hewan sedang dikembalikan.',
  l_mkt_list:p=>`🏪 ${p.c} ${p.n} dipasang di Pasar Pemain seharga ${money(p.p)}.`,l_mkt_bought:p=>`🛒 Membeli ${p.n} dari ${p.u} di Pasar Pemain seharga ${money(p.p)}.`,
- l_mkt_sold:p=>`💰 ${p.c} ${p.n} terjual ke ${p.u} di Pasar Pemain seharga ${money(p.p)}.`,l_mkt_back:p=>`↩️ ${p.c} ${p.n} ${p.why==='expired'?'tidak laku dalam 14 hari':'batal dijual'} dan kembali ke koleksimu.`,
+ l_mkt_sold:p=>`💰 ${p.c} ${p.n} terjual ke ${p.u} di Pasar Pemain seharga ${money(p.p)}.`,l_mkt_back:p=>p.why==='removed'?`🛡️ ${p.c} ${p.n} diturunkan dari Pasar Pemain oleh admin: “${p.r||''}”. Hewannya kembali ke koleksimu.`:`↩️ ${p.c} ${p.n} ${p.why==='expired'?'tidak laku dalam 14 hari':'batal dijual'} dan kembali ke koleksimu.`,
  e_price_too_low:'Harga di bawah minimum (50% nilai hewan).',e_price_too_high:'Harga terlalu tinggi (maks. $100.000.000).',e_bad_price:'Harga harus angka bulat.',e_listing_closed:'Jualan ini sudah tidak tersedia.',e_listing_not_found:'Jualan tidak ditemukan.',e_own_listing:'Itu jualanmu sendiri.',
  e_snake_listed:'Hewan ini sedang diiklankan di toko NPC. Batalkan iklannya dulu.',e_snake_paired:'Hewan ini sedang dipasangkan. Pisahkan dulu.',
  csrc_all:'Semua asal',csrc_bred:'Hasil breeding',csrc_market:'Beli di pasar',csrc_trade:'Dari trade',csrc_starter:'Hewan awal',
@@ -438,6 +438,14 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  tab_teman:'Teman',tab_global:'Global',gc_sub:p=>`Ngobrol dengan semua pemain Morph Lab. Hanya ${p.n} pesan terakhir yang disimpan; pesan yang lebih lama terhapus otomatis.`,gc_ph:'Tulis pesan untuk semua pemain…',gc_empty:'Belum ada pesan. Jadilah yang pertama menyapa!',e_empty_message:'Pesan masih kosong.',e_message_too_long:'Pesan terlalu panjang.',busy:'Tunggu sebentar, sedang memproses…',
  tab_admin:'Admin',mod_sub:'Hanya terlihat oleh admin. Laporan chat global, pemain yang dibisukan, dan catatan semua tindakan moderasi.',mod_reload:'Muat ulang',
  ms_players:'Pemain',ms_new:p=>`+${p.a} (24 jam) · +${p.b} (7 hari)`,ms_active24:'Aktif 24 jam',ms_active7:'Aktif 7 hari',ms_msgs:'Chat global 24 jam',ms_msgs7:p=>`${p.n} dalam 7 hari`,ms_trades:'Trade 7 hari',ms_trades_ok:p=>`${p.n} diterima`,ms_reports:'Laporan chat menunggu',ms_mutes:'Pemain dibisukan',ms_bugs:'Bug belum selesai',ms_bugs_sm:p=>`${p.a} baru · ${p.b} ditinjau`,
+ mkt_h:'Pasar Pemain',mkt_active:p=>`Sedang dijual (${p.n})`,mkt_sold:p=>`Terjual (7 hari: ${p.n})`,mkt_none:'Tidak ada jualan.',mkt_more:'Muat lebih banyak',
+ mkt_hi:'⚠️ > 5× nilai',mkt_pair:'🔁 Pasangan berulang',mkt_fr:'👥 Berteman',mkt_ex:'🚫 Tidak dihitung di riwayat harga',mkt_val:p=>`nilai ${p.v}`,
+ mkt_down:'⬇️ Turunkan',mkt_exclude:'🚫 Keluarkan dari riwayat harga',mkt_include:'↩️ Masukkan lagi ke riwayat',
+ mkt_down_h:p=>`Turunkan jualan ${p.n}?`,mkt_down_sub:p=>`Hewan dikembalikan ke ${p.u} lewat kiriman. Alasanmu tampil di catatan breeder penjual.`,
+ mkt_reason:'Alasan (wajib, terlihat oleh penjual)',mkt_reason_ph:'mis. Harga tidak wajar / dugaan transaksi palsu',
+ t_mkt_down:'Jualan diturunkan. Hewan dikembalikan ke penjual.',t_mkt_ex:'Penjualan dikeluarkan dari riwayat harga.',t_mkt_in:'Penjualan dimasukkan lagi ke riwayat harga.',
+ ml_mkt_takedown:'menurunkan jualan Pasar Pemain milik',ml_mkt_exclude:'mengeluarkan dari riwayat harga penjualan milik',ml_mkt_include:'memasukkan lagi ke riwayat harga penjualan milik',
+ pms_removed:'🛡️ Diturunkan admin',e_listing_not_sold:'Hanya penjualan yang sudah terjual.',
  mod_reports:'Laporan chat global',mod_open:'Menunggu',mod_hist:'Riwayat',mod_no_reports:'Tidak ada laporan yang menunggu. 🎉',mod_no_hist:'Belum ada riwayat laporan.',mod_mutes:'Sedang dibisukan',mod_no_mutes:'Tidak ada pemain yang sedang dibisukan.',mod_log:'Log tindakan admin',mod_no_log:'Belum ada tindakan.',
  mod_del:'Hapus pesan',mod_sure:'Yakin?',mod_mute:'Bisukan',mod_unmute:'Buka bisu',mod_deleted:'Pesan dihapus dari chat global.',mod_muted:'Pemain dibisukan.',mod_purged:p=>`${p.n} pesannya ikut dihapus.`,mod_resolved:'Laporan ditutup.',mod_unmuted:'Bisu dibuka.',
  mr_n:p=>`${p.n} laporan`,mr_live:'Pesan masih ada di chat',mr_gone:'Pesan sudah tidak ada di chat',mr_muted:'pengirim sedang dibisukan',mr_st_actioned:'✓ Ditindak',mr_st_dismissed:'✕ Tidak melanggar',mr_act:'Ditindak',mr_dis:'Tidak melanggar',
@@ -614,7 +622,7 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  pms_sold:p=>`✅ Sold to ${p.u}`,pms_cancelled:'✖ Cancelled',pms_expired:'↩️ Didn’t sell (returned)',
  t_mkt_listed:'🏪 Animal listed on the player market.',t_mkt_bought:p=>`🎉 ${p.n} joined your collection!`,t_mkt_cancelled:'Listing cancelled. The animal is on its way back.',
  l_mkt_list:p=>`🏪 ${p.c} ${p.n} listed on the player market for ${money(p.p)}.`,l_mkt_bought:p=>`🛒 Bought ${p.n} from ${p.u} on the player market for ${money(p.p)}.`,
- l_mkt_sold:p=>`💰 ${p.c} ${p.n} sold to ${p.u} on the player market for ${money(p.p)}.`,l_mkt_back:p=>`↩️ ${p.c} ${p.n} ${p.why==='expired'?'didn’t sell within 14 days':'was taken off the market'} and returned to your collection.`,
+ l_mkt_sold:p=>`💰 ${p.c} ${p.n} sold to ${p.u} on the player market for ${money(p.p)}.`,l_mkt_back:p=>p.why==='removed'?`🛡️ ${p.c} ${p.n} was taken down from the player market by an admin: “${p.r||''}”. It returned to your collection.`:`↩️ ${p.c} ${p.n} ${p.why==='expired'?'didn’t sell within 14 days':'was taken off the market'} and returned to your collection.`,
  e_price_too_low:'Price is below the minimum (50% of the animal’s value).',e_price_too_high:'Price is too high (max $100,000,000).',e_bad_price:'Price must be a whole number.',e_listing_closed:'This listing is no longer available.',e_listing_not_found:'Listing not found.',e_own_listing:'That’s your own listing.',
  e_snake_listed:'This animal is listed in the NPC shop. Unlist it first.',e_snake_paired:'This animal is paired. Separate it first.',
  csrc_all:'Any origin',csrc_bred:'Bred by you',csrc_market:'Bought at market',csrc_trade:'From a trade',csrc_starter:'Starter animals',
@@ -725,6 +733,14 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  tab_teman:'Friends',tab_global:'Global',gc_sub:p=>`Chat with every Morph Lab player. Only the last ${p.n} messages are kept; older ones are deleted automatically.`,gc_ph:'Write a message to everyone…',gc_empty:'No messages yet. Be the first to say hi!',e_empty_message:'The message is empty.',e_message_too_long:'The message is too long.',busy:'One moment, still working…',
  tab_admin:'Admin',mod_sub:'Only visible to admins. Global chat reports, muted players, and a log of every moderation action.',mod_reload:'Reload',
  ms_players:'Players',ms_new:p=>`+${p.a} (24 h) · +${p.b} (7 days)`,ms_active24:'Active 24 h',ms_active7:'Active 7 days',ms_msgs:'Global chat 24 h',ms_msgs7:p=>`${p.n} in 7 days`,ms_trades:'Trades 7 days',ms_trades_ok:p=>`${p.n} accepted`,ms_reports:'Chat reports waiting',ms_mutes:'Muted players',ms_bugs:'Open bugs',ms_bugs_sm:p=>`${p.a} new · ${p.b} in review`,
+ mkt_h:'Player market',mkt_active:p=>`For sale (${p.n})`,mkt_sold:p=>`Sold (7 days: ${p.n})`,mkt_none:'No listings.',mkt_more:'Load more',
+ mkt_hi:'⚠️ > 5× value',mkt_pair:'🔁 Repeated pair',mkt_fr:'👥 Friends',mkt_ex:'🚫 Not counted in price history',mkt_val:p=>`value ${p.v}`,
+ mkt_down:'⬇️ Take down',mkt_exclude:'🚫 Exclude from price history',mkt_include:'↩️ Include in price history again',
+ mkt_down_h:p=>`Take down listing ${p.n}?`,mkt_down_sub:p=>`The animal is returned to ${p.u} as a delivery. Your reason appears in the seller’s breeder log.`,
+ mkt_reason:'Reason (required, visible to the seller)',mkt_reason_ph:'e.g. Unrealistic price / suspected fake sale',
+ t_mkt_down:'Listing taken down. The animal was returned to the seller.',t_mkt_ex:'Sale excluded from the price history.',t_mkt_in:'Sale included in the price history again.',
+ ml_mkt_takedown:'took down a player market listing by',ml_mkt_exclude:'excluded from the price history a sale by',ml_mkt_include:'included in the price history again a sale by',
+ pms_removed:'🛡️ Taken down by an admin',e_listing_not_sold:'Only sales that already completed.',
  mod_reports:'Global chat reports',mod_open:'Waiting',mod_hist:'History',mod_no_reports:'No reports waiting. 🎉',mod_no_hist:'No report history yet.',mod_mutes:'Currently muted',mod_no_mutes:'No players are muted.',mod_log:'Admin action log',mod_no_log:'No actions yet.',
  mod_del:'Delete message',mod_sure:'Sure?',mod_mute:'Mute',mod_unmute:'Unmute',mod_deleted:'Message deleted from global chat.',mod_muted:'Player muted.',mod_purged:p=>`${p.n} of their messages were deleted too.`,mod_resolved:'Report closed.',mod_unmuted:'Player unmuted.',
  mr_n:p=>`${p.n} report${p.n===1?'':'s'}`,mr_live:'Message is still in the chat',mr_gone:'Message is no longer in the chat',mr_muted:'sender is muted',mr_st_actioned:'✓ Actioned',mr_st_dismissed:'✕ Not a violation',mr_act:'Actioned',mr_dis:'Not a violation',
@@ -1538,6 +1554,10 @@ function act(a,id,el){
   case 'mod_hist':Mod.hist=el.dataset.v==='1';Mod.load();return;
   case 'mod_more':Mod.more();return;
   case 'mod_reload':Mod.load();return;
+  case 'mkt_kind':Mod.mk.kind=el.dataset.v;Mod.load();return;
+  case 'mkt_more':Mod.mktMore();return;
+  case 'mkt_down':Mod.mktDownForm(id);return;
+  case 'mkt_ex':Mod.call('admin_market_exclude',{p_listing:id,p_exclude:el.dataset.v==='1'},el.dataset.v==='1'?'t_mkt_ex':'t_mkt_in');return;
   case 'bug_new':Bugs.newForm();return;
   case 'bug_cancel':Bugs.files.forEach(x=>URL.revokeObjectURL(x.url));Bugs.files=[];closeModal(true);return;
   case 'bug_open':Bugs.open(id);return;
@@ -1882,14 +1902,15 @@ const GR_REASONS=['spam','abusive','scam','other'];
 /* ========= MODERASI (admin) =========
    Ringkasan angka, antrean laporan chat global, pemain yang dibisukan, dan log tindakan admin. */
 const MUTE_OPTS=[[1,'mu_1h'],[24,'mu_24h'],[168,'mu_7d'],[0,'mu_perm']];
-var Mod={sum:null,reports:[],hist:false,mutes:[],log:[],logMore:false,loaded:false,loading:false,open:0,armed:null,
- reset(){this.sum=null;this.reports=[];this.hist=false;this.mutes=[];this.log=[];this.loaded=false;this.open=0;this.armed=null},
+var Mod={sum:null,reports:[],hist:false,mutes:[],log:[],logMore:false,loaded:false,loading:false,open:0,armed:null,mk:{kind:'active',d:null,rows:[],more:false},
+ reset(){this.sum=null;this.reports=[];this.hist=false;this.mutes=[];this.log=[];this.loaded=false;this.open=0;this.armed=null;this.mk={kind:'active',d:null,rows:[],more:false}},
  sb(){return Cloud.sb},
  async count(){if(!Bugs.admin||!Cloud.user)return;const{data,error}=await this.sb().rpc('admin_list_chat_reports',{p_open:true});
   if(error)return;const n=(data||[]).length;if(n!==this.open){this.open=n;renderTabs()}},
  async load(){if(!Bugs.admin||this.loading)return;this.loading=true;
-  const sb=this.sb(),[a,b,c,d]=await Promise.all([sb.rpc('admin_summary'),sb.rpc('admin_list_chat_reports',{p_open:!this.hist}),sb.rpc('admin_list_mutes'),sb.rpc('admin_get_log',{p_before:null})]);
+  const sb=this.sb(),[a,b,c,d,m]=await Promise.all([sb.rpc('admin_summary'),sb.rpc('admin_list_chat_reports',{p_open:!this.hist}),sb.rpc('admin_list_mutes'),sb.rpc('admin_get_log',{p_before:null}),sb.rpc('admin_market',{p_kind:this.mk.kind,p_before:null})]);
   this.loading=false;const e=a.error||b.error||c.error||d.error;if(e){toast(errText(e));return}
+  if(!m.error){this.mk.d=m.data;this.mk.rows=m.data.rows||[];this.mk.more=this.mk.rows.length===30}   // market.sql belum dijalankan: bagian pasar disembunyikan
   this.sum=a.data;this.reports=b.data||[];this.mutes=c.data||[];this.log=d.data||[];this.logMore=this.log.length===30;this.loaded=true;
   this.open=this.sum.reports_open;renderTabs();if(TAB==='admin'&&!MODAL_LOCK)render()},
  async more(){const last=this.log[this.log.length-1];if(!last)return;const{data,error}=await this.sb().rpc('admin_get_log',{p_before:last.id});
@@ -1915,9 +1936,29 @@ var Mod={sum:null,reports:[],hist:false,mutes:[],log:[],logMore:false,loaded:fal
   btn.disabled=false;if(error){$('mumsg').innerHTML=`<div class="warn">${errText(error)}</div>`;return}
   closeModal(true);toast(t('mod_muted')+(data&&data.purged?' '+t('mod_purged',{n:data.purged}):''));
   if(data&&data.purged)Global.load();this.load()},
+ async mktMore(){const last=this.mk.rows[this.mk.rows.length-1];if(!last)return;
+  const{data,error}=await this.sb().rpc('admin_market',{p_kind:this.mk.kind,p_before:last.id});if(error){toast(errText(error));return}
+  this.mk.rows=this.mk.rows.concat(data.rows||[]);this.mk.more=(data.rows||[]).length===30;render()},
+ mktDownForm(id){const r=this.mk.rows.find(x=>x.id===id);if(!r)return;
+  modal(`<h2>${t('mkt_down_h',{n:esc(r.code+' '+r.name)})}</h2><p class="sub">${t('mkt_down_sub',{u:esc(r.seller_name)})}</p>${miniList([r.snake])}
+  <form data-form="mktdown" class="bugform" novalidate><input type="hidden" name="id" value="${r.id}">
+   <label>${t('mkt_reason')}<textarea name="reason" rows="2" maxlength="300" placeholder="${t('mkt_reason_ph')}"></textarea></label>
+   <div class="msg" id="mkmsg"></div>
+   <div class="actions"><button class="danger" type="submit">${t('mkt_down')}</button><button class="ghost" type="button" data-act="close">${t('btn_cancel')}</button></div>
+  </form>`)},
+ async mktDown(f){const reason=f.reason.value.trim();if(reason.length<3){$('mkmsg').innerHTML=`<div class="warn">${t('e_reason_required')}</div>`;return}
+  const btn=f.querySelector('button[type=submit]');btn.disabled=true;
+  const{error}=await this.sb().rpc('admin_market_takedown',{p_listing:+f.id.value,p_reason:reason});
+  btn.disabled=false;if(error){$('mkmsg').innerHTML=`<div class="warn">${errText(error)}</div>`;return}
+  closeModal(true);toast(t('t_mkt_down'));this.load()},
+ mktRow(r){const s=r.snake,sold=this.mk.kind==='sold',tags=[r.hi&&'mkt_hi',r.pair&&'mkt_pair',r.fr&&'mkt_fr',r.excluded&&'mkt_ex'].filter(Boolean).map(k=>`<span class="tag a">${t(k)}</span>`).join(' ');
+  return `<div class="panel modrep"><div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:6px"><span class="row" style="gap:8px"><img class="mini" src="${thumb(traitsOf(s.g),s.seed,false,spOfG(s.g))}" alt=""><span><span class="tbid">${esc(r.code)}</span> ${sexIcon(r.sex)} ${esc(r.name)} · <b>${money(r.price)}</b> <span class="kbd">(${t('mkt_val',{v:money(r.value)})})</span></span></span><span>${tags}</span></div>
+   <div class="kbd">${r.seller_name?profLink(r.seller_name):`<i>${t('tr_gone')}</i>`}${sold?` → ${r.buyer_name?profLink(r.buyer_name):`<i>${t('tr_gone')}</i>`} · ${dtm(r.resolved_at)}`:` · ${dtm(r.created_at)} · ⏳ ${pmLeft(r.expires_at)}`}</div>
+   <div class="actions">${sold?`<button class="ghost sm" data-act="mkt_ex" data-id="${r.id}" data-v="${r.excluded?0:1}">${t(r.excluded?'mkt_include':'mkt_exclude')}</button>`:`<button class="ghost danger sm" data-act="mkt_down" data-id="${r.id}">${t('mkt_down')}</button>`}</div></div>`},
  untilTxt(u){return u?t('mu_until',{d:dtm(u)}):t('mu_forever')},
  logLine(l){const d=l.detail||{},who=x=>x?esc(x):`<i>${t('tr_gone')}</i>`;
   const ex=l.action==='mute'?`${d.hours?t(MUTE_OPTS.find(o=>o[0]===d.hours)[1]):t('mu_perm')} · “${esc(d.reason||'')}”${d.purged?' · '+t('mod_purged',{n:d.purged}):''}`
+   :l.action.startsWith('mkt_')?`${esc((d.c||'')+' '+(d.n||''))} · ${money(d.p||0)}${d.b?' → '+esc(d.b):''}${d.reason?` · “${esc(d.reason)}”`:''}`
    :d.body!=null?`“${esc(d.body)}”`:'';
   return `<div class="modlog"><span class="kbd">${dtm(l.created_at)}</span> <b>${who(l.admin_name)}</b> ${t('ml_'+l.action)} <b>${who(l.target_name)}</b>${ex?`<div class="kbd">${ex}</div>`:''}</div>`}
 };
@@ -1943,6 +1984,10 @@ function vAdmin(){const M=Mod;if(!Bugs.admin)return `<div class="empty">${t('e_n
  <div class="toolbar"><button class="chip ${!M.hist?'on':''}" data-act="mod_hist" data-v="0">${t('mod_open')}${s.reports_open?` <span class="cnt hot">${s.reports_open}</span>`:''}</button><button class="chip ${M.hist?'on':''}" data-act="mod_hist" data-v="1">${t('mod_hist')}</button></div>
  ${M.reports.length?`<div class="buglist">${M.reports.map(rep).join('')}</div>`:`<div class="empty">${t(M.hist?'mod_no_hist':'mod_no_reports')}</div>`}
  <h3>🔇 ${t('mod_mutes')}</h3>${mutes}
+ ${M.mk.d?`<h3>🏪 ${t('mkt_h')}</h3>
+ <div class="toolbar"><button class="chip ${M.mk.kind==='active'?'on':''}" data-act="mkt_kind" data-v="active">${t('mkt_active',{n:fmt(M.mk.d.active_n)})}</button><button class="chip ${M.mk.kind==='sold'?'on':''}" data-act="mkt_kind" data-v="sold">${t('mkt_sold',{n:fmt(M.mk.d.sold_7d)})}</button></div>
+ ${M.mk.rows.length?`<div class="buglist">${M.mk.rows.map(r=>M.mktRow(r)).join('')}</div>`:`<div class="empty">${t('mkt_none')}</div>`}
+ ${M.mk.more?`<div class="actions" style="justify-content:center"><button class="ghost" data-act="mkt_more">${t('mkt_more')}</button></div>`:''}`:''}
  <h3>📜 ${t('mod_log')}</h3>${M.log.length?M.log.map(l=>M.logLine(l)).join(''):`<p class="kbd">${t('mod_no_log')}</p>`}
  ${M.logMore?`<div class="actions" style="justify-content:center"><button class="ghost" data-act="mod_more">${t('bug_more')}</button></div>`:''}`}
 /* ========= LAPORAN BUG =========
@@ -2308,7 +2353,7 @@ function boot(){
   else if(el.dataset&&el.dataset.colall){const L=colList().filter(s=>!s.gravid);if(el.checked)L.forEach(s=>COL.sel.add(s.id));else L.forEach(s=>COL.sel.delete(s.id));paintCol()}});
  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
  document.addEventListener('submit',e=>{const f=e.target.closest('form[data-form]');if(!f)return;e.preventDefault();
-  const k=f.dataset.form;if(k==='gchat'){Global.send(f);return}if(k==='greport'){Global.report(f);return}if(k==='gmute'){Mod.mute(f);return}if(k==='bug'){Bugs.submit(f);return}if(k==='bugc'){Bugs.comment(f);return}if(k==='bugadm'){Bugs.adminSave(f);return}if(k==='addfriend'||k==='chat')guarded(()=>socialForm(k,f));else if(k.startsWith('dz_'))dangerGo(k.slice(3),f);else if(k==='profile')saveProfile(f);else handleForm(k,f)});
+  const k=f.dataset.form;if(k==='gchat'){Global.send(f);return}if(k==='greport'){Global.report(f);return}if(k==='gmute'){Mod.mute(f);return}if(k==='mktdown'){Mod.mktDown(f);return}if(k==='bug'){Bugs.submit(f);return}if(k==='bugc'){Bugs.comment(f);return}if(k==='bugadm'){Bugs.adminSave(f);return}if(k==='addfriend'||k==='chat')guarded(()=>socialForm(k,f));else if(k.startsWith('dz_'))dangerGo(k.slice(3),f);else if(k==='profile')saveProfile(f);else handleForm(k,f)});
  document.addEventListener('input',e=>{const el=e.target;
   if(el.form&&el.form.dataset.form==='profile'&&Profile.edit){
    if(el.name==='bio'){Profile.edit.bio=el.value;const c=$('biocnt');if(c)c.textContent=el.value.length+'/'+BIO_MAX}

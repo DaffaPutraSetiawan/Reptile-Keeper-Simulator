@@ -137,12 +137,13 @@ Angka peringkat (kekayaan, Morph Dex, hewan termahal per spesies, bayi menetas, 
 ## 11. Pasar Pemain
 
 1. Buka **SQL Editor → New query**.
-2. Salin seluruh isi [`supabase/market.sql`](supabase/market.sql), tempel, lalu klik **Run**. Jalankan **setelah** `social.sql` (memakai fungsi bantu trade dan tabel `deliveries`), lalu deploy ulang Edge Function `game` (aksi `market_list`).
+2. Salin seluruh isi [`supabase/market.sql`](supabase/market.sql), tempel, lalu klik **Run**. Jalankan **setelah** `social.sql` (memakai fungsi bantu trade dan tabel `deliveries`) dan `moderation.sql` (log admin), lalu deploy ulang Edge Function `game` (aksi `market_list`).
 
 - Memasang jualan lewat Edge Function `game`: server menghitung nilai hewan dan menolak harga di bawah 50% nilai atau di atas $100.000.000. Hewan keluar dari save dan dititipkan di `market_escrow` dalam satu transaksi (`_market_list`, hanya bisa dipanggil kunci server).
 - Membeli (`buy_listing`) dan membatalkan (`cancel_listing`) adalah fungsi database. Baris jualan dikunci saat dibeli, jadi kalau dua pemain membeli bersamaan hanya satu yang berhasil. Uang untuk penjual dan hewan yang kembali dikirim lewat `deliveries` dan diklaim otomatis, sama seperti hasil trade.
 - Jualan yang lewat 14 hari dikembalikan ke penjual setiap kali seseorang membuka Pasar Pemain. Kalau penjual me-reset atau menghapus akun, jualan aktifnya dibuang.
 - Riwayat harga (`get_market_prices`) dihitung dari penjualan 30 hari terakhir per morph & kelamin: median, rentang tengah (kuartil 25%–75%), dan harga termahal.
+- Moderasi di tab Admin: `admin_market` (daftar jualan aktif / terjual + tanda mencurigakan), `admin_market_takedown` (turunkan jualan dengan alasan; hewan kembali ke penjual) dan `admin_market_exclude` (keluarkan / masukkan lagi penjualan ke riwayat harga). Semua tindakan tercatat di `admin_log`, jadi jalankan `market.sql` **setelah** `moderation.sql`.
 - Tabel `market_listings` dan `market_escrow` tertutup untuk browser (RLS tanpa policy); semua akses lewat fungsi server.
 
 ## Catatan keamanan

@@ -6,7 +6,9 @@
 --   lewat deliveries (diklaim otomatis seperti hasil trade).
 -- * Tanpa biaya, tanpa batas jumlah jualan. Tayang 14 hari; yang tidak laku kembali ke penjual.
 -- * Riwayat harga: rata-rata harga terjual per morph & kelamin dalam 30 hari terakhir.
--- Jalankan SETELAH schema.sql dan social.sql (memakai fungsi bantu trade). Aman dijalankan ulang.
+-- * Admin (tab Admin): daftar jualan aktif & terjual, menurunkan jualan (hewan kembali ke penjual + alasan),
+--   dan mengeluarkan penjualan palsu dari riwayat harga. Semua tercatat di admin_log.
+-- Jalankan SETELAH schema.sql, social.sql (fungsi bantu trade) dan moderation.sql (admin_log). Aman dijalankan ulang.
 -- =====================================================================
 
 create table if not exists public.market_listings (
@@ -20,13 +22,22 @@ create table if not exists public.market_listings (
   preview     jsonb not null,                        -- data hewan untuk pembeli (_public_snake)
   price       integer not null check (price between 1 and 100000000),
   value       integer not null default 0,            -- nilai pasar hewan di save penjual saat dipasang
-  status      text not null default 'active' check (status in ('active', 'sold', 'cancelled', 'expired')),
+  status      text not null default 'active' check (status in ('active', 'sold', 'cancelled', 'expired', 'removed')),
   buyer       uuid references auth.users (id) on delete set null,
   buyer_name  text not null default '',
   created_at  timestamptz not null default now(),
   expires_at  timestamptz not null default now() + interval '14 days',
   resolved_at timestamptz
 );
+-- kolom tambahan (v36): penjualan yang dikeluarkan admin dari riwayat harga; status 'removed' = diturunkan admin
+alter table public.market_listings add column if not exists excluded boolean not null default false;
+alter table public.market_listings drop constraint if exists market_listings_status_check;
+alter table public.market_listings add constraint market_listings_status_check
+  check (status in ('active', 'sold', 'cancelled', 'expired', 'removed'));
+-- tindakan admin pasar ikut tercatat di admin_log (moderation.sql)
+alter table public.admin_log drop constraint if exists admin_log_action_check;
+alter table public.admin_log add constraint admin_log_action_check check (action in ('delete_msg', 'mute', 'unmute',
+  'report_actioned', 'report_dismissed', 'mkt_takedown', 'mkt_exclude', 'mkt_include'));
 create index if not exists market_active_idx on public.market_listings (status, sp, price) where status = 'active';
 create index if not exists market_seller_idx on public.market_listings (seller, id desc);
 create index if not exists market_sold_idx on public.market_listings (sp, resolved_at) where status = 'sold';
@@ -70,8 +81,9 @@ begin
   return v_id;
 end $$;
 
--- Kembalikan hewan jualan ke penjual lewat kiriman (dibatalkan / kedaluwarsa).
-create or replace function public._market_return(p_l public.market_listings, p_status text)
+-- Kembalikan hewan jualan ke penjual lewat kiriman (dibatalkan / kedaluwarsa / diturunkan admin dengan alasan).
+drop function if exists public._market_return(public.market_listings, text);
+create or replace function public._market_return(p_l public.market_listings, p_status text, p_reason text default null)
 returns void language plpgsql security definer set search_path = '' as $$
 declare v_snake jsonb;
 begin
@@ -80,7 +92,8 @@ begin
   if p_l.seller is not null and v_snake is not null then
     insert into public.deliveries (user_id, snakes, money, log)
     values (p_l.seller, jsonb_build_array(v_snake), 0,
-            jsonb_build_object('m', 'l_mkt_back', 'p', jsonb_build_object('c', p_l.code, 'n', p_l.name, 'why', p_status)));
+            jsonb_build_object('m', 'l_mkt_back', 'p', jsonb_build_object('c', p_l.code, 'n', p_l.name, 'why', p_status)
+              || case when p_reason is null then '{}'::jsonb else jsonb_build_object('r', p_reason) end));
   end if;
   delete from public.market_escrow where listing_id = p_l.id;
 end $$;
@@ -171,7 +184,7 @@ returns jsonb language sql stable security definer set search_path = '' as $$
                  round(percentile_cont(0.75) within group (order by price))::int hi,
                  max(price) mx
             from public.market_listings
-           where status = 'sold' and resolved_at > now() - interval '30 days' and (p_sp is null or sp = p_sp)
+           where status = 'sold' and not excluded and resolved_at > now() - interval '30 days' and (p_sp is null or sp = p_sp)
            group by sp, name, sex) x;
 $$;
 
@@ -218,19 +231,78 @@ begin
 end $$;
 
 -- ---------------------------------------------------------------------
+-- ADMIN
+-- ---------------------------------------------------------------------
+-- Daftar untuk tab Admin. p_kind: 'active' (sedang dijual) | 'sold' (terjual). 30 per halaman, terbaru dulu.
+-- Tanda: hi = harga > 5× nilai hewan · pair = penjual & pembeli ini bertransaksi ≥ 2× dalam 30 hari · fr = berteman
+create or replace function public.admin_market(p_kind text default 'sold', p_before bigint default null)
+returns jsonb language plpgsql security definer set search_path = '' as $$
+begin
+  perform public._bug_need_admin();
+  perform public._market_expire();
+  if p_kind not in ('active', 'sold') then raise exception 'bad_action'; end if;
+  return jsonb_build_object(
+    'active_n', (select count(*) from public.market_listings where status = 'active'),
+    'sold_7d',  (select count(*) from public.market_listings where status = 'sold' and resolved_at > now() - interval '7 days'),
+    'rows', coalesce((select jsonb_agg(jsonb_build_object('id', l.id,
+        'seller', l.seller, 'seller_name', coalesce(public._username(l.seller), l.seller_name),
+        'buyer_name', coalesce(public._username(l.buyer), l.buyer_name),
+        'sp', l.sp, 'name', l.name, 'sex', l.sex, 'code', l.code, 'snake', l.preview, 'price', l.price, 'value', l.value,
+        'created_at', l.created_at, 'expires_at', l.expires_at, 'resolved_at', l.resolved_at, 'excluded', l.excluded,
+        'hi', l.value > 0 and l.price > 5 * l.value,
+        'pair', l.status = 'sold' and l.seller is not null and l.buyer is not null and (select count(*) from public.market_listings x
+                 where x.status = 'sold' and x.seller = l.seller and x.buyer = l.buyer and x.resolved_at > now() - interval '30 days') >= 2,
+        'fr', l.seller is not null and l.buyer is not null and public._are_friends(l.seller, l.buyer)) order by l.id desc)
+      from (select * from public.market_listings
+             where status = case when p_kind = 'active' then 'active' else 'sold' end and (p_before is null or id < p_before)
+             order by id desc limit 30) l), '[]'::jsonb));
+end $$;
+
+-- Turunkan jualan aktif: hewan dikirim kembali ke penjual bersama alasannya (terlihat di catatan breeder penjual).
+create or replace function public.admin_market_takedown(p_listing bigint, p_reason text)
+returns void language plpgsql security definer set search_path = '' as $$
+declare l public.market_listings;
+begin
+  perform public._bug_need_admin();
+  p_reason := btrim(regexp_replace(coalesce(p_reason, ''), '[\x01-\x1f\x7f]+', ' ', 'g'));
+  if char_length(p_reason) < 3 or char_length(p_reason) > 300 then raise exception 'reason_required'; end if;
+  select * into l from public.market_listings where id = p_listing for update;
+  if not found then raise exception 'listing_not_found'; end if;
+  if l.status <> 'active' then raise exception 'listing_closed'; end if;
+  perform public._market_return(l, 'removed', p_reason);
+  perform public._mod_log('mkt_takedown', l.seller, jsonb_build_object('id', l.id, 'c', l.code, 'n', l.name, 'p', l.price, 'reason', p_reason));
+end $$;
+
+-- Keluarkan (p_exclude = true) atau masukkan lagi penjualan ke riwayat harga.
+create or replace function public.admin_market_exclude(p_listing bigint, p_exclude boolean)
+returns void language plpgsql security definer set search_path = '' as $$
+declare l public.market_listings;
+begin
+  perform public._bug_need_admin();
+  select * into l from public.market_listings where id = p_listing for update;
+  if not found then raise exception 'listing_not_found'; end if;
+  if l.status <> 'sold' then raise exception 'listing_not_sold'; end if;
+  if l.excluded = coalesce(p_exclude, false) then return; end if;
+  update public.market_listings set excluded = coalesce(p_exclude, false) where id = l.id;
+  perform public._mod_log(case when p_exclude then 'mkt_exclude' else 'mkt_include' end, l.seller,
+    jsonb_build_object('id', l.id, 'c', l.code, 'n', l.name, 'p', l.price, 'b', coalesce(public._username(l.buyer), l.buyer_name)));
+end $$;
+
+-- ---------------------------------------------------------------------
 -- HAK AKSES
 -- ---------------------------------------------------------------------
 do $$
 declare f text;
 begin
   foreach f in array array['_market_list(uuid, jsonb, bigint, jsonb, jsonb, integer, integer, text, text)',
-                           '_market_return(public.market_listings, text)', '_market_expire()', '_market_reset(uuid)',
+                           '_market_return(public.market_listings, text, text)', '_market_expire()', '_market_reset(uuid)',
                            '_market_row(public.market_listings, uuid)', '_market_on_user_deleted()'] loop
     execute format('revoke all on function public.%s from public, anon, authenticated', f);
   end loop;
   execute 'grant execute on function public._market_list(uuid, jsonb, bigint, jsonb, jsonb, integer, integer, text, text) to service_role';
   foreach f in array array['get_market(text, text)', 'get_my_listings()', 'get_market_prices(text)',
-                           'buy_listing(bigint, bigint)', 'cancel_listing(bigint)'] loop
+                           'buy_listing(bigint, bigint)', 'cancel_listing(bigint)',
+                           'admin_market(text, bigint)', 'admin_market_takedown(bigint, text)', 'admin_market_exclude(bigint, boolean)'] loop
     execute format('revoke all on function public.%s from public, anon', f);
     execute format('grant execute on function public.%s to authenticated', f);
   end loop;
