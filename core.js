@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:37,date:'2026-11-21'};
+const VERSION={v:38,date:'2026-11-21'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -59,7 +59,7 @@ const TL={pastel:'Pastel',superpastel:'Super Pastel',mojave:'Mojave',lesser:'Les
  tremper:'Tremper Albino',bell:'Bell Albino',rainwater:'Rainwater Albino',eclipse:'Eclipse',blizzard:'Blizzard',murphy:'Murphy Patternless',marble:'Marble Eye',macksnow:'Mack Snow',supersnow:'Super Snow',giant:'Giant',supergiant:'Super Giant',lemonfrost:'Lemon Frost',superlemonfrost:'Super Lemon Frost',enigma:'Enigma',wy:'White & Yellow',
  axleu:'Leucistic',axalb:'Albino',axmel:'Melanoid',axaxa:'Axanthic',axcop:'Copper',gfp:'GFP',rfp:'RFP'};
 const TV={pastel:45,superpastel:150,mojave:55,lesser:55,bel:600,enchi:60,superenchi:260,yb:40,ivory:280,cinnamon:50,supercinnamon:260,banana:140,superbanana:500,spider:70,pinstripe:60,albino:280,piebald:380,clown:520,axanthic:300,
- tremper:45,bell:55,rainwater:55,eclipse:60,blizzard:50,murphy:55,marble:70,macksnow:30,supersnow:120,giant:40,supergiant:140,lemonfrost:120,superlemonfrost:360,enigma:45,wy:45,
+ tremper:55,bell:75,rainwater:85,eclipse:80,blizzard:75,murphy:85,marble:110,macksnow:45,supersnow:140,giant:55,supergiant:150,lemonfrost:110,superlemonfrost:190,enigma:50,wy:55,
  axleu:6,axalb:9,axmel:6,axaxa:12,axcop:15,gfp:10,rfp:15};
 const TLOC={pastel:'pastel',superpastel:'pastel',mojave:'bel',lesser:'bel',bel:'bel',enchi:'enchi',superenchi:'enchi',yb:'yb',ivory:'yb',cinnamon:'cinnamon',supercinnamon:'cinnamon',banana:'banana',superbanana:'banana',spider:'spider',pinstripe:'pinstripe',albino:'albino',piebald:'piebald',clown:'clown',axanthic:'axanthic',
  tremper:'tremper',bell:'bell',rainwater:'rainwater',eclipse:'eclipse',blizzard:'blizzard',murphy:'murphy',marble:'marble',macksnow:'macksnow',supersnow:'macksnow',giant:'giant',supergiant:'giant',lemonfrost:'lemonfrost',superlemonfrost:'lemonfrost',enigma:'enigma',wy:'wy',
@@ -83,12 +83,13 @@ const SPECIES={
   mk:{baby:{a:[1,3],w:[70,180]},F:{a:[24,30],w:[1500,1900]},M:{a:[10,16],w:[550,900]}},
   pool:[['normal',8],['pastel',10],['mojave',6],['lesser',6],['enchi',6],['yb',7],['cinnamon',6],['banana',4],['spider',6],['pinstripe',6],['albino',5],['piebald',4],['clown',3],['axanthic',4]],
   orderBase:['pastel','spider','albino','enchi'],orderSkip:['bel','superbanana','supercinnamon']},
- leo:{name:'leopard gecko',orderBonus:30,code:'LG',loci:LEO_LOCI,maxAge:240,base:25,fAge:10,mAge:9,recover:3,ovul:.7,layIn:1,slug:.1,layLoss:.94,gravidLoss:1,clutches:[4,6],minLayW:40,slugStep:.04,
+ leo:{name:'leopard gecko',orderBonus:30,code:'LG',loci:LEO_LOCI,maxAge:240,base:35,fAge:10,mAge:9,recover:3,ovul:.7,layIn:1,slug:.1,layLoss:.94,gravidLoss:1,clutches:[4,6],minLayW:40,slugStep:.04,
   K:{F:65,M:75,H:70},r:{F:.4,M:.4,H:.4},hatchW:[3,5],wBonus:[4,40],foodBase:1,inc:2,
   temp:{min:26,max:34,mid:30,step:.5},
   eggs:()=>R()<.1?1:2,
   mk:{baby:{a:[1,3],w:[6,15]},F:{a:[10,14],w:[50,62]},M:{a:[9,13],w:[55,70]}},
-  pool:[['normal',8],['tremper',9],['bell',6],['rainwater',5],['eclipse',6],['blizzard',6],['murphy',5],['marble',3],['macksnow',9],['giant',6],['lemonfrost',3],['enigma',5],['wy',5]],
+  // tiket undian toko (v38): umum 10 · sedang 5–6 · agak langka 4 · langka 2. Normal tidak diundi: selalu ada (fixed).
+  pool:[['tremper',10],['macksnow',10],['bell',6],['eclipse',6],['giant',6],['enigma',6],['blizzard',5],['wy',5],['rainwater',4],['murphy',4],['marble',2],['lemonfrost',2]],fixed:['normal'],
   orderBase:['macksnow','tremper','eclipse','giant'],orderSkip:['superlemonfrost','supergiant']},
  axo:{name:'axolotl',orderBonus:10,code:'AX',loci:AXO_LOCI,maxAge:180,base:5,fAge:18,mAge:12,recover:4,ovul:.6,layIn:1,slug:.15,layLoss:.9,gravidLoss:1,clutches:[1,1],minLayW:0,slugStep:0,
   K:{F:110,M:95,H:100},r:{F:.5,M:.5,H:.5},hatchW:[2,3],wBonus:[2,60],foodBase:1,inc:1,
@@ -329,7 +330,8 @@ function growW(sp,sex,w,g,rf){const P=SPECIES[sp],r=P.r[sex==='F'||sex==='M'?sex
 function grow(s){const sp=spOf(s);if(s.gravid){s.w=Math.round(s.w*SPECIES[sp].gravidLoss);return}s.w=growW(sp,s.sex,s.w,s.g,(0.85+R()*0.3)*(1-inbOf(s)/2))}
 
 /* ========= PASAR & PESANAN ========= */
-// Pasar: tiap spesies punya 3 hewan bergen tunggal (atau Normal), gennya tidak boleh sama, stok berganti tiap 50 turn.
+// Pasar: tiap spesies punya 3 hewan bergen tunggal (atau Normal) hasil undian, gennya tidak boleh sama, stok berganti tiap 50 turn.
+// SPECIES[sp].fixed = gen yang selalu dijual di luar undian (leopard gecko: Normal), ditandai fixed:1.
 // Tiap hewan di pasar bisa dibeli berkali-kali: bayi (10× harga dasar) atau siap kawin (20× harga dasar), ♂ atau ♀.
 const MARKET_SIZE=3,MARKET_EVERY=50,BUY_MULT={baby:10,adult:20};
 const MARKET_POOL=SPECIES.ball.pool;
@@ -343,15 +345,24 @@ const marketBase=L=>Math.round(baseValue(listingTraits(L),spOf(L))/5)*5;     // 
 const marketPrice=(L,age)=>marketBase(L)*(BUY_MULT[age]||0);
 const marketLeft=()=>Math.max(0,MARKET_EVERY-(S.turn-(S.marketAt||0)));   // turn sampai stok berganti
 // Isi ulang stok satu spesies saja (listing ball python tanpa sp, sama seperti format lama).
-function fillMarket(sp){S.market=(Array.isArray(S.market)?S.market:[]).filter(L=>L&&spOf(L)!==sp);const pool=SPECIES[sp].pool.slice();let n=0;
- while(n<MARKET_SIZE&&pool.length){const k=wpick(pool);pool.splice(pool.findIndex(p=>p[0]===k),1);const L={lid:Math.floor(R()*1e9),gene:k};if(sp!=='ball')L.sp=sp;S.market.push(L);n++}}
+const mkListing=(sp,gene,fixed)=>{const L={lid:Math.floor(R()*1e9),gene};if(sp!=='ball')L.sp=sp;if(fixed)L.fixed=1;return L};
+// keep = listing undian yang dipertahankan (perbaikan save lama); sisanya diundi ulang, lalu gen tetap ditambahkan.
+function fillMarket(sp,keep){keep=keep||[];S.market=(Array.isArray(S.market)?S.market:[]).filter(L=>L&&spOf(L)!==sp).concat(keep);
+ const pool=SPECIES[sp].pool.filter(p=>!keep.some(L=>L.gene===p[0]));let n=keep.length;
+ while(n<MARKET_SIZE&&pool.length){const k=wpick(pool);pool.splice(pool.findIndex(p=>p[0]===k),1);S.market.push(mkListing(sp,k));n++}
+ for(const g of SPECIES[sp].fixed||[])S.market.push(mkListing(sp,g,true))}
 function refreshMarket(){S.market=[];for(const sp of SPECIES_LIST)fillMarket(sp);S.marketAt=S.turn}
-const spMarketOk=sp=>{const L=S.market.filter(x=>spOf(x)===sp);return L.length===MARKET_SIZE&&new Set(L.map(x=>x.gene)).size===L.length&&L.every(x=>SPECIES[sp].pool.some(p=>p[0]===x.gene))};
+const lotOk=(sp,L)=>!L.fixed&&SPECIES[sp].pool.some(p=>p[0]===L.gene);
+const spMarketOk=sp=>{const L=S.market.filter(x=>spOf(x)===sp),lot=L.filter(x=>!x.fixed),fx=L.filter(x=>x.fixed),F=SPECIES[sp].fixed||[];
+ return lot.length===MARKET_SIZE&&new Set(L.map(x=>x.gene)).size===L.length&&lot.every(x=>lotOk(sp,x))&&fx.length===F.length&&F.every(g=>fx.some(x=>x.gene===g))};
 const marketOk=()=>Array.isArray(S.market)&&S.marketAt!=null&&S.market.every(L=>L&&L.gene&&(!L.sp||SPECIES[L.sp]))&&SPECIES_LIST.every(spMarketOk);
 // Save lama: format pasar lama diganti total; spesies baru yang belum punya stok ditambahkan tanpa mengganti stok lain.
 function ensureMarket(){if(marketOk())return;
  if(!Array.isArray(S.market)||S.marketAt==null||!S.market.every(L=>L&&L.gene&&(!L.sp||SPECIES[L.sp]))){refreshMarket();return}
- for(const sp of SPECIES_LIST)if(!spMarketOk(sp))fillMarket(sp)}
+ // stok yang masih sah dipertahankan; hanya slot yang tidak sah lagi (mis. Normal leopard gecko di undian lama) yang diganti
+ for(const sp of SPECIES_LIST)if(!spMarketOk(sp)){const seen=new Set(),keep=[];
+  for(const L of S.market.filter(x=>spOf(x)===sp))if(lotOk(sp,L)&&!seen.has(L.gene)&&keep.length<MARKET_SIZE){seen.add(L.gene);keep.push(L)}
+  fillMarket(sp,keep)}}
 function makeMarketSnake(L,age,sex){const sp=spOf(L),{g,hp}=listingGeno(L.gene,sp),M=SPECIES[sp].mk[age==='baby'?'baby':sex];
  const s=newSnake({sex,age:rint(M.a),w:rint(M.w),g,hp});if(sp!=='ball')s.sp=sp;return s}
 function orderSpec(){
