@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:31,date:'2026-11-20'};
+const VERSION={v:32,date:'2026-11-20'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -250,10 +250,10 @@ function pedNode(s){const o={k:s.seed,c:code(s),n:fullName(s),x:s.sex},h=hetText
 // 2 = induk jantan, 3 = induk betina, 4–7 = kakek-nenek, ... sampai 63), nilai inbreeding-nya sendiri di s.inb,
 // dan s.af = {seed: F} untuk leluhur yang inbred. Dari situ dihitung koefisien inbreeding (F) calon anak dengan
 // rumus kekerabatan (kinship) standar, jadi kawin sedarah berulang ikut menumpuk: 25% → 37,5% → 50% → 59%.
-// Efek (versi berat): telur tidak subur +0,8×F, gagal menetas +0,8×F; hewan yang inbred tumbuh (1−F/2)× lebih cepat
+// Efek (versi ringan + efek tambahan): telur tidak subur +0,4×F, gagal menetas +0,4×F; hewan yang inbred tumbuh (1−F/2)× lebih cepat
 // dan betina inbred berovulasi (1−F)× peluang biasanya.
 const ANC_MAX=64;                         // posisi < 64 = 5 generasi leluhur
-const INB_SLUG=.8,INB_DEAD=.8,HATCH_DEAD=.04;
+const INB_SLUG=.4,INB_DEAD=.4,HATCH_DEAD=.04;
 // Peta posisi → seed untuk hewan (atau snapshot induk). Hewan v24 tanpa s.anc: dibaca dari s.ped.
 function ancMap(x){const A={1:x.seed};
  if(Array.isArray(x.anc)){x.anc.forEach((k,i)=>{if(i>=2&&i<ANC_MAX&&k)A[i]=k});return A}
