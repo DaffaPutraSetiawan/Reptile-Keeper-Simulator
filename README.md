@@ -11,8 +11,8 @@ Buka game lewat GitHub Pages, lalu daftar gratis dengan email dan pilih username
 1. Kamu mulai dengan **$5.000**, **2 rak (20 space)**, dan sepasang ball python: jantan Normal het Albino dan betina Albino yang langsung bisa dikawinkan.
 2. **Kawinkan** pasangan di tab Kawinkan. Tabel peluang menunjukkan morph apa saja yang mungkin keluar.
 3. Tekan **Lanjut bulan**. Betina bisa ovulasi, bertelur, lalu telurnya menetas di **Inkubator**. Suhu inkubasi mengatur peluang anak jantan/betina.
-4. **Jual** hewan lewat iklan, jual cepat, atau kirim ke **pembeli** di tab Pesanan (paling untung).
-5. Kumpulkan morph di **Morph Dex**, beli gen baru di **Pasar**, buka spesies lain, dan beli rak tambahan ($10.000, lalu naik 2× setiap pembelian).
+4. **Jual** hewan lewat iklan, jual cepat, kirim ke **pembeli** di tab Pesanan (paling untung), atau pasang di **Pasar Pemain** untuk dijual ke pemain lain dengan harga pilihanmu.
+5. Kumpulkan morph di **Morph Dex**, beli gen baru di **Pasar** (toko NPC atau hewan milik pemain lain), buka spesies lain, dan beli rak tambahan ($10.000, lalu naik 2× setiap pembelian).
 6. Ikuti **Misi pemula** di samping layar untuk panduan langkah demi langkah.
 
 Game **wajib login**. Setiap aksi dikirim ke server (Edge Function `game`), yang menghitung hasil breeding, pasar, dan uang. Save tidak bisa diubah dari browser, jadi aman dari kecurangan, bisa dilanjutkan dari perangkat mana pun, dan dipakai untuk trading serta papan peringkat.
@@ -25,7 +25,7 @@ Game **wajib login**. Setiap aksi dikirim ke server (Edge Function `game`), yang
   - **Ball python** (12 gen): resesif Albino, Piebald, Clown, Axanthic · co-dominan dengan bentuk super Pastel, Enchi, Yellow Belly (→ Ivory), Cinnamon, Banana · dominan Spider, Pinstripe · kompleks BEL (Mojave + Lesser)
   - **Leopard gecko** (12 gen): tiga strain albino (Tremper, Bell, Rainwater), Eclipse, Blizzard, Murphy Patternless, Marble Eye, Mack Snow, Giant, Lemon Frost, Enigma, White & Yellow · 4–6 clutch dari sekali kawin · suhu inkubasi menentukan jenis kelamin (termasuk pola "hot female")
   - **Axolotl** (7 gen): Leucistic, Albino, Melanoid, Axanthic, Copper, GFP, RFP · sampai 100 telur per clutch; pilih maksimal 3 bayi, sisanya otomatis dijual
-- **Sistem het & pos het**: peluang het dihitung otomatis, dan induk "terbukti het" setelah menghasilkan anak visual
+- **Sistem het & pos het**: peluang het dihitung otomatis saat menetas dan tidak bisa diubah pemain. Contoh untuk anak yang tidak visual: induk visual × normal → 100% het, het × het → 66% pos het, het × normal → 50% pos het, 50% pos het × normal → 25% pos het. Hewan pos het "terbukti het" (naik jadi 100%) begitu menghasilkan anak visual. Nilai hewan ikut naik sesuai peluang het-nya. Hewan milik pemain lain (profil, trade, Pasar Pemain) hanya menampilkan catatan het ini, sedangkan gen resesif yang tidak terlihat disembunyikan server; pembeli baru tahu gen aslinya lewat breeding
 - **Tabel peluang keturunan** untuk setiap pasangan
 - **Planner breeding** (di tab Kawinkan): centang gen target, lalu planner menunjukkan hewan pembawa tiap gen dan 5 pasangan terbaik di koleksimu (peluang per bayi, perkiraan bayi target per musim, status siap kawin, dan inbreeding) untuk 1 generasi
 - **Siklus breeding bulanan**: umur minimal kawin, ovulasi, jumlah telur dipengaruhi berat, telur tidak subur, inkubasi dengan pengaturan suhu, masa pemulihan betina, batas umur
