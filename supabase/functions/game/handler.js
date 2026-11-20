@@ -38,8 +38,11 @@ async function run(body, uid, db) {
         // Save lama dengan format pasar lama: ubah sekali ke pasar baru lalu simpan.
         C.use(row.data);
         // save tanpa angka peringkat (pemain lama) ikut disimpan ulang supaya langsung masuk papan peringkat
-        if (C.marketOk() && row.rank) return { state: row.data, rev: row.rev };
+        // save yang belum menjalankan perbaikan inbreeding v31 juga disimpan ulang sekali
+        const inbOk = !!(row.data.fx && row.data.fx.inb);
+        if (C.marketOk() && row.rank && inbOk) return { state: row.data, rev: row.rev };
         C.ensureMarket();
+        if (!inbOk) { C.repairInb(); row.data.fx = Object.assign(row.data.fx || {}, { inb: 1 }); }
         row.data.rev = row.rev + 1;
         if (await db.update(uid, row.data, row.rev, C.rankStats(row.data))) return { state: row.data, rev: row.data.rev };
         continue;

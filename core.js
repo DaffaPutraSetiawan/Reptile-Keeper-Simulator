@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:30,date:'2026-11-20'};
+const VERSION={v:31,date:'2026-11-20'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -304,6 +304,20 @@ function relation(m,f){const F=kinship(ancRec(m),ancRec(f));if(F<=0)return null;
  else if(sharedG)r='rel_cousin';
  return{F,r}}
 const inbOf=s=>(s&&s.inb)||0;
+// Leluhur hewan di posisi `top` (2 = induk jantan, 3 = induk betina) diambil dari peta leluhur anaknya.
+function recFrom(A,top,af){const a=[],gt=31-Math.clz32(top);
+ for(const i in A){const c=+i;if(c<2)continue;const g=31-Math.clz32(c)-gt;if(g<1||(c>>g)!==top)continue;a[(1<<g)+(c-(top<<g))]=A[i]}
+ return{k:A[top],a,inb:(af||{})[A[top]]||0,af:af||{}}}
+// F hewan dihitung ulang dari leluhur yang tersimpan di dirinya sendiri (s.anc).
+function inbFromAnc(x){const A=ancMap(x);if(!A[2]||!A[3])return 0;return kinship(recFrom(A,2,x.af),recFrom(A,3,x.af))}
+// Perbaikan sekali jalan (v31): sampai v30, clutch ke-2 dst. dari sekali kawin (leopard gecko) kehilangan nilai F,
+// jadi anaknya tercatat 0% walaupun induknya berkerabat. Hitung ulang untuk hewan, telur di inkubator, brood, dan betina bunting.
+function repairInb(){let n=0;
+ for(const s of S.snakes){if(Array.isArray(s.anc)&&!(s.inb>0)){const F=inbFromAnc(s);if(F>0){s.inb=F;n++}}
+  const g=s.gravid;if(g&&(g.no||1)>1&&!(g.inb>0)&&g.sire&&g.sire.ar){const F=kinship(g.sire.ar,ancRec(s));if(F>0)g.inb=F}}
+ for(const c of S.clutches||[])if(c.ca&&!(c.inb>0)){const F=inbFromAnc({anc:c.ca.anc,af:c.ca.af});if(F>0){c.inb=F;c.ca.inb=F}}
+ for(const b of S.broods||[])if(b.ca&&!(b.ca.inb>0)){const F=inbFromAnc({anc:b.ca.anc,af:b.ca.af});if(F>0)b.ca.inb=F}
+ if(n)log('l_inbfix',{n},'info');return n}
 function removeSnake(s){if(s.sex==='M')S.snakes.forEach(f=>{if(f.pairedWith===s.id)f.pairedWith=null});if(s.pairedWith){const m=byId(s.pairedWith);if(m)m.pairs=Math.max(0,m.pairs-1)}S.snakes=S.snakes.filter(x=>x!==s)}
 // Morph Dex: kunci ball python = nama morph (seperti dulu); spesies lain diberi awalan, mis. "leo:RAPTOR".
 const dexKey=(tr,sp)=>(sp&&sp!=='ball'?sp+':':'')+nameOf(tr,null,sp||spOfTr(tr));
@@ -524,7 +538,7 @@ function advance(){
   S.stats.clutches++;
   log('l_laid',tot>1?{c:code(f),n,good:eggs.length,slug:slugs,m:P.inc,no,tot}:{c:code(f),n,good:eggs.length,slug:slugs,m:P.inc},'good');head.push(['h_laid',{c:code(f),n:eggs.length}]);
   f.lastLaid=S.turn;f.w=Math.round(f.w*P.layLoss);
-  if(no<tot&&f.w>=P.minLayW)f.gravid={sire:m,layIn:1,no:no+1,tot};
+  if(no<tot&&f.w>=P.minLayW)f.gravid={sire:m,layIn:1,no:no+1,tot,inb:F};   // F ikut ke clutch berikutnya
   else{f.gravid=null;if(no<tot)log('l_season_light',{c:code(f),n:no},'info');else if(tot>1)log('l_season_end',{c:code(f),n:tot,r:P.recover},'info')}}
  // 3. ovulasi dari perkawinan bulan lalu
  for(const f of S.snakes){if(!f.pairedWith)continue;const m=byId(f.pairedWith),P=SPECIES[spOf(f)];
@@ -619,6 +633,7 @@ function applyAction(state,a){
  if(!a||typeof a!=='object'||typeof a.type!=='string'||!Object.prototype.hasOwnProperty.call(ACTIONS,a.type))fail('bad_action');
  S=state;if(!Array.isArray(S.broods))S.broods=[];if(typeof S.rep!=='number')S.rep=(S.stats&&S.stats.orders)||0;   // save lama: reputasi = pesanan yang sudah dipenuhi
  syncDex();trimLog();ensureMarket();
+ if(!S.fx||!S.fx.inb){repairInb();S.fx=Object.assign(S.fx||{},{inb:1})}
  const res=ACTIONS[a.type](a)||{};
  const q=checkQuests();if(q.length)res.quests=q;
  return res;
@@ -633,7 +648,7 @@ root.MorphCore={
  mi,yr,cap,log,rackPrice,RACK_MULT,
  emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,
  OLD_WARN,maxAge,lifeLeft,sizeMult,kOf,growW,
- pedNode,pedParents,labelNode,ancRec,kinship,relation,inbOf,INB_SLUG,INB_DEAD,HATCH_DEAD,
+ pedNode,pedParents,labelNode,ancRec,kinship,relation,inbOf,inbFromAnc,repairInb,INB_SLUG,INB_DEAD,HATCH_DEAD,
  mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,dexKey,matches,ORDER_PREMIUM,orderPay,REP_ORDER,REP_BIG,BIG_LEVEL,ORDER_PREMIUM_BIG,MAX_SMALL,repNeed,repLevel,isBig,genBigOrder,bigPay,orderLabel,
  monthlyCosts,previewNext,
  MARKET_SIZE,MARKET_EVERY,BUY_MULT,MARKET_POOL,listingTraits,marketBase,marketPrice,marketLeft,refreshMarket,ensureMarket,marketOk,makeMarketSnake,
