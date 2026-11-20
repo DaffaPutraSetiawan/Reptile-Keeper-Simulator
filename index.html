@@ -312,9 +312,7 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  pm_count:p=>`${p.n} dari ${p.t} jualan`,pm_none:'Belum ada yang berjualan. Jadilah yang pertama: buka hewan di koleksi lalu pilih "Jual di Pasar Pemain".',pm_none_f:'Tidak ada jualan yang cocok dengan filter.',pm_seller:'Penjual',
  pm_left:p=>p.d>0?`sisa ${p.d} hari ${p.h} jam`:p.h>0?`sisa ${p.h} jam`:'segera berakhir',pm_val:p=>`nilai ${p.v}`,pm_buy:'Beli',pm_cancel:'Batalkan jualan',pm_err:'Gagal memuat Pasar Pemain.',
  sortpm_new:'Terbaru',sortpm_cheap:'Termurah',sortpm_ending:'Segera berakhir',sortpm_value:'Nilai tertinggi',
- pm_buy_h:'Beli dari Pasar Pemain?',pm_buy_final:p=>`Kamu membayar ${p.p} ke ${p.u}. Pembelian tidak bisa dibatalkan.`,pm_buy_yes:p=>`Ya, beli ${p.p}`,
- pmw_pricey:p=>`Harga ${p.p} lebih dari 2× nilai pasar hewan ini (${p.v}).`,pmw_avg:p=>`Harga ini jauh di atas median harga terjual 30 hari terakhir (${p.a}).`,pmw_money:p=>`Harga ${p.p} setara setengah atau lebih dari uangmu (${p.b}).`,
- pmw_cap:p=>`Setelah membeli kamu punya ${p.n} hewan, melebihi kapasitas ${p.c}. ${p.x} hewan kena biaya space darurat ${p.v}/bulan.`,
+ pm_buy_h:'Yakin beli?',pm_buy_final:p=>`Kamu akan membeli <b>${p.n}</b> dari ${p.u} seharga <b>${p.p}</b>. Pembelian tidak bisa dibatalkan.`,pm_buy_yes:p=>`Ya, beli ${p.p}`,
  pm_cancel_h:'Batalkan jualan?',pm_cancel_q:p=>`${p.n} akan dikembalikan ke koleksimu lewat kiriman.`,pm_cancel_yes:'Ya, batalkan',
  pm_sell:'🏪 Jual di Pasar Pemain',pm_sell_h:'Jual di Pasar Pemain',pm_minp:'Harga minimum (50% nilai)',pm_hist:'Riwayat harga (30 hari)',pm_hist_v:p=>`📊 median <b>${p.m}</b>${p.lo?` · kebanyakan terjual ${p.lo}–${p.hi}`:''} · termahal ${p.mx} · ${p.n}× terjual`,pm_hist_none:'Belum ada yang terjual',
  pm_price:'Harga jual ($)',pm_sell_note:p=>`Selama dijual, hewan keluar dari koleksimu (tidak bisa dikawinkan atau dijual di toko). Tayang ${p.d} hari; kalau tidak laku, hewan kembali otomatis. Tanpa biaya.`,pm_sell_yes:'Pasang jualan',
@@ -606,9 +604,7 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  pm_count:p=>`${p.n} of ${p.t} listings`,pm_none:'Nobody is selling yet. Be the first: open an animal in your collection and choose "Sell on the player market".',pm_none_f:'No listings match your filters.',pm_seller:'Seller',
  pm_left:p=>p.d>0?`${p.d}d ${p.h}h left`:p.h>0?`${p.h}h left`:'ending soon',pm_val:p=>`value ${p.v}`,pm_buy:'Buy',pm_cancel:'Cancel listing',pm_err:'Could not load the player market.',
  sortpm_new:'Newest',sortpm_cheap:'Cheapest',sortpm_ending:'Ending soon',sortpm_value:'Highest value',
- pm_buy_h:'Buy from the player market?',pm_buy_final:p=>`You pay ${p.p} to ${p.u}. Purchases can’t be undone.`,pm_buy_yes:p=>`Yes, buy for ${p.p}`,
- pmw_pricey:p=>`The price ${p.p} is more than 2× this animal’s market value (${p.v}).`,pmw_avg:p=>`This price is far above the 30-day median sale price (${p.a}).`,pmw_money:p=>`The price ${p.p} is half or more of your money (${p.b}).`,
- pmw_cap:p=>`After buying you’ll have ${p.n} animals, over your capacity of ${p.c}. ${p.x} animals will cost ${p.v}/month in emergency space.`,
+ pm_buy_h:'Are you sure you want to buy?',pm_buy_final:p=>`You’re about to buy <b>${p.n}</b> from ${p.u} for <b>${p.p}</b>. Purchases can’t be undone.`,pm_buy_yes:p=>`Yes, buy for ${p.p}`,
  pm_cancel_h:'Cancel listing?',pm_cancel_q:p=>`${p.n} will be returned to your collection as a delivery.`,pm_cancel_yes:'Yes, cancel',
  pm_sell:'🏪 Sell on the player market',pm_sell_h:'Sell on the player market',pm_minp:'Minimum price (50% of value)',pm_hist:'Price history (30 days)',pm_hist_v:p=>`📊 median <b>${p.m}</b>${p.lo?` · most sold for ${p.lo}–${p.hi}`:''} · highest ${p.mx} · ${p.n}× sold`,pm_hist_none:'None sold yet',
  pm_price:'Sale price ($)',pm_sell_note:p=>`While listed, the animal leaves your collection (it can’t be bred or sold in the shop). Listed for ${p.d} days; if it doesn’t sell, it comes back automatically. No fees.`,pm_sell_yes:'Create listing',
@@ -1356,13 +1352,9 @@ function vPasar(){const sub=`<div class="toolbar">${['npc','pm','mine'].map(k=>`
  </div>
  <div class="toolbar"><span class="kbd">${t('sort_by')}</span><select id="pmsort" style="width:auto">${['new','cheap','ending','value'].map(k=>opt(k,f.sort,t('sortpm_'+k))).join('')}</select>${rf}</div>
  <div id="pmbody">${pmBody()}</div>`}
-function pmBuyAsk(id){const L=PM.find(id);if(!L)return;const s=L.snake,v=value(s),w=[],n=S.snakes.length+1,ph=PM.price(L.sp,L.name,L.sex);
- if(n>cap())w.push(t('pmw_cap',{n,c:cap(),x:n-cap(),v:money((n-cap())*15)}));
- if(L.price>v*2&&L.price-v>=100)w.push(t('pmw_pricey',{p:money(L.price),v:money(v)}));
- if(ph&&ph.n>=2&&L.price>ph.med*1.5&&L.price-ph.med>=100)w.push(t('pmw_avg',{a:money(ph.med)}));
- if(L.price>=S.money*.5)w.push(t('pmw_money',{p:money(L.price),b:money(S.money)}));
- modal(`<h2>${t('pm_buy_h')}</h2>${miniList([s])}<p class="kbd">${t('pm_seller')}: ${esc(L.seller_name)} · ⭐ Lv ${repLevel(L.rep||0)} · ⏳ ${pmLeft(L.expires_at)}</p>
-  ${warnBlock({w},t('pm_buy_final',{p:money(L.price),u:esc(L.seller_name)}))}
+function pmBuyAsk(id){const L=PM.find(id);if(!L)return;
+ modal(`<h2>${t('pm_buy_h')}</h2>${miniList([L.snake])}<p class="kbd">${t('pm_seller')}: ${esc(L.seller_name)} · ⭐ Lv ${repLevel(L.rep||0)} · ⏳ ${pmLeft(L.expires_at)}</p>
+  <p class="sub">${t('pm_buy_final',{p:money(L.price),u:esc(L.seller_name),n:esc(L.name)})}</p>
   <div class="actions"><button class="pri" data-act="pm_buy_yes" data-id="${id}">${t('pm_buy_yes',{p:money(L.price)})}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`)}
 async function pmBuy(id){const L=PM.find(id);if(!L)return;
  try{await Cloud.rpcSave('buy_listing',{p_listing:id});closeModal(true);toast(t('t_mkt_bought',{n:esc(L.name)}))}
@@ -1378,7 +1370,7 @@ async function pmSellAsk(id){const s=byId(id);if(!s||pmBlocked(s))return;await P
  const v=value(s),min=Math.max(1,Math.ceil(v*Core.MKT_MIN)),ph=PM.price(spOfG(s.g),fullName(s),s.sex);
  modal(`<h2>${t('pm_sell_h')}</h2>${miniList([s])}
   <dl><dt>${t('d_value')}</dt><dd>${money(v)}</dd><dt>${t('pm_minp')}</dt><dd><b>${money(min)}</b></dd><dt>${t('pm_hist')}</dt><dd>${ph?pmHist(ph):t('pm_hist_none')}</dd></dl>
-  <label>${t('pm_price')}<input id="pmprice" type="number" min="${min}" max="${Core.MKT_MAX}" step="1" value="${Math.max(min,Math.round(ph?ph.med:v))}"></label>
+  <label>${t('pm_price')}<input id="pmprice" type="number" min="${min}" max="${Core.MKT_MAX}" step="1" value="" autocomplete="off"></label>
   <p class="kbd">${t('pm_sell_note',{d:Core.MKT_DAYS})}</p>
   <div class="actions"><button class="pri" data-act="pm_sell_yes" data-id="${id}">${t('pm_sell_yes')}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`)}
 async function pmSell(id){const el=$('pmprice');if(!el)return;const price=Math.round(+el.value);
