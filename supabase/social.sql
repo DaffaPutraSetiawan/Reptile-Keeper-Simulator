@@ -288,7 +288,7 @@ declare v_log jsonb := jsonb_build_array(jsonb_build_object('w', coalesce((p_dat
           'm', p_key, 'p', coalesce(p_params, '{}'::jsonb), 'k', p_kind)) || coalesce(p_data -> 'log', '[]'::jsonb);
 begin
   select coalesce(jsonb_agg(e order by o), '[]'::jsonb) into v_log
-    from jsonb_array_elements(v_log) with ordinality t(e, o) where o <= 50;  -- maks. 50 catatan, yang paling lama terhapus
+    from jsonb_array_elements(v_log) with ordinality t(e, o) where o <= 100;  -- maks. 100 catatan (sama dengan LOG_MAX di core.js), yang paling lama terhapus
   return jsonb_set(p_data, '{log}', v_log);
 end $$;
 

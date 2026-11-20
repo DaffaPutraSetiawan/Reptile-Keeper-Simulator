@@ -1062,7 +1062,7 @@ function render(){
  renderQuest();
  $('logh').textContent=t('log_title');
  $('logclr').textContent=t('log_clear');$('logclr').style.display=S.log.length?'':'none';
- $('log').innerHTML=S.log.length?S.log.slice(0,50).map(logLine).join(''):`<li class="info" style="border:0">${esc(t('log_empty'))}</li>`;
+ $('log').innerHTML=S.log.length?S.log.slice(0,Core.LOG_MAX||100).map(logLine).join(''):`<li class="info" style="border:0">${esc(t('log_empty'))}</li>`;
  afterRender();
 }
 /* ========= PRATINJAU SALDO BULAN DEPAN ========= */

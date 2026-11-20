@@ -33,6 +33,7 @@ Game **wajib login**. Setiap aksi dikirim ke server (Edge Function `game`), yang
 - **Silsilah 3 generasi** di setiap hewan (ikut pindah saat trade)
 - **Kawin sedarah (inbreeding)**: koefisien inbreeding dihitung dari leluhur 5 generasi. Ada peringatan sebelum memasangkan kerabat, dan efeknya nyata: telur tidak subur dan gagal menetas masing-masing naik 0,4 × F, hewan inbred tumbuh (1 − F/2)× dan betinanya berovulasi (1 − F)× dari biasanya (F 25% untuk saudara kandung atau induk × anak). Nilai inbreeding terbawa di setiap clutch dari sekali kawin
 - **Ekonomi**: biaya pakan & rak, harga pasar yang naik turun dan bisa jenuh, pasar tiap spesies (bayi 10× / siap kawin 20× harga dasar), iklan, jual cepat, event, pesanan pembeli (membayar hadiah atau 125% nilai hewan), dan **pratinjau saldo bulan depan**. Keseimbangannya diuji dengan simulasi ratusan game.
+- **Catatan breeder** di samping layar: 100 kejadian terakhir (kawin, bertelur, menetas, penjualan, trade, Pasar Pemain, event), ikut berganti bahasa
 - **Misi pemula** sebagai tutorial (9 misi, hadiah total $2.000)
 - **Konfirmasi Lanjut bulan** kalau masih ada betina yang bisa dikawinkan
 - **Halaman masuk** dengan logo Morph Lab
