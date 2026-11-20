@@ -190,6 +190,7 @@ textarea{width:100%;box-sizing:border-box;resize:vertical;font:inherit;backgroun
 .card.mk .meta{margin-bottom:8px}.sexsw{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-bottom:8px}.sexsw button{flex:1;border:0;border-radius:0;background:none;color:var(--mut);padding:6px}.sexsw button.on{background:var(--accbg);color:var(--text);font-weight:700}
 .buyopt{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 0;border-top:1px dashed var(--line)}.buyopt>div{display:flex;flex-direction:column}.buyopt .kbd{font-size:11.5px}.buyopt button{white-space:nowrap;min-width:84px}
 .dzone{margin-top:18px;padding-top:12px;border-top:1px solid #4a2b26}.dzone .lbl{color:var(--bad)}.dzrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0}.dzrow p{margin:2px 0 0;font-size:12.5px;color:var(--mut)}.dzrow button{flex:none}
+.tbid{font-size:11.5px;font-weight:700;color:var(--mut);letter-spacing:.02em}.okbox{border:1px solid var(--line);background:var(--panel2);border-radius:12px;padding:10px 14px;margin:10px 0}.okbox p{margin:6px 0;font-size:13.5px}
 .warnbox{border:1px solid #7a3d34;background:#2a1714;border-radius:12px;padding:10px 14px;margin:10px 0}.warnbox p{margin:6px 0;font-size:13.5px}
 button.danger{background:var(--bad);border-color:var(--bad);color:#1b0a07;font-weight:700}button.danger:hover:not(:disabled){background:#ec7d71}
 .empty{color:var(--mut);padding:30px;text-align:center;border:1px dashed var(--line);border-radius:14px}
@@ -434,7 +435,11 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  tb_r_gravid:'bunting',tb_r_listed:'diiklankan',tb_r_paired:'sedang dipasangkan',tb_r_locked:'tidak bisa ditukar',
  tb_e_empty:'Pilih hewan atau isi jumlah uang yang mau kamu berikan.',tb_e_money:'Uangmu tidak cukup.',tb_e_reqmoney:'Jumlah uang tidak valid.',
  tb_e_max:'Maksimal 10 hewan per sisi.',
- tb_escrow_note:'Hewan dan uang yang kamu tawarkan langsung dititipkan (escrow) sampai tawaran dijawab.',
+ tb_escrow_note:'Hewan dan uang yang kamu tawarkan langsung dititipkan (escrow) sampai tawaran dijawab.',tb_id_note:'ID yang tampil adalah ID di koleksi pemiliknya sekarang; hewan mendapat ID baru setelah pindah.',tb_confirm_h:'Konfirmasi tawaran',tb_confirm_sub:p=>`Periksa lagi sebelum mengirim tawaran ke ${p.u}.`,tb_send_yes:'Ya, kirim tawaran',tb_back:'Kembali ubah',tr_accept_yes:'Ya, terima trade',
+ tw_none:'Tidak ada peringatan.',tw_gift:p=>`Kamu tidak meminta apa pun, jadi ini akan menjadi <b>hadiah</b> senilai ${p.v}.`,tw_imbalance:p=>`Nilai yang kamu berikan (${p.g}) jauh lebih besar daripada yang kamu terima (${p.r}), selisih <b>${p.d}</b>.`,
+ tw_last_sp:p=>`Ini <b>semua ${p.sp}</b> milikmu. Setelah trade kamu tidak punya ${p.sp} lagi.`,tw_cap:p=>`Setelah trade kamu punya ${p.n} hewan, melebihi kapasitas ${p.c}. ${p.x} hewan kena biaya space darurat ${p.v}/bulan.`,
+ tw_money:p=>`Uang yang kamu berikan (${p.v}) setara setengah atau lebih dari saldomu (${p.b}).`,tw_escrow:'Setelah dikirim, hewan & uang yang kamu tawarkan langsung dititipkan sampai tawaran dijawab. Kamu masih bisa membatalkannya selama belum diterima.',
+ tw_final:'Trade langsung dijalankan dan tidak bisa dibatalkan.',tw_values:p=>`Nilai pasar: kamu berikan ${p.g} · kamu terima ${p.r}.`,
  e_request_unavailable:'Hewan yang diminta sudah tidak tersedia (dijual, diiklankan, bunting, atau dipasangkan).',
  e_not_enough_money:'Uang tidak cukup.',e_trade_closed:'Tawaran ini sudah ditutup.',e_trade_not_found:'Tawaran tidak ditemukan.',
  e_not_friends:'Kalian sudah tidak berteman.',e_stale_save:'Save-mu baru saja berubah (mis. dari perangkat lain). Data sudah dimuat ulang, coba lagi.',
@@ -685,7 +690,11 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  tb_r_gravid:'gravid',tb_r_listed:'listed',tb_r_paired:'paired this month',tb_r_locked:'can’t be traded',
  tb_e_empty:'Pick animals or enter an amount of money to give.',tb_e_money:'You don’t have enough money.',tb_e_reqmoney:'Invalid amount of money.',
  tb_e_max:'Up to 10 animals per side.',
- tb_escrow_note:'The animals and money you offer are held in escrow right away until the offer is answered.',
+ tb_escrow_note:'The animals and money you offer are held in escrow right away until the offer is answered.',tb_id_note:'IDs shown are the IDs in the owner’s collection now; animals get a new ID after they move.',tb_confirm_h:'Confirm offer',tb_confirm_sub:p=>`Double-check before sending the offer to ${p.u}.`,tb_send_yes:'Yes, send offer',tb_back:'Go back & edit',tr_accept_yes:'Yes, accept trade',
+ tw_none:'No warnings.',tw_gift:p=>`You’re not asking for anything, so this will be a <b>gift</b> worth ${p.v}.`,tw_imbalance:p=>`What you give (${p.g}) is worth much more than what you get (${p.r}), a difference of <b>${p.d}</b>.`,
+ tw_last_sp:p=>`This is <b>every ${p.sp}</b> you own. After the trade you won’t have any ${p.sp} left.`,tw_cap:p=>`After the trade you’ll have ${p.n} animals, over your capacity of ${p.c}. ${p.x} animal${p.x===1?'':'s'} will cost ${p.v}/month in emergency space.`,
+ tw_money:p=>`The money you give (${p.v}) is half or more of your balance (${p.b}).`,tw_escrow:'Once sent, the animals & money you offer are held in escrow until the offer is answered. You can still cancel it until it’s accepted.',
+ tw_final:'The trade happens right away and can’t be undone.',tw_values:p=>`Market value: you give ${p.g} · you get ${p.r}.`,
  e_request_unavailable:'A requested animal is no longer available (sold, listed, gravid or paired).',
  e_not_enough_money:'Not enough money.',e_trade_closed:'This offer is already closed.',e_trade_not_found:'Offer not found.',
  e_not_friends:'You’re no longer friends.',e_stale_save:'Your save just changed (e.g. on another device). It has been reloaded; try again.',
@@ -1170,7 +1179,7 @@ function openSnake(id){const s=byId(id);if(!s)return;const tr=traitsOf(s.g),r=re
  <div class="actions"><button class="pri" data-act="list" data-id="${s.id}" ${s.gravid?'disabled':''}>${s.listed?t('unlist'):t('list',{v:money(value(s))})}</button><button data-act="quicksell" data-id="${s.id}" ${s.gravid?'disabled':''}>${t('quick',{v:money(value(s)*.6)})}</button><button data-act="tobreed" data-id="${s.id}">${t('plan')}</button><button class="ghost" data-act="close">${t('close')}</button></div>
  ${s.gravid?`<p class="kbd">${t('gravid_nosale')}</p>`:''}`)}
 
-const SOCIAL_ACTS=new Set(['openchat','fr_accept','fr_decline','fr_remove','fr_remove_yes','tr_new','tb_close','tr_send','tr_accept','tr_accept_yes','tr_decline','tr_cancel']);
+const SOCIAL_ACTS=new Set(['openchat','fr_accept','fr_decline','fr_remove','fr_remove_yes','tr_new','tb_close','tr_send','tr_send_yes','tb_back','tr_accept','tr_accept_yes','tr_decline','tr_cancel']);
 const FREE_ACTS=new Set(['quest_go','gview','rk_cat','rk_sp','rk_fr','rk_refresh','bug_new','bug_cancel','bug_open','bug_mine','bug_more','bug_rmimg','bug_delc','bug_del','bs_inc','bs_dec','spf','brsp','dexsp','guidesp','mk_sex','settings','theme','preview','profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
 // Jalankan aksi game: dikirim ke server (Edge Function "game") yang menghitung hasilnya.
 async function game(a){
@@ -1844,7 +1853,7 @@ function renderTabs(){if(!S||!Cloud.user||!$('tabs'))return;
  const T=[['koleksi',S.snakes.length],['breeding'],['inkubator',S.clutches.length+S.snakes.filter(s=>s.gravid).length+(S.broods||[]).length],['pasar'],['pesanan',S.orders.length],['dex',Object.keys(S.dex).length],['teman',Social.badge()||null,true],['global',Global.unread||null,true],['panduan'],['bugs',Bugs.unread||null,true]].concat(Bugs.admin?[['admin',Mod.open||null,true]]:[]);
  $('tabs').innerHTML=T.map(([k,c,hot])=>`<button class="${TAB===k?'on':''}" data-act="tab" data-tab="${k}">${t('tab_'+k)}${c!=null?`<span class="cnt${hot?' hot':''}">${c}</span>`:''}</button>`).join('')}
 
-function miniList(arr,money_,owner){const items=(arr||[]).map(s=>{const tr=traitsOf(s.g);return `<div class="mini-row"><img class="mini" src="${thumb(tr,s.seed,false,spOfG(s.g))}" alt=""><div><div>${sexIcon(s.sex)} ${esc(nameOf(tr,s.g))}</div><div class="het">${esc(hetText(s))}</div><div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g · ${money(value(s))}</div>${owner===undefined?'':originLine(s,owner)}</div></div>`});
+function miniList(arr,money_,owner){const items=(arr||[]).map(s=>{const tr=traitsOf(s.g);return `<div class="mini-row"><img class="mini" src="${thumb(tr,s.seed,false,spOfG(s.g))}" alt=""><div><div><span class="tbid">${code(s)}</span> ${sexIcon(s.sex)} ${esc(nameOf(tr,s.g))}</div><div class="het">${esc(hetText(s))}</div><div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g · ${money(value(s))}</div>${owner===undefined?'':originLine(s,owner)}</div></div>`});
  if(money_)items.push(`<div class="mini-row money">💵 ${money(money_)}</div>`);
  return items.length?items.join(''):`<div class="kbd">${t('tr_nothing')}</div>`}
 function tradeCard(x){
@@ -1899,11 +1908,11 @@ async function openTradeBuilder(uid){
  TB.coll=data.snakes||[];paintTB();
 }
 function tbRow(s,side){const tr=traitsOf(s.g),blk=tradeBlock(s),on=TB[side].has(s.id);
- return `<label class="tbrow ${blk?'off':''} ${on?'on':''}"><input type="checkbox" data-tb="${side}" data-sid="${s.id}" ${on?'checked':''} ${blk?'disabled':''}><img class="mini" src="${thumb(tr,s.seed,false,spOfG(s.g))}" alt=""><div><div>${sexIcon(s.sex)} ${esc(nameOf(tr,s.g))}</div><div class="het">${esc(hetText(s))}</div><div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g · ${money(value(s))}${blk?` · <span class="warn">${t(blk)}</span>`:''}</div>${originLine(s,side==='mine'?null:TB.u,true)}</div></label>`}
+ return `<label class="tbrow ${blk?'off':''} ${on?'on':''}"><input type="checkbox" data-tb="${side}" data-sid="${s.id}" ${on?'checked':''} ${blk?'disabled':''}><img class="mini" src="${thumb(tr,s.seed,false,spOfG(s.g))}" alt=""><div><div><span class="tbid">${code(s)}</span> ${sexIcon(s.sex)} ${esc(nameOf(tr,s.g))}</div><div class="het">${esc(hetText(s))}</div><div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g · ${money(value(s))}${blk?` · <span class="warn">${t(blk)}</span>`:''}</div>${originLine(s,side==='mine'?null:TB.u,true)}</div></label>`}
 function paintTB(){
  if(!TB||!TB.coll)return;
  const gv=S.snakes.filter(s=>TB.mine.has(s.id)).reduce((a,s)=>a+value(s),0)+TB.om,rv=TB.coll.filter(s=>TB.theirs.has(s.id)).reduce((a,s)=>a+value(s),0)+TB.rm;
- modal(`<h2>${t('tb_h',{u:esc(TB.u)})}</h2><p class="sub">${t('tb_escrow_note')}</p>
+ modal(`<h2>${t('tb_h',{u:esc(TB.u)})}</h2><p class="sub">${t('tb_escrow_note')} ${t('tb_id_note')}</p>
  <div class="grid2 tb"><div><div class="lbl">${t('tb_give_h')}</div><div class="tblist">${S.snakes.length?S.snakes.map(s=>tbRow(s,'mine')).join(''):`<p class="kbd">${t('tb_none_mine')}</p>`}</div>
   <label class="tbm">💵 ${t('tb_money')} <input type="number" min="0" step="5" data-tbf="om" value="${TB.om||''}" placeholder="0"> <span class="kbd">/ ${money(S.money)}</span></label></div>
  <div><div class="lbl">${t('tb_get_h',{u:esc(TB.u)})}</div><div class="tblist">${TB.coll.length?TB.coll.map(s=>tbRow(s,'theirs')).join(''):`<p class="kbd">${t('tb_none_theirs')}</p>`}</div>
@@ -1913,6 +1922,22 @@ function paintTB(){
  <div class="msg">${TB.err?`<span class="warn">${TB.err}</span>`:''}</div>
  <div class="actions"><button class="pri" data-act="tr_send">${t('tb_send')}</button><button class="ghost" data-act="tb_close">${t('btn_cancel')}</button></div>`,true);
 }
+// Peringatan sebelum menawarkan / menerima trade. give/get = daftar hewan, gm/rm = uang yang diberikan / diterima.
+function tradeWarnings(give,gm,get,rm,mode){const w=[],gv=give.reduce((a,s)=>a+value(s),0)+gm,rv=get.reduce((a,s)=>a+value(s),0)+rm;
+ if(mode==='offer'&&!get.length&&!rm)w.push(t('tw_gift',{v:money(gv)}));
+ else if(gv>rv*1.5&&gv-rv>=100)w.push(t('tw_imbalance',{g:money(gv),r:money(rv),d:money(gv-rv)}));
+ const ids=new Set(give.map(s=>s.id));
+ for(const sp of SPECIES_LIST){const mine=S.snakes.filter(s=>spOfG(s.g)===sp);if(mine.length&&mine.every(s=>ids.has(s.id)))w.push(t('tw_last_sp',{sp:t('sp_'+sp)}))}
+ const after=S.snakes.length-give.length+get.length,over=after-cap();if(over>0)w.push(t('tw_cap',{n:after,c:cap(),x:over,v:money(over*15)}));
+ if(gm>0&&gm>=S.money*.5)w.push(t('tw_money',{v:money(gm),b:money(S.money)}));
+ return{w,gv,rv}}
+function warnBlock(r,final){return `<div class="${r.w.length?'warnbox':'okbox'}">${r.w.length?r.w.map(x=>`<p>⚠️ ${x}</p>`).join(''):`<p>✅ ${t('tw_none')}</p>`}<p><b>${final}</b></p></div>`}
+function tbConfirm(){const x=TB,give=S.snakes.filter(s=>x.mine.has(s.id)),get=x.coll.filter(s=>x.theirs.has(s.id)),om=Math.floor(+x.om||0),rm=Math.floor(+x.rm||0);
+ const r=tradeWarnings(give,om,get,rm,'offer');
+ modal(`<h2>${t('tb_confirm_h')}</h2><p class="sub">${t('tb_confirm_sub',{u:esc(x.u)})}</p>
+ <div class="grid2"><div><div class="lbl">${t('tr_give')} · ${money(r.gv)}</div>${miniList(give,om,null)}</div><div><div class="lbl">${t('tr_get')} · ${money(r.rv)}</div>${miniList(get,rm,x.u)}</div></div>
+ ${x.note?`<p class="note">“${esc(x.note)}”</p>`:''}${warnBlock(r,t('tw_escrow'))}
+ <div class="actions"><button class="pri" data-act="tr_send_yes">${t('tb_send_yes')}</button><button class="ghost" data-act="tb_back">${t('tb_back')}</button></div>`,true)}
 function busyModal(){modal(`<p class="sub" style="margin:8px 0">⏳ ${t('busy')}</p>`,true)}
 async function guarded(fn){if(Cloud.rpcBusy){toast(t('busy'));return}try{return await fn()}catch(e){toast(errText(e));console.warn(e)}}
 async function socialAct(a,el){
@@ -1936,13 +1961,20 @@ async function socialAct(a,el){
    if(!TB.mine.size&&!om)return fail('tb_e_empty'),true;
    if(om>S.money)return fail('tb_e_money'),true;
    if(TB.mine.size>10||TB.theirs.size>10)return fail('tb_e_max'),true;
+   TB.err='';tbConfirm();return true}
+  case 'tb_back':if(TB)paintTB();return true;
+  case 'tr_send_yes':{if(!TB)return true;
+   const om=Math.floor(+TB.om||0),rm=Math.floor(+TB.rm||0);
    const x=TB;busyModal();
    try{await Cloud.rpcSave('create_trade',{p_to:x.to,p_offer_ids:[...x.mine],p_offer_money:om,p_request_ids:[...x.theirs],p_request_money:rm,p_note:x.note||null});
     TB=null;closeModal(true);toast(t('t_tr_sent',{u:esc(x.u)}));Social.refresh()}
    catch(e){TB=x;TB.err=errText(e);paintTB()}
    return true}
   case 'tr_accept':{const x=Social.data.trades.find(r=>r.id===tid);if(!x)return true;
-   modal(`<h2>${t('tr_accept')}</h2><p class="sub">${t('tr_accept_q',{u:esc(x.username)})}</p>${tradeCard({...x,status:'accepted_preview'}).replace(/<span class="tag[^>]*>[^<]*<\/span>/,'')}<div class="actions"><button class="pri" data-act="tr_accept_yes" data-tid="${tid}">${t('tr_accept')}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`);return true}
+   const give=(x.request||[]).map(p=>byId(p.id)||p),r=tradeWarnings(give,x.request_money||0,x.offer||[],x.offer_money||0,'accept');
+   modal(`<h2>${t('tr_accept')}</h2><p class="sub">${t('tr_accept_q',{u:esc(x.username)})}</p>${tradeCard({...x,status:'accepted_preview'}).replace(/<span class="tag[^>]*>[^<]*<\/span>/,'')}
+   <p class="sub" style="margin:8px 0 0">${t('tw_values',{g:money(r.gv),r:money(r.rv)})}</p>${warnBlock(r,t('tw_final'))}
+   <div class="actions"><button class="pri" data-act="tr_accept_yes" data-tid="${tid}">${t('tr_accept_yes')}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`);return true}
   case 'tr_accept_yes':busyModal();
    try{await Cloud.rpcSave('accept_trade',{p_trade:tid});closeModal(true);toast(t('t_tr_done'));Social.refresh()}
    catch(e){closeModal(true);if(!/stale_save/.test(String(e&&e.message)))modal(`<h2>${t('tr_accept')}</h2><p class="warn">${errText(e)}</p><div class="actions"><button class="ghost" data-act="close">${t('close')}</button></div>`)}
