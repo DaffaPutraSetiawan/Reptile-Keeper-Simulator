@@ -159,11 +159,17 @@ begin
                            order by resolved_at desc limit 30) l), '[]'::jsonb));
 end $$;
 
--- Riwayat harga: harga terjual per morph & kelamin dalam 30 hari terakhir
+-- Riwayat harga per morph & kelamin dalam 30 hari terakhir:
+--   med = median (harga tengah), lo–hi = rentang tengah (kuartil 25%–75%: seperempat termurah & termahal dibuang),
+--   max = penjualan termahal, n = jumlah terjual. Browser menampilkan rentang tengah mulai 5 penjualan.
 create or replace function public.get_market_prices(p_sp text default null)
 returns jsonb language sql stable security definer set search_path = '' as $$
-  select coalesce(jsonb_agg(jsonb_build_object('sp', sp, 'name', name, 'sex', sex, 'n', n, 'avg', avg, 'min', mn, 'max', mx)), '[]'::jsonb)
-    from (select sp, name, sex, count(*) n, round(avg(price))::int avg, min(price) mn, max(price) mx
+  select coalesce(jsonb_agg(jsonb_build_object('sp', sp, 'name', name, 'sex', sex, 'n', n, 'med', med, 'lo', lo, 'hi', hi, 'max', mx)), '[]'::jsonb)
+    from (select sp, name, sex, count(*) n,
+                 round(percentile_cont(0.5) within group (order by price))::int med,
+                 round(percentile_cont(0.25) within group (order by price))::int lo,
+                 round(percentile_cont(0.75) within group (order by price))::int hi,
+                 max(price) mx
             from public.market_listings
            where status = 'sold' and resolved_at > now() - interval '30 days' and (p_sp is null or sp = p_sp)
            group by sp, name, sex) x;

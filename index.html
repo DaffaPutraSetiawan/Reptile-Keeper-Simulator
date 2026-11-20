@@ -310,13 +310,13 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  pmv_npc:'🏬 Toko NPC',pmv_pm:'🧑‍🤝‍🧑 Pasar Pemain',pmv_mine:'📋 Jualan saya',csrc_pmarket:'Pasar Pemain',og_got_pmarket:p=>`Dibeli dari ${p.u} di Pasar Pemain`,
  pm_sub:'Hewan yang dijual pemain lain dengan harga pas, tanpa biaya. Gen het yang tidak terlihat hanya tampil sebagai "het/pos het" sesuai catatan penjual.',pm_q_ph:'Cari morph, ID, atau penjual…',pm_min:'Harga min $',pm_max:'Harga maks $',pm_adult:'Sudah dewasa',pm_refresh:'Muat ulang',
  pm_count:p=>`${p.n} dari ${p.t} jualan`,pm_none:'Belum ada yang berjualan. Jadilah yang pertama: buka hewan di koleksi lalu pilih "Jual di Pasar Pemain".',pm_none_f:'Tidak ada jualan yang cocok dengan filter.',pm_seller:'Penjual',
- pm_left:p=>p.d>0?`sisa ${p.d} hari ${p.h} jam`:p.h>0?`sisa ${p.h} jam`:'segera berakhir',pm_val:p=>`nilai ${p.v}`,pm_avg:p=>`rata-rata terjual ${p.v} (${p.n}×)`,pm_buy:'Beli',pm_cancel:'Batalkan jualan',pm_err:'Gagal memuat Pasar Pemain.',
+ pm_left:p=>p.d>0?`sisa ${p.d} hari ${p.h} jam`:p.h>0?`sisa ${p.h} jam`:'segera berakhir',pm_val:p=>`nilai ${p.v}`,pm_buy:'Beli',pm_cancel:'Batalkan jualan',pm_err:'Gagal memuat Pasar Pemain.',
  sortpm_new:'Terbaru',sortpm_cheap:'Termurah',sortpm_ending:'Segera berakhir',sortpm_value:'Nilai tertinggi',
  pm_buy_h:'Beli dari Pasar Pemain?',pm_buy_final:p=>`Kamu membayar ${p.p} ke ${p.u}. Pembelian tidak bisa dibatalkan.`,pm_buy_yes:p=>`Ya, beli ${p.p}`,
- pmw_pricey:p=>`Harga ${p.p} lebih dari 2× nilai pasar hewan ini (${p.v}).`,pmw_avg:p=>`Harga ini jauh di atas rata-rata terjual 30 hari terakhir (${p.a}).`,pmw_money:p=>`Harga ${p.p} setara setengah atau lebih dari uangmu (${p.b}).`,
+ pmw_pricey:p=>`Harga ${p.p} lebih dari 2× nilai pasar hewan ini (${p.v}).`,pmw_avg:p=>`Harga ini jauh di atas median harga terjual 30 hari terakhir (${p.a}).`,pmw_money:p=>`Harga ${p.p} setara setengah atau lebih dari uangmu (${p.b}).`,
  pmw_cap:p=>`Setelah membeli kamu punya ${p.n} hewan, melebihi kapasitas ${p.c}. ${p.x} hewan kena biaya space darurat ${p.v}/bulan.`,
  pm_cancel_h:'Batalkan jualan?',pm_cancel_q:p=>`${p.n} akan dikembalikan ke koleksimu lewat kiriman.`,pm_cancel_yes:'Ya, batalkan',
- pm_sell:'🏪 Jual di Pasar Pemain',pm_sell_h:'Jual di Pasar Pemain',pm_minp:'Harga minimum (50% nilai)',pm_hist:'Riwayat harga (30 hari)',pm_hist_v:p=>`rata-rata ${p.a} · ${p.lo}–${p.hi} · ${p.n}× terjual`,pm_hist_none:'Belum ada yang terjual',
+ pm_sell:'🏪 Jual di Pasar Pemain',pm_sell_h:'Jual di Pasar Pemain',pm_minp:'Harga minimum (50% nilai)',pm_hist:'Riwayat harga (30 hari)',pm_hist_v:p=>`📊 median <b>${p.m}</b>${p.lo?` · kebanyakan terjual ${p.lo}–${p.hi}`:''} · termahal ${p.mx} · ${p.n}× terjual`,pm_hist_none:'Belum ada yang terjual',
  pm_price:'Harga jual ($)',pm_sell_note:p=>`Selama dijual, hewan keluar dari koleksimu (tidak bisa dikawinkan atau dijual di toko). Tayang ${p.d} hari; kalau tidak laku, hewan kembali otomatis. Tanpa biaya.`,pm_sell_yes:'Pasang jualan',
  pm_blocked:'Tidak bisa dijual di Pasar Pemain selama bunting, diiklankan di toko NPC, atau dipasangkan.',pm_mine_sub:'Jualanmu yang masih tayang dan riwayat 30 jualan terakhir.',pm_active:p=>`Sedang dijual (${p.n})`,pm_history:'Riwayat',pm_mine_none:'Kamu belum menjual apa pun di Pasar Pemain.',
  pms_sold:p=>`✅ Terjual ke ${p.u}`,pms_cancelled:'✖ Dibatalkan',pms_expired:'↩️ Tidak laku (kembali)',
@@ -604,13 +604,13 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  pmv_npc:'🏬 NPC shop',pmv_pm:'🧑‍🤝‍🧑 Player market',pmv_mine:'📋 My listings',csrc_pmarket:'Player market',og_got_pmarket:p=>`Bought from ${p.u} on the player market`,
  pm_sub:'Animals other players sell at a fixed price, no fees. Hidden het genes only show as "het/pos het" from the seller’s records.',pm_q_ph:'Search morph, ID or seller…',pm_min:'Min price $',pm_max:'Max price $',pm_adult:'Adults only',pm_refresh:'Reload',
  pm_count:p=>`${p.n} of ${p.t} listings`,pm_none:'Nobody is selling yet. Be the first: open an animal in your collection and choose "Sell on the player market".',pm_none_f:'No listings match your filters.',pm_seller:'Seller',
- pm_left:p=>p.d>0?`${p.d}d ${p.h}h left`:p.h>0?`${p.h}h left`:'ending soon',pm_val:p=>`value ${p.v}`,pm_avg:p=>`avg sold ${p.v} (${p.n}×)`,pm_buy:'Buy',pm_cancel:'Cancel listing',pm_err:'Could not load the player market.',
+ pm_left:p=>p.d>0?`${p.d}d ${p.h}h left`:p.h>0?`${p.h}h left`:'ending soon',pm_val:p=>`value ${p.v}`,pm_buy:'Buy',pm_cancel:'Cancel listing',pm_err:'Could not load the player market.',
  sortpm_new:'Newest',sortpm_cheap:'Cheapest',sortpm_ending:'Ending soon',sortpm_value:'Highest value',
  pm_buy_h:'Buy from the player market?',pm_buy_final:p=>`You pay ${p.p} to ${p.u}. Purchases can’t be undone.`,pm_buy_yes:p=>`Yes, buy for ${p.p}`,
- pmw_pricey:p=>`The price ${p.p} is more than 2× this animal’s market value (${p.v}).`,pmw_avg:p=>`This price is far above the 30-day average sale price (${p.a}).`,pmw_money:p=>`The price ${p.p} is half or more of your money (${p.b}).`,
+ pmw_pricey:p=>`The price ${p.p} is more than 2× this animal’s market value (${p.v}).`,pmw_avg:p=>`This price is far above the 30-day median sale price (${p.a}).`,pmw_money:p=>`The price ${p.p} is half or more of your money (${p.b}).`,
  pmw_cap:p=>`After buying you’ll have ${p.n} animals, over your capacity of ${p.c}. ${p.x} animals will cost ${p.v}/month in emergency space.`,
  pm_cancel_h:'Cancel listing?',pm_cancel_q:p=>`${p.n} will be returned to your collection as a delivery.`,pm_cancel_yes:'Yes, cancel',
- pm_sell:'🏪 Sell on the player market',pm_sell_h:'Sell on the player market',pm_minp:'Minimum price (50% of value)',pm_hist:'Price history (30 days)',pm_hist_v:p=>`avg ${p.a} · ${p.lo}–${p.hi} · ${p.n}× sold`,pm_hist_none:'None sold yet',
+ pm_sell:'🏪 Sell on the player market',pm_sell_h:'Sell on the player market',pm_minp:'Minimum price (50% of value)',pm_hist:'Price history (30 days)',pm_hist_v:p=>`📊 median <b>${p.m}</b>${p.lo?` · most sold for ${p.lo}–${p.hi}`:''} · highest ${p.mx} · ${p.n}× sold`,pm_hist_none:'None sold yet',
  pm_price:'Sale price ($)',pm_sell_note:p=>`While listed, the animal leaves your collection (it can’t be bred or sold in the shop). Listed for ${p.d} days; if it doesn’t sell, it comes back automatically. No fees.`,pm_sell_yes:'Create listing',
  pm_blocked:'Can’t be sold on the player market while gravid, listed in the NPC shop or paired.',pm_mine_sub:'Your active listings and your last 30 finished ones.',pm_active:p=>`For sale (${p.n})`,pm_history:'History',pm_mine_none:'You haven’t sold anything on the player market yet.',
  pms_sold:p=>`✅ Sold to ${p.u}`,pms_cancelled:'✖ Cancelled',pms_expired:'↩️ Didn’t sell (returned)',
@@ -1317,6 +1317,8 @@ var PM={view:'npc',list:null,mine:null,prices:null,loading:false,err:'',q:'',f:O
  find(id){return (this.list||[]).concat(this.mine?this.mine.active:[]).find(x=>x.id===id)}
 };
 PM.restore();
+// Riwayat harga: median + rentang tengah (mulai 5 penjualan) + termahal
+const pmHist=ph=>t('pm_hist_v',{m:money(ph.med),lo:ph.n>=5?money(ph.lo):'',hi:money(ph.hi),mx:money(ph.max),n:ph.n});
 const pmBlocked=s=>!!(s.gravid||s.listed||s.pairedWith||s.pairs);
 function pmLeft(iso){const ms=Math.max(0,new Date(iso)-Date.now());return t('pm_left',{d:Math.floor(ms/864e5),h:Math.floor(ms%864e5/36e5)})}
 function pmList(){const f=PM.f,q=PM.q.toLowerCase().trim(),mn=+f.min||0,mx=f.max===''?Infinity:+f.max;
@@ -1326,7 +1328,7 @@ function pmCard(L){const s=L.snake,tr=traitsOf(s.g),sp=spOfG(s.g),ph=PM.price(L.
  return `<div class="card pm${L.mine?' mine':''}"><img class="snk" src="${thumb(tr,s.seed,false,sp)}" alt="${esc(L.name)}"><div class="nm">${sexIcon(L.sex)} ${esc(L.name)}</div>${ht?`<div class="het">${esc(ht)}</div>`:''}
   <div class="meta"><span class="tbid">${esc(L.code)}</span> · ${ageTxt(s.age)} · ${fmt(s.w)} g${s.nick?' · '+esc(s.nick):''}</div>
   <div class="meta">${t('pm_seller')}: ${L.mine?t('og_you'):profLink(L.seller_name)} · ⭐ Lv ${repLevel(L.rep||0)}</div>
-  <div class="meta">⏳ ${pmLeft(L.expires_at)} · ${t('pm_val',{v:money(value(s))})}${ph?' · '+t('pm_avg',{v:money(ph.avg),n:ph.n}):''}</div>
+  <div class="meta">⏳ ${pmLeft(L.expires_at)} · ${t('pm_val',{v:money(value(s))})}</div>${ph?`<div class="meta">${pmHist(ph)}</div>`:''}
   <div class="val">${money(L.price)}</div>
   ${L.mine?`<button class="ghost" style="width:100%" data-act="pm_cancel" data-id="${L.id}">✖ ${t('pm_cancel')}</button>`:`<button class="pri" style="width:100%" data-act="pm_buy" data-id="${L.id}" ${S.money<L.price?'disabled':''}>${t('pm_buy')} · ${money(L.price)}</button>`}</div>`}
 function pmBody(){if(PM.list===null)return `<div class="empty">${t('so_loading')}</div>`;const L=pmList();
@@ -1357,7 +1359,7 @@ function vPasar(){const sub=`<div class="toolbar">${['npc','pm','mine'].map(k=>`
 function pmBuyAsk(id){const L=PM.find(id);if(!L)return;const s=L.snake,v=value(s),w=[],n=S.snakes.length+1,ph=PM.price(L.sp,L.name,L.sex);
  if(n>cap())w.push(t('pmw_cap',{n,c:cap(),x:n-cap(),v:money((n-cap())*15)}));
  if(L.price>v*2&&L.price-v>=100)w.push(t('pmw_pricey',{p:money(L.price),v:money(v)}));
- if(ph&&ph.n>=2&&L.price>ph.avg*1.5&&L.price-ph.avg>=100)w.push(t('pmw_avg',{a:money(ph.avg)}));
+ if(ph&&ph.n>=2&&L.price>ph.med*1.5&&L.price-ph.med>=100)w.push(t('pmw_avg',{a:money(ph.med)}));
  if(L.price>=S.money*.5)w.push(t('pmw_money',{p:money(L.price),b:money(S.money)}));
  modal(`<h2>${t('pm_buy_h')}</h2>${miniList([s])}<p class="kbd">${t('pm_seller')}: ${esc(L.seller_name)} · ⭐ Lv ${repLevel(L.rep||0)} · ⏳ ${pmLeft(L.expires_at)}</p>
   ${warnBlock({w},t('pm_buy_final',{p:money(L.price),u:esc(L.seller_name)}))}
@@ -1375,8 +1377,8 @@ async function pmCancel(id){closeModal(true);
 async function pmSellAsk(id){const s=byId(id);if(!s||pmBlocked(s))return;await PM.loadPrices();
  const v=value(s),min=Math.max(1,Math.ceil(v*Core.MKT_MIN)),ph=PM.price(spOfG(s.g),fullName(s),s.sex);
  modal(`<h2>${t('pm_sell_h')}</h2>${miniList([s])}
-  <dl><dt>${t('d_value')}</dt><dd>${money(v)}</dd><dt>${t('pm_minp')}</dt><dd><b>${money(min)}</b></dd><dt>${t('pm_hist')}</dt><dd>${ph?t('pm_hist_v',{a:money(ph.avg),lo:money(ph.min),hi:money(ph.max),n:ph.n}):t('pm_hist_none')}</dd></dl>
-  <label>${t('pm_price')}<input id="pmprice" type="number" min="${min}" max="${Core.MKT_MAX}" step="1" value="${Math.max(min,Math.round(ph?ph.avg:v))}"></label>
+  <dl><dt>${t('d_value')}</dt><dd>${money(v)}</dd><dt>${t('pm_minp')}</dt><dd><b>${money(min)}</b></dd><dt>${t('pm_hist')}</dt><dd>${ph?pmHist(ph):t('pm_hist_none')}</dd></dl>
+  <label>${t('pm_price')}<input id="pmprice" type="number" min="${min}" max="${Core.MKT_MAX}" step="1" value="${Math.max(min,Math.round(ph?ph.med:v))}"></label>
   <p class="kbd">${t('pm_sell_note',{d:Core.MKT_DAYS})}</p>
   <div class="actions"><button class="pri" data-act="pm_sell_yes" data-id="${id}">${t('pm_sell_yes')}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`)}
 async function pmSell(id){const el=$('pmprice');if(!el)return;const price=Math.round(+el.value);

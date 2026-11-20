@@ -142,6 +142,7 @@ Angka peringkat (kekayaan, Morph Dex, hewan termahal per spesies, bayi menetas, 
 - Memasang jualan lewat Edge Function `game`: server menghitung nilai hewan dan menolak harga di bawah 50% nilai atau di atas $100.000.000. Hewan keluar dari save dan dititipkan di `market_escrow` dalam satu transaksi (`_market_list`, hanya bisa dipanggil kunci server).
 - Membeli (`buy_listing`) dan membatalkan (`cancel_listing`) adalah fungsi database. Baris jualan dikunci saat dibeli, jadi kalau dua pemain membeli bersamaan hanya satu yang berhasil. Uang untuk penjual dan hewan yang kembali dikirim lewat `deliveries` dan diklaim otomatis, sama seperti hasil trade.
 - Jualan yang lewat 14 hari dikembalikan ke penjual setiap kali seseorang membuka Pasar Pemain. Kalau penjual me-reset atau menghapus akun, jualan aktifnya dibuang.
+- Riwayat harga (`get_market_prices`) dihitung dari penjualan 30 hari terakhir per morph & kelamin: median, rentang tengah (kuartil 25%–75%), dan harga termahal.
 - Tabel `market_listings` dan `market_escrow` tertutup untuk browser (RLS tanpa policy); semua akses lewat fungsi server.
 
 ## Catatan keamanan
