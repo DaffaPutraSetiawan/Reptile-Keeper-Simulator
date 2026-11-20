@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:38,date:'2026-11-21'};
+const VERSION={v:39,date:'2026-11-21'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -88,8 +88,8 @@ const SPECIES={
   temp:{min:26,max:34,mid:30,step:.5},
   eggs:()=>R()<.1?1:2,
   mk:{baby:{a:[1,3],w:[6,15]},F:{a:[10,14],w:[50,62]},M:{a:[9,13],w:[55,70]}},
-  // tiket undian toko (v38): umum 10 · sedang 5–6 · agak langka 4 · langka 2. Normal tidak diundi: selalu ada (fixed).
-  pool:[['tremper',10],['macksnow',10],['bell',6],['eclipse',6],['giant',6],['enigma',6],['blizzard',5],['wy',5],['rainwater',4],['murphy',4],['marble',2],['lemonfrost',2]],fixed:['normal'],
+  // tiket undian toko (v39): Normal 8 · umum 10 · sedang 5–6 · agak langka 4 · langka 2 (3 slot, semua lewat undian)
+  pool:[['normal',8],['tremper',10],['macksnow',10],['bell',6],['eclipse',6],['giant',6],['enigma',6],['blizzard',5],['wy',5],['rainwater',4],['murphy',4],['marble',2],['lemonfrost',2]],
   orderBase:['macksnow','tremper','eclipse','giant'],orderSkip:['superlemonfrost','supergiant']},
  axo:{name:'axolotl',orderBonus:10,code:'AX',loci:AXO_LOCI,maxAge:180,base:5,fAge:18,mAge:12,recover:4,ovul:.6,layIn:1,slug:.15,layLoss:.9,gravidLoss:1,clutches:[1,1],minLayW:0,slugStep:0,
   K:{F:110,M:95,H:100},r:{F:.5,M:.5,H:.5},hatchW:[2,3],wBonus:[2,60],foodBase:1,inc:1,
