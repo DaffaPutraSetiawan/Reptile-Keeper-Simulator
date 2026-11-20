@@ -12,7 +12,7 @@ Buka game lewat GitHub Pages, lalu daftar gratis dengan email dan pilih username
 2. **Kawinkan** pasangan di tab Kawinkan. Tabel peluang menunjukkan morph apa saja yang mungkin keluar.
 3. Tekan **Lanjut bulan**. Betina bisa ovulasi, bertelur, lalu telurnya menetas di **Inkubator**. Suhu inkubasi mengatur peluang anak jantan/betina.
 4. **Jual** hewan lewat iklan, jual cepat, kirim ke **pembeli** di tab Pesanan (paling untung), atau pasang di **Pasar Pemain** untuk dijual ke pemain lain dengan harga pilihanmu.
-5. Kumpulkan morph di **Morph Dex**, beli gen baru di **Pasar** (toko NPC atau hewan milik pemain lain), buka spesies lain, dan beli rak tambahan ($10.000, lalu naik 2× setiap pembelian).
+5. Kumpulkan morph di **Morph Dex**, beli gen baru di **Pasar** (toko NPC atau hewan milik pemain lain), buka spesies lain, dan beli rak tambahan ($5.000, lalu naik $5.000 setiap pembelian: $5.000, $10.000, $15.000, $20.000, …).
 6. Ikuti **Misi pemula** di samping layar untuk panduan langkah demi langkah.
 
 Game **wajib login**. Setiap aksi dikirim ke server (Edge Function `game`), yang menghitung hasil breeding, pasar, dan uang. Save tidak bisa diubah dari browser, jadi aman dari kecurangan, bisa dilanjutkan dari perangkat mana pun, dan dipakai untuk trading serta papan peringkat.

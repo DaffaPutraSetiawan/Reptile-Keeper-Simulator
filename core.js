@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:36,date:'2026-11-20'};
+const VERSION={v:37,date:'2026-11-21'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -123,9 +123,9 @@ const rint=([a,b])=>a+Math.floor(R()*(b-a+1));
 const mi=()=>(8+S.turn)%12;
 const yr=()=>1+Math.floor((8+S.turn)/12);
 const cap=()=>S.racks*10;
-// Harga rak naik 2× setiap pembelian: rak ke-3 $10.000, ke-4 $20.000, ke-5 $40.000, dst. (2 rak pertama gratis dari awal)
-const RACK_BASE=10000,RACK_MULT=2,START_RACKS=2;
-const rackPrice=()=>RACK_BASE*Math.pow(RACK_MULT,Math.max(0,S.racks-START_RACKS));
+// Harga rak naik $5.000 setiap pembelian: rak ke-3 $5.000, ke-4 $10.000, ke-5 $15.000, ke-6 $20.000, dst. (2 rak pertama gratis dari awal)
+const RACK_BASE=5000,RACK_STEP=5000,START_RACKS=2;
+const rackPrice=()=>RACK_BASE+RACK_STEP*Math.max(0,S.racks-START_RACKS);
 // Catatan disimpan sebagai kunci + parameter supaya ikut berganti bahasa.
 // Catatan breeder maksimal LOG_MAX entri: entri baru masuk di atas, yang paling lama terhapus.
 const LOG_MAX=100;
@@ -695,7 +695,7 @@ root.MorphCore={
  SPECIES,SPECIES_LIST,spOf,spOfG,spOfTr,lociOf,isRec,
  R,pick,clamp,money,fmt,
  use(s){S=s},state(){return S},
- mi,yr,cap,log,LOG_MAX,rackPrice,RACK_MULT,
+ mi,yr,cap,log,LOG_MAX,rackPrice,RACK_STEP,
  emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,
  OLD_WARN,maxAge,lifeLeft,sizeMult,kOf,growW,
  pedNode,pedParents,labelNode,ancRec,kinship,relation,inbOf,inbFromAnc,repairInb,INB_SLUG,INB_DEAD,HATCH_DEAD,
