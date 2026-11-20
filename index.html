@@ -195,6 +195,7 @@ textarea{width:100%;box-sizing:border-box;resize:vertical;font:inherit;backgroun
 @media (max-width:640px){.gear .gname{display:none}}
 .tcell select{width:auto;min-width:210px;padding:5px 8px}.tcell .odds{color:var(--mut);font-size:12.5px;margin-left:4px}.tcell .kbd{font-size:11.5px;margin-top:3px}
 .card.mk .meta{margin-bottom:8px}.sexsw{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-bottom:8px}.sexsw button{flex:1;border:0;border-radius:0;background:none;color:var(--mut);padding:6px}.sexsw button.on{background:var(--accbg);color:var(--text);font-weight:700}
+.card.pm .meta{margin-bottom:4px}.card.pm .val{margin:6px 0 8px}.card.pm.mine{border-color:var(--acc)}.pmhist .mini-row{border-bottom:1px solid var(--line);padding:6px 0}.pmhist .mini-row:last-child{border-bottom:0}
 .buyopt{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 0;border-top:1px dashed var(--line)}.buyopt>div{display:flex;flex-direction:column}.buyopt .kbd{font-size:11.5px}.buyopt button{white-space:nowrap;min-width:84px}
 .dzone{margin-top:18px;padding-top:12px;border-top:1px solid #4a2b26}.dzone .lbl{color:var(--bad)}.dzrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0}.dzrow p{margin:2px 0 0;font-size:12.5px;color:var(--mut)}.dzrow button{flex:none}
 .tbid{font-size:11.5px;font-weight:700;color:var(--mut);letter-spacing:.02em}.okbox{border:1px solid var(--line);background:var(--panel2);border-radius:12px;padding:10px 14px;margin:10px 0}.okbox p{margin:6px 0;font-size:13.5px}
@@ -306,6 +307,24 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  f_all:'Semua',f_M:'♂ Jantan',f_F:'♀ Betina',f_ready:'Siap kawin',f_listed:'Diiklankan',
  sort_by:'Urutkan',sort_val:'Nilai',sort_age:'Umur',sort_new:'Terbaru',sort_id:'ID',sort_w:'Berat',sort_life:'Sisa umur',sort_inb:'Inbreeding',sort_name:'Nama morph (A–Z)',col_q_ph:'Cari ID, nama panggilan, morph, atau gen…',col_st:'Status',col_src:'Asal',col_gene:'Gen',col_gene_any:'Semua gen',col_gm:'Cara cocok gen',
  cst_all:'Semua status',cst_ready:'Siap kawin',cst_paired:'Sedang dipasangkan',cst_gravid:'Bunting',cst_baby:'Bayi (belum cukup umur)',cst_old:'Tua (sisa ≤12 bulan)',cst_inbred:'Inbred (>0%)',cst_listed:'Diiklankan',
+ pmv_npc:'🏬 Toko NPC',pmv_pm:'🧑‍🤝‍🧑 Pasar Pemain',pmv_mine:'📋 Jualan saya',csrc_pmarket:'Pasar Pemain',og_got_pmarket:p=>`Dibeli dari ${p.u} di Pasar Pemain`,
+ pm_sub:'Hewan yang dijual pemain lain dengan harga pas, tanpa biaya. Gen het yang tidak terlihat hanya tampil sebagai "het/pos het" sesuai catatan penjual.',pm_q_ph:'Cari morph, ID, atau penjual…',pm_min:'Harga min $',pm_max:'Harga maks $',pm_adult:'Sudah dewasa',pm_refresh:'Muat ulang',
+ pm_count:p=>`${p.n} dari ${p.t} jualan`,pm_none:'Belum ada yang berjualan. Jadilah yang pertama: buka hewan di koleksi lalu pilih "Jual di Pasar Pemain".',pm_none_f:'Tidak ada jualan yang cocok dengan filter.',pm_seller:'Penjual',
+ pm_left:p=>p.d>0?`sisa ${p.d} hari ${p.h} jam`:p.h>0?`sisa ${p.h} jam`:'segera berakhir',pm_val:p=>`nilai ${p.v}`,pm_avg:p=>`rata-rata terjual ${p.v} (${p.n}×)`,pm_buy:'Beli',pm_cancel:'Batalkan jualan',pm_err:'Gagal memuat Pasar Pemain.',
+ sortpm_new:'Terbaru',sortpm_cheap:'Termurah',sortpm_ending:'Segera berakhir',sortpm_value:'Nilai tertinggi',
+ pm_buy_h:'Beli dari Pasar Pemain?',pm_buy_final:p=>`Kamu membayar ${p.p} ke ${p.u}. Pembelian tidak bisa dibatalkan.`,pm_buy_yes:p=>`Ya, beli ${p.p}`,
+ pmw_pricey:p=>`Harga ${p.p} lebih dari 2× nilai pasar hewan ini (${p.v}).`,pmw_avg:p=>`Harga ini jauh di atas rata-rata terjual 30 hari terakhir (${p.a}).`,pmw_money:p=>`Harga ${p.p} setara setengah atau lebih dari uangmu (${p.b}).`,
+ pmw_cap:p=>`Setelah membeli kamu punya ${p.n} hewan, melebihi kapasitas ${p.c}. ${p.x} hewan kena biaya space darurat ${p.v}/bulan.`,
+ pm_cancel_h:'Batalkan jualan?',pm_cancel_q:p=>`${p.n} akan dikembalikan ke koleksimu lewat kiriman.`,pm_cancel_yes:'Ya, batalkan',
+ pm_sell:'🏪 Jual di Pasar Pemain',pm_sell_h:'Jual di Pasar Pemain',pm_minp:'Harga minimum (50% nilai)',pm_hist:'Riwayat harga (30 hari)',pm_hist_v:p=>`rata-rata ${p.a} · ${p.lo}–${p.hi} · ${p.n}× terjual`,pm_hist_none:'Belum ada yang terjual',
+ pm_price:'Harga jual ($)',pm_sell_note:p=>`Selama dijual, hewan keluar dari koleksimu (tidak bisa dikawinkan atau dijual di toko). Tayang ${p.d} hari; kalau tidak laku, hewan kembali otomatis. Tanpa biaya.`,pm_sell_yes:'Pasang jualan',
+ pm_blocked:'Tidak bisa dijual di Pasar Pemain selama bunting, diiklankan di toko NPC, atau dipasangkan.',pm_mine_sub:'Jualanmu yang masih tayang dan riwayat 30 jualan terakhir.',pm_active:p=>`Sedang dijual (${p.n})`,pm_history:'Riwayat',pm_mine_none:'Kamu belum menjual apa pun di Pasar Pemain.',
+ pms_sold:p=>`✅ Terjual ke ${p.u}`,pms_cancelled:'✖ Dibatalkan',pms_expired:'↩️ Tidak laku (kembali)',
+ t_mkt_listed:'🏪 Hewan dipasang di Pasar Pemain.',t_mkt_bought:p=>`🎉 ${p.n} masuk ke koleksimu!`,t_mkt_cancelled:'Jualan dibatalkan. Hewan sedang dikembalikan.',
+ l_mkt_list:p=>`🏪 ${p.c} ${p.n} dipasang di Pasar Pemain seharga ${money(p.p)}.`,l_mkt_bought:p=>`🛒 Membeli ${p.n} dari ${p.u} di Pasar Pemain seharga ${money(p.p)}.`,
+ l_mkt_sold:p=>`💰 ${p.c} ${p.n} terjual ke ${p.u} di Pasar Pemain seharga ${money(p.p)}.`,l_mkt_back:p=>`↩️ ${p.c} ${p.n} ${p.why==='expired'?'tidak laku dalam 14 hari':'batal dijual'} dan kembali ke koleksimu.`,
+ e_price_too_low:'Harga di bawah minimum (50% nilai hewan).',e_price_too_high:'Harga terlalu tinggi (maks. $100.000.000).',e_bad_price:'Harga harus angka bulat.',e_listing_closed:'Jualan ini sudah tidak tersedia.',e_listing_not_found:'Jualan tidak ditemukan.',e_own_listing:'Itu jualanmu sendiri.',
+ e_snake_listed:'Hewan ini sedang diiklankan di toko NPC. Batalkan iklannya dulu.',e_snake_paired:'Hewan ini sedang dipasangkan. Pisahkan dulu.',
  csrc_all:'Semua asal',csrc_bred:'Hasil breeding',csrc_market:'Beli di pasar',csrc_trade:'Dari trade',csrc_starter:'Hewan awal',
  cgm_vis:'Visual saja',cgm_het:'Visual + het',cgm_any:'Semua pembawa (termasuk pos het)',col_dir:'Balik arah urutan',col_v_card:'Kartu',col_v_list:'Daftar',
  col_count:p=>`${p.n} dari ${p.t} hewan`,col_reset:'Reset filter',col_nomatch:'Tidak ada hewan yang cocok dengan pencarian & filter ini.',
@@ -470,7 +489,7 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  e_not_authenticated:'Sesi login habis. Silakan masuk lagi.',e_empty_offer:'Pilih sesuatu untuk ditawarkan.',e_no_save:'Save cloud belum siap. Tunggu sebentar lalu coba lagi.',
  e_generic:p=>`Gagal: ${p.e}`,
  t_tr_sent:p=>`Tawaran dikirim ke ${p.u}.`,t_tr_done:'🤝 Trade berhasil! Hewan barumu sudah masuk koleksi.',t_tr_declined:'Tawaran ditolak. Barang penawar dikembalikan.',
- t_tr_cancel:'Tawaran dibatalkan. Barangmu sedang dikembalikan.',t_claimed:p=>`📦 ${p.n} kiriman trade masuk ke koleksimu.`,
+ t_tr_cancel:'Tawaran dibatalkan. Barangmu sedang dikembalikan.',t_claimed:p=>`📦 ${p.n} kiriman (trade / Pasar Pemain) masuk ke akunmu.`,
  t_newmsg:p=>`💬 ${p.u}: ${p.b}`,t_newreq:p=>`👋 ${p.u} ingin berteman.`,t_newtrade:p=>`🔁 Tawaran trade baru dari ${p.u}.`,
  t_removed:p=>`${p.u} dihapus dari daftar teman.`,
  l_trade_sent:p=>`🔁 Tawaran trade dikirim ke ${p.u}: ${p.n} hewan${p.mo?` + ${money(p.mo)}`:''} dititipkan (escrow).`,
@@ -582,6 +601,24 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  f_all:'All',f_M:'♂ Males',f_F:'♀ Females',f_ready:'Ready to breed',f_listed:'Listed',
  sort_by:'Sort by',sort_val:'Value',sort_age:'Age',sort_new:'Newest',sort_id:'ID',sort_w:'Weight',sort_life:'Life left',sort_inb:'Inbreeding',sort_name:'Morph name (A–Z)',col_q_ph:'Search ID, nickname, morph or gene…',col_st:'Status',col_src:'Origin',col_gene:'Gene',col_gene_any:'Any gene',col_gm:'Gene match',
  cst_all:'Any status',cst_ready:'Ready to breed',cst_paired:'Paired',cst_gravid:'Gravid',cst_baby:'Babies (too young)',cst_old:'Old (≤12 months left)',cst_inbred:'Inbred (>0%)',cst_listed:'Listed',
+ pmv_npc:'🏬 NPC shop',pmv_pm:'🧑‍🤝‍🧑 Player market',pmv_mine:'📋 My listings',csrc_pmarket:'Player market',og_got_pmarket:p=>`Bought from ${p.u} on the player market`,
+ pm_sub:'Animals other players sell at a fixed price, no fees. Hidden het genes only show as "het/pos het" from the seller’s records.',pm_q_ph:'Search morph, ID or seller…',pm_min:'Min price $',pm_max:'Max price $',pm_adult:'Adults only',pm_refresh:'Reload',
+ pm_count:p=>`${p.n} of ${p.t} listings`,pm_none:'Nobody is selling yet. Be the first: open an animal in your collection and choose "Sell on the player market".',pm_none_f:'No listings match your filters.',pm_seller:'Seller',
+ pm_left:p=>p.d>0?`${p.d}d ${p.h}h left`:p.h>0?`${p.h}h left`:'ending soon',pm_val:p=>`value ${p.v}`,pm_avg:p=>`avg sold ${p.v} (${p.n}×)`,pm_buy:'Buy',pm_cancel:'Cancel listing',pm_err:'Could not load the player market.',
+ sortpm_new:'Newest',sortpm_cheap:'Cheapest',sortpm_ending:'Ending soon',sortpm_value:'Highest value',
+ pm_buy_h:'Buy from the player market?',pm_buy_final:p=>`You pay ${p.p} to ${p.u}. Purchases can’t be undone.`,pm_buy_yes:p=>`Yes, buy for ${p.p}`,
+ pmw_pricey:p=>`The price ${p.p} is more than 2× this animal’s market value (${p.v}).`,pmw_avg:p=>`This price is far above the 30-day average sale price (${p.a}).`,pmw_money:p=>`The price ${p.p} is half or more of your money (${p.b}).`,
+ pmw_cap:p=>`After buying you’ll have ${p.n} animals, over your capacity of ${p.c}. ${p.x} animals will cost ${p.v}/month in emergency space.`,
+ pm_cancel_h:'Cancel listing?',pm_cancel_q:p=>`${p.n} will be returned to your collection as a delivery.`,pm_cancel_yes:'Yes, cancel',
+ pm_sell:'🏪 Sell on the player market',pm_sell_h:'Sell on the player market',pm_minp:'Minimum price (50% of value)',pm_hist:'Price history (30 days)',pm_hist_v:p=>`avg ${p.a} · ${p.lo}–${p.hi} · ${p.n}× sold`,pm_hist_none:'None sold yet',
+ pm_price:'Sale price ($)',pm_sell_note:p=>`While listed, the animal leaves your collection (it can’t be bred or sold in the shop). Listed for ${p.d} days; if it doesn’t sell, it comes back automatically. No fees.`,pm_sell_yes:'Create listing',
+ pm_blocked:'Can’t be sold on the player market while gravid, listed in the NPC shop or paired.',pm_mine_sub:'Your active listings and your last 30 finished ones.',pm_active:p=>`For sale (${p.n})`,pm_history:'History',pm_mine_none:'You haven’t sold anything on the player market yet.',
+ pms_sold:p=>`✅ Sold to ${p.u}`,pms_cancelled:'✖ Cancelled',pms_expired:'↩️ Didn’t sell (returned)',
+ t_mkt_listed:'🏪 Animal listed on the player market.',t_mkt_bought:p=>`🎉 ${p.n} joined your collection!`,t_mkt_cancelled:'Listing cancelled. The animal is on its way back.',
+ l_mkt_list:p=>`🏪 ${p.c} ${p.n} listed on the player market for ${money(p.p)}.`,l_mkt_bought:p=>`🛒 Bought ${p.n} from ${p.u} on the player market for ${money(p.p)}.`,
+ l_mkt_sold:p=>`💰 ${p.c} ${p.n} sold to ${p.u} on the player market for ${money(p.p)}.`,l_mkt_back:p=>`↩️ ${p.c} ${p.n} ${p.why==='expired'?'didn’t sell within 14 days':'was taken off the market'} and returned to your collection.`,
+ e_price_too_low:'Price is below the minimum (50% of the animal’s value).',e_price_too_high:'Price is too high (max $100,000,000).',e_bad_price:'Price must be a whole number.',e_listing_closed:'This listing is no longer available.',e_listing_not_found:'Listing not found.',e_own_listing:'That’s your own listing.',
+ e_snake_listed:'This animal is listed in the NPC shop. Unlist it first.',e_snake_paired:'This animal is paired. Separate it first.',
  csrc_all:'Any origin',csrc_bred:'Bred by you',csrc_market:'Bought at market',csrc_trade:'From a trade',csrc_starter:'Starter animals',
  cgm_vis:'Visual only',cgm_het:'Visual + het',cgm_any:'All carriers (incl. pos het)',col_dir:'Reverse sort order',col_v_card:'Cards',col_v_list:'List',
  col_count:p=>`${p.n} of ${p.t} animals`,col_reset:'Reset filters',col_nomatch:'No animals match this search & filter.',
@@ -740,7 +777,7 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  e_not_authenticated:'Your session expired. Please log in again.',e_empty_offer:'Pick something to offer.',e_no_save:'Your cloud save isn’t ready yet. Wait a moment and try again.',
  e_generic:p=>`Failed: ${p.e}`,
  t_tr_sent:p=>`Offer sent to ${p.u}.`,t_tr_done:'🤝 Trade complete! Your new animals are in your collection.',t_tr_declined:'Offer declined. The sender’s items were returned.',
- t_tr_cancel:'Offer cancelled. Your items are on their way back.',t_claimed:p=>`📦 ${p.n} trade ${p.n===1?'delivery':'deliveries'} added to your collection.`,
+ t_tr_cancel:'Offer cancelled. Your items are on their way back.',t_claimed:p=>`📦 ${p.n} ${p.n===1?'delivery':'deliveries'} (trade / player market) added to your account.`,
  t_newmsg:p=>`💬 ${p.u}: ${p.b}`,t_newreq:p=>`👋 ${p.u} wants to be friends.`,t_newtrade:p=>`🔁 New trade offer from ${p.u}.`,
  t_removed:p=>`${p.u} was removed from your friends.`,
  l_trade_sent:p=>`🔁 Trade offer sent to ${p.u}: ${p.n} ${p.n===1?'animal':'animals'}${p.mo?` + ${money(p.mo)}`:''} held in escrow.`,
@@ -1071,7 +1108,7 @@ const COL_KEY='ml_col_v1',COL_DEF={sex:'all',st:'all',src:'all',gene:'',gm:'any'
 const COL=Object.assign({},COL_DEF,(()=>{try{return JSON.parse(localStorage.getItem(COL_KEY)||'{}')}catch(e){return{}}})(),{q:'',sel:new Set()});
 function colSave(){try{const o={};for(const k in COL_DEF)o[k]=COL[k];o.spf=SPF;localStorage.setItem(COL_KEY,JSON.stringify(o))}catch(e){}}
 try{const o=JSON.parse(localStorage.getItem(COL_KEY)||'{}');if(o.spf&&(o.spf==='all'||SPECIES[o.spf]))SPF=o.spf}catch(e){}
-const COL_ST=['all','ready','paired','gravid','baby','old','inbred','listed'],COL_SRC=['all','bred','market','trade','starter'];
+const COL_ST=['all','ready','paired','gravid','baby','old','inbred','listed'],COL_SRC=['all','bred','market','pmarket','trade','starter'];
 const COL_SORT={val:[s=>value(s),-1],age:[s=>s.age,-1],new:[s=>s.id,-1],id:[s=>s.id,1],w:[s=>s.w,-1],life:[s=>lifeLeft(s),1],inb:[s=>inbOf(s),-1],name:[s=>fullName(s).toLowerCase(),1]};
 const colSrcOf=s=>{const r=srcOf(s);return r?r.t:''};
 const isBaby=s=>s.age<(s.sex==='M'?SPECIES[spOf(s)].mAge:SPECIES[spOf(s)].fAge);
@@ -1250,8 +1287,8 @@ function vInkubator(){
 function eventText(e){return e.e?t(e.e,e):(e.txt||'')}
 // Pasar: 3 ular bergen tunggal; tiap ular bisa dibeli berkali-kali sebagai bayi atau siap kawin, ♂/♀
 const MKSEX={};
-function vPasar(){
- let h=`<h2>${t('tab_pasar')}</h2><p class="sub">${t('mk_sub2')}${S.event?' <b>📢 '+esc(eventText(S.event))+'</b>':''}</p>
+function vPasarNpc(sub){
+ let h=`<h2>${t('tab_pasar')}</h2>${sub}<p class="sub">${t('mk_sub2')}${S.event?' <b>📢 '+esc(eventText(S.event))+'</b>':''}</p>
  <div class="toolbar"><span class="tag a">🔄 ${t('mk_reset',{n:marketLeft()})}</span><button data-act="rack" ${S.money<rackPrice()?'disabled':''}>${t('rack_btn',{v:money(rackPrice())})}</button><span class="kbd">${t('rack_note',{n:cap()})}</span></div><div class="grid">`;
  if(!marketOk())return h+`</div><div class="empty">${t('so_loading')}</div>`;
  h+='</div>'+SPECIES_LIST.map(sp=>`<h3>${SP_ICON[sp]} ${t('sp_'+sp)}</h3><div class="grid">`+S.market.filter(L=>spOf(L)===sp).map(L=>{const tr=listingTraits(L),sx=MKSEX[L.lid]||'F',base=marketBase(L),pb=marketPrice(L,'baby'),pa=marketPrice(L,'adult');
@@ -1262,6 +1299,89 @@ function vPasar(){
   <div class="buyopt"><div><b>🐣 ${t('mk_baby')}</b><span class="kbd">${mkRange(spOf(L),'baby')}</span></div><button class="pri" data-act="buy" data-id="${L.lid}" data-age="baby" ${S.money<pb?'disabled':''}>${money(pb)}</button></div>
   <div class="buyopt"><div><b>${SP_ICON[spOf(L)]} ${t('mk_adult')}</b><span class="kbd">${mkRange(spOf(L),sx)} · ${t('mk_pairnow')}</span></div><button class="pri" data-act="buy" data-id="${L.lid}" data-age="adult" ${S.money<pa?'disabled':''}>${money(pa)}</button></div></div>`}).join('')+'</div>').join('');
  return h}
+/* ========= PASAR PEMAIN (jual-beli antarpemain) ========= */
+const PM_KEY='ml_pm_v1',PM_DEF={sp:'all',sex:'all',gene:'',gm:'any',min:'',max:'',adult:false,sort:'new'};
+var PM={view:'npc',list:null,mine:null,prices:null,loading:false,err:'',q:'',f:Object.assign({},PM_DEF),
+ restore(){try{const o=JSON.parse(localStorage.getItem(PM_KEY)||'{}');for(const k in PM_DEF)if(o[k]!==undefined)this.f[k]=o[k];if(['npc','pm','mine'].includes(o.view))this.view=o.view}catch(e){}},
+ save(){try{localStorage.setItem(PM_KEY,JSON.stringify(Object.assign({view:this.view},this.f)))}catch(e){}},
+ async load(){if(!Cloud.user||!Cloud.sb||this.loading)return;this.loading=true;
+  try{const sb=Cloud.sb,[a,b,c]=await Promise.all([sb.rpc('get_market',{p_sp:this.f.sp==='all'?null:this.f.sp,p_sort:this.f.sort}),sb.rpc('get_market_prices',{p_sp:null}),sb.rpc('get_my_listings')]);
+   this.err=a.error?a.error.message:'';this.list=a.error?(this.list||[]):(a.data||[]);
+   if(!b.error)this.setPrices(b.data||[]);if(!c.error)this.mine=c.data||{active:[],history:[]};else if(!this.mine)this.mine={active:[],history:[]}}
+  catch(e){this.err=String(e&&e.message||e);if(!this.list)this.list=[];if(!this.mine)this.mine={active:[],history:[]}}
+  finally{this.loading=false}
+  if(TAB==='pasar'&&this.view!=='npc'&&!MODAL_LOCK&&!$('modal').innerHTML)render()},
+ setPrices(arr){const m={};arr.forEach(p=>m[p.sp+'|'+p.name+'|'+p.sex]=p);this.prices=m},
+ price(sp,name,sex){return this.prices&&this.prices[sp+'|'+name+'|'+sex]||null},
+ async loadPrices(){if(this.prices||!Cloud.sb)return;try{const{data,error}=await Cloud.sb.rpc('get_market_prices',{p_sp:null});if(!error)this.setPrices(data||[])}catch(e){}},
+ find(id){return (this.list||[]).concat(this.mine?this.mine.active:[]).find(x=>x.id===id)}
+};
+PM.restore();
+const pmBlocked=s=>!!(s.gravid||s.listed||s.pairedWith||s.pairs);
+function pmLeft(iso){const ms=Math.max(0,new Date(iso)-Date.now());return t('pm_left',{d:Math.floor(ms/864e5),h:Math.floor(ms%864e5/36e5)})}
+function pmList(){const f=PM.f,q=PM.q.toLowerCase().trim(),mn=+f.min||0,mx=f.max===''?Infinity:+f.max;
+ return (PM.list||[]).filter(L=>(f.sp==='all'||L.sp===f.sp)&&(f.sex==='all'||L.sex===f.sex)&&L.price>=mn&&L.price<=mx&&(!f.adult||!isBaby(L.snake))&&(!f.gene||colGene(L.snake,f.gene,f.gm))
+  &&(!q||[L.name,L.code,L.seller_name,hetText(L.snake),L.snake.nick||''].some(x=>String(x).toLowerCase().includes(q))))}
+function pmCard(L){const s=L.snake,tr=traitsOf(s.g),sp=spOfG(s.g),ph=PM.price(L.sp,L.name,L.sex),ht=hetText(s);
+ return `<div class="card pm${L.mine?' mine':''}"><img class="snk" src="${thumb(tr,s.seed,false,sp)}" alt="${esc(L.name)}"><div class="nm">${sexIcon(L.sex)} ${esc(L.name)}</div>${ht?`<div class="het">${esc(ht)}</div>`:''}
+  <div class="meta"><span class="tbid">${esc(L.code)}</span> · ${ageTxt(s.age)} · ${fmt(s.w)} g${s.nick?' · '+esc(s.nick):''}</div>
+  <div class="meta">${t('pm_seller')}: ${L.mine?t('og_you'):profLink(L.seller_name)} · ⭐ Lv ${repLevel(L.rep||0)}</div>
+  <div class="meta">⏳ ${pmLeft(L.expires_at)} · ${t('pm_val',{v:money(value(s))})}${ph?' · '+t('pm_avg',{v:money(ph.avg),n:ph.n}):''}</div>
+  <div class="val">${money(L.price)}</div>
+  ${L.mine?`<button class="ghost" style="width:100%" data-act="pm_cancel" data-id="${L.id}">✖ ${t('pm_cancel')}</button>`:`<button class="pri" style="width:100%" data-act="pm_buy" data-id="${L.id}" ${S.money<L.price?'disabled':''}>${t('pm_buy')} · ${money(L.price)}</button>`}</div>`}
+function pmBody(){if(PM.list===null)return `<div class="empty">${t('so_loading')}</div>`;const L=pmList();
+ return `${PM.err?`<div class="warn">${t('pm_err')}</div>`:''}<div class="row colcount"><span class="kbd">${t('pm_count',{n:L.length,t:PM.list.length})}</span></div>`+
+  (L.length?`<div class="grid">${L.map(pmCard).join('')}</div>`:`<div class="empty">${t(PM.list.length?'pm_none_f':'pm_none')}</div>`)}
+function paintPM(){const el=$('pmbody');if(el)el.innerHTML=pmBody()}
+function vPasar(){const sub=`<div class="toolbar">${['npc','pm','mine'].map(k=>`<button class="chip ${PM.view===k?'on':''}" data-act="pm_view" data-v="${k}">${t('pmv_'+k)}</button>`).join('')}</div>`;
+ if(PM.view==='npc')return vPasarNpc(sub);
+ if((PM.view==='pm'?PM.list:PM.mine)===null&&!PM.loading)setTimeout(()=>PM.load(),0);
+ const head=`<h2>${t('tab_pasar')}</h2>${sub}`,rf=`<button class="ghost sm" data-act="pm_refresh">↻ ${t('pm_refresh')}</button>`;
+ if(PM.view==='mine'){const M=PM.mine;let h=head+`<div class="toolbar"><span class="kbd">${t('pm_mine_sub')}</span>${rf}</div>`;
+  if(!M)return h+`<div class="empty">${t('so_loading')}</div>`;
+  if(!M.active.length&&!M.history.length)return h+`<div class="empty">${t('pm_mine_none')}</div>`;
+  h+=`<h3>${t('pm_active',{n:M.active.length})}</h3>`+(M.active.length?`<div class="grid">${M.active.map(pmCard).join('')}</div>`:'');
+  if(M.history.length)h+=`<h3>${t('pm_history')}</h3><div class="panel pmhist">${M.history.map(L=>{const s=L.snake;return `<div class="mini-row"><img class="mini" src="${thumb(traitsOf(s.g),s.seed,false,spOfG(s.g))}" alt=""><div><div><span class="tbid">${esc(L.code)}</span> ${sexIcon(L.sex)} ${esc(L.name)} · <b>${money(L.price)}</b></div><div class="meta">${L.status==='sold'?t('pms_sold',{u:profLink(L.buyer_name)}):t('pms_'+L.status)} · ${esc(new Date(L.resolved_at).toLocaleDateString(LANG==='id'?'id-ID':'en-US'))}</div></div></div>`}).join('')}</div>`;
+  return h}
+ const f=PM.f,gsp=f.sp==='all'?SPECIES_LIST:[f.sp],opt=(v,cur,l)=>`<option value="${v}" ${v===cur?'selected':''}>${l}</option>`;
+ return head+`<p class="sub">${t('pm_sub')}</p>${spChips(f.sp,'pm_sp',true)}
+ <div class="colbar"><input id="pmq" type="search" placeholder="${t('pm_q_ph')}" value="${esc(PM.q)}" autocomplete="off">
+  <div class="row" style="gap:5px">${['all','M','F'].map(k=>`<button class="chip ${f.sex===k?'on':''}" data-act="pm_sex" data-v="${k}">${t('f_'+k)}</button>`).join('')}</div>
+  <select id="pmgene" aria-label="${t('col_gene')}"><option value="">${t('col_gene_any')}</option>${gsp.map(sp=>`<optgroup label="${t('sp_'+sp)}">${colGenes(sp).map(k=>opt(k,f.gene,esc(colGeneLabel(k)))).join('')}</optgroup>`).join('')}</select>
+  ${f.gene&&LOCI_ALL.find(l=>l.k===TLOC[f.gene]).t==='rec'?`<select id="pmgm" aria-label="${t('col_gm')}">${['vis','het','any'].map(k=>opt(k,f.gm,t('cgm_'+k))).join('')}</select>`:''}
+  <input id="pmmin" type="number" min="0" step="1" style="width:120px" placeholder="${t('pm_min')}" value="${esc(f.min)}"><input id="pmmax" type="number" min="0" step="1" style="width:120px" placeholder="${t('pm_max')}" value="${esc(f.max)}">
+  <label class="row" style="gap:5px;white-space:nowrap"><input type="checkbox" id="pmadult" ${f.adult?'checked':''}> ${t('pm_adult')}</label>
+ </div>
+ <div class="toolbar"><span class="kbd">${t('sort_by')}</span><select id="pmsort" style="width:auto">${['new','cheap','ending','value'].map(k=>opt(k,f.sort,t('sortpm_'+k))).join('')}</select>${rf}</div>
+ <div id="pmbody">${pmBody()}</div>`}
+function pmBuyAsk(id){const L=PM.find(id);if(!L)return;const s=L.snake,v=value(s),w=[],n=S.snakes.length+1,ph=PM.price(L.sp,L.name,L.sex);
+ if(n>cap())w.push(t('pmw_cap',{n,c:cap(),x:n-cap(),v:money((n-cap())*15)}));
+ if(L.price>v*2&&L.price-v>=100)w.push(t('pmw_pricey',{p:money(L.price),v:money(v)}));
+ if(ph&&ph.n>=2&&L.price>ph.avg*1.5&&L.price-ph.avg>=100)w.push(t('pmw_avg',{a:money(ph.avg)}));
+ if(L.price>=S.money*.5)w.push(t('pmw_money',{p:money(L.price),b:money(S.money)}));
+ modal(`<h2>${t('pm_buy_h')}</h2>${miniList([s])}<p class="kbd">${t('pm_seller')}: ${esc(L.seller_name)} · ⭐ Lv ${repLevel(L.rep||0)} · ⏳ ${pmLeft(L.expires_at)}</p>
+  ${warnBlock({w},t('pm_buy_final',{p:money(L.price),u:esc(L.seller_name)}))}
+  <div class="actions"><button class="pri" data-act="pm_buy_yes" data-id="${id}">${t('pm_buy_yes',{p:money(L.price)})}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`)}
+async function pmBuy(id){const L=PM.find(id);if(!L)return;
+ try{await Cloud.rpcSave('buy_listing',{p_listing:id});closeModal(true);toast(t('t_mkt_bought',{n:esc(L.name)}))}
+ catch(e){closeModal(true);toast(errText(e))}
+ PM.load()}
+function pmCancelAsk(id){const L=PM.find(id);if(!L)return;
+ modal(`<h2>${t('pm_cancel_h')}</h2><p class="sub">${t('pm_cancel_q',{n:esc(L.code+' '+L.name)})}</p><div class="actions"><button class="danger" data-act="pm_cancel_yes" data-id="${id}">${t('pm_cancel_yes')}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`)}
+async function pmCancel(id){closeModal(true);
+ try{const{error}=await Cloud.sb.rpc('cancel_listing',{p_listing:id});if(error)throw new Error(error.message);toast(t('t_mkt_cancelled'));Social.claim()}
+ catch(e){toast(errText(e))}
+ PM.load()}
+async function pmSellAsk(id){const s=byId(id);if(!s||pmBlocked(s))return;await PM.loadPrices();
+ const v=value(s),min=Math.max(1,Math.ceil(v*Core.MKT_MIN)),ph=PM.price(spOfG(s.g),fullName(s),s.sex);
+ modal(`<h2>${t('pm_sell_h')}</h2>${miniList([s])}
+  <dl><dt>${t('d_value')}</dt><dd>${money(v)}</dd><dt>${t('pm_minp')}</dt><dd><b>${money(min)}</b></dd><dt>${t('pm_hist')}</dt><dd>${ph?t('pm_hist_v',{a:money(ph.avg),lo:money(ph.min),hi:money(ph.max),n:ph.n}):t('pm_hist_none')}</dd></dl>
+  <label>${t('pm_price')}<input id="pmprice" type="number" min="${min}" max="${Core.MKT_MAX}" step="1" value="${Math.max(min,Math.round(ph?ph.avg:v))}"></label>
+  <p class="kbd">${t('pm_sell_note',{d:Core.MKT_DAYS})}</p>
+  <div class="actions"><button class="pri" data-act="pm_sell_yes" data-id="${id}">${t('pm_sell_yes')}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`)}
+async function pmSell(id){const el=$('pmprice');if(!el)return;const price=Math.round(+el.value);
+ if(!Number.isFinite(price)||price<1){toast(t('e_bad_price'));return}
+ closeModal();const r=await game({type:'market_list',id,price});if(r){PM.list=null;PM.mine=null;PM.load()}}
 const SP_ICON={ball:'🐍',leo:'🦎',axo:'💧'};
 const mkRange=(sp,k)=>{const M=SPECIES[sp].mk[k];const w=v=>v>=1000?(v/1000).toLocaleString(LANG==='id'?'id-ID':'en-US',{maximumFractionDigits:1})+' kg':v+' g';return `${ageTxt(M.a[0])}–${ageTxt(M.a[1])} · ${w(M.w[0])}–${w(M.w[1])}`};
 function repPanel(){const r=S.rep||0,L=repLevel(r),lo=repNeed(L),hi=repNeed(L+1),pc=Math.round((r-lo)/(hi-lo)*100);
@@ -1331,10 +1451,11 @@ function openSnake(id){const s=byId(id);if(!s)return;const tr=traitsOf(s.g),r=re
  <dl><dt>${t('d_species')}</dt><dd>${SP_ICON[spOf(s)]} ${t('sp_'+spOf(s))}</dd><dt>${t('d_code')}</dt><dd>${code(s)}</dd><dt>${t('d_agew')}</dt><dd>${ageTxt(s.age)} · ${fmt(s.w)} g</dd><dt>${t('d_life')}</dt><dd>${t('d_life_v',{max:ageTxt(maxAge(s)),left:ageTxt(lifeLeft(s))})}</dd><dt>${t('og_got')}</dt><dd>${srcTxt(s)}</dd><dt>${t('og_origin')}</dt><dd>${(o=>whoTxt(o.u)+` <span class="kbd">(${t(OG_HOW[o.how]||'og_unknown')})</span>`)(originOf(s,null))}</dd>${(s.keepers||[]).length?`<dt>${t('og_chain')}</dt><dd>${s.keepers.map(u=>profLink(u)).join(' → ')} → ${t('og_you')}</dd>`:''}<dt>${t('d_status')}</dt><dd>${r?'⏳ '+esc(t(r)):t('ready_ok')}</dd><dt>${t('d_value')}</dt><dd><b>${money(value(s))}</b></dd></dl>${pedTree(s)}
  <div class="row"><input id="nick" maxlength="24" placeholder="${t('nick_ph')}" value="${esc(s.nick)}"><button data-act="nick" data-id="${s.id}">${t('save')}</button></div>
  <div class="actions"><button class="pri" data-act="list" data-id="${s.id}" ${s.gravid?'disabled':''}>${s.listed?t('unlist'):t('list',{v:money(value(s))})}</button><button data-act="quicksell" data-id="${s.id}" ${s.gravid?'disabled':''}>${t('quick',{v:money(value(s)*.6)})}</button><button data-act="tobreed" data-id="${s.id}">${t('plan')}</button><button class="ghost" data-act="close">${t('close')}</button></div>
- ${s.gravid?`<p class="kbd">${t('gravid_nosale')}</p>`:''}`)}
+ <div class="actions"><button data-act="pm_sell" data-id="${s.id}" ${pmBlocked(s)?'disabled':''}>${t('pm_sell')}</button></div>
+ ${s.gravid?`<p class="kbd">${t('gravid_nosale')}</p>`:pmBlocked(s)?`<p class="kbd">${t('pm_blocked')}</p>`:''}`)}
 
 const SOCIAL_ACTS=new Set(['openchat','fr_accept','fr_decline','fr_remove','fr_remove_yes','tr_new','tb_close','tr_send','tr_send_yes','tb_back','tr_accept','tr_accept_yes','tr_decline','tr_cancel']);
-const FREE_ACTS=new Set(['quest_go','col_sex','col_dir','col_view','col_reset','col_selnone','pl_open','pl_g','pl_sex','pl_clear','pl_pick','gview','rk_cat','rk_sp','rk_fr','rk_refresh','bug_new','bug_cancel','bug_open','bug_mine','bug_more','bug_rmimg','bug_delc','bug_del','bs_inc','bs_dec','spf','brsp','dexsp','guidesp','mk_sex','settings','theme','preview','profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
+const FREE_ACTS=new Set(['pm_view','pm_sp','pm_sex','pm_refresh','pm_buy','pm_cancel','quest_go','col_sex','col_dir','col_view','col_reset','col_selnone','pl_open','pl_g','pl_sex','pl_clear','pl_pick','gview','rk_cat','rk_sp','rk_fr','rk_refresh','bug_new','bug_cancel','bug_open','bug_mine','bug_more','bug_rmimg','bug_delc','bug_del','bs_inc','bs_dec','spf','brsp','dexsp','guidesp','mk_sex','settings','theme','preview','profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
 // Jalankan aksi game: dikirim ke server (Edge Function "game") yang menghitung hasilnya.
 async function game(a){
  if(!Cloud.user||!S)return null;
@@ -1362,11 +1483,21 @@ function act(a,id,el){
  if(cloudAct(a,el))return;
  if(a==='tab'&&el.dataset.tab==='teman'&&Social.ch)Social.refresh();
  switch(a){
-  case 'tab':TAB=el.dataset.tab;if(TAB==='bugs'){Bugs.loaded=false;Bugs.count()}if(TAB==='admin')Mod.load();if(TAB==='global'){if(Global.view==='chat')Global.unread=0;else Rank.load();Global.focus=false;if(!Global.loaded)Global.load()}break;
+  case 'tab':TAB=el.dataset.tab;if(TAB==='pasar'&&PM.view!=='npc')PM.load();if(TAB==='bugs'){Bugs.loaded=false;Bugs.count()}if(TAB==='admin')Mod.load();if(TAB==='global'){if(Global.view==='chat')Global.unread=0;else Rank.load();Global.focus=false;if(!Global.loaded)Global.load()}break;
   case 'lang':{const reopen=settingsOpen();setLang(el.dataset.v);if(reopen){render();showSettings();return}break}
   case 'close':closeModal();return;
   case 'tobreed':{const s=byId(id);BRSP=spOf(s);if(s.sex==='M')SEL.m=id;else SEL.f=id;TAB='breeding';closeModal();break}
   case 'spf':SPF=el.dataset.v;colSave();break;
+  case 'pm_view':PM.view=el.dataset.v;PM.save();if(PM.view!=='npc')PM.load();break;
+  case 'pm_sp':PM.f.sp=el.dataset.v;if(PM.f.gene&&PM.f.sp!=='all'&&!colGenes(PM.f.sp).includes(PM.f.gene))PM.f.gene='';PM.save();PM.load();break;
+  case 'pm_sex':PM.f.sex=el.dataset.v;PM.save();break;
+  case 'pm_refresh':PM.load();return;
+  case 'pm_buy':pmBuyAsk(id);return;
+  case 'pm_buy_yes':pmBuy(id);return;
+  case 'pm_cancel':pmCancelAsk(id);return;
+  case 'pm_cancel_yes':pmCancel(id);return;
+  case 'pm_sell':pmSellAsk(id);return;
+  case 'pm_sell_yes':pmSell(id);return;
   case 'brsp':BRSP=el.dataset.v;break;
   case 'dexsp':DEXSP=el.dataset.v;break;
   case 'bs_inc':{const b=(S.broods||[]).find(x=>x.bid===id);if(!b)break;const sel=BSEL[id]||(BSEL[id]={}),g=broodGroups(b).find(x=>x.k===el.dataset.k);
@@ -1630,12 +1761,12 @@ function cloudAct(a,el){
 // owner: null = milikku, string = username pemilik sekarang, false = pemilik tidak diketahui (akun dihapus)
 const OG_HOW={bred:'og_bred',market:'og_market',starter:'og_starter',unknown:'og_unknown'};
 const srcOf=s=>s.src||(s.gen>0?{t:'bred'}:null);
-function originOf(s,owner){if(s.origin&&s.origin.u)return{u:s.origin.u,how:s.origin.how};const r=srcOf(s);return{u:owner,how:r&&r.t!=='trade'?r.t:'unknown'}}
+function originOf(s,owner){if(s.origin&&s.origin.u)return{u:s.origin.u,how:s.origin.how};const r=srcOf(s);return{u:owner,how:r&&r.t!=='trade'&&r.t!=='pmarket'?r.t:'unknown'}}
 function whoTxt(u,plain){return u===null?t('og_you'):u===false?t('tr_gone'):plain?esc(u):profLink(u)}
 function originLine(s,owner,plain){const o=originOf(s,owner),n=(s.keepers||[]).length;
  return `<div class="origin">🏷️ ${t('og_line',{u:whoTxt(o.u,plain),how:t(OG_HOW[o.how]||'og_unknown')})}${n?' · '+t('og_prev',{n}):''}</div>`}
 function srcTxt(s){const r=srcOf(s);if(!r)return t('og_got_unknown');const tn=r.turn!=null?' · Turn '+r.turn:'';
- if(r.t==='trade')return t('og_got_trade',{u:r.from?profLink(r.from):'?'})+tn;return t('og_got_'+r.t)+tn}
+ if(r.t==='trade'||r.t==='pmarket')return t('og_got_'+r.t,{u:r.from?profLink(r.from):'?'})+tn;return t('og_got_'+r.t)+tn}
 
 /* ========= PROFIL ========= */
 const Profile={cur:null,edit:null};const BIO_MAX=160,SHOW_MAX=6;
@@ -2172,6 +2303,9 @@ function boot(){
   if(el.dataset&&el.dataset.tb&&TB){const set=TB[el.dataset.tb],id=+el.dataset.sid;el.checked?set.add(id):set.delete(id);TB.err='';
    const sc=[...document.querySelectorAll('#modal .tblist')].map(x=>x.scrollTop);paintTB();document.querySelectorAll('#modal .tblist').forEach((x,i)=>x.scrollTop=sc[i]||0);return}
   if(el.id==='selM'){SEL.m=+el.value;render()}else if(el.id==='selF'){SEL.f=+el.value;render()}else if(el.id==='sort'){COL.sort=el.value;COL.dir=COL_SORT[el.value][1];colSave();render()}
+  else if(el.id==='pmgene'||el.id==='pmgm'){PM.f[el.id.slice(2)]=el.value;PM.save();render()}
+  else if(el.id==='pmadult'){PM.f.adult=el.checked;PM.save();paintPM()}
+  else if(el.id==='pmsort'){PM.f.sort=el.value;PM.save();PM.load()}
   else if(el.id==='colst'||el.id==='colsrc'||el.id==='colgene'||el.id==='colgm'){COL[el.id.slice(3)]=el.value;colSave();render()}
   else if(el.dataset&&el.dataset.colsel){const id=+el.dataset.colsel;el.checked?COL.sel.add(id):COL.sel.delete(id);paintCol()}
   else if(el.dataset&&el.dataset.colall){const L=colList().filter(s=>!s.gravid);if(el.checked)L.forEach(s=>COL.sel.add(s.id));else L.forEach(s=>COL.sel.delete(s.id));paintCol()}});
@@ -2184,6 +2318,8 @@ function boot(){
    else if(el.dataset.sc){const id=+el.dataset.sc,sel=Profile.edit.sel;const i=sel.indexOf(id);if(el.checked&&i<0&&sel.length<SHOW_MAX)sel.push(id);else if(!el.checked&&i>=0)sel.splice(i,1);paintProfileEdit()}}
   else if(el.name==='confirm'&&el.form&&/^dz_/.test(el.form.dataset.form||'')){const d=DZ[el.form.dataset.form.slice(3)];el.form.querySelector('button[type=submit]').disabled=el.value.trim()!==d.w;el.form.querySelector('.msg').innerHTML=''}
   else if(el.id==='colq'){COL.q=el.value;paintCol()}
+  else if(el.id==='pmq'){PM.q=el.value;paintPM()}
+  else if(el.id==='pmmin'||el.id==='pmmax'){PM.f[el.id.slice(2)]=el.value===''?'':String(Math.max(0,Math.floor(+el.value||0)));PM.save();paintPM()}
   else if(el.id==='chatin'){Social.draft=el.value;Social.chatFocus=true}
   else if(el.id==='gchatin'){Global.draft=el.value;Global.focus=true}
   else if(el.dataset&&el.dataset.temp){const cid=+el.dataset.temp,temp=+el.value;game({type:'incubate',cid,temp}).then(r=>{if(r)toast(t('t_temp',{t:fmtTemp(temp),o:sexOdds(temp)}))})}

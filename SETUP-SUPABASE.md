@@ -134,6 +134,16 @@ Angka peringkat (kekayaan, Morph Dex, hewan termahal per spesies, bayi menetas, 
   Huruf a–z saja, minimal 3 huruf. Huruf berulang dan angka/simbol pengganti (a→4/@, i→1/!, e→3, o→0, s→5/$) ikut tertangkap; hanya kata utuh yang disensor.
 - Pembersihan otomatis saat admin membuka tab Admin: laporan chat yang sudah ditutup > 90 hari, statistik chat > 30 hari, dan log admin > 1 tahun.
 
+## 11. Pasar Pemain
+
+1. Buka **SQL Editor → New query**.
+2. Salin seluruh isi [`supabase/market.sql`](supabase/market.sql), tempel, lalu klik **Run**. Jalankan **setelah** `social.sql` (memakai fungsi bantu trade dan tabel `deliveries`), lalu deploy ulang Edge Function `game` (aksi `market_list`).
+
+- Memasang jualan lewat Edge Function `game`: server menghitung nilai hewan dan menolak harga di bawah 50% nilai atau di atas $100.000.000. Hewan keluar dari save dan dititipkan di `market_escrow` dalam satu transaksi (`_market_list`, hanya bisa dipanggil kunci server).
+- Membeli (`buy_listing`) dan membatalkan (`cancel_listing`) adalah fungsi database. Baris jualan dikunci saat dibeli, jadi kalau dua pemain membeli bersamaan hanya satu yang berhasil. Uang untuk penjual dan hewan yang kembali dikirim lewat `deliveries` dan diklaim otomatis, sama seperti hasil trade.
+- Jualan yang lewat 14 hari dikembalikan ke penjual setiap kali seseorang membuka Pasar Pemain. Kalau penjual me-reset atau menghapus akun, jualan aktifnya dibuang.
+- Tabel `market_listings` dan `market_escrow` tertutup untuk browser (RLS tanpa policy); semua akses lewat fungsi server.
+
 ## Catatan keamanan
 
 - **Save online hanya bisa diubah server**: Edge Function `game` dan fungsi trading di `social.sql`. Mengubah uang atau ular lewat DevTools hanya mengubah tampilan di layar sendiri, dan akan kembali ke angka server setelah aksi berikutnya.

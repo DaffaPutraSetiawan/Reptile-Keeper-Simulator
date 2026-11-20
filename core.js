@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:33,date:'2026-11-20'};
+const VERSION={v:34,date:'2026-11-20'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -397,6 +397,7 @@ function hasTrait(s,tr,t){if(tr.includes(t))return true;if(SUPER_OF[t]&&tr.inclu
 // Bayaran pesanan: hadiah tetap pesanan, atau ORDER_PREMIUM × nilai hewan yang dikirim kalau itu lebih tinggi.
 // Dengan begitu mengirim ke pembeli selalu lebih untung daripada iklan (100% nilai) dan jual cepat (60%).
 const ORDER_PREMIUM=1.25;
+const MKT_MIN=.5,MKT_MAX=100000000,MKT_DAYS=14;   // Pasar Pemain: harga minimal 50% nilai, tayang 14 hari
 const orderPay=(o,s)=>Math.max(o.reward,Math.ceil(value(s)*ORDER_PREMIUM/5)*5);   // dibulatkan ke atas: selalu ≥125%
 function matches(o){if(isBig(o))return[];const sp=spOf(o);return S.snakes.filter(s=>{const tr=traitsOf(s.g);return spOf(s)===sp&&o.tr.every(t=>hasTrait(s,tr,t))&&(!o.sex||s.sex===o.sex)&&!s.gravid&&!s.listed})}
 
@@ -609,6 +610,15 @@ const ACTIONS={
    if(on&&s.pairedWith){const m=byId(s.pairedWith);if(m)m.pairs=Math.max(0,m.pairs-1);s.pairedWith=null}
    if(on&&s.sex==='M'){S.snakes.forEach(f=>{if(f.pairedWith===s.id)f.pairedWith=null});s.pairs=0}}
   if(n)log(op==='list'?'l_bulk_list':'l_bulk_unlist',{n},'info');return{toast:op==='list'?'t_bulk_list':'t_bulk_unlist'}},
+ // Pasar Pemain: pasang hewan dengan harga pas. Harga minimal 50% dari nilai pasar hewan (dihitung di sini, di server),
+ // maksimal $100.000.000 (batas teknis). Hewan keluar dari save; Edge Function menyimpannya ke escrow & daftar jualan
+ // dalam satu transaksi. Tayang 14 hari, tanpa biaya.
+ market_list(a){const s=mustSnake(a.id);if(s.gravid)fail('gravid_locked');if(s.listed)fail('snake_listed');if(s.pairedWith||s.pairs)fail('snake_paired');
+  const price=Number(a.price);if(!Number.isInteger(price))fail('bad_price');
+  const v=value(s),min=Math.max(1,Math.ceil(v*MKT_MIN));if(price<min)fail('price_too_low');if(price>MKT_MAX)fail('price_too_high');
+  const snakeCopy=JSON.parse(JSON.stringify(s));snakeCopy.xferAgo=Math.max(0,S.turn-(typeof s.lastLaid==='number'?s.lastLaid:-99));
+  const info={c:code(s),n:fullName(s)};removeSnake(s);log('l_mkt_list',{c:info.c,n:info.n,p:price},'info');
+  return{toast:'t_mkt_listed',market:{snake:snakeCopy,price,value:v,name:info.n,code:info.c}}},
  nick(a){const s=mustSnake(a.id);s.nick=String(a.name==null?'':a.name).replace(/[\u0000-\u001f\u007f]/g,'').trim().slice(0,24);return{}},
  buy(a){const lid=toId(a.lid);const L=S.market.find(x=>x.lid===lid);if(!L)fail('listing_gone');
   if(!Object.prototype.hasOwnProperty.call(BUY_MULT,a.age)||(a.sex!=='M'&&a.sex!=='F'))fail('bad_action');
@@ -661,7 +671,7 @@ root.MorphCore={
  emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,
  OLD_WARN,maxAge,lifeLeft,sizeMult,kOf,growW,
  pedNode,pedParents,labelNode,ancRec,kinship,relation,inbOf,inbFromAnc,repairInb,INB_SLUG,INB_DEAD,HATCH_DEAD,
- mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,dexKey,matches,ORDER_PREMIUM,orderPay,REP_ORDER,REP_BIG,BIG_LEVEL,ORDER_PREMIUM_BIG,MAX_SMALL,repNeed,repLevel,isBig,genBigOrder,bigPay,orderLabel,
+ mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,dexKey,matches,ORDER_PREMIUM,orderPay,MKT_MIN,MKT_MAX,MKT_DAYS,REP_ORDER,REP_BIG,BIG_LEVEL,ORDER_PREMIUM_BIG,MAX_SMALL,repNeed,repLevel,isBig,genBigOrder,bigPay,orderLabel,
  monthlyCosts,previewNext,
  MARKET_SIZE,MARKET_EVERY,BUY_MULT,MARKET_POOL,listingTraits,marketBase,marketPrice,marketLeft,refreshMarket,ensureMarket,marketOk,makeMarketSnake,
  INC_MONTHS,TEMP_MIN,TEMP_MAX,TEMP_MID,TEMP_STEP,tempRange,femaleChance,incTotal,tempOpen,tempMonthsLeft,validTemp,

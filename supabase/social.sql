@@ -710,6 +710,8 @@ create or replace function public._reset_account(p_user uuid)
 returns void language plpgsql security definer set search_path = '' as $$
 begin
   perform public._cancel_pending_trades(p_user, 'reset');
+  -- jualan aktif di Pasar Pemain ikut dibuang (market.sql); dilewati kalau file itu belum dijalankan
+  if to_regprocedure('public._market_reset(uuid)') is not null then execute 'select public._market_reset($1)' using p_user; end if;
   delete from public.deliveries where user_id = p_user and claimed_at is null;
   -- id ular dimulai lagi dari 1 setelah reset, jadi showcase lama tidak berlaku lagi
   update public.profiles set showcase = '{}' where id = p_user;

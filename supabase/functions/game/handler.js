@@ -10,7 +10,8 @@ const MAX_RETRY = 4;
  * @param {string} uid   id pemain yang sudah diverifikasi
  * @param {object} db    { load(uid) -> {data, rev, rank} | null, insert(uid, data, rank) -> bool, update(uid, data, oldRev, rank) -> bool,
  *                         (rank = angka papan peringkat dari C.rankStats, disimpan di kolom saves.rank)
- *                         beforeReset(uid) -> void }
+ *                         beforeReset(uid) -> void,
+ *                         marketList(uid, data, oldRev, rank, {snake, price, value, name, code}) -> id listing | null (save berubah) }
  * @returns {Promise<object>} { state, rev, head?, toast? }  (melempar Error(kode) kalau gagal)
  */
 export async function handle(body, uid, db) {
@@ -62,6 +63,13 @@ async function run(body, uid, db) {
     const state = row.data;
     const result = C.applyAction(state, action);   // melempar Error(kode) kalau aksi tidak sah
     state.rev = row.rev + 1;
+    if (result.market) {
+      // Pasar Pemain: save baru + daftar jualan + escrow disimpan dalam satu transaksi database
+      if (!db.marketList) throw new Error('bad_action');
+      const id = await db.marketList(uid, state, row.rev, C.rankStats(state), result.market);
+      if (id) return { state, rev: state.rev, toast: result.toast || null, quests: result.quests || null, listing: id };
+      continue;
+    }
     if (await db.update(uid, state, row.rev, C.rankStats(state))) return { state, rev: state.rev, head: result.head || null, toast: result.toast || null, quests: result.quests || null };
     // save berubah di tengah jalan (mis. trade diterima): baca ulang dan ulangi aksinya
   }

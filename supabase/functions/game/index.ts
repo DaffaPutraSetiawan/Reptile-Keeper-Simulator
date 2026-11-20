@@ -36,6 +36,13 @@ const db = {
     const { error } = await admin.rpc('_reset_account', { p_user: uid });
     if (error) throw new Error('db_error');
   },
+  // Pasar Pemain: simpan save (cek rev) + buat jualan + escrow dalam satu fungsi database
+  async marketList(uid: string, state: Record<string, unknown>, oldRev: number, rank: unknown, m: Record<string, unknown>) {
+    const { data, error } = await admin.rpc('_market_list', { p_user: uid, p_data: state, p_old_rev: oldRev, p_rank: rank,
+      p_snake: m.snake, p_price: m.price, p_value: m.value, p_name: m.name, p_code: m.code });
+    if (error) { const c = (error.message || '').match(/^[a-z_]{2,40}$/); throw new Error(c ? c[0] : 'db_error'); }
+    return data || null;
+  },
   async update(uid: string, state: Record<string, unknown>, oldRev: number, rank: unknown) {
     const { data, error } = await admin.from('saves')
       .update({ data: state, game_turn: state.turn, rev: oldRev + 1, rank })
