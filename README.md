@@ -27,6 +27,7 @@ Game **wajib login**. Setiap aksi dikirim ke server (Edge Function `game`), yang
   - **Axolotl** (7 gen): Leucistic, Albino, Melanoid, Axanthic, Copper, GFP, RFP · sampai 100 telur per clutch; pilih maksimal 3 bayi, sisanya otomatis dijual
 - **Sistem het & pos het**: peluang het dihitung otomatis, dan induk "terbukti het" setelah menghasilkan anak visual
 - **Tabel peluang keturunan** untuk setiap pasangan
+- **Planner breeding** (di tab Kawinkan): centang gen target, lalu planner menunjukkan hewan pembawa tiap gen dan 5 pasangan terbaik di koleksimu (peluang per bayi, perkiraan bayi target per musim, status siap kawin, dan inbreeding) untuk 1 generasi
 - **Siklus breeding bulanan**: umur minimal kawin, ovulasi, jumlah telur dipengaruhi berat, telur tidak subur, inkubasi dengan pengaturan suhu, masa pemulihan betina, batas umur
 - **Silsilah 3 generasi** di setiap hewan (ikut pindah saat trade)
 - **Kawin sedarah (inbreeding)**: koefisien inbreeding dihitung dari leluhur 5 generasi. Ada peringatan sebelum memasangkan kerabat, dan efeknya nyata: telur tidak subur dan gagal menetas masing-masing naik 0,4 × F, hewan inbred tumbuh (1 − F/2)× dan betinanya berovulasi (1 − F)× dari biasanya (F 25% untuk saudara kandung atau induk × anak). Nilai inbreeding terbawa di setiap clutch dari sekali kawin
