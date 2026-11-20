@@ -29,10 +29,11 @@ Game **wajib login**. Setiap aksi dikirim ke server (Edge Function `game`), yang
 - **Tabel peluang keturunan** untuk setiap pasangan
 - **Siklus breeding bulanan**: umur minimal kawin, ovulasi, jumlah telur dipengaruhi berat, telur tidak subur, inkubasi dengan pengaturan suhu, masa pemulihan betina, batas umur
 - **Silsilah 3 generasi** di setiap hewan (ikut pindah saat trade)
-- **Kawin sedarah (inbreeding)**: koefisien inbreeding dihitung dari leluhur 5 generasi. Ada peringatan sebelum memasangkan kerabat, dan efeknya nyata: telur tidak subur, gagal menetas, pertumbuhan lebih lambat, dan ovulasi lebih jarang
+- **Kawin sedarah (inbreeding)**: koefisien inbreeding dihitung dari leluhur 5 generasi. Ada peringatan sebelum memasangkan kerabat, dan efeknya nyata: telur tidak subur dan gagal menetas masing-masing naik 0,4 × F, hewan inbred tumbuh (1 − F/2)× dan betinanya berovulasi (1 − F)× dari biasanya (F 25% untuk saudara kandung atau induk × anak). Nilai inbreeding terbawa di setiap clutch dari sekali kawin
 - **Ekonomi**: biaya pakan & rak, harga pasar yang naik turun dan bisa jenuh, pasar tiap spesies (bayi 10× / siap kawin 20× harga dasar), iklan, jual cepat, event, pesanan pembeli (membayar hadiah atau 125% nilai hewan), dan **pratinjau saldo bulan depan**. Keseimbangannya diuji dengan simulasi ratusan game.
 - **Misi pemula** sebagai tutorial (9 misi, hadiah total $2.000)
 - **Konfirmasi Lanjut bulan** kalau masih ada betina yang bisa dikawinkan
+- **Halaman masuk** dengan logo Morph Lab
 - **Morph Dex** per spesies, berisi morph target dan kombinasi terkenal (Bumblebee, Killer Bee, RAPTOR, White Albino, dan lainnya)
 - **Gambar hewan prosedural** yang dibuat dari genetika tiap hewan
 - **Teman, chat & trading**: tambah teman lewat username, chat real-time & global chat, profil dengan etalase, dan tukar hewan/uang dengan sistem escrow yang dijalankan server. Menu trade menampilkan ID hewan, dan setiap tawaran maupun penerimaan trade punya langkah konfirmasi dengan peringatan (nilai timpang, hadiah, hewan terakhir satu spesies, kapasitas rak penuh, uang besar). Riwayat pemilik hewan (origin keeper) ikut tercatat.
