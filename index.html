@@ -48,6 +48,10 @@ h3{font-family:Fraunces,serif;font-weight:600;font-size:16px;margin:18px 0 8px}
 .chip{padding:5px 11px;border-radius:20px;font-size:13px}
 .chip.on{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:12px}
+.colbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 10px}.colbar #colq{flex:1 1 240px;min-width:200px}.colbar select{width:auto;max-width:100%}
+.colcount{justify-content:space-between;margin:0 0 8px;min-height:30px}.coltable{width:100%;font-size:13px}.coltable td{vertical-align:middle;padding:5px 6px}.coltable .mini{width:72px}.coltable tr.click{cursor:pointer}.coltable tr.click:hover td{background:var(--hover)}
+.coltable tr.on td{background:color-mix(in srgb,var(--acc) 10%,transparent)}.coltable td.ck,.coltable th.ck{width:30px}.coltable .tags{display:flex;flex-wrap:wrap;gap:3px;margin:0}
+.bulkbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 12px;margin:0 0 8px;position:sticky;top:6px;z-index:3}.cqlist{max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:6px 10px;display:flex;flex-direction:column;gap:3px;margin:8px 0}
 .planner{padding:12px 14px;margin:0 0 14px}.planner h4{margin:14px 0 6px;font-size:14px}.plgenes{display:flex;flex-wrap:wrap;gap:5px;align-items:center}.plsep{width:6px}
 .pltarget{display:flex;gap:10px;align-items:center;margin-top:12px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}.pltarget .mini{width:84px}
 .pltable{width:100%;font-size:13px}.pltable td{vertical-align:top;padding:6px 6px}.plc{display:inline-block;margin:0 6px 3px 0;white-space:nowrap}.tablewrap{overflow-x:auto}
@@ -300,7 +304,17 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  // koleksi
  col_sub:p=>`${p.n} ekor · nilai koleksi ${p.v} · klik hewan untuk detail, jual, atau iklankan.`,
  f_all:'Semua',f_M:'♂ Jantan',f_F:'♀ Betina',f_ready:'Siap kawin',f_listed:'Diiklankan',
- sort_by:'Urutkan',sort_val:'Nilai',sort_age:'Umur',sort_new:'Terbaru',col_empty:'Tidak ada hewan untuk filter ini.',
+ sort_by:'Urutkan',sort_val:'Nilai',sort_age:'Umur',sort_new:'Terbaru',sort_id:'ID',sort_w:'Berat',sort_life:'Sisa umur',sort_inb:'Inbreeding',sort_name:'Nama morph (A–Z)',col_q_ph:'Cari ID, nama panggilan, morph, atau gen…',col_st:'Status',col_src:'Asal',col_gene:'Gen',col_gene_any:'Semua gen',col_gm:'Cara cocok gen',
+ cst_all:'Semua status',cst_ready:'Siap kawin',cst_paired:'Sedang dipasangkan',cst_gravid:'Bunting',cst_baby:'Bayi (belum cukup umur)',cst_old:'Tua (sisa ≤12 bulan)',cst_inbred:'Inbred (>0%)',cst_listed:'Diiklankan',
+ csrc_all:'Semua asal',csrc_bred:'Hasil breeding',csrc_market:'Beli di pasar',csrc_trade:'Dari trade',csrc_starter:'Hewan awal',
+ cgm_vis:'Visual saja',cgm_het:'Visual + het',cgm_any:'Semua pembawa (termasuk pos het)',col_dir:'Balik arah urutan',col_v_card:'Kartu',col_v_list:'Daftar',
+ col_count:p=>`${p.n} dari ${p.t} hewan`,col_reset:'Reset filter',col_nomatch:'Tidak ada hewan yang cocok dengan pencarian & filter ini.',
+ col_sel:p=>`${p.n} dipilih`,col_sel_v:p=>`nilai ${p.v}`,col_b_list:p=>`Iklankan (${p.n})`,col_b_unlist:p=>`Batalkan iklan (${p.n})`,col_b_sell:p=>`Jual cepat · ${p.v}`,col_selnone:'Hapus pilihan',col_selall:'Pilih semua yang tampil',
+ col_th_age:'Umur',col_th_v:'Nilai',cw_last_sp:p=>`Ini <b>semua ${p.sp}</b> milikmu. Setelah dijual kamu tidak punya ${p.sp} lagi.`,col_th_w:'Berat',col_th_st:'Status',gravid_locked_t:'Betina bunting tidak bisa dipilih',
+ cw_ready:p=>`${p.n} betina siap kawin ikut terjual.`,cw_het:p=>`${p.n} hewan membawa het / pos het yang mungkin berguna untuk breeding.`,cw_listed:p=>`${p.n} hewan sedang diiklankan (iklan 100% nilai, jual cepat hanya 60%).`,
+ cq_h:p=>`Jual cepat ${p.n} hewan?`,cq_sub:p=>`Kamu mendapat ${p.q} (60% dari nilai pasar ${p.v}).`,cq_final:'Hewan langsung terjual dan tidak bisa dikembalikan.',cq_yes:p=>`Ya, jual cepat (${p.q})`,
+ t_bulk_sell:'Hewan terpilih sudah dijual cepat.',t_bulk_list:'Hewan terpilih sudah diiklankan.',t_bulk_unlist:'Iklan hewan terpilih dibatalkan.',
+ l_bulk_sell:p=>`💰 ${p.n} hewan dijual cepat sekaligus: ${p.v}.`,l_bulk_list:p=>`📣 ${p.n} hewan diiklankan sekaligus.`,l_bulk_unlist:p=>`✖ Iklan ${p.n} hewan dibatalkan.`,col_empty:'Belum ada hewan di koleksi.',
  // kawinkan
  br_sub:'Pilih pasangan, lihat peluang tiap morph keturunannya, lalu pasangkan kapan saja selama keduanya sudah cukup umur (jantan ≥10 bulan, betina ≥24 bulan). Peluang ovulasi ±55% per bulan.',
  br_need:'Kamu butuh minimal 1 jantan dan 1 betina.',ready_ok:'✓ Siap kawin',pair_btn:'Pasangkan bulan ini',
@@ -566,7 +580,17 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
 <h3>6. Temperature &amp; economy</h3><p>Axolotl sex is set by chromosomes, not temperature, so it’s always about 50:50 and the incubator temperature can’t be changed. Axolotls are cheap per animal, but one clutch can earn a lot from the automatic sale. They live up to 15 years.</p>`,d_species:'Species',mk_pairnow:'can be paired right away',r_fage_leo:'Too young (min. 10 months)',r_mage_leo:'Too young (min. 9 months)',e_species_mismatch:'Only animals of the same species can be paired.',br_sub_ball:'Pick a ball python pair, check the odds for every possible offspring, then pair them any time once both are old enough (males ≥10 months, females ≥24 months). Each month a paired female has a ~55% chance to ovulate, and lays 2–9 eggs depending on her weight.',br_sub_leo:'Pick a leopard gecko pair (males ≥9 months, females ≥10 months). A paired female has a ~70% chance to ovulate. One pairing gives 4–6 clutches in a row (1 clutch of 1–2 eggs every month), then she rests for 3 months.',d_life:'Lifespan',d_life_v:p=>`${p.max} · ${p.left} left`,
  col_sub:p=>`${p.n} ${p.n===1?'animal':'animals'} · collection value ${p.v} · click an animal to see details, sell it or list it.`,
  f_all:'All',f_M:'♂ Males',f_F:'♀ Females',f_ready:'Ready to breed',f_listed:'Listed',
- sort_by:'Sort by',sort_val:'Value',sort_age:'Age',sort_new:'Newest',col_empty:'No animals match this filter.',
+ sort_by:'Sort by',sort_val:'Value',sort_age:'Age',sort_new:'Newest',sort_id:'ID',sort_w:'Weight',sort_life:'Life left',sort_inb:'Inbreeding',sort_name:'Morph name (A–Z)',col_q_ph:'Search ID, nickname, morph or gene…',col_st:'Status',col_src:'Origin',col_gene:'Gene',col_gene_any:'Any gene',col_gm:'Gene match',
+ cst_all:'Any status',cst_ready:'Ready to breed',cst_paired:'Paired',cst_gravid:'Gravid',cst_baby:'Babies (too young)',cst_old:'Old (≤12 months left)',cst_inbred:'Inbred (>0%)',cst_listed:'Listed',
+ csrc_all:'Any origin',csrc_bred:'Bred by you',csrc_market:'Bought at market',csrc_trade:'From a trade',csrc_starter:'Starter animals',
+ cgm_vis:'Visual only',cgm_het:'Visual + het',cgm_any:'All carriers (incl. pos het)',col_dir:'Reverse sort order',col_v_card:'Cards',col_v_list:'List',
+ col_count:p=>`${p.n} of ${p.t} animals`,col_reset:'Reset filters',col_nomatch:'No animals match this search & filter.',
+ col_sel:p=>`${p.n} selected`,col_sel_v:p=>`worth ${p.v}`,col_b_list:p=>`List for sale (${p.n})`,col_b_unlist:p=>`Unlist (${p.n})`,col_b_sell:p=>`Quick sell · ${p.v}`,col_selnone:'Clear selection',col_selall:'Select all shown',
+ col_th_age:'Age',col_th_v:'Value',cw_last_sp:p=>`This is <b>every ${p.sp}</b> you own. After selling you won’t have any ${p.sp} left.`,col_th_w:'Weight',col_th_st:'Status',gravid_locked_t:'Gravid females can’t be selected',
+ cw_ready:p=>`${p.n} breeding-ready female${p.n===1?'':'s'} will be sold.`,cw_het:p=>`${p.n} animal${p.n===1?'':'s'} carry hets / pos hets that may be useful for breeding.`,cw_listed:p=>`${p.n} animal${p.n===1?' is':'s are'} listed for sale (ads pay 100%, quick sell only 60%).`,
+ cq_h:p=>`Quick sell ${p.n} animal${p.n===1?'':'s'}?`,cq_sub:p=>`You get ${p.q} (60% of the ${p.v} market value).`,cq_final:'The animals are sold right away and can’t be brought back.',cq_yes:p=>`Yes, quick sell (${p.q})`,
+ t_bulk_sell:'Selected animals quick-sold.',t_bulk_list:'Selected animals listed for sale.',t_bulk_unlist:'Selected listings cancelled.',
+ l_bulk_sell:p=>`💰 ${p.n} animals quick-sold at once: ${p.v}.`,l_bulk_list:p=>`📣 ${p.n} animals listed at once.`,l_bulk_unlist:p=>`✖ ${p.n} listings cancelled.`,col_empty:'No animals in your collection yet.',
  br_sub:'Pick a pair, check the odds for every possible offspring, then pair them any time once both are old enough (males ≥10 months, females ≥24 months). Each month a paired female has a ~55% chance to ovulate.',
  br_need:'You need at least 1 male and 1 female.',ready_ok:'✓ Ready to breed',pair_btn:'Pair this month',
  odds_h:'Offspring odds',
@@ -764,7 +788,7 @@ function setLang(l){if(l!=='id'&&l!=='en')return;LANG=l;try{localStorage.setItem
 function buyerName(o){return o.bi!=null?t('buyers')[o.bi]:(o.buyer||o.b||'')}
 
 /* ========= STATE ========= */
-let S=null, TAB='koleksi', FILTER='all', SORT='val', SEL={m:null,f:null}, SPF='all', BRSP='ball', DEXSP='ball';
+let S=null, TAB='koleksi', SEL={m:null,f:null}, SPF='all', BRSP='ball', DEXSP='ball';
 const spChips=(cur,act,all)=>`<div class="toolbar">${(all?['all']:[]).concat(SPECIES_LIST).map(k=>`<button class="chip ${cur===k?'on':''}" data-act="${act}" data-v="${k}">${k==='all'?t('sp_all'):t('sp_'+k)}</button>`).join('')}</div>`;
 const dateOf=w=>t('turn_n',{n:w});
 const dateTxt=()=>dateOf(S.turn);
@@ -1041,14 +1065,78 @@ function renderGate(){
  $('hdr').innerHTML=`<div class="langsw" role="group" aria-label="${t('lang_label')}">${['id','en'].map(l=>`<button data-act="lang" data-v="${l}" class="${LANG===l?'on':''}" aria-pressed="${LANG===l}" lang="${l}" title="${l==='id'?'Bahasa Indonesia':'English'}">${l.toUpperCase()}</button>`).join('')}</div><span id="acct"></span>`;
  renderAcct();$('tabs').innerHTML='';$('view').innerHTML=vGate();
 }
+/* ========= KOLEKSI: CARI, FILTER, URUTKAN, TAMPILAN DAFTAR & AKSI SEKALIGUS =========
+   Pilihan filter & urutan disimpan di perangkat (localStorage); kotak cari dan centang tidak disimpan. */
+const COL_KEY='ml_col_v1',COL_DEF={sex:'all',st:'all',src:'all',gene:'',gm:'any',sort:'val',dir:-1,view:'card'};
+const COL=Object.assign({},COL_DEF,(()=>{try{return JSON.parse(localStorage.getItem(COL_KEY)||'{}')}catch(e){return{}}})(),{q:'',sel:new Set()});
+function colSave(){try{const o={};for(const k in COL_DEF)o[k]=COL[k];o.spf=SPF;localStorage.setItem(COL_KEY,JSON.stringify(o))}catch(e){}}
+try{const o=JSON.parse(localStorage.getItem(COL_KEY)||'{}');if(o.spf&&(o.spf==='all'||SPECIES[o.spf]))SPF=o.spf}catch(e){}
+const COL_ST=['all','ready','paired','gravid','baby','old','inbred','listed'],COL_SRC=['all','bred','market','trade','starter'];
+const COL_SORT={val:[s=>value(s),-1],age:[s=>s.age,-1],new:[s=>s.id,-1],id:[s=>s.id,1],w:[s=>s.w,-1],life:[s=>lifeLeft(s),1],inb:[s=>inbOf(s),-1],name:[s=>fullName(s).toLowerCase(),1]};
+const colSrcOf=s=>{const r=srcOf(s);return r?r.t:''};
+const isBaby=s=>s.age<(s.sex==='M'?SPECIES[spOf(s)].mAge:SPECIES[spOf(s)].fAge);
+function colStatus(s,st){switch(st){case 'ready':return !readyMsg(s);case 'paired':return !!(s.pairedWith||s.pairs);case 'gravid':return !!s.gravid;
+ case 'baby':return isBaby(s);case 'old':return lifeLeft(s)<=OLD_WARN;case 'inbred':return inbOf(s)>0;case 'listed':return !!s.listed}return true}
+// Gen filter: satu pilihan per lokus (Mack Snow = Mack Snow atau Super Snow; Mojave & Lesser terpisah).
+const colGenes=sp=>SPECIES[sp].loci.flatMap(l=>l.t==='bel'?['mojave','lesser']:[l.k]);
+const colGeneLabel=k=>{const l=LOCI_ALL.find(x=>x.k===k);return l&&l.sk?TL[k]+' / '+TL[l.sk]:TL[k]};
+const LOCI_ALL=SPECIES_LIST.flatMap(sp=>SPECIES[sp].loci);
+function colGene(s,k,mode){const l=lociOf(s.g).find(x=>x.k===TLOC[k]);if(!l)return false;const a=s.g[l.k]||[0,0];
+ if(l.t==='rec'){if(traitsOf(s.g).includes(k))return true;const h=(s.hp||{})[k]||0;return mode==='het'?h>=.999:mode==='any'?h>0.005:false}
+ if(l.t==='bel')return a.includes(k==='mojave'?1:2);return !!(a[0]||a[1])}
+function colMatchQ(s,q){if(!q)return true;q=q.toLowerCase().trim();const c=code(s).toLowerCase();
+ if(/^\d+$/.test(q))return String(s.id)===String(+q)||c.includes(q);
+ return c.includes(q)||(s.nick||'').toLowerCase().includes(q)||fullName(s).toLowerCase().includes(q)||hetText(s).toLowerCase().includes(q)}
+function colList(){const [key,def]=COL_SORT[COL.sort]||COL_SORT.val,dir=COL.dir||def;
+ return S.snakes.filter(s=>(SPF==='all'||spOf(s)===SPF)&&(COL.sex==='all'||s.sex===COL.sex)&&colStatus(s,COL.st)&&(COL.src==='all'||colSrcOf(s)===COL.src)
+  &&(!COL.gene||colGene(s,COL.gene,COL.gm))&&colMatchQ(s,COL.q))
+  .sort((a,b)=>{const x=key(a),y=key(b);return (x<y?-1:x>y?1:0)*dir||b.id-a.id})}
+const colActive=()=>COL.sex!=='all'||COL.st!=='all'||COL.src!=='all'||!!COL.gene||!!COL.q.trim()||SPF!=='all';
+function colRow(s){const tr=traitsOf(s.g),on=COL.sel.has(s.id);return `<tr class="click ${on?'on':''}" data-open="${s.id}"><td class="ck"><input type="checkbox" data-colsel="${s.id}" ${on?'checked':''} ${s.gravid?'disabled title="'+t('gravid_locked_t')+'"':''} aria-label="${code(s)}"></td>
+ <td><img class="mini" src="${thumb(tr,s.seed,false,spOfG(s.g))}" alt=""></td><td><b>${code(s)}</b>${s.nick?`<div class="kbd">${esc(s.nick)}</div>`:''}</td>
+ <td>${sexIcon(s.sex)} ${esc(fullName(s))}<div class="het">${esc(hetText(s))}</div></td><td class="num">${ageTxt(s.age)}</td><td class="num">${fmt(s.w)} g</td><td class="num"><b>${money(value(s))}</b></td><td><div class="tags">${tags(s)}</div></td></tr>`}
+// Total jual cepat persis seperti di server: harga morph turun 3% setelah tiap hewan terjual.
+function quickTotal(list){const keep=S.mm;S.mm={...keep};let tot=0;try{for(const s of list){tot+=Math.round(value(s)*.6);traitsOf(s.g).forEach(g=>S.mm[g]=mm(g)*.97)}}finally{S.mm=keep}return tot}
+function colBulkBar(L){const sel=S.snakes.filter(s=>COL.sel.has(s.id));if(!sel.length)return '';
+ const v=sel.reduce((a,s)=>a+value(s),0),q=quickTotal(sel.filter(s=>!s.gravid)),nl=sel.filter(s=>!s.listed).length,ul=sel.filter(s=>s.listed).length;
+ return `<div class="panel bulkbar"><b>${t('col_sel',{n:sel.length})}</b><span class="kbd">${t('col_sel_v',{v:money(v)})}</span>
+  <span class="row" style="gap:6px;margin-left:auto;flex-wrap:wrap">${nl?`<button class="sm" data-act="col_bulk" data-v="list">📣 ${t('col_b_list',{n:nl})}</button>`:''}${ul?`<button class="sm" data-act="col_bulk" data-v="unlist">✖ ${t('col_b_unlist',{n:ul})}</button>`:''}
+  <button class="sm danger" data-act="col_bulk" data-v="quicksell">💰 ${t('col_b_sell',{v:money(q)})}</button><button class="sm ghost" data-act="col_selnone">${t('col_selnone')}</button></span></div>`}
+function colResults(){const L=colList(),all=S.snakes.length;
+ const head=`<div class="row colcount"><span class="kbd">${t('col_count',{n:L.length,t:all})}</span>${colActive()?`<button class="ghost sm" data-act="col_reset">↺ ${t('col_reset')}</button>`:''}</div>`;
+ if(!L.length)return head+`<div class="empty">${all?t('col_nomatch'):t('col_empty')}</div>`;
+ if(COL.view==='list'){const allOn=L.filter(s=>!s.gravid).every(s=>COL.sel.has(s.id));
+  return head+colBulkBar(L)+`<div class="tablewrap"><table class="coltable"><tr><th class="ck"><input type="checkbox" data-colall="1" ${allOn?'checked':''} aria-label="${t('col_selall')}" title="${t('col_selall')}"></th><th></th><th>ID</th><th>${t('th_morph')}</th><th class="num">${t('col_th_age')}</th><th class="num">${t('col_th_w')}</th><th class="num">${t('col_th_v')}</th><th>${t('col_th_st')}</th></tr>${L.map(colRow).join('')}</table></div>`}
+ return head+`<div class="grid">${L.map(card).join('')}</div>`}
+function paintCol(){const el=$('colres');if(el)el.innerHTML=colResults();else render()}
 function vKoleksi(){
- let L=S.snakes.filter(s=>SPF==='all'||spOf(s)===SPF).filter(s=>FILTER==='all'||(FILTER==='M'&&s.sex==='M')||(FILTER==='F'&&s.sex==='F')||(FILTER==='ready'&&!readyMsg(s))||(FILTER==='listed'&&s.listed));
- L.sort(SORT==='val'?(a,b)=>value(b)-value(a):SORT==='age'?(a,b)=>b.age-a.age:(a,b)=>b.id-a.id);
- const total=S.snakes.reduce((a,s)=>a+value(s),0);
+ const total=S.snakes.reduce((a,s)=>a+value(s),0),gsp=SPF==='all'?SPECIES_LIST:[SPF];
+ if(COL.gene&&!gsp.some(sp=>colGenes(sp).includes(COL.gene)))COL.gene='';
+ const opt=(v,cur,l)=>`<option value="${v}" ${v===cur?'selected':''}>${l}</option>`;
  return `<h2>${t('tab_koleksi')}</h2><p class="sub">${t('col_sub',{n:S.snakes.length,v:money(total)})}</p>
- ${spChips(SPF,'spf',true)}<div class="toolbar">${['all','M','F','ready','listed'].map(k=>`<button class="chip ${FILTER===k?'on':''}" data-act="filter" data-v="${k}">${t('f_'+k)}</button>`).join('')}
- <span style="margin-left:auto" class="kbd">${t('sort_by')}</span><select id="sort" style="width:auto">${['val','age','new'].map(k=>`<option value="${k}" ${SORT===k?'selected':''}>${t('sort_'+k)}</option>`).join('')}</select></div>
- ${L.length?`<div class="grid">${L.map(card).join('')}</div>`:`<div class="empty">${t('col_empty')}</div>`}`}
+ ${spChips(SPF,'spf',true)}
+ <div class="colbar"><input id="colq" type="search" placeholder="${t('col_q_ph')}" value="${esc(COL.q)}" autocomplete="off">
+  <div class="row" style="gap:5px">${['all','M','F'].map(k=>`<button class="chip ${COL.sex===k?'on':''}" data-act="col_sex" data-v="${k}">${t('f_'+k)}</button>`).join('')}</div>
+  <select id="colst" aria-label="${t('col_st')}">${COL_ST.map(k=>opt(k,COL.st,t('cst_'+k))).join('')}</select>
+  <select id="colsrc" aria-label="${t('col_src')}">${COL_SRC.map(k=>opt(k,COL.src,t('csrc_'+k))).join('')}</select>
+  <select id="colgene" aria-label="${t('col_gene')}"><option value="">${t('col_gene_any')}</option>${gsp.map(sp=>`<optgroup label="${t('sp_'+sp)}">${colGenes(sp).map(k=>opt(k,COL.gene,esc(colGeneLabel(k)))).join('')}</optgroup>`).join('')}</select>
+  ${COL.gene&&LOCI_ALL.find(l=>l.k===TLOC[COL.gene]).t==='rec'?`<select id="colgm" aria-label="${t('col_gm')}">${['vis','het','any'].map(k=>opt(k,COL.gm,t('cgm_'+k))).join('')}</select>`:''}
+ </div>
+ <div class="toolbar"><span class="kbd">${t('sort_by')}</span><select id="sort" style="width:auto">${Object.keys(COL_SORT).map(k=>opt(k,COL.sort,t('sort_'+k))).join('')}</select>
+  <button class="ghost sm" data-act="col_dir" title="${t('col_dir')}" aria-label="${t('col_dir')}">${(COL.dir||COL_SORT[COL.sort][1])<0?'↓':'↑'}</button>
+  <span class="row" style="gap:5px;margin-left:auto">${['card','list'].map(k=>`<button class="chip ${COL.view===k?'on':''}" data-act="col_view" data-v="${k}">${k==='card'?'▦ '+t('col_v_card'):'☰ '+t('col_v_list')}</button>`).join('')}</span></div>
+ <div id="colres">${colResults()}</div>`}
+async function colBulk(op){const sel=S.snakes.filter(s=>COL.sel.has(s.id)&&!s.gravid);if(!sel.length)return;
+ const ids=(op==='list'?sel.filter(s=>!s.listed):op==='unlist'?sel.filter(s=>s.listed):sel).map(s=>s.id);if(!ids.length)return;
+ if(op!=='quicksell'){const r=await game({type:'bulk',op,ids});if(r){COL.sel.clear();paintCol()}return}
+ const list=sel,q=quickTotal(list),v=list.reduce((a,s)=>a+value(s),0),w=[];
+ const rdyF=list.filter(s=>s.sex==='F'&&!readyMsg(s)).length,ph=list.filter(s=>hetText(s)).length,sp=SPECIES_LIST.filter(x=>{const m=S.snakes.filter(s=>spOf(s)===x);return m.length&&m.every(s=>COL.sel.has(s.id))});
+ if(rdyF)w.push(t('cw_ready',{n:rdyF}));if(ph)w.push(t('cw_het',{n:ph}));sp.forEach(x=>w.push(t('cw_last_sp',{sp:t('sp_'+x)})));
+ if(list.some(s=>s.listed))w.push(t('cw_listed',{n:list.filter(s=>s.listed).length}));
+ COL._go=ids;modal(`<h2>💰 ${t('cq_h',{n:list.length})}</h2><p class="sub">${t('cq_sub',{q:money(q),v:money(v)})}</p>
+  <div class="cqlist">${list.slice(0,30).map(s=>`<div class="row" style="justify-content:space-between;gap:8px"><span><b>${code(s)}</b> ${sexIcon(s.sex)} ${esc(fullName(s))}</span><span class="kbd">${money(Math.round(value(s)*.6))}</span></div>`).join('')}${list.length>30?`<div class="kbd">${t('pl_more',{n:list.length-30})}</div>`:''}</div>
+  <div class="${w.length?'warnbox':'okbox'}">${w.length?w.map(x=>`<p>⚠️ ${x}</p>`).join(''):`<p>✅ ${t('tw_none')}</p>`}<p><b>${t('cq_final')}</b></p></div>
+  <div class="actions"><button class="danger" data-act="col_sell_yes">${t('cq_yes',{q:money(q)})}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`)}
 const pct=x=>(Math.round(x*10000)/100).toLocaleString(LANG==='id'?'id-ID':'en-US')+'%';
 // Teks efek kawin sedarah untuk koefisien F (sama dengan rumus di core.js)
 const inbEff=F=>t('inb_eff',{s:pct(INB_SLUG*F),d:pct(INB_DEAD*F),g:pct(F/2),o:pct(F)});
@@ -1246,7 +1334,7 @@ function openSnake(id){const s=byId(id);if(!s)return;const tr=traitsOf(s.g),r=re
  ${s.gravid?`<p class="kbd">${t('gravid_nosale')}</p>`:''}`)}
 
 const SOCIAL_ACTS=new Set(['openchat','fr_accept','fr_decline','fr_remove','fr_remove_yes','tr_new','tb_close','tr_send','tr_send_yes','tb_back','tr_accept','tr_accept_yes','tr_decline','tr_cancel']);
-const FREE_ACTS=new Set(['quest_go','pl_open','pl_g','pl_sex','pl_clear','pl_pick','gview','rk_cat','rk_sp','rk_fr','rk_refresh','bug_new','bug_cancel','bug_open','bug_mine','bug_more','bug_rmimg','bug_delc','bug_del','bs_inc','bs_dec','spf','brsp','dexsp','guidesp','mk_sex','settings','theme','preview','profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
+const FREE_ACTS=new Set(['quest_go','col_sex','col_dir','col_view','col_reset','col_selnone','pl_open','pl_g','pl_sex','pl_clear','pl_pick','gview','rk_cat','rk_sp','rk_fr','rk_refresh','bug_new','bug_cancel','bug_open','bug_mine','bug_more','bug_rmimg','bug_delc','bug_del','bs_inc','bs_dec','spf','brsp','dexsp','guidesp','mk_sex','settings','theme','preview','profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
 // Jalankan aksi game: dikirim ke server (Edge Function "game") yang menghitung hasilnya.
 async function game(a){
  if(!Cloud.user||!S)return null;
@@ -1276,10 +1364,9 @@ function act(a,id,el){
  switch(a){
   case 'tab':TAB=el.dataset.tab;if(TAB==='bugs'){Bugs.loaded=false;Bugs.count()}if(TAB==='admin')Mod.load();if(TAB==='global'){if(Global.view==='chat')Global.unread=0;else Rank.load();Global.focus=false;if(!Global.loaded)Global.load()}break;
   case 'lang':{const reopen=settingsOpen();setLang(el.dataset.v);if(reopen){render();showSettings();return}break}
-  case 'filter':FILTER=el.dataset.v;break;
   case 'close':closeModal();return;
   case 'tobreed':{const s=byId(id);BRSP=spOf(s);if(s.sex==='M')SEL.m=id;else SEL.f=id;TAB='breeding';closeModal();break}
-  case 'spf':SPF=el.dataset.v;break;
+  case 'spf':SPF=el.dataset.v;colSave();break;
   case 'brsp':BRSP=el.dataset.v;break;
   case 'dexsp':DEXSP=el.dataset.v;break;
   case 'bs_inc':{const b=(S.broods||[]).find(x=>x.bid===id);if(!b)break;const sel=BSEL[id]||(BSEL[id]={}),g=broodGroups(b).find(x=>x.k===el.dataset.k);
@@ -1301,6 +1388,13 @@ function act(a,id,el){
   case 'rk_sp':Rank.sp=el.dataset.v;Rank.load();return;
   case 'rk_fr':Rank.fr=el.dataset.v==='1';Rank.load();return;
   case 'rk_refresh':Rank.load(true);return;
+  case 'col_sex':COL.sex=el.dataset.v;colSave();render();return;
+  case 'col_dir':COL.dir=-(COL.dir||COL_SORT[COL.sort][1]);colSave();render();return;
+  case 'col_view':COL.view=el.dataset.v;colSave();render();return;
+  case 'col_reset':Object.assign(COL,{sex:'all',st:'all',src:'all',gene:'',q:''});SPF='all';colSave();render();return;
+  case 'col_selnone':COL.sel.clear();paintCol();return;
+  case 'col_bulk':colBulk(el.dataset.v);return;
+  case 'col_sell_yes':{const ids=COL._go;COL._go=null;closeModal(true);if(!ids)return;game({type:'bulk',op:'quicksell',ids}).then(r=>{if(r){COL.sel.clear();paintCol()}});return}
   case 'pl_open':PLAN.open=!PLAN.open;render();return;
   case 'pl_g':{const v=el.dataset.v,T=planTr(),on=T.includes(v);PLAN.tr[BRSP]=T.filter(k=>TLOC[k]!==TLOC[v]);if(!on)PLAN.tr[BRSP].push(v);
    PLAN.tr[BRSP].sort((a,b)=>ALLT.indexOf(a)-ALLT.indexOf(b));render();return}
@@ -2070,13 +2164,17 @@ function boot(){
  document.addEventListener('click',e=>{
   if(e.target.id==='modal'){closeModal();return}
   const a=e.target.closest('[data-act]');if(a){act(a.dataset.act,+a.dataset.id,a);return}
+  if(e.target.closest('td.ck,th.ck'))return;
   const o=e.target.closest('[data-open]');if(o)openSnake(+o.dataset.open)});
  document.addEventListener('change',e=>{const el=e.target;
   if(el.id==='bugst'||el.id==='bugcat'){Bugs[el.id==='bugst'?'st':'cat']=el.value;Bugs.loaded=false;Bugs.load();return}
   if(el.name==='img'&&el.form&&el.form.dataset.form==='bug'){Bugs.addFiles([...el.files]);el.value='';return}
   if(el.dataset&&el.dataset.tb&&TB){const set=TB[el.dataset.tb],id=+el.dataset.sid;el.checked?set.add(id):set.delete(id);TB.err='';
    const sc=[...document.querySelectorAll('#modal .tblist')].map(x=>x.scrollTop);paintTB();document.querySelectorAll('#modal .tblist').forEach((x,i)=>x.scrollTop=sc[i]||0);return}
-  if(el.id==='selM'){SEL.m=+el.value;render()}else if(el.id==='selF'){SEL.f=+el.value;render()}else if(el.id==='sort'){SORT=el.value;render()}});
+  if(el.id==='selM'){SEL.m=+el.value;render()}else if(el.id==='selF'){SEL.f=+el.value;render()}else if(el.id==='sort'){COL.sort=el.value;COL.dir=COL_SORT[el.value][1];colSave();render()}
+  else if(el.id==='colst'||el.id==='colsrc'||el.id==='colgene'||el.id==='colgm'){COL[el.id.slice(3)]=el.value;colSave();render()}
+  else if(el.dataset&&el.dataset.colsel){const id=+el.dataset.colsel;el.checked?COL.sel.add(id):COL.sel.delete(id);paintCol()}
+  else if(el.dataset&&el.dataset.colall){const L=colList().filter(s=>!s.gravid);if(el.checked)L.forEach(s=>COL.sel.add(s.id));else L.forEach(s=>COL.sel.delete(s.id));paintCol()}});
  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
  document.addEventListener('submit',e=>{const f=e.target.closest('form[data-form]');if(!f)return;e.preventDefault();
   const k=f.dataset.form;if(k==='gchat'){Global.send(f);return}if(k==='greport'){Global.report(f);return}if(k==='gmute'){Mod.mute(f);return}if(k==='bug'){Bugs.submit(f);return}if(k==='bugc'){Bugs.comment(f);return}if(k==='bugadm'){Bugs.adminSave(f);return}if(k==='addfriend'||k==='chat')guarded(()=>socialForm(k,f));else if(k.startsWith('dz_'))dangerGo(k.slice(3),f);else if(k==='profile')saveProfile(f);else handleForm(k,f)});
@@ -2085,6 +2183,7 @@ function boot(){
    if(el.name==='bio'){Profile.edit.bio=el.value;const c=$('biocnt');if(c)c.textContent=el.value.length+'/'+BIO_MAX}
    else if(el.dataset.sc){const id=+el.dataset.sc,sel=Profile.edit.sel;const i=sel.indexOf(id);if(el.checked&&i<0&&sel.length<SHOW_MAX)sel.push(id);else if(!el.checked&&i>=0)sel.splice(i,1);paintProfileEdit()}}
   else if(el.name==='confirm'&&el.form&&/^dz_/.test(el.form.dataset.form||'')){const d=DZ[el.form.dataset.form.slice(3)];el.form.querySelector('button[type=submit]').disabled=el.value.trim()!==d.w;el.form.querySelector('.msg').innerHTML=''}
+  else if(el.id==='colq'){COL.q=el.value;paintCol()}
   else if(el.id==='chatin'){Social.draft=el.value;Social.chatFocus=true}
   else if(el.id==='gchatin'){Global.draft=el.value;Global.focus=true}
   else if(el.dataset&&el.dataset.temp){const cid=+el.dataset.temp,temp=+el.value;game({type:'incubate',cid,temp}).then(r=>{if(r)toast(t('t_temp',{t:fmtTemp(temp),o:sexOdds(temp)}))})}

@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:32,date:'2026-11-20'};
+const VERSION={v:33,date:'2026-11-20'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -597,6 +597,18 @@ const ACTIONS={
  quicksell(a){const s=mustSnake(a.id);if(s.gravid)fail('gravid_locked');
   const v=Math.round(value(s)*.6);S.money+=v;S.stats.sold++;S.stats.earned+=v;traitsOf(s.g).forEach(g=>S.mm[g]=mm(g)*.97);
   log('l_quick',{c:code(s),n:fullName(s),v:money(v)},'good');removeSnake(s);return{}},
+ // Aksi sekaligus dari tampilan daftar koleksi: op = 'list' (iklankan), 'unlist' (batalkan iklan), 'quicksell' (jual cepat 60%).
+ // Semua hewan dicek dulu; kalau ada satu yang tidak sah, tidak ada yang diubah. Maks. 200 hewan per aksi.
+ bulk(a){const op=a.op;if(!['list','unlist','quicksell'].includes(op))fail('bad_action');
+  if(!Array.isArray(a.ids)||!a.ids.length||a.ids.length>200)fail('bad_action');
+  const ids=a.ids.map(toId);if(new Set(ids).size!==ids.length)fail('bad_action');
+  const list=ids.map(mustSnake);if(list.some(s=>s.gravid))fail('gravid_locked');
+  if(op==='quicksell'){let tot=0;for(const s of list){const v=Math.round(value(s)*.6);tot+=v;S.money+=v;S.stats.sold++;S.stats.earned+=v;traitsOf(s.g).forEach(g=>S.mm[g]=mm(g)*.97);removeSnake(s)}
+   log('l_bulk_sell',{n:list.length,v:money(tot)},'good');return{toast:'t_bulk_sell'}}
+  let n=0;for(const s of list){const on=op==='list';if(s.listed===on)continue;s.listed=on;n++;
+   if(on&&s.pairedWith){const m=byId(s.pairedWith);if(m)m.pairs=Math.max(0,m.pairs-1);s.pairedWith=null}
+   if(on&&s.sex==='M'){S.snakes.forEach(f=>{if(f.pairedWith===s.id)f.pairedWith=null});s.pairs=0}}
+  if(n)log(op==='list'?'l_bulk_list':'l_bulk_unlist',{n},'info');return{toast:op==='list'?'t_bulk_list':'t_bulk_unlist'}},
  nick(a){const s=mustSnake(a.id);s.nick=String(a.name==null?'':a.name).replace(/[\u0000-\u001f\u007f]/g,'').trim().slice(0,24);return{}},
  buy(a){const lid=toId(a.lid);const L=S.market.find(x=>x.lid===lid);if(!L)fail('listing_gone');
   if(!Object.prototype.hasOwnProperty.call(BUY_MULT,a.age)||(a.sex!=='M'&&a.sex!=='F'))fail('bad_action');
