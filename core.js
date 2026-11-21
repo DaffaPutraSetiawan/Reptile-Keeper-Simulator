@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:39,date:'2026-11-21'};
+const VERSION={v:40,date:'2026-11-21'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -331,7 +331,6 @@ function grow(s){const sp=spOf(s);if(s.gravid){s.w=Math.round(s.w*SPECIES[sp].gr
 
 /* ========= PASAR & PESANAN ========= */
 // Pasar: tiap spesies punya 3 hewan bergen tunggal (atau Normal) hasil undian, gennya tidak boleh sama, stok berganti tiap 50 turn.
-// SPECIES[sp].fixed = gen yang selalu dijual di luar undian (leopard gecko: Normal), ditandai fixed:1.
 // Tiap hewan di pasar bisa dibeli berkali-kali: bayi (10× harga dasar) atau siap kawin (20× harga dasar), ♂ atau ♀.
 const MARKET_SIZE=3,MARKET_EVERY=50,BUY_MULT={baby:10,adult:20};
 const MARKET_POOL=SPECIES.ball.pool;
@@ -345,16 +344,16 @@ const marketBase=L=>Math.round(baseValue(listingTraits(L),spOf(L))/5)*5;     // 
 const marketPrice=(L,age)=>marketBase(L)*(BUY_MULT[age]||0);
 const marketLeft=()=>Math.max(0,MARKET_EVERY-(S.turn-(S.marketAt||0)));   // turn sampai stok berganti
 // Isi ulang stok satu spesies saja (listing ball python tanpa sp, sama seperti format lama).
-const mkListing=(sp,gene,fixed)=>{const L={lid:Math.floor(R()*1e9),gene};if(sp!=='ball')L.sp=sp;if(fixed)L.fixed=1;return L};
-// keep = listing undian yang dipertahankan (perbaikan save lama); sisanya diundi ulang, lalu gen tetap ditambahkan.
+const mkListing=(sp,gene)=>{const L={lid:Math.floor(R()*1e9),gene};if(sp!=='ball')L.sp=sp;return L};
+// keep = listing yang dipertahankan (perbaikan save lama); sisa slot diundi ulang.
 function fillMarket(sp,keep){keep=keep||[];S.market=(Array.isArray(S.market)?S.market:[]).filter(L=>L&&spOf(L)!==sp).concat(keep);
  const pool=SPECIES[sp].pool.filter(p=>!keep.some(L=>L.gene===p[0]));let n=keep.length;
- while(n<MARKET_SIZE&&pool.length){const k=wpick(pool);pool.splice(pool.findIndex(p=>p[0]===k),1);S.market.push(mkListing(sp,k));n++}
- for(const g of SPECIES[sp].fixed||[])S.market.push(mkListing(sp,g,true))}
+ while(n<MARKET_SIZE&&pool.length){const k=wpick(pool);pool.splice(pool.findIndex(p=>p[0]===k),1);S.market.push(mkListing(sp,k));n++}}
 function refreshMarket(){S.market=[];for(const sp of SPECIES_LIST)fillMarket(sp);S.marketAt=S.turn}
+// listing sah = gennya ada di undian spesies itu (listing bertanda fixed dari save v38 dianggap tidak sah dan diganti)
 const lotOk=(sp,L)=>!L.fixed&&SPECIES[sp].pool.some(p=>p[0]===L.gene);
-const spMarketOk=sp=>{const L=S.market.filter(x=>spOf(x)===sp),lot=L.filter(x=>!x.fixed),fx=L.filter(x=>x.fixed),F=SPECIES[sp].fixed||[];
- return lot.length===MARKET_SIZE&&new Set(L.map(x=>x.gene)).size===L.length&&lot.every(x=>lotOk(sp,x))&&fx.length===F.length&&F.every(g=>fx.some(x=>x.gene===g))};
+const spMarketOk=sp=>{const L=S.market.filter(x=>spOf(x)===sp);
+ return L.length===MARKET_SIZE&&new Set(L.map(x=>x.gene)).size===L.length&&L.every(x=>lotOk(sp,x))};
 const marketOk=()=>Array.isArray(S.market)&&S.marketAt!=null&&S.market.every(L=>L&&L.gene&&(!L.sp||SPECIES[L.sp]))&&SPECIES_LIST.every(spMarketOk);
 // Save lama: format pasar lama diganti total; spesies baru yang belum punya stok ditambahkan tanpa mengganti stok lain.
 function ensureMarket(){if(marketOk())return;
