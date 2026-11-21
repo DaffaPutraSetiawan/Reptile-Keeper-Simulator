@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:40,date:'2026-11-21'};
+const VERSION={v:41,date:'2026-11-22'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -211,10 +211,46 @@ function odds(m,f){
  }
  return dist.sort((a,b)=>b.p-a.p)}
 
+/* ========= SIFAT LINE-BRED (POLIGENIK) =========
+   Leopard gecko punya 11 nilai sifat line-bred (0–100) di s.lb, urutannya sesuai LB_KEYS. Sifat ini tidak diatur
+   satu gen, tapi naik pelan-pelan lewat seleksi:
+    nilai anak = rata-rata nilai kedua induk + acak normal (simpangan baku LB_SD = 6), dibulatkan, dibatasi 0–100.
+   Hewan toko NPC & gecko yang sudah ada sebelum v41 mendapat nilai acak 0–15 (LB_INIT).
+   Pemain hanya melihat perkiraan 5 tingkat (LB_TIERS): sangat rendah <20 · rendah <40 · sedang <60 · tinggi <85 · sangat tinggi 85+.
+   Label muncul di nilai >= 60 (LB_LABEL); Hypo punya tingkat super (Super Hypo) di >= 85 (LB_SUPER).
+   Garis punggung + Oranye tinggi = Red Stripe (selain itu Bold Stripe). Super Hypo + Tangerine + Carrot Tail = SHTCT.
+   Bonus harga per nilai (LB_PRICE): 40–59 naik pelan sampai $20, 60–84 $50, 85+ $110; jumlahnya dikali
+   1 + 10% untuk setiap sifat berlabel tambahan (maks. +50%), lebih kecil dari tambahan gen biasa (+35% per gen). */
+const LB_KEYS=['orange','hypo','ctail','chead','baldy','stripe','jungle','mask','bandit','dark','lav'];
+const LB_SD=6,LB_INIT=15,LB_LABEL=60,LB_SUPER=85,LB_TIERS=[20,40,60,85];
+const LB_PRICE={mid:40,midMax:20,label:50,sup:110,step:.1,maxSteps:5};
+const LB_NAME={orange:'Tangerine',ctail:'Carrot Tail',chead:'Carrot Head',baldy:'Baldy',jungle:'Jungle',mask:'Halloween Mask',bandit:'Bandit',dark:'Black Night',lav:'Lavender'};
+const hasLb=sp=>sp==='leo';
+function gauss(){let u=0,v=0;while(!u)u=R();while(!v)v=R();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+const lbInit=()=>LB_KEYS.map(()=>Math.floor(R()*(LB_INIT+1)));
+const lbOf=s=>(s&&Array.isArray(s.lb)&&s.lb.length===LB_KEYS.length)?s.lb:null;
+// nilai anak dari dua induk (induk tanpa nilai, mis. snapshot jantan dari save lama, dianggap acak 0–15)
+function lbChild(m,f){const a=lbOf(m)||lbInit(),b=lbOf(f)||lbInit();return LB_KEYS.map((_,i)=>clamp(Math.round((a[i]+b[i])/2+gauss()*LB_SD),0,100))}
+const lbTier=x=>LB_TIERS.filter(b=>x>=b).length;          // 0 = sangat rendah … 4 = sangat tinggi
+// Label sifat line-bred yang terlihat, mis. ['Tangerine','Bold Stripe'] atau ['SHTCT']
+function lbLabels(s){const v=lbOf(s);if(!v)return[];const H=k=>v[LB_KEYS.indexOf(k)],o=[];
+ const tang=H('orange')>=LB_LABEL,hy=H('hypo')>=LB_LABEL,sh=H('hypo')>=LB_SUPER,ct=H('ctail')>=LB_LABEL;
+ if(sh&&tang&&ct)o.push('SHTCT');else{if(hy)o.push(sh?'Super Hypo':'Hypo');if(tang)o.push(LB_NAME.orange);if(ct)o.push(LB_NAME.ctail)}
+ for(const k of ['chead','baldy'])if(H(k)>=LB_LABEL)o.push(LB_NAME[k]);
+ if(H('stripe')>=LB_LABEL)o.push(tang?'Red Stripe':'Bold Stripe');
+ for(const k of ['jungle','mask','bandit','dark','lav'])if(H(k)>=LB_LABEL)o.push(LB_NAME[k]);
+ return o}
+function lbBonus(s){const v=lbOf(s);if(!v)return 0;const P=LB_PRICE;let sum=0,k=0;
+ for(const x of v){if(x>=LB_SUPER){sum+=P.sup;k++}else if(x>=LB_LABEL){sum+=P.label;k++}else if(x>=P.mid)sum+=P.midMax*(x-P.mid)/(LB_LABEL-P.mid)}
+ return sum*(1+P.step*Math.min(P.maxSteps,Math.max(0,k-1)))}
+// Gecko lama (sebelum v41) atau hasil trade dari save lama: beri nilai awal acak 0–15.
+const lbOk=()=>S.snakes.every(s=>!hasLb(spOf(s))||lbOf(s));
+function addLb(){let n=0;for(const s of S.snakes)if(hasLb(spOf(s))&&!lbOf(s)){s.lb=lbInit();n++}return n}
+
 /* ========= EKONOMI ========= */
 const mm=t=>S.mm[t]||1;
 function baseValue(tr,sp){let sum=0;for(const t of tr)sum+=TV[t]*mm(t);return SPECIES[sp||spOfTr(tr)].base+sum*(1+0.35*Math.max(0,tr.length-1))}
-function value(s){const sp=spOfG(s.g),P=SPECIES[sp],tr=traitsOf(s.g),vs=new Set(tr);let v=baseValue(tr,sp);
+function value(s){const sp=spOfG(s.g),P=SPECIES[sp],tr=traitsOf(s.g),vs=new Set(tr);let v=baseValue(tr,sp)+lbBonus(s);
  for(const l of P.loci)if(l.t==='rec'&&!vs.has(l.k))v+=((s.hp||{})[l.k]||0)*TV[l.k]*0.18*mm(l.k);
  if(s.sex==='F')v*=1.35;v*=1+Math.min(1.6,Math.max(0,(s.w-P.wBonus[0])/P.wBonus[1]));return Math.round(v/5)*5}
 
@@ -232,7 +268,7 @@ const lifeLeft=s=>Math.max(0,maxAge(s)-s.age);
 function femaleReady(s){const sp=spOf(s),P=SPECIES[sp];if(s.gravid)return 'r_gravid';if(s.age<P.fAge)return sp==='ball'?'r_fage':'r_fage_'+sp;if(S.turn-s.lastLaid<P.recover)return 'r_recover';if(s.listed)return 'r_listed';return ''}
 function maleReady(s){const sp=spOf(s);if(s.age<SPECIES[sp].mAge)return sp==='ball'?'r_mage':'r_mage_'+sp;if(s.pairs>=4)return 'r_mpairs';if(s.listed)return 'r_listed';return ''}
 const readyMsg=s=>s.sex==='M'?maleReady(s):femaleReady(s);
-function snap(s){return{id:s.id,g:JSON.parse(JSON.stringify(s.g)),hp:{...s.hp},label:code(s)+' '+fullName(s),gen:s.gen,pn:pedNode(s),ar:ancRec(s)}}
+function snap(s){return{id:s.id,g:JSON.parse(JSON.stringify(s.g)),hp:{...s.hp},label:code(s)+' '+fullName(s),gen:s.gen,pn:pedNode(s),ar:ancRec(s),lb:lbOf(s)?lbOf(s).slice():undefined}}
 /* ========= SILSILAH ========= */
 // Setiap anak menyimpan ringkasan induknya di s.ped = {s: induk jantan, d: induk betina}, dan tiap induk membawa
 // ringkasan orang tuanya sendiri. Jadi pohon 3 generasi (hewan, induk, kakek-nenek) tetap utuh walaupun induknya
@@ -363,7 +399,7 @@ function ensureMarket(){if(marketOk())return;
   for(const L of S.market.filter(x=>spOf(x)===sp))if(lotOk(sp,L)&&!seen.has(L.gene)&&keep.length<MARKET_SIZE){seen.add(L.gene);keep.push(L)}
   fillMarket(sp,keep)}}
 function makeMarketSnake(L,age,sex){const sp=spOf(L),{g,hp}=listingGeno(L.gene,sp),M=SPECIES[sp].mk[age==='baby'?'baby':sex];
- const s=newSnake({sex,age:rint(M.a),w:rint(M.w),g,hp});if(sp!=='ball')s.sp=sp;return s}
+ const s=newSnake({sex,age:rint(M.a),w:rint(M.w),g,hp});if(sp!=='ball')s.sp=sp;if(hasLb(sp))s.lb=lbInit();return s}
 function orderSpec(){
  // pesanan untuk spesies lain lebih sering muncul kalau pemain memeliharanya
  let sp='ball';for(const x of SPECIES_LIST)if(x!=='ball'&&R()<(S.snakes.some(s=>spOf(s)===x)?.35:.1)){sp=x;break}
@@ -550,10 +586,10 @@ function advance(){
   let born=0,dead=0,nm=0,nf=0;const vis=new Set();const newNames=[];
   const brood=P.brood?{bid:Math.floor(R()*1e9),sp,damLabel:c.damLabel,sireLabel:c.sireLabel,gen:c.gen,hp:{...c.hp},items:[],turn:S.turn}:null;if(brood&&c.ped)brood.ped=c.ped;if(brood&&c.ca)brood.ca=c.ca;
   const deadP=HATCH_DEAD+INB_DEAD*(c.inb||0);
-  for(const g of c.eggs){if(R()<deadP){dead++;continue}
+  for(let ei=0;ei<c.eggs.length;ei++){const g=c.eggs[ei];if(R()<deadP){dead++;continue}
    const sex=R()<femaleChance(c.temp,sp)?'F':'M';
    if(brood)brood.items.push({g,sex});
-   else{const o={sex,w:rint(P.hatchW),g,hp:{...c.hp},sire:c.sireLabel,dam:c.damLabel,gen:c.gen,src:{t:'bred',turn:S.turn}};if(sp!=='ball')o.sp=sp;if(c.ped)o.ped=c.ped;if(c.ca)Object.assign(o,c.ca);
+   else{const o={sex,w:rint(P.hatchW),g,hp:{...c.hp},sire:c.sireLabel,dam:c.damLabel,gen:c.gen,src:{t:'bred',turn:S.turn}};if(sp!=='ball')o.sp=sp;if(c.ped)o.ped=c.ped;if(c.ca)Object.assign(o,c.ca);if(hasLb(sp))o.lb=(c.lb&&lbOf({lb:c.lb[ei]}))?c.lb[ei]:lbInit();
     const s=addSnake(newSnake(o));const tr=traitsOf(g);for(const l of P.loci)if(l.t==='rec'&&tr.includes(l.k))s.hp[l.k]=1}
    const tr=traitsOf(g);tr.forEach(t=>{if(isRec(t))vis.add(t)});
    if(sex==='F')nf++;else nm++;
@@ -570,9 +606,9 @@ function advance(){
  for(const f of S.snakes){if(!f.gravid)continue;f.gravid.layIn--;if(f.gravid.layIn>0)continue;
   const sp=spOf(f),P=SPECIES[sp],no=f.gravid.no||1,tot=f.gravid.tot||1;
   const m=f.gravid.sire,F=f.gravid.inb||0;const n=P.eggs(f),slugP=Math.min(.95,P.slug+P.slugStep*(no-1)+INB_SLUG*F);
-  const eggs=[];let slugs=0;for(let i=0;i<n;i++){if(R()>=slugP)eggs.push(breedGeno(m,f));else slugs++}
+  const eggs=[],lbs=hasLb(sp)?[]:null;let slugs=0;for(let i=0;i<n;i++){if(R()>=slugP){eggs.push(breedGeno(m,f));if(lbs)lbs.push(lbChild(m,f))}else slugs++}
   const c={cid:Math.floor(R()*1e9),damId:f.id,sireId:m.id,damLabel:code(f)+' '+fullName(f),sireLabel:m.label,eggs,slugs,hatchIn:P.inc,incTotal:P.inc,temp:P.temp?P.temp.mid:null,hp:childHp(m,f),gen:Math.max(f.gen,m.gen)+1,ped:{s:m.pn||labelNode(m.label,'M'),d:pedNode(f)},inb:F,ca:m.ar?childAnc(m.ar,ancRec(f),F):null};
-  if(sp!=='ball')c.sp=sp;S.clutches.push(c);
+  if(sp!=='ball')c.sp=sp;if(lbs)c.lb=lbs;S.clutches.push(c);
   S.stats.clutches++;{const p=ps();p.cl++;p.laid+=n;p.slug+=slugs}
   log('l_laid',tot>1?{c:code(f),n,good:eggs.length,slug:slugs,m:P.inc,no,tot}:{c:code(f),n,good:eggs.length,slug:slugs,m:P.inc},'good');head.push(['h_laid',{c:code(f),n:eggs.length}]);
   f.lastLaid=S.turn;f.w=Math.round(f.w*P.layLoss);
@@ -692,7 +728,7 @@ function bigFulfill(o,a){const ids=Array.isArray(a.sids)?a.sids:[];if(ids.length
 function applyAction(state,a){
  if(!a||typeof a!=='object'||typeof a.type!=='string'||!Object.prototype.hasOwnProperty.call(ACTIONS,a.type))fail('bad_action');
  S=state;if(!Array.isArray(S.broods))S.broods=[];if(typeof S.rep!=='number')S.rep=(S.stats&&S.stats.orders)||0;   // save lama: reputasi = pesanan yang sudah dipenuhi
- syncDex();trimLog();ensureMarket();ps();
+ syncDex();trimLog();ensureMarket();ps();addLb();
  if(!S.fx||!S.fx.inb){repairInb();S.fx=Object.assign(S.fx||{},{inb:1})}
  const res=ACTIONS[a.type](a)||{};
  const q=checkQuests();if(q.length)res.quests=q;
@@ -713,6 +749,7 @@ root.MorphCore={
  monthlyCosts,previewNext,
  MARKET_SIZE,MARKET_EVERY,BUY_MULT,MARKET_POOL,listingTraits,marketBase,marketPrice,marketLeft,refreshMarket,ensureMarket,marketOk,makeMarketSnake,
  INC_MONTHS,TEMP_MIN,TEMP_MAX,TEMP_MID,TEMP_STEP,tempRange,femaleChance,incTotal,tempOpen,tempMonthsLeft,validTemp,
+ LB_KEYS,LB_SD,LB_INIT,LB_LABEL,LB_SUPER,LB_TIERS,LB_PRICE,lbOf,lbInit,lbChild,lbTier,lbLabels,lbBonus,lbOk,addLb,
  QUESTS,checkQuests,rankStats,HIST_MAX,MP_MAX,ps,netWorth,psKey,
  newGame,advance,applyAction,syncDex,isState,ACTION_TYPES:Object.keys(ACTIONS)
 };

@@ -41,8 +41,10 @@ async function run(body, uid, db) {
         // save tanpa angka peringkat (pemain lama) ikut disimpan ulang supaya langsung masuk papan peringkat
         // save yang belum menjalankan perbaikan inbreeding v31 juga disimpan ulang sekali
         const inbOk = !!(row.data.fx && row.data.fx.inb);
-        if (C.marketOk() && row.rank && inbOk) return { state: row.data, rev: row.rev };
+        // leopard gecko tanpa nilai sifat line-bred (save sebelum v41) diberi nilai awal sekali, lalu disimpan
+        if (C.marketOk() && row.rank && inbOk && C.lbOk()) return { state: row.data, rev: row.rev };
         C.ensureMarket();
+        C.addLb();
         if (!inbOk) { C.repairInb(); row.data.fx = Object.assign(row.data.fx || {}, { inb: 1 }); }
         row.data.rev = row.rev + 1;
         if (await db.update(uid, row.data, row.rev, C.rankStats(row.data))) return { state: row.data, rev: row.data.rev };
