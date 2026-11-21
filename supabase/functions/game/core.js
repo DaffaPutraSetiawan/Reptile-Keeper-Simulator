@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:43,date:'2026-11-22'};
+const VERSION={v:44,date:'2026-11-22'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -218,10 +218,10 @@ function odds(m,f){
    Warna (5 nilai): yellow = High Yellow · orange = Tangerine (dianggap sudah termasuk Carrot Tail) · lav = Lavender ·
      emer = Emerine · dark = Black Night. Label di 60+ (LB_LABEL), tingkat tertinggi di 85+ (LB_SUPER).
      Black Night 60+ menutupi warna lain: labelnya tidak tampil & tidak menambah harga (nilainya tetap diwariskan).
-   Bintik (1 sumbu): rendah = Bold (0–19), 40–59 normal, Hypo 60+, Super Hypo 85+. Nilai awal 45–55 (normal).
+   Bintik (1 sumbu): rendah = Bold (0–19), 40–59 normal, Hypo 60+, Super Hypo 85+. Nilai awal 44–55 (normal).
    Pola (1 sumbu): normal (belang) → Jungle 60+ → Stripe 85+ → Reverse Stripe 95+ (varian langka).
    Kombinasi: Super Hypo + Tangerine = SHTCT.
-   Nilai awal (hewan toko NPC & gecko yang dibuka pertama kali sejak v42): acak 0–15, kecuali bintik 45–55.
+   Nilai awal (hewan toko NPC & gecko yang dibuka pertama kali sejak v42): acak 0–15, kecuali bintik 44–55.
    Pemain hanya melihat perkiraan 5 tingkat (pola 6 tingkat), bukan angka.
    Bonus harga per sifat (LB_PRICE): label $50, tingkat tertinggi $110, Reverse Stripe $160; warna & pola 40–59 naik pelan
    sampai $20 (bintik tidak, karena semua gecko mulai di sana). Jumlahnya dikali 1 + 10% untuk setiap sifat berlabel
@@ -229,7 +229,7 @@ function odds(m,f){
 const LB_KEYS=['yellow','orange','lav','emer','dark','spots','pattern'];
 const LB_COLORS=['yellow','orange','lav','emer'];          // warna yang tertutup Black Night
 const LB_SD=6,LB_LABEL=60,LB_SUPER=85,LB_REVERSE=95,LB_BOLD=19;
-const LB_INIT={spots:[45,55]},LB_INIT_DEF=[0,15];
+const LB_INIT={spots:[44,55]},LB_INIT_DEF=[0,15];
 // batas tingkat perkiraan per sifat (jumlah batas yang dilewati = nomor tingkat)
 const LB_TIERS={def:[20,40,60,85],spots:[20,40,60,85],pattern:[20,40,60,85,95]};
 const LB_PRICE={mid:40,midMax:20,label:50,sup:110,reverse:160,step:.1,maxSteps:5};
