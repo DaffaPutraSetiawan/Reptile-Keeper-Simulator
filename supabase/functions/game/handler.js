@@ -41,7 +41,7 @@ async function run(body, uid, db) {
         // save tanpa angka peringkat (pemain lama) ikut disimpan ulang supaya langsung masuk papan peringkat
         // save yang belum menjalankan perbaikan inbreeding v31 juga disimpan ulang sekali
         const inbOk = !!(row.data.fx && row.data.fx.inb);
-        // leopard gecko tanpa nilai sifat line-bred (save sebelum v41) diberi nilai awal sekali, lalu disimpan
+        // leopard gecko tanpa nilai sifat line-bred (save sebelum v42, termasuk susunan lama v41) diberi nilai awal sekali, lalu disimpan
         if (C.marketOk() && row.rank && inbOk && C.lbOk()) return { state: row.data, rev: row.rev };
         C.ensureMarket();
         C.addLb();

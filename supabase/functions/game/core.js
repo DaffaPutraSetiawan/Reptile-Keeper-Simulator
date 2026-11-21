@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:41,date:'2026-11-22'};
+const VERSION={v:42,date:'2026-11-22'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -212,38 +212,58 @@ function odds(m,f){
  return dist.sort((a,b)=>b.p-a.p)}
 
 /* ========= SIFAT LINE-BRED (POLIGENIK) =========
-   Leopard gecko punya 11 nilai sifat line-bred (0–100) di s.lb, urutannya sesuai LB_KEYS. Sifat ini tidak diatur
-   satu gen, tapi naik pelan-pelan lewat seleksi:
+   Leopard gecko punya 7 nilai sifat line-bred (0–100) di s.lb, urutannya sesuai LB_KEYS. Sifat ini tidak diatur
+   satu gen, tapi naik/turun pelan-pelan lewat seleksi:
     nilai anak = rata-rata nilai kedua induk + acak normal (simpangan baku LB_SD = 6), dibulatkan, dibatasi 0–100.
-   Hewan toko NPC & gecko yang sudah ada sebelum v41 mendapat nilai acak 0–15 (LB_INIT).
-   Pemain hanya melihat perkiraan 5 tingkat (LB_TIERS): sangat rendah <20 · rendah <40 · sedang <60 · tinggi <85 · sangat tinggi 85+.
-   Label muncul di nilai >= 60 (LB_LABEL); Hypo punya tingkat super (Super Hypo) di >= 85 (LB_SUPER).
-   Garis punggung + Oranye tinggi = Red Stripe (selain itu Bold Stripe). Super Hypo + Tangerine + Carrot Tail = SHTCT.
-   Bonus harga per nilai (LB_PRICE): 40–59 naik pelan sampai $20, 60–84 $50, 85+ $110; jumlahnya dikali
-   1 + 10% untuk setiap sifat berlabel tambahan (maks. +50%), lebih kecil dari tambahan gen biasa (+35% per gen). */
-const LB_KEYS=['orange','hypo','ctail','chead','baldy','stripe','jungle','mask','bandit','dark','lav'];
-const LB_SD=6,LB_INIT=15,LB_LABEL=60,LB_SUPER=85,LB_TIERS=[20,40,60,85];
-const LB_PRICE={mid:40,midMax:20,label:50,sup:110,step:.1,maxSteps:5};
-const LB_NAME={orange:'Tangerine',ctail:'Carrot Tail',chead:'Carrot Head',baldy:'Baldy',jungle:'Jungle',mask:'Halloween Mask',bandit:'Bandit',dark:'Black Night',lav:'Lavender'};
+   Warna (5 nilai): yellow = High Yellow · orange = Tangerine (dianggap sudah termasuk Carrot Tail) · lav = Lavender ·
+     emer = Emerine · dark = Black Night. Label di 60+ (LB_LABEL), tingkat tertinggi di 85+ (LB_SUPER).
+     Black Night 60+ menutupi warna lain: labelnya tidak tampil & tidak menambah harga (nilainya tetap diwariskan).
+   Bintik (1 sumbu): rendah = Bold (0–19), 40–59 normal, Hypo 60+, Super Hypo 85+. Nilai awal 45–54 (normal).
+   Pola (1 sumbu): normal (belang) → Jungle 60+ → Stripe 85+ → Reverse Stripe 95+ (varian langka).
+   Kombinasi: Super Hypo + Tangerine = SHTCT.
+   Nilai awal (hewan toko NPC & gecko yang dibuka pertama kali sejak v42): acak 0–15, kecuali bintik 45–54.
+   Pemain hanya melihat perkiraan 5 tingkat (pola 6 tingkat), bukan angka.
+   Bonus harga per sifat (LB_PRICE): label $50, tingkat tertinggi $110, Reverse Stripe $160; warna & pola 40–59 naik pelan
+   sampai $20 (bintik tidak, karena semua gecko mulai di sana). Jumlahnya dikali 1 + 10% untuk setiap sifat berlabel
+   tambahan (maks. +50%), lebih kecil dari tambahan gen biasa (+35% per gen). */
+const LB_KEYS=['yellow','orange','lav','emer','dark','spots','pattern'];
+const LB_COLORS=['yellow','orange','lav','emer'];          // warna yang tertutup Black Night
+const LB_SD=6,LB_LABEL=60,LB_SUPER=85,LB_REVERSE=95,LB_BOLD=19;
+const LB_INIT={spots:[45,54]},LB_INIT_DEF=[0,15];
+// batas tingkat perkiraan per sifat (jumlah batas yang dilewati = nomor tingkat)
+const LB_TIERS={def:[20,40,60,85],spots:[20,40,60,85],pattern:[20,40,60,85,95]};
+const LB_PRICE={mid:40,midMax:20,label:50,sup:110,reverse:160,step:.1,maxSteps:5};
+const LB_NAME={yellow:'High Yellow',orange:'Tangerine',lav:'Lavender',emer:'Emerine',dark:'Black Night'};
 const hasLb=sp=>sp==='leo';
+const LBI=k=>LB_KEYS.indexOf(k);
 function gauss(){let u=0,v=0;while(!u)u=R();while(!v)v=R();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
-const lbInit=()=>LB_KEYS.map(()=>Math.floor(R()*(LB_INIT+1)));
+const lbInit=()=>LB_KEYS.map(k=>rint(LB_INIT[k]||LB_INIT_DEF));
+// save v41 punya 11 nilai dengan susunan lama: panjangnya beda, jadi dianggap belum punya nilai dan diberi nilai awal baru
 const lbOf=s=>(s&&Array.isArray(s.lb)&&s.lb.length===LB_KEYS.length)?s.lb:null;
-// nilai anak dari dua induk (induk tanpa nilai, mis. snapshot jantan dari save lama, dianggap acak 0–15)
+// nilai anak dari dua induk (induk tanpa nilai, mis. snapshot jantan dari save lama, memakai nilai awal acak)
 function lbChild(m,f){const a=lbOf(m)||lbInit(),b=lbOf(f)||lbInit();return LB_KEYS.map((_,i)=>clamp(Math.round((a[i]+b[i])/2+gauss()*LB_SD),0,100))}
-const lbTier=x=>LB_TIERS.filter(b=>x>=b).length;          // 0 = sangat rendah … 4 = sangat tinggi
-// Label sifat line-bred yang terlihat, mis. ['Tangerine','Bold Stripe'] atau ['SHTCT']
-function lbLabels(s){const v=lbOf(s);if(!v)return[];const H=k=>v[LB_KEYS.indexOf(k)],o=[];
- const tang=H('orange')>=LB_LABEL,hy=H('hypo')>=LB_LABEL,sh=H('hypo')>=LB_SUPER,ct=H('ctail')>=LB_LABEL;
- if(sh&&tang&&ct)o.push('SHTCT');else{if(hy)o.push(sh?'Super Hypo':'Hypo');if(tang)o.push(LB_NAME.orange);if(ct)o.push(LB_NAME.ctail)}
- for(const k of ['chead','baldy'])if(H(k)>=LB_LABEL)o.push(LB_NAME[k]);
- if(H('stripe')>=LB_LABEL)o.push(tang?'Red Stripe':'Bold Stripe');
- for(const k of ['jungle','mask','bandit','dark','lav'])if(H(k)>=LB_LABEL)o.push(LB_NAME[k]);
+const lbTier=(k,x)=>(LB_TIERS[k]||LB_TIERS.def).filter(b=>x>=b).length;
+// Tingkat harga satu sifat: 0 = belum berlabel, 1 = label, 2 = tingkat tertinggi, 3 = Reverse Stripe
+function lbGrade(k,x){
+ if(k==='spots')return x<=LB_BOLD?1:x>=LB_SUPER?2:x>=LB_LABEL?1:0;
+ if(k==='pattern'&&x>=LB_REVERSE)return 3;
+ return x>=LB_SUPER?2:x>=LB_LABEL?1:0}
+const lbDark=v=>v[LBI('dark')]>=LB_LABEL;
+const lbHidden=(v,k)=>lbDark(v)&&LB_COLORS.includes(k);  // warna yang tertutup Black Night
+// Label sifat line-bred yang terlihat, mis. ['High Yellow','Hypo','Jungle'] atau ['SHTCT']
+function lbLabels(s){const v=lbOf(s);if(!v)return[];const H=k=>v[LBI(k)],o=[];
+ const show=k=>!lbHidden(v,k)&&H(k)>=LB_LABEL;
+ const sh=H('spots')>=LB_SUPER,shtct=sh&&show('orange');
+ for(const k of ['yellow','orange','lav','emer','dark'])if(show(k)&&!(k==='orange'&&shtct))o.push(LB_NAME[k]);
+ if(shtct)o.push('SHTCT');else if(sh)o.push('Super Hypo');else if(H('spots')>=LB_LABEL)o.push('Hypo');else if(H('spots')<=LB_BOLD)o.push('Bold');
+ const p=H('pattern');if(p>=LB_REVERSE)o.push('Reverse Stripe');else if(p>=LB_SUPER)o.push('Stripe');else if(p>=LB_LABEL)o.push('Jungle');
  return o}
-function lbBonus(s){const v=lbOf(s);if(!v)return 0;const P=LB_PRICE;let sum=0,k=0;
- for(const x of v){if(x>=LB_SUPER){sum+=P.sup;k++}else if(x>=LB_LABEL){sum+=P.label;k++}else if(x>=P.mid)sum+=P.midMax*(x-P.mid)/(LB_LABEL-P.mid)}
- return sum*(1+P.step*Math.min(P.maxSteps,Math.max(0,k-1)))}
-// Gecko lama (sebelum v41) atau hasil trade dari save lama: beri nilai awal acak 0–15.
+function lbBonus(s){const v=lbOf(s);if(!v)return 0;const P=LB_PRICE;let sum=0,n=0;
+ LB_KEYS.forEach((k,i)=>{if(lbHidden(v,k))return;const x=v[i],g=lbGrade(k,x);
+  if(g){sum+=g===3?P.reverse:g===2?P.sup:P.label;n++}
+  else if(k!=='spots'&&x>=P.mid)sum+=P.midMax*(x-P.mid)/(LB_LABEL-P.mid)});
+ return sum*(1+P.step*Math.min(P.maxSteps,Math.max(0,n-1)))}
+// Gecko tanpa nilai (save sebelum v42, termasuk susunan lama v41): beri nilai awal acak.
 const lbOk=()=>S.snakes.every(s=>!hasLb(spOf(s))||lbOf(s));
 function addLb(){let n=0;for(const s of S.snakes)if(hasLb(spOf(s))&&!lbOf(s)){s.lb=lbInit();n++}return n}
 
@@ -749,7 +769,7 @@ root.MorphCore={
  monthlyCosts,previewNext,
  MARKET_SIZE,MARKET_EVERY,BUY_MULT,MARKET_POOL,listingTraits,marketBase,marketPrice,marketLeft,refreshMarket,ensureMarket,marketOk,makeMarketSnake,
  INC_MONTHS,TEMP_MIN,TEMP_MAX,TEMP_MID,TEMP_STEP,tempRange,femaleChance,incTotal,tempOpen,tempMonthsLeft,validTemp,
- LB_KEYS,LB_SD,LB_INIT,LB_LABEL,LB_SUPER,LB_TIERS,LB_PRICE,lbOf,lbInit,lbChild,lbTier,lbLabels,lbBonus,lbOk,addLb,
+ LB_KEYS,LB_COLORS,LB_SD,LB_INIT,LB_LABEL,LB_SUPER,LB_REVERSE,LB_BOLD,LB_TIERS,LB_PRICE,lbOf,lbInit,lbChild,lbTier,lbGrade,lbDark,lbLabels,lbBonus,lbOk,addLb,
  QUESTS,checkQuests,rankStats,HIST_MAX,MP_MAX,ps,netWorth,psKey,
  newGame,advance,applyAction,syncDex,isState,ACTION_TYPES:Object.keys(ACTIONS)
 };
