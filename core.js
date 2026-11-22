@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:55,date:'2026-11-22'};
+const VERSION={v:56,date:'2026-11-22'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -189,14 +189,16 @@ function nameLeo(tr){
  return out.length?out.join(' '):'Normal'}
 // Nama axolotl: albino digabung dengan gen lain jadi White / Axanthic / Melanoid / Golden Albino; tanpa gen = Wild Type.
 function nameAxo(tr){
- const s=new Set(tr);let alb='';
+ const s=new Set(tr);let alb='',mac=false;
+ // v56: Mac = Axanthic + Copper + Melanoid (tanpa albino)
+ if(!s.has('axalb')&&s.has('axaxa')&&s.has('axcop')&&s.has('axmel')){['axaxa','axcop','axmel'].forEach(k=>s.delete(k));mac=true}
  if(s.has('axalb')){s.delete('axalb');
   if(s.has('axleu')){s.delete('axleu');alb='White Albino'}
   else if(s.has('axaxa')){s.delete('axaxa');alb='Axanthic Albino'}
   else if(s.has('axmel')){s.delete('axmel');alb='Melanoid Albino'}
   else alb='Golden Albino'}
  const out=[];for(const k of ['gfp','rfp','axcop','axleu','axaxa','axmel'])if(s.has(k))out.push(TL[k]);
- if(alb)out.push(alb);
+ if(mac)out.push('Mac');if(alb)out.push(alb);
  return out.length?out.join(' '):'Wild Type'}
 function nameOf(tr,g,sp){sp=sp||(g?spOfG(g):spOfTr(tr));return sp==='leo'?nameLeo(tr):sp==='axo'?nameAxo(tr):nameBall(tr,g)}
 const fullName=s=>nameOf(traitsOf(s.g),s.g,spOfG(s.g));
@@ -245,27 +247,43 @@ const LB_COLORS=['yellow','orange','lav','emer'];          // warna yang tertutu
 const LB_SD=6,LB_LABEL=60,LB_SUPER=85,LB_REVERSE=95,LB_BOLD=19,LB_REVEAL=6;
 const LB_INIT={spots:[44,55]},LB_INIT_DEF=[0,15];
 // batas tingkat perkiraan per sifat (jumlah batas yang dilewati = nomor tingkat)
-const LB_TIERS={def:[20,40,60,85],spots:[20,40,60,85],pattern:[20,40,60,85,95]};
+const LB_TIERS={def:[20,40,60,85],spots:[20,40,60,85],pattern:[20,40,60,85,95],tone:[15,30,70,85]};
 const LB_PRICE={mid:40,midMax:20,label:50,sup:110,reverse:160,sunglow:110,stripe:50,step:.1,maxSteps:5};
 const LB_NAME={yellow:'High Yellow',orange:'Tangerine',lav:'Lavender',emer:'Emerine',dark:'Black Night'};
-const hasLb=sp=>sp==='leo';
+/* ---- Axolotl (v56): 3 nilai, langsung terlihat sejak menetas (tanpa masa "belum jelas") ----
+   iri = Kilau (iridophore): High Iridophore 60+ (85+ tingkat tertinggi). Ditutup Melanoid (melanoid tidak punya kilau).
+     Golden Albino + High Iridophore = Sunburst; Copper + High Iridophore = Moonburst (menggantikan label High Iridophore).
+   dspot = Bintik gelap: Dirty Leucistic 60+, Piebald 85+. Hanya terlihat pada Leucistic yang tidak albino.
+   tone = Nada warna (1 sumbu): Light Wild di bawah 30, Dark Wild 70+. Hanya terlihat pada Wild Type (tanpa gen warna).
+   Nilai awal: kilau & bintik gelap 0–15, nada warna 44–55. Bonus harga: label $8, tingkat tertinggi $15, Sunburst/Moonburst +$10,
+   dikali 1 + 10% per sifat berlabel tambahan (maks. +20%). */
+const AX_KEYS=['iri','dspot','tone'];
+const AX_INIT={iri:[0,15],dspot:[0,15],tone:[44,55]};
+const AX_LIGHT=30,AX_DARK=70;
+const AX_PRICE={label:8,sup:15,combo:10,step:.1,maxSteps:2};
+const LB_KEYS_SP={leo:LB_KEYS,axo:AX_KEYS};
+const lbKeysOf=sp=>LB_KEYS_SP[sp]||null;
+const hasLb=sp=>!!LB_KEYS_SP[sp];
+// spesies pemilik nilai line-bred (objek tanpa gen, mis. telur di inkubator: dari s.sp, bawaan leopard gecko)
+const lbSpOf=s=>s&&s.g?spOfG(s.g):s&&s.sp&&LB_KEYS_SP[s.sp]?s.sp:'leo';
 const LBI=k=>LB_KEYS.indexOf(k);
 function gauss(){let u=0,v=0;while(!u)u=R();while(!v)v=R();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
-const lbInit=()=>LB_KEYS.map(k=>rint(LB_INIT[k]||LB_INIT_DEF));
+const lbInit=sp=>sp==='axo'?AX_KEYS.map(k=>rint(AX_INIT[k])):LB_KEYS.map(k=>rint(LB_INIT[k]||LB_INIT_DEF));
 // save v41 punya 11 nilai dengan susunan lama: panjangnya beda, jadi dianggap belum punya nilai dan diberi nilai awal baru
-const lbOf=s=>(s&&Array.isArray(s.lb)&&s.lb.length===LB_KEYS.length)?s.lb:null;
+const lbOf=s=>{if(!s||!Array.isArray(s.lb))return null;const K=lbKeysOf(lbSpOf(s));return K&&s.lb.length===K.length?s.lb:null};
 // nilai anak dari dua induk (induk tanpa nilai, mis. snapshot jantan dari save lama, memakai nilai awal acak)
-function lbChild(m,f){const a=lbOf(m)||lbInit(),b=lbOf(f)||lbInit();return LB_KEYS.map((_,i)=>clamp(Math.round((a[i]+b[i])/2+gauss()*LB_SD),0,100))}
+function lbChild(m,f){const sp=lbSpOf(f),a=lbOf(m)||lbInit(sp),b=lbOf(f)||lbInit(sp);return lbKeysOf(sp).map((_,i)=>clamp(Math.round((a[i]+b[i])/2+gauss()*LB_SD),0,100))}
 const lbTier=(k,x)=>(LB_TIERS[k]||LB_TIERS.def).filter(b=>x>=b).length;
 // Bayi (umur < LB_REVEAL bulan): sifat belum terlihat jelas. Tebakan tingkat bisa meleset -1/0/+1 (peluang 25/50/25%),
 // ditentukan dari seed hewan supaya tebakannya tidak berubah-ubah. Hewan tanpa umur (data uji) dianggap sudah jelas.
-const lbRevealed=s=>!(s&&typeof s.age==='number'&&s.age<LB_REVEAL);
+const lbRevealed=s=>lbSpOf(s)==='axo'||!(s&&typeof s.age==='number'&&s.age<LB_REVEAL);   // axolotl: langsung terlihat
 function lbGuessOff(s,i){const h=(Math.imul((s.seed|0)^0x9e3779b9,2654435761)^Math.imul(i+1,40503))>>>0;const r=h%4;return r===0?-1:r===3?1:0}
 // tingkat yang terlihat oleh pemain (tebakan untuk bayi); -1 kalau tidak punya nilai
-function lbShownTier(s,i){const v=lbOf(s);if(!v)return -1;const k=LB_KEYS[i],t=lbTier(k,v[i]);if(lbRevealed(s))return t;
+function lbShownTier(s,i){const v=lbOf(s);if(!v)return -1;const k=lbKeysOf(lbSpOf(s))[i],t=lbTier(k,v[i]);if(lbRevealed(s))return t;
  return clamp(t+lbGuessOff(s,i),0,(LB_TIERS[k]||LB_TIERS.def).length)}
 // Tingkat harga satu sifat: 0 = belum berlabel, 1 = label, 2 = tingkat tertinggi, 3 = Reverse Stripe
 function lbGrade(k,x){
+ if(k==='tone')return x<AX_LIGHT||x>=AX_DARK?1:0;
  if(k==='spots')return x<=LB_BOLD?1:x>=LB_SUPER?2:x>=LB_LABEL?1:0;
  if(k==='pattern'&&x>=LB_REVERSE)return 3;
  return x>=LB_SUPER?2:x>=LB_LABEL?1:0}
@@ -276,7 +294,13 @@ const LB_MASK={blizzard:LB_KEYS,murphy:['spots','pattern'],supersnow:['yellow','
 // gen visual yang menutup sifat k ('' kalau tidak ada)
 function lbMaskGene(s,k){if(!s||!s.g)return'';const tr=traitsOf(s.g);for(const g in LB_MASK)if(tr.includes(g)&&LB_MASK[g].includes(k))return g;return''}
 // penutup sifat k: kunci gen, 'dark' (Black Night menutup 4 warna lain), atau ''
-function lbCover(s,k){const m=lbMaskGene(s,k);if(m)return m;const v=lbOf(s);return v&&lbDark(v)&&LB_COLORS.includes(k)?'dark':''}
+// penutup sifat axolotl: 'axmel' (kilau), 'axalb' / 'noleu' (bintik gelap: albino / bukan Leucistic), gen warna (nada warna)
+function axCover(s,k){if(!s||!s.g)return'';const tr=traitsOf(s.g);
+ if(k==='iri')return tr.includes('axmel')?'axmel':'';
+ if(k==='dspot')return tr.includes('axalb')?'axalb':tr.includes('axleu')?'':'noleu';
+ if(k==='tone'){for(const g of ['axleu','axalb','axmel','axaxa','axcop'])if(tr.includes(g))return g}
+ return''}
+function lbCover(s,k){if(lbSpOf(s)==='axo')return axCover(s,k);const m=lbMaskGene(s,k);if(m)return m;const v=lbOf(s);return v&&lbDark(v)&&LB_COLORS.includes(k)?'dark':''}
 // penutup yang terlihat oleh pemain: gen penutup selalu terlihat; Black Night baru terlihat setelah umur LB_REVEAL
 function lbShownCover(s,k){const c=lbCover(s,k);return c==='dark'&&!lbRevealed(s)?'':c}
 // Sunglow = SHTCT (Super Hypo + Tangerine yang terlihat) pada gecko albino; nama mengikuti strain albinonya
@@ -287,14 +311,25 @@ function lbSunglow(s){const v=lbOf(s);if(!v||!s.g)return'';
 function lbStripe(s){const v=lbOf(s);if(!v||lbCover(s,'pattern'))return'';const p=v[LBI('pattern')];if(!(p>=LB_SUPER&&p<LB_REVERSE))return'';
  if(v[LBI('orange')]>=LB_LABEL&&!lbCover(s,'orange'))return'red';return v[LBI('spots')]<=LB_BOLD&&!lbCover(s,'spots')?'bold':''}
 // Label sifat line-bred yang terlihat, mis. ['High Yellow','Hypo','Jungle'], ['SHTCT'], ['Sunglow'] atau ['Red Stripe']
-function lbLabels(s){const v=lbOf(s);if(!v)return[];const H=k=>v[LBI(k)],o=[],cv=k=>!!lbCover(s,k);
+// Sunburst = Golden Albino (albino tanpa Leucistic/Axanthic/Melanoid) + High Iridophore · Moonburst = Copper + High Iridophore
+function axBurst(s){const tr=traitsOf(s.g);if(tr.includes('axcop'))return'Moonburst';
+ return tr.includes('axalb')&&!['axleu','axaxa','axmel'].some(t=>tr.includes(t))?'Sunburst':''}
+function axLabels(s){const v=lbOf(s);if(!v)return[];const o=[],cv=k=>!!axCover(s,k),[iri,ds,tone]=v;
+ if(!cv('iri')&&iri>=LB_LABEL)o.push(axBurst(s)||'High Iridophore');
+ if(!cv('dspot')){if(ds>=LB_SUPER)o.push('Piebald');else if(ds>=LB_LABEL)o.push('Dirty Leucistic')}
+ if(!cv('tone')){if(tone<AX_LIGHT)o.push('Light Wild');else if(tone>=AX_DARK)o.push('Dark Wild')}
+ return o}
+function axBonus(s){const v=lbOf(s);if(!v)return 0;const P=AX_PRICE;let sum=0,n=0;
+ AX_KEYS.forEach((k,i)=>{if(axCover(s,k))return;const g=lbGrade(k,v[i]);if(g){sum+=g>=2?P.sup:P.label;n++}});
+ return sum*(1+P.step*Math.min(P.maxSteps,Math.max(0,n-1)))+(axLabels(s).some(L=>L==='Sunburst'||L==='Moonburst')?P.combo:0)}
+function lbLabels(s){if(lbSpOf(s)==='axo')return axLabels(s);const v=lbOf(s);if(!v)return[];const H=k=>v[LBI(k)],o=[],cv=k=>!!lbCover(s,k);
  const show=k=>!cv(k)&&H(k)>=LB_LABEL;
  const sh=!cv('spots')&&H('spots')>=LB_SUPER,shtct=sh&&show('orange'),sg=lbSunglow(s),st=lbStripe(s);
  for(const k of ['yellow','orange','lav','emer','dark'])if(show(k)&&!(k==='orange'&&(shtct||st==='red')))o.push(LB_NAME[k]);
  if(!cv('spots')){if(sg)o.push(sg);else if(shtct)o.push('SHTCT');else if(sh)o.push('Super Hypo');else if(H('spots')>=LB_LABEL)o.push('Hypo');else if(H('spots')<=LB_BOLD&&st!=='bold')o.push('Bold')}
  const p=H('pattern');if(!cv('pattern')){if(p>=LB_REVERSE)o.push('Reverse Stripe');else if(p>=LB_SUPER)o.push(st==='red'?'Red Stripe':st==='bold'?'Bold Stripe':'Stripe');else if(p>=LB_LABEL)o.push('Jungle')}
  return o}
-function lbBonus(s){const v=lbOf(s);if(!v||!lbRevealed(s))return 0;const P=LB_PRICE;let sum=0,n=0;   // bayi: belum dihitung
+function lbBonus(s){if(lbSpOf(s)==='axo')return axBonus(s);const v=lbOf(s);if(!v||!lbRevealed(s))return 0;const P=LB_PRICE;let sum=0,n=0;   // bayi: belum dihitung
  LB_KEYS.forEach((k,i)=>{if(lbCover(s,k))return;const x=v[i],g=lbGrade(k,x);
   if(g){sum+=g===3?P.reverse:g===2?P.sup:P.label;n++}
   else if(k!=='spots'&&x>=P.mid)sum+=P.midMax*(x-P.mid)/(LB_LABEL-P.mid)});
@@ -306,10 +341,14 @@ const lbKey=s=>hasLb(spOfG(s.g))?lbVisibleLabels(s).join(' · '):'';
 // Nama tampilan (v54): label line-bred yang terlihat + nama morph gen, mis. "Tangerine Jungle Tremper Albino", "Sunglow RAPTOR";
 // tanpa gen cukup labelnya ("Emerine"). Bayi < 6 bulan & hewan tanpa label = nama gen. Morph Dex, pesanan pembeli,
 // statistik per morph & riwayat harga Pasar Pemain tetap memakai nama gen (fullName).
-function displayName(s){const n=fullName(s);if(!hasLb(spOfG(s.g)))return n;const L=lbVisibleLabels(s);if(!L.length)return n;return L.join(' ')+(n==='Normal'?'':' '+n)}
+// Axolotl (v56): "Wild Type" dibuang kalau ada label (seperti "Normal"); label yang memuat "Leucistic" (Dirty Leucistic)
+// menggantikan kata Leucistic di nama gen, jadi bukan "Dirty Leucistic Leucistic".
+function displayName(s){const n=fullName(s),sp=spOfG(s.g);if(!hasLb(sp))return n;const L=lbVisibleLabels(s);if(!L.length)return n;
+ let g=n==='Normal'||n==='Wild Type'?'':n;if(sp==='axo'&&L.some(x=>x.includes('Leucistic')))g=g.replace(/\bLeucistic\b/,'').replace(/\s+/g,' ').trim();
+ return L.join(' ')+(g?' '+g:'')}
 // Gecko tanpa nilai (save sebelum v42, termasuk susunan lama v41): beri nilai awal acak.
 const lbOk=()=>S.snakes.every(s=>!hasLb(spOf(s))||lbOf(s));
-function addLb(){let n=0;for(const s of S.snakes)if(hasLb(spOf(s))&&!lbOf(s)){s.lb=lbInit();n++}return n}
+function addLb(){let n=0;for(const s of S.snakes)if(hasLb(spOf(s))&&!lbOf(s)){s.lb=lbInit(spOf(s));n++}return n}
 
 /* ========= EKONOMI ========= */
 const mm=t=>S.mm[t]||1;
@@ -426,7 +465,8 @@ function dexAdd(tr,sp){sp=sp||spOfTr(tr);const k=dexKey(tr,sp);if(S.dex[k])retur
 // Target Morph Dex per spesies (dipakai tampilan Dex, misi Morph Dex & papan peringkat). Semua morph yang ditemukan tetap
 // tercatat di S.dex, tapi hanya morph target yang ditampilkan & dihitung (bagian "morph lain" dihapus).
 //  ball: Normal + 19 gen + 13 kombinasi · leo: Normal + 15 gen + 18 kombinasi (v52: + Calcite, Cyclone, Banana Blizzard & varian
-//  Blazing Blizzard) + 17 label line-bred (DEX_LB, v54) · axo: Wild Type + 7 gen + 8 kombinasi. v53: morph tanpa gen ikut jadi target.
+//  Blazing Blizzard) + 17 label line-bred (DEX_LB, v54) · axo: Wild Type + 7 gen + 13 kombinasi (v56: + Copper Axanthic, Copper Melanoid,
+//  Copper Leucistic, Mac, RFP Leucistic) + 7 label line-bred (v56). v53: morph tanpa gen ikut jadi target.
 const DEX_TARGETS={
  ball:[[],['pastel'],['superpastel'],['mojave'],['lesser'],['bel'],['enchi'],['superenchi'],['yb'],['ivory'],['cinnamon'],['supercinnamon'],['banana'],['superbanana'],['spider'],['pinstripe'],['albino'],['piebald'],['clown'],['axanthic'],['pastel','spider'],['superpastel','spider'],['pastel','pinstripe'],['spider','pinstripe'],['pastel','spider','pinstripe'],['albino','axanthic'],['pastel','albino'],['spider','albino'],['enchi','pastel'],['pastel','clown'],['banana','clown'],['piebald','albino'],['enchi','yb']],
  leo:[[],['tremper'],['bell'],['rainwater'],['eclipse'],['blizzard'],['murphy'],['marble'],['macksnow'],['supersnow'],['giant'],['supergiant'],['lemonfrost'],['superlemonfrost'],['enigma'],['wy'],
@@ -434,13 +474,16 @@ const DEX_TARGETS={
   ['bell','eclipse','wy','macksnow','enigma'],['rainwater','eclipse','murphy'],['blizzard','murphy'],['blizzard','murphy','tremper'],
   ['blizzard','bell'],['blizzard','rainwater'],['blizzard','murphy','bell'],['blizzard','murphy','rainwater']],
  axo:[[],['axleu'],['axalb'],['axmel'],['axaxa'],['axcop'],['gfp'],['rfp'],
- ['axalb','axleu'],['axalb','axaxa'],['axalb','axmel'],['axleu','axmel'],['axleu','axaxa'],['axaxa','axmel'],['gfp','axleu'],['gfp','axalb']]};
+ ['axalb','axleu'],['axalb','axaxa'],['axalb','axmel'],['axleu','axmel'],['axleu','axaxa'],['axaxa','axmel'],['gfp','axleu'],['gfp','axalb'],
+ ['axcop','axaxa'],['axcop','axmel'],['axleu','axcop'],['axaxa','axcop','axmel'],['rfp','axleu']]};   // v56: kombinasi Copper, Mac, RFP Leucistic
 // v54: 17 label sifat line-bred leopard gecko ikut jadi target Morph Dex (tercatat saat labelnya terlihat pada gecko milikmu)
 const DEX_LB=['High Yellow','Tangerine','Lavender','Emerine','Black Night','Hypo','Super Hypo','Bold','Jungle','Stripe','Reverse Stripe','SHTCT','Sunglow','Bell Sunglow','Rainwater Sunglow','Red Stripe','Bold Stripe'];
-const dexLbKey=L=>'leo:lb:'+L;
-function dexAddLb(L){if(!DEX_LB.includes(L))return false;const k=dexLbKey(L);if(S.dex[k])return false;S.dex[k]={lb:L,wt:S.turn,sp:'leo'};return true}
+// v56: 7 label line-bred axolotl ikut jadi target (tercatat saat menetas, karena sifat axolotl langsung terlihat)
+const DEX_LBS={leo:DEX_LB,axo:['High Iridophore','Sunburst','Moonburst','Dirty Leucistic','Piebald','Light Wild','Dark Wild']};
+const dexLbKey=(L,sp)=>(sp||'leo')+':lb:'+L;
+function dexAddLb(L,sp){sp=sp||'leo';if(!(DEX_LBS[sp]||[]).includes(L))return false;const k=dexLbKey(L,sp);if(S.dex[k])return false;S.dex[k]={lb:L,wt:S.turn,sp};return true}
 const DEX_KEYS=new Set();for(const sp of SPECIES_LIST)for(const tr of DEX_TARGETS[sp])DEX_KEYS.add(dexKey(tr,sp));
-for(const L of DEX_LB)DEX_KEYS.add(dexLbKey(L));
+for(const sp in DEX_LBS)for(const L of DEX_LBS[sp])DEX_KEYS.add(dexLbKey(L,sp));
 const isDexTarget=k=>DEX_KEYS.has(k);
 const dexCount=st=>Object.keys(((st||S)&&(st||S).dex)||{}).filter(isDexTarget).length;
 // Gen Giant membuat tubuh lebih besar (1 salinan ×1,25, Super Giant ×1,6).
@@ -483,7 +526,7 @@ function ensureMarket(){if(marketOk())return;
   for(const L of S.market.filter(x=>spOf(x)===sp))if(lotOk(sp,L)&&!seen.has(L.gene)&&keep.length<MARKET_SIZE){seen.add(L.gene);keep.push(L)}
   fillMarket(sp,keep)}}
 function makeMarketSnake(L,age,sex){const sp=spOf(L),{g,hp}=listingGeno(L.gene,sp),M=SPECIES[sp].mk[age==='baby'?'baby':sex];
- const s=newSnake({sex,age:rint(M.a),w:rint(M.w),g,hp});if(sp!=='ball')s.sp=sp;if(hasLb(sp))s.lb=lbInit();return s}
+ const s=newSnake({sex,age:rint(M.a),w:rint(M.w),g,hp});if(sp!=='ball')s.sp=sp;if(hasLb(sp))s.lb=lbInit(sp);return s}
 function orderSpec(){
  // pesanan untuk spesies lain lebih sering muncul kalau pemain memeliharanya
  let sp='ball';for(const x of SPECIES_LIST)if(x!=='ball'&&R()<(S.snakes.some(s=>spOf(s)===x)?.35:.1)){sp=x;break}
@@ -648,6 +691,7 @@ function previewNext(){
 // sisanya otomatis dijual cepat (60% nilai). Brood yang belum dipilih saat "Lanjut bulan" diproses otomatis:
 // bayi yang paling bernilai disimpan.
 function broodSnake(b,it){const P=SPECIES[b.sp],o={sp:b.sp,sex:it.sex,age:0,w:P.hatchW[0],g:it.g,hp:{...b.hp},sire:b.sireLabel,dam:b.damLabel,gen:b.gen,src:{t:'bred',turn:b.turn}};
+ if(hasLb(b.sp)){if(!lbOf({lb:it.lb,g:it.g}))it.lb=lbInit(b.sp);o.lb=it.lb.slice()}   // brood lama tanpa nilai: diberi sekali (tetap sama setelahnya)
  if(b.ped)o.ped=b.ped;if(b.ca)Object.assign(o,b.ca);const tr=traitsOf(it.g);for(const l of P.loci)if(l.t==='rec'&&tr.includes(l.k))o.hp[l.k]=1;return newSnake(o)}
 const broodValue=(b,i)=>value(broodSnake(b,b.items[i]));
 function resolveBrood(b,keep,auto){const P=SPECIES[b.sp];let total=0,sold=0;const sat=new Set();
@@ -673,8 +717,11 @@ function advance(){
   const deadP=HATCH_DEAD+INB_DEAD*(c.inb||0);
   for(let ei=0;ei<c.eggs.length;ei++){const g=c.eggs[ei];if(R()<deadP){dead++;continue}
    const sex=R()<femaleChance(c.temp,sp)?'F':'M';
-   if(brood)brood.items.push({g,sex});
-   else{const o={sex,w:rint(P.hatchW),g,hp:{...c.hp},sire:c.sireLabel,dam:c.damLabel,gen:c.gen,src:{t:'bred',turn:S.turn}};if(sp!=='ball')o.sp=sp;if(c.ped)o.ped=c.ped;if(c.ca)Object.assign(o,c.ca);if(hasLb(sp))o.lb=(c.lb&&lbOf({lb:c.lb[ei]}))?c.lb[ei]:lbInit();
+   const lbv=hasLb(sp)?((c.lb&&lbOf({lb:c.lb[ei],g}))?c.lb[ei]:lbInit(sp)):null;
+   // sifat line-bred axolotl langsung terlihat: labelnya tercatat di Morph Dex saat menetas
+   if(lbv)for(const L of lbVisibleLabels({g,lb:lbv,age:0}))if(dexAddLb(L,sp))newNames.push('\u2728 '+L);
+   if(brood)brood.items.push(lbv?{g,sex,lb:lbv}:{g,sex});
+   else{const o={sex,w:rint(P.hatchW),g,hp:{...c.hp},sire:c.sireLabel,dam:c.damLabel,gen:c.gen,src:{t:'bred',turn:S.turn}};if(sp!=='ball')o.sp=sp;if(c.ped)o.ped=c.ped;if(c.ca)Object.assign(o,c.ca);if(lbv)o.lb=lbv;
     const s=addSnake(newSnake(o));const tr=traitsOf(g);for(const l of P.loci)if(l.t==='rec'&&tr.includes(l.k))s.hp[l.k]=1}
    const tr=traitsOf(g);tr.forEach(t=>{if(isRec(t))vis.add(t)});
    if(sex==='F')nf++;else nm++;
@@ -707,7 +754,7 @@ function advance(){
  S.snakes.forEach(s=>{if(s.sex==='M'&&s.pairs){s.w=Math.round(s.w*(1-.015*s.pairs));s.pairs=0}});
  // 4. pertumbuhan
  S.snakes.forEach(s=>{s.age++;grow(s)});
- for(const s of S.snakes)if(hasLb(spOf(s))&&s.age===LB_REVEAL){const L=lbLabels(s);if(L.length)log('l_lbreveal',{c:code(s),l:L.join(' · ')},'star')   // bayi line-bred: label terungkap di 6 bulan
+ for(const s of S.snakes)if(spOf(s)==='leo'&&s.age===LB_REVEAL){const L=lbLabels(s);if(L.length)log('l_lbreveal',{c:code(s),l:L.join(' · ')},'star')   // bayi line-bred: label terungkap di 6 bulan
   for(const x of L)if(dexAddLb(x)){log('l_newmorph',{n:'✨ '+x},'star');head.push(['h_new',{n:'✨ '+x}])}}
  // 4b. mati karena tua (betina yang sedang bunting ikut mati bersama telurnya)
  for(const s of S.snakes.slice())if(s.age>=maxAge(s)){log('l_oldage',{c:code(s),n:displayName(s),a:s.age,gr:s.gravid?1:0},'bad');head.push(['h_oldage',{c:code(s)}]);removeSnake(s)}
@@ -741,7 +788,7 @@ function fail(code){throw new Error(code)}
 const toId=x=>{const n=Number(x);if(!Number.isInteger(n))fail('bad_action');return n};
 function mustSnake(id){const s=byId(toId(id));if(!s)fail('snake_not_found');return s}
 // Pastikan hewan yang baru masuk (mis. dari trade) tercatat di Morph Dex.
-function syncDex(){for(const s of S.snakes){s.hp=s.hp||{};dexAdd(traitsOf(s.g),spOf(s));if(hasLb(spOf(s)))for(const L of lbVisibleLabels(s))dexAddLb(L)}}
+function syncDex(){for(const s of S.snakes){s.hp=s.hp||{};dexAdd(traitsOf(s.g),spOf(s));if(hasLb(spOf(s)))for(const L of lbVisibleLabels(s))dexAddLb(L,spOf(s))}}
 const ACTIONS={
  advance(){return{head:advance()}},
  pair(a){const m=mustSnake(a.m),f=mustSnake(a.f);
@@ -835,11 +882,11 @@ root.MorphCore={
  emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,
  OLD_WARN,maxAge,lifeLeft,sizeMult,kOf,growW,
  pedNode,pedParents,labelNode,ancRec,kinship,relation,inbOf,inbFromAnc,repairInb,INB_SLUG,INB_DEAD,HATCH_DEAD,
- mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,dexKey,DEX_TARGETS,DEX_LB,dexLbKey,dexAddLb,isDexTarget,dexCount,displayName,matches,ORDER_PREMIUM,orderPay,MKT_MIN,MKT_MAX,MKT_DAYS,REP_ORDER,REP_BIG,BIG_LEVEL,ORDER_PREMIUM_BIG,MAX_SMALL,repNeed,repLevel,isBig,genBigOrder,bigPay,orderLabel,
+ mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,dexKey,DEX_TARGETS,DEX_LB,DEX_LBS,dexLbKey,dexAddLb,isDexTarget,dexCount,displayName,matches,ORDER_PREMIUM,orderPay,MKT_MIN,MKT_MAX,MKT_DAYS,REP_ORDER,REP_BIG,BIG_LEVEL,ORDER_PREMIUM_BIG,MAX_SMALL,repNeed,repLevel,isBig,genBigOrder,bigPay,orderLabel,
  monthlyCosts,previewNext,
  MARKET_SIZE,MARKET_EVERY,BUY_MULT,MARKET_POOL,listingTraits,marketBase,marketPrice,marketLeft,refreshMarket,ensureMarket,marketOk,makeMarketSnake,
  INC_MONTHS,TEMP_MIN,TEMP_MAX,TEMP_MID,TEMP_STEP,tempRange,femaleChance,incTotal,tempOpen,tempMonthsLeft,validTemp,
- LB_KEYS,LB_COLORS,LB_SD,LB_INIT,LB_LABEL,LB_SUPER,LB_REVERSE,LB_BOLD,LB_REVEAL,LB_TIERS,LB_PRICE,lbOf,lbInit,lbChild,lbTier,lbRevealed,lbShownTier,lbVisibleLabels,lbKey,lbGrade,lbDark,LB_MASK,lbMaskGene,lbCover,lbShownCover,lbSunglow,lbStripe,lbLabels,lbBonus,lbOk,addLb,
+ LB_KEYS,AX_KEYS,LB_KEYS_SP,lbKeysOf,hasLb,lbSpOf,AX_LIGHT,AX_DARK,AX_PRICE,axCover,axLabels,axBurst,LB_COLORS,LB_SD,LB_INIT,LB_LABEL,LB_SUPER,LB_REVERSE,LB_BOLD,LB_REVEAL,LB_TIERS,LB_PRICE,lbOf,lbInit,lbChild,lbTier,lbRevealed,lbShownTier,lbVisibleLabels,lbKey,lbGrade,lbDark,LB_MASK,lbMaskGene,lbCover,lbShownCover,lbSunglow,lbStripe,lbLabels,lbBonus,lbOk,addLb,
  QUESTS,checkQuests,rankStats,HIST_MAX,MP_MAX,ps,netWorth,psKey,
  newGame,advance,applyAction,syncDex,isState,ACTION_TYPES:Object.keys(ACTIONS)
 };
