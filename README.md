@@ -34,6 +34,8 @@ Game **wajib login**. Setiap aksi dikirim ke server (Edge Function `game`), yang
 - **Koleksi yang mudah diatur**: cari berdasarkan ID, nama panggilan, morph, atau gen; filter spesies, kelamin, status (siap kawin, dipasangkan, bunting, bayi, tua, inbred, diiklankan), asal, dan gen (visual / visual + het / semua pembawa); urutkan berdasarkan nilai, umur, terbaru, ID, berat, sisa umur, inbreeding, atau nama dengan tombol ↑↓. Ada tampilan kartu & tampilan daftar, dan dari tampilan daftar banyak hewan bisa diiklankan atau dijual cepat sekaligus (dengan konfirmasi & peringatan). Pilihan filter diingat di perangkat.
 - **Silsilah 3 generasi** di setiap hewan (ikut pindah saat trade)
 - **Sifat line-bred (poligenik), leopard gecko**: selain gen, tiap gecko punya 7 nilai sifat yang berubah pelan-pelan lewat seleksi. Nilai anak kira-kira rata-rata kedua induk ± sedikit acak. Pemain hanya melihat perkiraan tingkatnya, bukan angka.
+  - Bayi di bawah 6 bulan belum jelas warnanya: tingkatnya hanya tebakan bertanda ? (bisa meleset satu tingkat), belum ada label, dan bonus harga line-bred baru dihitung saat umur 6 bulan
+  - Breeding planner hanya menampilkan sifat kedua induk, tanpa perkiraan anak: pemain menebak sendiri
   - Warna (5): High Yellow, Tangerine (sudah termasuk Carrot Tail), Lavender, Emerine, Black Night. Label muncul di tingkat Tinggi. Black Night tinggi menutupi warna lain (labelnya hilang dan tidak menambah harga, tapi tetap diwariskan)
   - Bintik (1 sumbu): Bold ↔ Normal ↔ Hypo → Super Hypo. Semua gecko mulai di Normal
   - Pola (1 sumbu): belang → Jungle → Stripe → Reverse Stripe (varian langka)
@@ -102,7 +104,8 @@ Berikutnya:
 - [ ] Peringkat musiman
 - [ ] Event berkala & kompetisi morph
 - [x] Sifat line-bred (poligenik) untuk leopard gecko: 7 nilai (warna, bintik, pola), pewarisan, label & harga
-- [ ] Sifat line-bred: tampil di Pasar Pemain & trade, pesanan pembeli, kalkulator peluang
+- [x] Sifat line-bred di breeding planner (tampilan induk saja, pemain menebak)
+- [ ] Sifat line-bred: tampil di Pasar Pemain & trade, pesanan pembeli
 - [ ] Spesies berikutnya (corn snake atau bearded dragon) & sifat line-bred untuk ball python dan axolotl
 - [ ] Perawatan & kesehatan (suhu, kelembapan, shedding, mogok makan)
 - [ ] Versi aplikasi (PWA)
