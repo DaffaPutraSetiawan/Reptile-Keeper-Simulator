@@ -324,7 +324,9 @@ begin
     'reports_open', (select count(distinct message_id) from public.chat_reports where status = 'open'),
     'mutes',      (select count(*) from public.chat_mutes where until is null or until > now()),
     'bugs',       coalesce((select jsonb_object_agg(status, n) from
-                     (select status, count(*) n from public.bug_reports group by status) b), '{}'::jsonb));
+                     (select status, count(*) n from public.bug_reports where kind = 'bug' group by status) b), '{}'::jsonb),
+    'ideas',      coalesce((select jsonb_object_agg(status, n) from
+                     (select status, count(*) n from public.bug_reports where kind = 'idea' group by status) b), '{}'::jsonb));
 end $$;
 
 -- ---------------------------------------------------------------------

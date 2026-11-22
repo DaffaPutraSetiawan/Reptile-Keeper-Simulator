@@ -19,6 +19,13 @@ Catatan pembaruan untuk pemain (bahasa yang lebih sederhana, ID & EN) ada di `pa
 - Gambar: lapisan line-bred, pembeda Mojave/Lesser/Enchi/Yellow Belly/Cinnamon/Spinner, tampilan Pewter/Silver Bullet/Sterling. Panduan spesies diperbarui.
 - *(web)* Pengaturan bahasa tanpa emoji bendera (tampil sebagai huruf GB/ID di Windows).
 - *(web)* Catatan pembaruan di game & `CHANGELOG.md` ini.
+- *(web + database)* Tab Laporan bug jadi **Masukan**: laporan bug & **saran** dalam satu tab (`bug_reports.kind`).
+  - Saran: kategori sendiri (Spesies & gen baru, Gameplay, Ekonomi, Tampilan, Sosial, Lainnya), gambar opsional, maks. 3 saran per 24 jam.
+  - Dukungan 👍 (`idea_votes`, `vote_idea`), urutan dukungan terbanyak, filter "Saya dukung".
+  - Masukan mirip saat menulis judul (`similar_reports`).
+  - Status saran: Direncanakan, Sedang dikerjakan, Selesai di vXX; admin bisa mengisi versi & ID masukan asli untuk Duplikat.
+  - Notifikasi untuk pengirim & pendukung (`feedback_unread`); saran Selesai tampil di catatan pembaruan sebagai "Saran dari …" (`done_ideas`).
+  - Sensor kata kasar di judul, deskripsi, dan komentar masukan; ringkasan admin memisahkan bug & saran.
 
 ## v56 — 22 Nov 2026
 **Axolotl: sifat line-bred, Mac & Copper, Morph Dex 28**

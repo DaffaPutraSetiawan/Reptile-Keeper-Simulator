@@ -69,7 +69,7 @@ Game **wajib login**. Setiap aksi dikirim ke server (Edge Function `game`), yang
 - **Papan peringkat global** (di tab Global): kekayaan, Morph Dex, hewan termahal (per spesies), breeder produktif, pesanan, dan reputasi. Ada top 50, posisi kamu, dan filter teman saja.
 - **Moderasi chat global**: pemain bisa melaporkan pesan (spam, kasar, penipuan trade, lainnya). Kata kasar otomatis disensor jadi ★★★ dan pesan yang sama tidak bisa dikirim lebih dari 3× dalam 5 menit. Admin bisa menghapus pesan dan membisukan pemain di chat global (1 jam, 24 jam, 7 hari, atau selamanya, dengan alasan yang terlihat oleh pemain).
 - **Tab Admin** (hanya untuk admin): ringkasan angka pemain, chat, trade & laporan, antrean laporan chat, daftar pemain yang dibisukan, log tindakan admin, dan **moderasi Pasar Pemain**: daftar jualan aktif & penjualan terbaru dengan tanda mencurigakan (harga > 5× nilai, pasangan penjual–pembeli berulang, penjual & pembeli berteman), tombol **turunkan jualan** (hewan kembali ke penjual dengan alasan yang tampil di catatan breeder-nya), dan tombol **keluarkan dari riwayat harga** untuk transaksi palsu (bisa dimasukkan lagi).
-- **Laporan bug**: pemain melapor dengan judul, deskripsi, kategori, dan 1–3 screenshot. Semua pemain bisa membaca & berkomentar; admin mengubah status, membalas, dan menghapus. Pelapor mendapat notifikasi saat ada balasan.
+- **Masukan (laporan bug & saran)**: pemain melaporkan bug (judul, deskripsi, kategori, 1–3 screenshot wajib) atau mengirim saran (gambar opsional). Semua pemain bisa membaca & berkomentar, dan mendukung saran dengan 👍 (sekali per saran, tidak bisa untuk saran sendiri); saran bisa diurutkan dari dukungan terbanyak. Saat menulis judul, muncul masukan yang mirip supaya tidak dobel. Admin mengubah status (saran: Baru, Ditinjau, Direncanakan, Sedang dikerjakan, Selesai di vXX, Ditolak, Duplikat), membalas, dan menghapus. Pengirim & pendukung mendapat notifikasi saat status berubah; saran yang Selesai tampil di catatan pembaruan sebagai "Saran dari …". Kata kasar di judul, deskripsi, dan komentar disensor. Batas: 3 laporan bug + 3 saran per 24 jam.
 - **Dua bahasa: Indonesia & Inggris**, bisa diganti kapan saja. Bahasa awal mengikuti bahasa browser, lalu pilihan pemain diingat.
 - **3 tema warna** (Terrarium, Hutan Hujan, Samudra Malam) di Pengaturan
 - **Catatan pembaruan** di Pengaturan → Tentang (semua versi, ID & EN), plus popup sekali saat ada versi baru. Riwayat teknis per versi ada di [`CHANGELOG.md`](CHANGELOG.md)
@@ -86,7 +86,7 @@ Game **wajib login**. Setiap aksi dikirim ke server (Edge Function `game`), yang
 | `supabase/functions/game/` | Edge Function `game` (`index.ts`, `handler.js`, salinan `core.js`) |
 | `supabase/schema.sql` | Tabel `profiles` & `saves` dengan Row Level Security |
 | `supabase/social.sql` | Teman, chat, global chat, profil, trading (escrow) + fungsi server & realtime |
-| `supabase/bugs.sql` | Laporan bug, komentar, admin, dan bucket Storage untuk screenshot |
+| `supabase/bugs.sql` | Masukan (laporan bug & saran), dukungan saran, komentar, admin, dan bucket Storage untuk screenshot |
 | `supabase/leaderboard.sql` | Papan peringkat global (kolom `saves.rank` & fungsi `get_leaderboard`) |
 | `supabase/moderation.sql` | Moderasi chat global (laporan, bisu, sensor kata), log & ringkasan admin |
 | `supabase/market.sql` | Pasar Pemain: jualan harga pas, escrow, beli/batal, riwayat harga |
@@ -109,6 +109,7 @@ Sudah selesai:
 - [x] Penyeimbangan ekonomi dengan simulasi (`scripts/sim-economy.cjs`)
 - [x] Misi pemula (tutorial)
 - [x] Laporan bug dengan komentar & panel admin
+- [x] Kotak saran dengan dukungan 👍 (tab Masukan)
 - [x] Papan peringkat global (sepanjang masa)
 - [x] Moderasi chat global & ringkasan admin
 - [x] Reputasi breeder & pembeli besar

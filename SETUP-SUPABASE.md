@@ -92,10 +92,10 @@ Saat pemain login, game berjalan dalam **mode online ("server-authoritative")**.
 
 Game hanya bisa dimainkan setelah login. Pengunjung yang belum login melihat halaman sambutan dengan tombol **Masuk** dan **Daftar**. Tidak ada mode offline, jadi tidak ada logika game yang berjalan bebas di browser.
 
-## 8. Laporan bug
+## 8. Masukan: laporan bug & saran
 
 1. Buka **SQL Editor → New query**.
-2. Salin seluruh isi [`supabase/bugs.sql`](supabase/bugs.sql), tempel, lalu klik **Run**. Jalankan **setelah** `social.sql`. Skrip ini membuat tabel laporan & komentar, bucket Storage privat `bug-reports` (maks. 2 MB per gambar, JPG/PNG/WebP), dan policy-nya.
+2. Salin seluruh isi [`supabase/bugs.sql`](supabase/bugs.sql), tempel, lalu klik **Run**. Jalankan **setelah** `social.sql`. Skrip ini membuat tabel masukan (`bug_reports`, kolom `kind` = `bug` / `idea`), dukungan saran (`idea_votes`), komentar, bucket Storage privat `bug-reports` (maks. 2 MB per gambar, JPG/PNG/WebP), dan policy-nya.
 3. Jadikan akunmu admin (ganti emailnya):
 
    ```sql
@@ -109,7 +109,10 @@ Aturan yang dijalankan server:
 - Setiap laporan wajib punya judul, deskripsi, kategori, dan 1–3 gambar. Gambar dicek ulang di server (ada di Storage, milik pelapor, ≤ 2 MB, JPG/PNG/WebP).
 - Batas spam: 3 laporan dan 9 gambar per 24 jam, serta 30 komentar per 24 jam (admin tidak dibatasi).
 - Hanya admin yang bisa mengubah status, membalas, menghapus komentar, dan menghapus laporan.
-- Pembersihan: saat admin membuka tab Laporan bug, gambar dari laporan yang selesai lebih dari 90 hari dan gambar yatim (diunggah > 1 hari tapi tidak dipakai laporan) dihapus otomatis.
+- Saran (`kind = 'idea'`): gambar opsional (0–3), batas 3 saran per 24 jam (terpisah dari batas laporan bug), tanpa info perangkat. Pemain lain bisa mendukung lewat `vote_idea` (sekali per saran; tidak untuk saran sendiri atau saran yang sudah Selesai/Ditolak/Duplikat). `similar_reports` mencari judul yang mirip saat pemain menulis.
+- Status saran: `new`, `review`, `planned`, `progress`, `done`, `rejected`, `duplicate`. Admin bisa mengisi versi (untuk `fixed` / `done`) dan ID masukan asli (untuk `duplicate`). Pengirim dan pendukung mendapat notifikasi saat status berubah (`feedback_unread`). Saran `done` dengan versi muncul di catatan pembaruan game sebagai "Saran dari …" (`done_ideas`).
+- Kata kasar di judul, deskripsi, dan komentar disensor dengan daftar kata dari `moderation.sql` (dilewati kalau file itu belum dijalankan).
+- Pembersihan: saat admin membuka tab Masukan, gambar dari laporan yang selesai lebih dari 90 hari dan gambar yatim (diunggah > 1 hari tapi tidak dipakai laporan) dihapus otomatis.
 
 ## 9. Papan peringkat
 

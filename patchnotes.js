@@ -2,6 +2,15 @@
    Terbaru di atas. v = versi game (core.js VERSION). Riwayat teknis lengkap ada di CHANGELOG.md.
    Tambahkan entri baru di paling atas setiap kali versi game naik. */
 window.PATCH_NOTES=[
+ {v:57.1,d:'2026-11-22',label:'v57 (web)',
+  id:['Tab Laporan bug jadi <b>Masukan</b>: selain melaporkan bug, kamu bisa <b>mengirim saran</b> untuk game.',
+   'Dukung saran pemain lain dengan tombol 👍 dan urutkan saran berdasarkan dukungan terbanyak.',
+   'Saat menulis, muncul saran atau laporan yang mirip supaya tidak dobel.',
+   'Kamu mendapat tanda notifikasi saat status saran yang kamu kirim atau dukung berubah. Saran yang dikerjakan akan ditulis di catatan pembaruan beserta nama pemberi sarannya.'],
+  en:['The Bug reports tab is now <b>Feedback</b>: besides reporting bugs, you can <b>send suggestions</b> for the game.',
+   'Support other players’ suggestions with the 👍 button and sort suggestions by most supported.',
+   'While writing, similar suggestions or reports appear so nothing gets posted twice.',
+   'You get a notification when a suggestion you sent or support changes status. Suggestions that get made are listed in the patch notes with the name of the player who suggested them.']},
  {v:57,d:'2026-11-22',
   id:['Ball python punya 3 sifat line-bred: <b>Fader</b> (pola memudar), <b>High Intensity</b> (warna gen lebih pekat), dan <b>Light Line / Dark Line</b>. Sifat bayi baru jelas di umur 12 bulan.',
    '9 kombinasi ball python baru: Pewter, Super Blast, Silver Bullet, Queen Bee, Sterling, Bumble Belly, Killer Pied, Pumpkin Pied, Savannah.',
