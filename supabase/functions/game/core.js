@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:54,date:'2026-11-22'};
+const VERSION={v:55,date:'2026-11-22'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -581,11 +581,12 @@ function checkQuests(){if(!S.quest||!Array.isArray(S.quest.d))S.quest={d:[]};con
 /* ========= PAPAN PERINGKAT ========= */
 // Angka peringkat pemain, dihitung server setiap kali save disimpan (tidak bisa dipalsukan dari browser).
 //  nw = kekayaan (uang + nilai semua hewan) · dex = jumlah morph di Morph Dex · hatched = total bayi menetas
-//  orders = pesanan dipenuhi · top = hewan termahal per spesies (untuk ditampilkan, tanpa het tersembunyi)
+//  orders = pesanan dipenuhi · top = hewan termahal per spesies (untuk ditampilkan, tanpa het tersembunyi;
+//  l = label line-bred yang terlihat untuk gambarnya, v55)
 function rankStats(st){const prev=S;S=st;try{
  let nw=st.money;const top={};
  for(const s of st.snakes){const v=value(s),sp=spOf(s);nw+=v;
-  if(!top[sp]||v>top[sp].v)top[sp]={v,n:displayName(s),c:code(s),x:s.sex,tr:traitsOf(s.g),k:s.seed,nick:s.nick||''}}
+  if(!top[sp]||v>top[sp].v){top[sp]={v,n:displayName(s),c:code(s),x:s.sex,tr:traitsOf(s.g),k:s.seed,nick:s.nick||''};const L=hasLb(sp)?lbVisibleLabels(s):[];if(L.length)top[sp].l=L}}
  return{turn:st.turn,nw:Math.round(nw),dex:dexCount(st),hatched:(st.stats&&st.stats.hatched)||0,orders:(st.stats&&st.stats.orders)||0,rep:typeof st.rep==='number'?st.rep:((st.stats&&st.stats.orders)||0),top}
 }finally{S=prev}}
 

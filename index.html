@@ -2296,7 +2296,7 @@ var Rank={cat:'wealth',sp:'',fr:false,data:{},loading:false,
  score(r){return (this.cat==='wealth'||this.cat==='top')?money(r.score):this.cat==='rep'?`${fmt(r.score)} ⭐ · ${t('rk_lv',{l:repLevel(r.score)})}`:fmt(r.score)+' '+t('rk_u_'+this.cat)},
  row(r){const medal=['🥇','🥈','🥉'][r.pos-1]||'#'+r.pos,a=r.animal;
   return `<tr class="${r.me?'me':''}"><td class="pos">${medal}</td><td>${r.me?`<b>${esc(r.user)}</b> <span class="tag a">${t('so_you')}</span>`:profLink(r.user)}</td>
-   ${this.cat==='top'?`<td><div class="rkan"><img class="mini" src="${thumb(a.tr||[],a.k||1,false,a.sp)}" alt=""><div>${SP_ICON[a.sp]||''} ${a.x?sexIcon(a.x)+' ':''}${esc(a.n)}${a.nick?` <span class="kbd">"${esc(a.nick)}"</span>`:''}</div></div></td>`:''}
+   ${this.cat==='top'?`<td><div class="rkan"><img class="mini" src="${thumb(a.tr||[],a.k||1,false,a.sp,Array.isArray(a.l)?a.l.filter(x=>typeof x==='string'):null)}" alt=""><div>${SP_ICON[a.sp]||''} ${a.x?sexIcon(a.x)+' ':''}${esc(a.n)}${a.nick?` <span class="kbd">"${esc(a.nick)}"</span>`:''}</div></div></td>`:''}
    <td class="num kbd">${fmt(r.turn||0)}</td><td class="num"><b>${this.score(r)}</b></td></tr>`},
  html(){const c=this.data[this.key()],d=c&&c.d;
   const chips=`<div class="toolbar">${RANK_CATS.map(([k,ic])=>`<button class="chip ${this.cat===k?'on':''}" data-act="rk_cat" data-v="${k}">${ic} ${t('rk_'+k)}</button>`).join('')}</div>
