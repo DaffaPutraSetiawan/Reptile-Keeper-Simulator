@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:51,date:'2026-11-22'};
+const VERSION={v:52,date:'2026-11-22'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -419,6 +419,21 @@ function removeSnake(s){if(s.sex==='M')S.snakes.forEach(f=>{if(f.pairedWith===s.
 // Morph Dex: kunci ball python = nama morph (seperti dulu); spesies lain diberi awalan, mis. "leo:RAPTOR".
 const dexKey=(tr,sp)=>(sp&&sp!=='ball'?sp+':':'')+nameOf(tr,null,sp||spOfTr(tr));
 function dexAdd(tr,sp){sp=sp||spOfTr(tr);const k=dexKey(tr,sp);if(S.dex[k])return false;S.dex[k]=sp==='ball'?{tr,wt:S.turn}:{tr,wt:S.turn,sp};return true}
+// Target Morph Dex per spesies (dipakai tampilan Dex, misi Morph Dex & papan peringkat). Semua morph yang ditemukan tetap
+// tercatat di S.dex, tapi hanya morph target yang ditampilkan & dihitung (bagian "morph lain" dihapus).
+//  ball: 19 gen + 13 kombinasi · leo: 15 gen + 18 kombinasi (v52: + Calcite, Cyclone, Banana Blizzard & varian Blazing Blizzard)
+//  axo: 7 gen + 8 kombinasi
+const DEX_TARGETS={
+ ball:[['pastel'],['superpastel'],['mojave'],['lesser'],['bel'],['enchi'],['superenchi'],['yb'],['ivory'],['cinnamon'],['supercinnamon'],['banana'],['superbanana'],['spider'],['pinstripe'],['albino'],['piebald'],['clown'],['axanthic'],['pastel','spider'],['superpastel','spider'],['pastel','pinstripe'],['spider','pinstripe'],['pastel','spider','pinstripe'],['albino','axanthic'],['pastel','albino'],['spider','albino'],['enchi','pastel'],['pastel','clown'],['banana','clown'],['piebald','albino'],['enchi','yb']],
+ leo:[['tremper'],['bell'],['rainwater'],['eclipse'],['blizzard'],['murphy'],['marble'],['macksnow'],['supersnow'],['giant'],['supergiant'],['lemonfrost'],['superlemonfrost'],['enigma'],['wy'],
+ ['tremper','eclipse'],['bell','eclipse'],['rainwater','eclipse'],['tremper','eclipse','blizzard'],['tremper','eclipse','murphy'],['tremper','eclipse','enigma'],['macksnow','enigma','tremper','eclipse'],['supersnow','tremper','eclipse'],['blizzard','tremper'],['supersnow','eclipse'],
+  ['bell','eclipse','wy','macksnow','enigma'],['rainwater','eclipse','murphy'],['blizzard','murphy'],['blizzard','murphy','tremper'],
+  ['blizzard','bell'],['blizzard','rainwater'],['blizzard','murphy','bell'],['blizzard','murphy','rainwater']],
+ axo:[['axleu'],['axalb'],['axmel'],['axaxa'],['axcop'],['gfp'],['rfp'],
+ ['axalb','axleu'],['axalb','axaxa'],['axalb','axmel'],['axleu','axmel'],['axleu','axaxa'],['axaxa','axmel'],['gfp','axleu'],['gfp','axalb']]};
+const DEX_KEYS=new Set();for(const sp of SPECIES_LIST)for(const tr of DEX_TARGETS[sp])DEX_KEYS.add(dexKey(tr,sp));
+const isDexTarget=k=>DEX_KEYS.has(k);
+const dexCount=st=>Object.keys(((st||S)&&(st||S).dex)||{}).filter(isDexTarget).length;
 // Gen Giant membuat tubuh lebih besar (1 salinan ×1,25, Super Giant ×1,6).
 function sizeMult(g){if(!g||!g.giant)return 1;const n=(g.giant[0]?1:0)+(g.giant[1]?1:0);return n===2?1.6:n===1?1.25:1}
 const kOf=(sp,sex,g)=>SPECIES[sp].K[sex==='F'||sex==='M'?sex:'H']*sizeMult(g);
@@ -545,7 +560,7 @@ const QUESTS=[
  {k:'hatch',r:200,tab:'inkubator',ok:()=>S.stats.hatched>0},
  {k:'sell',r:150,tab:'koleksi',ok:()=>S.stats.sold>0},
  {k:'order',r:250,tab:'pesanan',ok:()=>(S.stats.orders||0)>0},
- {k:'dex',r:250,tab:'dex',ok:()=>Object.keys(S.dex||{}).length>=4},
+ {k:'dex',r:250,tab:'dex',ok:()=>dexCount(S)>=4},
  {k:'species',r:300,tab:'pasar',ok:()=>new Set(S.snakes.map(spOf)).size>=2},
  {k:'rack',r:500,tab:'pasar',ok:()=>S.racks>=3},
 ];
@@ -562,7 +577,7 @@ function rankStats(st){const prev=S;S=st;try{
  let nw=st.money;const top={};
  for(const s of st.snakes){const v=value(s),sp=spOf(s);nw+=v;
   if(!top[sp]||v>top[sp].v)top[sp]={v,n:fullName(s),c:code(s),x:s.sex,tr:traitsOf(s.g),k:s.seed,nick:s.nick||''}}
- return{turn:st.turn,nw:Math.round(nw),dex:Object.keys(st.dex||{}).length,hatched:(st.stats&&st.stats.hatched)||0,orders:(st.stats&&st.stats.orders)||0,rep:typeof st.rep==='number'?st.rep:((st.stats&&st.stats.orders)||0),top}
+ return{turn:st.turn,nw:Math.round(nw),dex:dexCount(st),hatched:(st.stats&&st.stats.hatched)||0,orders:(st.stats&&st.stats.orders)||0,rep:typeof st.rep==='number'?st.rep:((st.stats&&st.stats.orders)||0),top}
 }finally{S=prev}}
 
 /* ========= GAME BARU ========= */
@@ -809,7 +824,7 @@ root.MorphCore={
  emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,
  OLD_WARN,maxAge,lifeLeft,sizeMult,kOf,growW,
  pedNode,pedParents,labelNode,ancRec,kinship,relation,inbOf,inbFromAnc,repairInb,INB_SLUG,INB_DEAD,HATCH_DEAD,
- mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,dexKey,matches,ORDER_PREMIUM,orderPay,MKT_MIN,MKT_MAX,MKT_DAYS,REP_ORDER,REP_BIG,BIG_LEVEL,ORDER_PREMIUM_BIG,MAX_SMALL,repNeed,repLevel,isBig,genBigOrder,bigPay,orderLabel,
+ mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,dexKey,DEX_TARGETS,isDexTarget,dexCount,matches,ORDER_PREMIUM,orderPay,MKT_MIN,MKT_MAX,MKT_DAYS,REP_ORDER,REP_BIG,BIG_LEVEL,ORDER_PREMIUM_BIG,MAX_SMALL,repNeed,repLevel,isBig,genBigOrder,bigPay,orderLabel,
  monthlyCosts,previewNext,
  MARKET_SIZE,MARKET_EVERY,BUY_MULT,MARKET_POOL,listingTraits,marketBase,marketPrice,marketLeft,refreshMarket,ensureMarket,marketOk,makeMarketSnake,
  INC_MONTHS,TEMP_MIN,TEMP_MAX,TEMP_MID,TEMP_STEP,tempRange,femaleChance,incTotal,tempOpen,tempMonthsLeft,validTemp,

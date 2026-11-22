@@ -375,8 +375,8 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  ord_empty:'Belum ada pesanan. Pesanan baru muncul seiring waktu.',ord_left:p=>`sisa ${p.n} bulan`,ord_reward:p=>`Hadiah ${p.v}`,ord_ship:'Kirim ke pembeli',ord_nomatch:'Belum ada hewan yang cocok di koleksimu.',
  // dex
  dex_found:p=>'Ditemukan '+p.d,dex_notfound:'Belum ditemukan',
- dex_sub:p=>`${p.f}/${p.t} morph target ditemukan · ${p.n} morph total. Statistik: ${p.c} clutch, ${p.h} bayi menetas, ${p.s} hewan terjual (${p.e}).`,
- dex_extra:'Kombinasi lain yang kamu temukan',save_h:'Simpan / ulang',newgame:'Mulai game baru',
+ dex_sub:p=>`${p.f}/${p.t} morph target ditemukan. Statistik: ${p.c} clutch, ${p.h} bayi menetas, ${p.s} hewan terjual (${p.e}).`,
+ save_h:'Simpan / ulang',newgame:'Mulai game baru',
  save_cloud:'Progres dihitung dan disimpan di server, jadi aman dari kecurangan dan bisa dilanjutkan dari perangkat mana pun.', d_code:'Kode',d_agew:'Umur · berat',gv_chat:'Chat',gv_rank:'Peringkat',rk_sub:'Papan peringkat sepanjang masa. Angka dihitung server setiap kali kamu bermain; turn ditampilkan supaya kamu bisa membandingkan dengan pemain di tahap yang sama.',
  rk_wealth:'Kekayaan',rk_dex:'Morph Dex',rk_top:'Hewan termahal',rk_hatched:'Breeder produktif',rk_orders:'Pesanan',rk_allsp:'Semua spesies',rk_all:'Semua pemain',rk_friends:'Teman saja',rk_refresh:'Muat ulang',
  rk_d_wealth:'Uang + nilai seluruh koleksi hewan.',rk_d_dex:'Jumlah morph yang tercatat di Morph Dex (semua spesies). Kalau seri, yang lebih dulu mencapainya ada di atas.',rk_d_top:'Hewan bernilai tertinggi yang sedang dimiliki tiap pemain.',rk_d_hatched:'Total bayi yang berhasil menetas.',rk_d_orders:'Total pesanan pembeli yang dipenuhi.',
@@ -682,8 +682,8 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  pl_missing:p=>`No animal in your collection carries ${p.g} yet. Get a carrier first.`,pl_need_more:'No pair can produce this target in 1 generation: recessive genes and super forms need both parents to carry the gene, and every target gene must be in the same pair. Breed the carriers first to get babies that carry more of the target genes.',ord_min:'minimum · or 125% of the animal’s value',ord_min_big:'minimum · or 150% of both animals’ value. Both animals ship together.',ord_ship_big:'Ship both animals',e_order_same_animal:'Pick two different animals.',rep_h:p=>`Reputation ${p.r} · Level ${p.l}`,rep_next:p=>`${p.n} more to level ${p.l}`,rep_big_on:'Big buyers are unlocked: sometimes an order asks for 2 animals at once (⭐ +3, pays 150%).',rep_big_off:p=>`Reputation grows with every order you fill (⭐ +1). Level ${p.l} unlocks big buyers (${p.n} to go).`,t_rep:p=>`⭐ +${p.n} reputation (total ${p.r}).`,t_replevel:p=>`⭐ Reputation reached level ${p.l}!`,t_replevel_big:p=>`⭐ Level ${p.l}! Big buyers now visit the Orders tab.`,rk_rep:'Reputation',rk_d_rep:'Breeder reputation: +1 per order, +3 per big-buyer order.',rk_u_rep:'reputation',rk_lv:p=>`Lv ${p.l}`,ord_pay:p=>`pays ${p.v}`,
  ord_empty:'No orders yet. New orders appear over time.',ord_left:p=>`${p.n} ${p.n===1?'month':'months'} left`,ord_reward:p=>`Reward ${p.v}`,ord_ship:'Ship to buyer',ord_nomatch:'No matching animal in your collection yet.',
  dex_found:p=>'Found '+p.d,dex_notfound:'Not found yet',
- dex_sub:p=>`${p.f}/${p.t} target morphs found · ${p.n} morphs total. Stats: ${p.c} clutches, ${p.h} hatchlings, ${p.s} animals sold (${p.e}).`,
- dex_extra:'Other combos you discovered',save_h:'Save / restart',newgame:'Start a new game',
+ dex_sub:p=>`${p.f}/${p.t} target morphs found. Stats: ${p.c} clutches, ${p.h} hatchlings, ${p.s} animals sold (${p.e}).`,
+ save_h:'Save / restart',newgame:'Start a new game',
  save_cloud:'Progress is calculated and saved on the server, so it can’t be cheated and you can continue on any device.',
  d_code:'ID',d_agew:'Age · weight',gv_chat:'Chat',gv_rank:'Leaderboard',rk_sub:'All-time leaderboard. Scores are calculated by the server every time you play; turns are shown so you can compare yourself with players at the same stage.',
  rk_wealth:'Wealth',rk_dex:'Morph Dex',rk_top:'Most valuable animal',rk_hatched:'Most productive',rk_orders:'Orders',rk_allsp:'All species',rk_all:'All players',rk_friends:'Friends only',rk_refresh:'Refresh',
@@ -1474,24 +1474,15 @@ function vPesanan(){
  let h=`<h2>${t('ord_h')}</h2><p class="sub">${t('ord_sub')}</p>${repPanel()}`;
  if(!S.orders.length)return h+`<div class="empty">${t('ord_empty')}</div>`;
  return h+`<div class="grid">${S.orders.map(o=>{if(isBig(o))return bigCard(o);const ms=matches(o);const n=nameOf(o.tr);return `<div class="card"><img class="snk" src="${thumb(o.tr,strHash(n),false,spOf(o))}"><div class="nm">${o.sex?sexIcon(o.sex)+' ':''}${esc(n)}</div><div class="meta">${esc(buyerName(o))} · ${t('ord_left',{n:o.left})}</div><div class="val">${t('ord_reward',{v:money(o.reward)})} · <span class="tag">⭐ +${REP_ORDER}</span></div><div class="kbd">${t('ord_min')}</div>${ms.length?`<select id="ord-${o.oid}" style="margin-top:8px">${ordOptions(ms,o)}</select><button class="pri" style="margin-top:8px;width:100%" data-act="fulfill" data-id="${o.oid}">${t('ord_ship')}</button>`:`<div class="kbd" style="margin-top:8px">${t('ord_nomatch')}</div>`}</div>`}).join('')}</div>`}
-const TARGETS=[['pastel'],['superpastel'],['mojave'],['lesser'],['bel'],['enchi'],['superenchi'],['yb'],['ivory'],['cinnamon'],['supercinnamon'],['banana'],['superbanana'],['spider'],['pinstripe'],['albino'],['piebald'],['clown'],['axanthic'],['pastel','spider'],['superpastel','spider'],['pastel','pinstripe'],['spider','pinstripe'],['pastel','spider','pinstripe'],['albino','axanthic'],['pastel','albino'],['spider','albino'],['enchi','pastel'],['pastel','clown'],['banana','clown'],['piebald','albino'],['enchi','yb']];
-// Target Morph Dex leopard gecko: 15 gen + 10 kombinasi bernama
-const TARGETS_LEO=[['tremper'],['bell'],['rainwater'],['eclipse'],['blizzard'],['murphy'],['marble'],['macksnow'],['supersnow'],['giant'],['supergiant'],['lemonfrost'],['superlemonfrost'],['enigma'],['wy'],
- ['tremper','eclipse'],['bell','eclipse'],['rainwater','eclipse'],['tremper','eclipse','blizzard'],['tremper','eclipse','murphy'],['tremper','eclipse','enigma'],['macksnow','enigma','tremper','eclipse'],['supersnow','tremper','eclipse'],['blizzard','tremper'],['supersnow','eclipse']];
-// Target Morph Dex axolotl: 7 gen + 8 kombinasi
-const TARGETS_AXO=[['axleu'],['axalb'],['axmel'],['axaxa'],['axcop'],['gfp'],['rfp'],
- ['axalb','axleu'],['axalb','axaxa'],['axalb','axmel'],['axleu','axmel'],['axleu','axaxa'],['axaxa','axmel'],['gfp','axleu'],['gfp','axalb']];
-const DEX_T={ball:TARGETS,leo:TARGETS_LEO,axo:TARGETS_AXO};
+const DEX_T=Core.DEX_TARGETS;   // target Morph Dex per spesies (dari core.js, sama dengan hitungan server)
+
 const dexWhen=e=>e.wt!=null?dateOf(e.wt):(e.when||'');
 function vDex(){
- const sp=DEXSP,TG=DEX_T[sp],keys=new Set(TG.map(x=>dexKey(x,sp)));
- const mine=Object.keys(S.dex).filter(k=>(S.dex[k].sp||'ball')===sp);
- const extra=mine.filter(k=>!keys.has(k));
+ const sp=DEXSP,TG=DEX_T[sp];
  const found=TG.filter(x=>S.dex[dexKey(x,sp)]).length;
  const cell=(tr,e)=>{const n=nameOf(tr,null,sp);return `<div class="card"><div class="qwrap"><img class="snk ${e?'':'dexq'}" src="${thumb(tr,strHash(n),false,sp)}"></div><div class="nm">${e?esc(n):'???'}</div><div class="meta">${e?esc(t('dex_found',{d:dexWhen(e)})):t('dex_notfound')}</div>${e?`<div class="val">${money(Math.round(baseValue(tr,sp)/5)*5)}</div>`:''}</div>`};
- return `<h2>Morph Dex</h2>${spChips(sp,'dexsp')}<p class="sub">${t('dex_sub',{f:found,t:TG.length,n:mine.length,c:S.stats.clutches,h:S.stats.hatched,s:S.stats.sold,e:money(S.stats.earned)})}</p>
+ return `<h2>Morph Dex</h2>${spChips(sp,'dexsp')}<p class="sub">${t('dex_sub',{f:found,t:TG.length,c:S.stats.clutches,h:S.stats.hatched,s:S.stats.sold,e:money(S.stats.earned)})}</p>
  <div class="grid">${TG.map(x=>cell(x,S.dex[dexKey(x,sp)])).join('')}</div>
- ${extra.length?`<h3>${t('dex_extra')}</h3><div class="grid">${extra.map(k=>cell(S.dex[k].tr,S.dex[k])).join('')}</div>`:''}
  <h3>${t('save_h')}</h3><div class="toolbar"><button data-act="reset">${t('newgame')}</button><span class="kbd">${t('save_cloud')}</span></div>`}
 // Panduan per spesies: tabel angka diambil langsung dari SPECIES di core.js supaya selalu cocok dengan game.
 let GUIDESP='ball';
@@ -1950,7 +1941,7 @@ function showStats(){if(!S)return;const p=S.ps||{},ch=p.ch||{},ex=p.ex||{},hs=p.
  StatV.pts=stPoints();const coll=S.snakes.reduce((a,s)=>a+value(s),0),nw=Math.round(S.money+coll),pct=(a,b)=>b>0?(a/b*100).toFixed(1).replace('.',LANG==='id'?',':'.')+'%':'–';
  const tiles=[[t('st_nw'),money(nw)],[t('st_money'),money(S.money)],[t('st_coll'),money(coll)],[t('st_animals'),`${fmt(S.snakes.length)} / ${fmt(cap())}`],[t('st_months'),fmt(S.turn)],[t('st_rep'),`⭐ Lv ${repLevel(S.rep||0)}`]];
  const hsum=SPECIES_LIST.reduce((a,sp)=>a+(hs[sp]||0),0);
- const dexY={};for(const k in S.dex||{}){const w=S.dex[k]&&S.dex[k].wt;if(typeof w==='number'){const y=stYear(w);dexY[y]=(dexY[y]||0)+1}}
+ const dexY={};for(const k in S.dex||{}){if(!Core.isDexTarget(k))continue;const w=S.dex[k]&&S.dex[k].wt;if(typeof w==='number'){const y=stYear(w);dexY[y]=(dexY[y]||0)+1}}
  const dexRows=Object.keys(dexY).map(Number).sort((a,b)=>a-b).slice(-10).map(y=>({lbl:t('st_year',{y}),v:dexY[y],txt:fmt(dexY[y])}));
  const chRows=ST_CH.map(k=>({lbl:t('ch_'+k),v:(ch[k]||{}).v||0,txt:t('st_ch_v',{v:money((ch[k]||{}).v||0),n:fmt((ch[k]||{}).n||0)})}));
  const top=Object.entries(p.mp||{}).sort((a,b)=>b[1].v-a[1].v).slice(0,5);
@@ -2353,7 +2344,7 @@ var Social={data:null,open:null,msgs:[],draft:'',chatFocus:false,reply:null,ch:n
  }
 };
 function renderTabs(){if(!S||!Cloud.user||!$('tabs'))return;
- const T=[['koleksi',S.snakes.length],['breeding'],['inkubator',S.clutches.length+S.snakes.filter(s=>s.gravid).length+(S.broods||[]).length],['pasar'],['pesanan',S.orders.length],['dex',Object.keys(S.dex).length],['teman',Social.badge()||null,true],['global',Global.unread||null,true],['panduan'],['bugs',Bugs.unread||null,true]].concat(Bugs.admin?[['admin',Mod.open||null,true]]:[]);
+ const T=[['koleksi',S.snakes.length],['breeding'],['inkubator',S.clutches.length+S.snakes.filter(s=>s.gravid).length+(S.broods||[]).length],['pasar'],['pesanan',S.orders.length],['dex',Core.dexCount(S)],['teman',Social.badge()||null,true],['global',Global.unread||null,true],['panduan'],['bugs',Bugs.unread||null,true]].concat(Bugs.admin?[['admin',Mod.open||null,true]]:[]);
  $('tabs').innerHTML=T.map(([k,c,hot])=>`<button class="${TAB===k?'on':''}" data-act="tab" data-tab="${k}">${t('tab_'+k)}${c!=null?`<span class="cnt${hot?' hot':''}">${c}</span>`:''}</button>`).join('')}
 
 function miniList(arr,money_,owner,vk){const items=(arr||[]).map((s,i)=>{const tr=traitsOf(s.g);return `<div class="mini-row"><img class="mini" src="${thumb(tr,s.seed,false,spOfG(s.g))}" alt=""><div><div><span class="tbid">${code(s)}</span> ${sexIcon(s.sex)} ${esc(nameOf(tr,s.g))}</div><div class="het">${esc(hetText(s))}</div>${lbLine(s)}<div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g · ${money(value(s))}</div>${owner===undefined?'':originLine(s,owner)}${vk?lbViewBtn(s,vk+'_'+i):''}</div></div>`});
