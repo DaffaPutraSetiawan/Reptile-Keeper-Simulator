@@ -966,6 +966,10 @@ function leoLook(tr,lb){const s=new Set(tr);
  const alb=s.has('tremper')?'t':s.has('bell')?'b':s.has('rainwater')?'r':null;st.alb=alb;
  if(alb){p=alb==='b'?[146,90,64]:alb==='r'?[198,152,124]:[176,116,84];g=lerp(g,alb==='r'?[252,226,176]:[250,170,82],alb==='r'?.4:.3);tail=lerp(tail,[248,182,124],.4);
   eye=alb==='t'?[204,166,172]:alb==='b'?[214,92,104]:[228,150,160];if(s.has('blizzard'))g=lerp(g,[250,236,226],.6)}
+ // pembeda keluarga Blizzard: warna dasar & mata ikut gen pendampingnya
+ if(s.has('blizzard')){const ban=s.has('murphy');
+  const B={n:[[214,216,214],[44,42,48]],t:[[250,232,222],[204,166,172]],b:[[253,252,250],[176,28,52]],r:[[252,226,228],[240,160,176]]}[alb||'n'];
+  g=B[0].slice();eye=B[1].slice();if(ban)g=lerp(g,[242,222,146],alb?.55:.8);tail=lerp(g,[255,255,255],.12);belly=lerp(g,[255,255,255],.45)}
  if(s.has('eclipse')){st.solidEye=true;eye=alb?[192,30,46]:[14,14,18]}
  if(s.has('marble'))st.marble=true;
  // v55: label line-bred yang terlihat ikut mewarnai gambar (bayi & sifat tertutup tidak punya label, jadi tidak berubah)
@@ -975,6 +979,10 @@ function leoLook(tr,lb){const s=new Set(tr);
  if(L.has('Bold Stripe')){L.add('Stripe');L.add('Bold')}
  if(L.has('High Yellow')){g=lerp(g,[255,212,24],.75);tail=lerp(tail,[250,204,50],.5)}
  if(L.has('Tangerine')){g=lerp(g,[246,124,30],.72);tail=lerp(tail,[240,104,34],.8)}
+ // tiga Sunglow: Tremper oranye cerah · Bell oranye kemerahan + mata merah delima · Rainwater oranye muda (peach)
+ if(L.has('Sunglow')){g=lerp(g,[255,150,36],.35);if(!st.solidEye)eye=[210,170,178]}
+ if(L.has('Bell Sunglow')){g=lerp(g,[208,74,36],.4);tail=lerp(tail,[190,64,42],.5);if(!st.solidEye)eye=[176,28,52]}
+ if(L.has('Rainwater Sunglow')){g=lerp(g,[252,190,146],.5);tail=lerp(tail,[248,182,150],.55);if(!st.solidEye)eye=[240,160,176]}
  if(L.has('Lavender')){g=lerp(g,[206,182,226],.45);p=lerp(p,[112,86,140],.55);st.lav=1}
  if(L.has('Emerine')){st.emer=1;p=lerp(p,[58,70,30],.5)}
  if(L.has('Black Night')){g=[48,42,40];tail=[40,36,34];p=[14,13,15];belly=[78,72,66];st.bn=1}
@@ -1041,6 +1049,11 @@ function axoLook(tr){const s=new Set(tr);
  if(s.has('axaxa')){const ds=c=>{const l=c[0]*.3+c[1]*.59+c[2]*.11;return[l*.98,l*.99,l*1.05]};g=ds(g);sp=ds(sp);gill=ds(gill);belly=ds(belly);fleck=[206,210,220];if(!s.has('axmel'))g=lerp(g,[118,120,128],.5)}
  if(s.has('axcop')){g=[176,120,82];sp=[128,80,52];gill=[200,104,92];eye=[178,96,86];ring=null;belly=[214,170,130];fleck=[232,190,120]}
  if(s.has('axleu')){g=[248,224,226];sp=null;st.spots=0;st.fleck=s.has('axmel')||s.has('axaxa')?0:.3;fleck=[255,240,220];gill=[232,80,112];eye=[22,20,24];ring=s.has('axmel')||s.has('axaxa')?null:[200,180,150];belly=[252,236,236]}
+ // pembeda Leucistic: biasa = sedikit bintik gelap + kilau · Melanoid = doff tanpa kilau, insang keunguan · Axanthic = abu-abu dengan bintik abu halus
+ if(s.has('axleu')&&!s.has('axalb')){
+  if(s.has('axmel')){g=[240,234,236];st.fleck=0;gill=[164,56,96];belly=[246,242,242]}
+  else if(s.has('axaxa')){g=[226,226,232];sp=[140,140,152];st.spots=.55;st.fleck=0;gill=[234,150,170];belly=[238,238,242]}
+  else{sp=[96,78,86];st.spots=.22}}
  if(s.has('axalb')){st.spots=0;sp=null;ring=null;
   if(s.has('axleu')){g=[252,244,240];gill=[238,112,132];eye=[236,186,186];st.fleck=0}
   else if(s.has('axaxa')){g=[242,240,226];gill=[236,150,150];eye=[236,196,190];st.fleck=.4;fleck=[255,250,230]}
@@ -1074,7 +1087,7 @@ function drawAxo(cv,tr,seed){
  for(let i=N;i>=0;i--){const t=i/N,[px,py]=pos(t),[ax,ay]=pos(Math.min(1,t+.002)),[bx,by]=pos(Math.max(0,t-.002));
   let dx=ax-bx,dy=ay-by;const dl=Math.hypot(dx,dy)||1;dx/=dl;dy/=dl;const nx=-dy,ny=dx,r=axoRad(t)*R0,sz=Math.max(1.6,2*r/L+1.2);
   for(let j=0;j<L;j++){const u=-1+(j+.5)*2/L,au=Math.abs(u);let c=A.g.slice();
-   if(A.sp&&st.spots&&hash3(Math.floor(t*120),Math.floor((u+1)*6),seed)<.14)c=lerp(c,A.sp,.7);
+   if(A.sp&&st.spots&&hash3(Math.floor(t*120),Math.floor((u+1)*6),seed)<.14*st.spots)c=lerp(c,A.sp,.7);
    if(st.fleck&&hash3(Math.floor(t*210),Math.floor((u+1)*11),seed+3)<.05*st.fleck)c=lerp(c,A.fleck,.75);
    if(au>.8)c=lerp(c,A.belly,(au-.8)/.2*.5);const f=1.08-.28*au*au;
    x.fillStyle=`rgb(${clamp(c[0]*f,0,255)|0},${clamp(c[1]*f,0,255)|0},${clamp(c[2]*f,0,255)|0})`;x.fillRect(px+nx*u*r-sz/2,py+ny*u*r-sz/2,sz,sz)}}
