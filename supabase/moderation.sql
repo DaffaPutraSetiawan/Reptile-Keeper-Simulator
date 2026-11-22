@@ -234,6 +234,7 @@ begin
   perform public._bug_need_admin();
   delete from public.global_messages where id = p_id returning * into g;
   if g.id is null then raise exception 'msg_not_found'; end if;
+  update public.global_messages set reply_body = null where reply_to = p_id;   -- kutipan di balasan jadi "pesan dihapus"
   update public.chat_reports set status = 'actioned', resolved_by = auth.uid(), resolved_at = now()
    where message_id = p_id and status = 'open';
   perform public._mod_log('delete_msg', g.sender, jsonb_build_object('message_id', g.id, 'body', g.body));
@@ -258,8 +259,10 @@ begin
   on conflict (user_id) do update set until = excluded.until, reason = excluded.reason,
     by_admin = excluded.by_admin, created_at = excluded.created_at;
   if coalesce(p_purge, false) then
-    delete from public.global_messages where sender = p_user;
-    get diagnostics v_purged = row_count;
+    -- pesan dihapus, dan kutipannya di balasan pemain lain jadi "pesan dihapus"
+    with d as (delete from public.global_messages where sender = p_user returning id),
+         u as (update public.global_messages set reply_body = null where reply_to in (select id from d) returning 1)
+    select count(*) into v_purged from d;
   end if;
   update public.chat_reports set status = 'actioned', resolved_by = auth.uid(), resolved_at = now()
    where sender = p_user and status = 'open';

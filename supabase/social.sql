@@ -41,6 +41,11 @@ create index if not exists messages_pair_idx
   on public.messages (least(sender, recipient), greatest(sender, recipient), id desc);
 create index if not exists messages_unread_idx on public.messages (recipient, sender) where read_at is null;
 create index if not exists messages_sender_time_idx on public.messages (sender, created_at desc);
+-- Balas pesan (reply): id pesan yang dibalas + salinan nama pengirim & potongan isinya (maks. 120 karakter),
+-- supaya kutipan tetap terbaca walaupun pesan aslinya sudah hilang. reply_to ada tapi reply_body null = pesan asli dihapus admin.
+alter table public.messages add column if not exists reply_to bigint;
+alter table public.messages add column if not exists reply_name text;
+alter table public.messages add column if not exists reply_body text;
 
 create table if not exists public.trades (
   id              bigint generated always as identity primary key,
@@ -395,9 +400,11 @@ end $$;
 -- ---------------------------------------------------------------------
 -- CHAT
 -- ---------------------------------------------------------------------
-create or replace function public.send_message(p_to uuid, p_body text)
+-- p_reply = id pesan di percakapan ini yang dibalas (boleh null)
+drop function if exists public.send_message(uuid, text);
+create or replace function public.send_message(p_to uuid, p_body text, p_reply bigint default null)
 returns public.messages language plpgsql security definer set search_path = '' as $$
-declare me uuid := public._me(); m public.messages;
+declare me uuid := public._me(); m public.messages; q public.messages;
 begin
   p_body := trim(coalesce(p_body, ''));
   if char_length(p_body) = 0 then raise exception 'empty_message'; end if;
@@ -406,7 +413,14 @@ begin
   if (select count(*) from public.messages where sender = me and created_at > now() - interval '1 minute') >= 30 then
     raise exception 'rate_limited';
   end if;
-  insert into public.messages (sender, recipient, body) values (me, p_to, p_body) returning * into m;
+  if p_reply is not null then
+    select * into q from public.messages where id = p_reply
+       and least(sender, recipient) = least(me, p_to) and greatest(sender, recipient) = greatest(me, p_to);
+    if q.id is null then raise exception 'reply_gone'; end if;
+  end if;
+  insert into public.messages (sender, recipient, body, reply_to, reply_name, reply_body)
+  values (me, p_to, p_body, q.id, case when q.id is null then null else public._username(q.sender) end, left(q.body, 120))
+  returning * into m;
   return m;
 end $$;
 
@@ -488,14 +502,19 @@ create table if not exists public.global_messages (
   created_at timestamptz not null default now()
 );
 create index if not exists global_messages_sender_idx on public.global_messages (sender, created_at desc);
+-- Balas pesan (reply), sama seperti chat teman. Kutipan disalin karena chat global hanya menyimpan 50 pesan terakhir.
+alter table public.global_messages add column if not exists reply_to bigint;
+alter table public.global_messages add column if not exists reply_name text;
+alter table public.global_messages add column if not exists reply_body text;
 alter table public.global_messages enable row level security;
 drop policy if exists "global: pemain login boleh baca" on public.global_messages;
 create policy "global: pemain login boleh baca" on public.global_messages for select to authenticated using (true);
 revoke insert, update, delete on public.global_messages from anon, authenticated;
 
-create or replace function public.send_global_message(p_body text)
+drop function if exists public.send_global_message(text);
+create or replace function public.send_global_message(p_body text, p_reply bigint default null)
 returns public.global_messages language plpgsql security definer set search_path = '' as $$
-declare me uuid := public._me(); v_name text; m public.global_messages; v_cut bigint;
+declare me uuid := public._me(); v_name text; m public.global_messages; v_cut bigint; q public.global_messages;
 begin
   select username into v_name from public.profiles where id = me;
   if v_name is null then raise exception 'no_profile'; end if;
@@ -509,7 +528,12 @@ begin
   if to_regprocedure('public._chat_guard(uuid,text)') is not null then
     execute 'select public._chat_guard($1, $2)' into p_body using me, p_body;
   end if;
-  insert into public.global_messages (sender, username, body) values (me, v_name, p_body) returning * into m;
+  if p_reply is not null then
+    select * into q from public.global_messages where id = p_reply;
+    if q.id is null then raise exception 'reply_gone'; end if;   -- sudah tergeser keluar dari 50 terakhir / dihapus
+  end if;
+  insert into public.global_messages (sender, username, body, reply_to, reply_name, reply_body)
+  values (me, v_name, p_body, q.id, q.username, left(q.body, 120)) returning * into m;
   -- simpan hanya 50 pesan terakhir: yang lebih lama dihapus
   select id into v_cut from public.global_messages order by id desc offset 50 limit 1;
   if v_cut is not null then delete from public.global_messages where id <= v_cut; end if;
@@ -789,12 +813,12 @@ declare f text;
 begin
   foreach f in array array[
     'send_friend_request(text)', 'respond_friend_request(bigint, boolean)', 'remove_friend(uuid)',
-    'send_message(uuid, text)', 'get_messages(uuid, bigint, integer)', 'mark_read(uuid)',
+    'send_message(uuid, text, bigint)', 'get_messages(uuid, bigint, integer)', 'mark_read(uuid)',
     'get_social()', 'get_friend_collection(uuid)',
     'create_trade(uuid, integer[], integer, integer[], integer, text, bigint)',
     'accept_trade(bigint, bigint)', 'decline_trade(bigint)', 'cancel_trade(bigint)', 'claim_deliveries(bigint)', 'delete_my_account(text)',
     'get_profile(text)', 'update_profile(text, integer[])',
-    'send_global_message(text)', 'get_global_messages()'] loop
+    'send_global_message(text, bigint)', 'get_global_messages()'] loop
     execute format('revoke all on function public.%s from public, anon', f);
     execute format('grant execute on function public.%s to authenticated', f);
   end loop;

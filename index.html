@@ -174,7 +174,10 @@ button.sm{padding:4px 10px;font-size:12.5px}
 .gate-f{list-style:none;padding:0;margin:0 0 6px;display:grid;gap:6px;color:#dcd4c0}
 .gchat .chatlog{max-height:460px;min-height:300px}.bub .gname{display:flex;align-items:center;gap:6px}.gacts{margin-left:auto;display:inline-flex;gap:2px}
 .gact{background:none;border:0;padding:0 4px;font-size:12px;line-height:1.4;color:var(--mut);cursor:pointer;opacity:.55;border-radius:6px}.gact:hover{opacity:1;background:var(--hover)}.gact.done{cursor:default;opacity:.7}
-.bub:hover .gact{opacity:.9}.bub.grq{max-width:100%;margin:8px 0;align-self:stretch}
+.bub:hover .gact{opacity:.9}
+.rq{display:block;font-size:11.5px;line-height:1.35;border-left:3px solid var(--acc);background:var(--hover);padding:3px 8px;border-radius:6px;margin:2px 0 5px;cursor:pointer;color:var(--mut);white-space:normal;overflow:hidden;max-height:3.2em}.rq b{color:var(--text)}.rq.del{cursor:default;font-style:italic}
+.replybar{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mut);border-left:3px solid var(--acc);background:var(--hover);padding:5px 8px;border-radius:6px;margin:6px 0 0}.replybar i{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.replybar b{color:var(--text)}
+.bub.flash{outline:2px solid var(--acc);outline-offset:2px}.bub .rpb{opacity:.55}.bub:hover .rpb{opacity:1}@media (hover:none){.bub .rpb{opacity:.8}}.bub.grq{max-width:100%;margin:8px 0;align-self:stretch}
 .gmuted{border-top:1px solid var(--line);padding:12px 14px;background:color-mix(in srgb,var(--bad) 12%,transparent);font-size:13px;display:flex;flex-direction:column;gap:3px}
 .grreasons{display:grid;grid-template-columns:1fr 1fr;gap:6px}label.rad{display:flex;flex-direction:row!important;align-items:center;gap:7px;cursor:pointer;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 10px}label.rad input{width:auto;margin:0}
 .modstats{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin:6px 0 16px}.modstats .stat{min-width:0;padding:9px 12px}
@@ -512,7 +515,7 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  tw_money:p=>`Uang yang kamu berikan (${p.v}) setara setengah atau lebih dari saldomu (${p.b}).`,tw_escrow:'Setelah dikirim, hewan & uang yang kamu tawarkan langsung dititipkan sampai tawaran dijawab. Kamu masih bisa membatalkannya selama belum diterima.',
  tw_final:'Trade langsung dijalankan dan tidak bisa dibatalkan.',tw_values:p=>`Nilai pasar: kamu berikan ${p.g} · kamu terima ${p.r}.`,
  e_request_unavailable:'Hewan yang diminta sudah tidak tersedia (dijual, diiklankan, bunting, atau dipasangkan).',
- e_not_enough_money:'Uang tidak cukup.',e_rack_min:'Rak awal tidak bisa dijual.',e_trade_closed:'Tawaran ini sudah ditutup.',e_trade_not_found:'Tawaran tidak ditemukan.',
+ e_not_enough_money:'Uang tidak cukup.',e_reply_gone:'Pesan yang kamu balas sudah tidak ada.',rp_btn:'Balas',rp_to:p=>`Membalas ${p.u}:`,rq_deleted:'pesan dihapus',rq_jump:'Lihat pesan asli',rq_gone:'Pesan aslinya sudah tidak ada di layar.',e_rack_min:'Rak awal tidak bisa dijual.',e_trade_closed:'Tawaran ini sudah ditutup.',e_trade_not_found:'Tawaran tidak ditemukan.',
  e_not_friends:'Kalian sudah tidak berteman.',e_stale_save:'Save-mu baru saja berubah (mis. dari perangkat lain). Data sudah dimuat ulang, coba lagi.',
  e_snake_not_tradeable:'Ada hewan yang tidak bisa ditukar (bunting, diiklankan, atau dipasangkan).',e_snake_not_found:'Ada hewan yang sudah tidak kamu miliki.',
  e_too_many_trades:'Terlalu banyak tawaran yang masih menunggu (maks. 20).',e_rate_limited:'Terlalu banyak pesan. Tunggu sebentar.',
@@ -818,7 +821,7 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  tw_money:p=>`The money you give (${p.v}) is half or more of your balance (${p.b}).`,tw_escrow:'Once sent, the animals & money you offer are held in escrow until the offer is answered. You can still cancel it until it’s accepted.',
  tw_final:'The trade happens right away and can’t be undone.',tw_values:p=>`Market value: you give ${p.g} · you get ${p.r}.`,
  e_request_unavailable:'A requested animal is no longer available (sold, listed, gravid or paired).',
- e_not_enough_money:'Not enough money.',e_rack_min:'The starting racks can’t be sold.',e_trade_closed:'This offer is already closed.',e_trade_not_found:'Offer not found.',
+ e_not_enough_money:'Not enough money.',e_reply_gone:'The message you’re replying to is gone.',rp_btn:'Reply',rp_to:p=>`Replying to ${p.u}:`,rq_deleted:'message deleted',rq_jump:'Show original message',rq_gone:'The original message is no longer on screen.',e_rack_min:'The starting racks can’t be sold.',e_trade_closed:'This offer is already closed.',e_trade_not_found:'Offer not found.',
  e_not_friends:'You’re no longer friends.',e_stale_save:'Your save just changed (e.g. on another device). It has been reloaded; try again.',
  e_snake_not_tradeable:'Some animals can’t be traded (gravid, listed or paired).',e_snake_not_found:'You no longer own one of these animals.',
  e_too_many_trades:'Too many pending offers (max. 20).',e_rate_limited:'Too many messages. Wait a moment.',
@@ -1604,6 +1607,12 @@ function act(a,id,el){
   case 'pl_clear':PLAN.tr[BRSP]=[];render();return;
   case 'pl_pick':SEL.m=+el.dataset.m;SEL.f=+el.dataset.f;render();{const p=document.querySelector('.pair');if(p)p.scrollIntoView({behavior:'smooth',block:'center'})}return;
   case 'g_rep':Global.reportForm(id);return;
+  case 'g_reply':Global.startReply(id);return;
+  case 'g_x':Global.reply=null;Global.focus=true;render();return;
+  case 'dm_reply':{const m=Social.msgs.find(x=>x.id===id);if(!m)return;const mine=m.sender===Cloud.user.id,f=Social.friend(Social.open);
+   Social.reply={id,name:mine?(Cloud.profile&&Cloud.profile.username):(f&&f.username),body:m.body};Social.chatFocus=true;render();return}
+  case 'dm_x':Social.reply=null;Social.chatFocus=true;render();return;
+  case 'rq_jump':rqJump(el.dataset.k);return;
   case 'g_del':Mod.delMsg(id,true);return;
   case 'g_mute':Mod.muteForm(el.dataset.u,el.dataset.n);return;
   case 'mod_del':Mod.delMsg(id,false);return;
@@ -1985,10 +1994,22 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const tradeBlock=s=>s.gravid?'tb_r_gravid':s.listed?'tb_r_listed':(s.pairedWith||s.pairs)?'tb_r_paired':(s.tradeable===false?'tb_r_locked':'');
 const errText=e=>{const m=String((e&&e.message)||e||'');const k=(m.match(/[a-z_]+/g)||[]).find(x=>I18N.id['e_'+x]);return k?t('e_'+k):t('e_generic',{e:esc(m)})};
 const hm=iso=>{try{return new Date(iso).toLocaleTimeString(LANG==='id'?'id-ID':'en-GB',{hour:'2-digit',minute:'2-digit'})}catch(e){return ''}};
+/* ========= BALAS PESAN (reply) =========
+   Pesan balasan menyimpan salinan nama & potongan isi pesan yang dibalas (reply_name, reply_body), jadi kutipannya tetap
+   terbaca walaupun pesan aslinya sudah hilang. reply_to ada tapi reply_body null = pesan aslinya dihapus admin. */
+const rqSnip=b=>{b=String(b||'');return b.length>80?b.slice(0,80)+'…':b};
+const rqName=n=>Cloud.profile&&n===Cloud.profile.username?t('so_you'):esc(n||'?');
+function rqHtml(m,pre){if(!m||!m.reply_to)return'';if(m.reply_body==null)return `<div class="rq del">↩ ${t('rq_deleted')}</div>`;
+ return `<div class="rq" data-act="rq_jump" data-k="${pre}${m.reply_to}" title="${t('rq_jump')}">↩ <b>${rqName(m.reply_name)}</b>: ${esc(rqSnip(m.reply_body))}</div>`}
+function replyBar(r,x){return r?`<div class="replybar" id="${x}bar">↩ ${t('rp_to',{u:`<b>${rqName(r.name)}</b>`})}<i>${esc(rqSnip(r.body))}</i><button type="button" class="gact" data-act="${x}_x" title="${t('btn_cancel')}">✖</button></div>`:''}
+const rpBtn=(act,id)=>`<button type="button" class="gact rpb" data-act="${act}" data-id="${id}" title="${t('rp_btn')}">↩</button>`;
+function rqJump(k){const el=document.getElementById(k);if(!el){toast(t('rq_gone'));return}
+ el.scrollIntoView({block:'center',behavior:'smooth'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),1600)}
+
 /* ========= GLOBAL CHAT ========= */
 const GLOBAL_MAX=50,GMSG_MAX=300;
-var Global={msgs:[],unread:0,loaded:false,draft:'',focus:false,view:'chat',mute:null,reported:new Set(),armed:null,muteT:null,
- reset(){this.msgs=[];this.unread=0;this.loaded=false;this.draft='';this.mute=null;this.reported=new Set();this.armed=null;clearTimeout(this.muteT)},
+var Global={msgs:[],unread:0,loaded:false,draft:'',focus:false,view:'chat',mute:null,reported:new Set(),armed:null,muteT:null,reply:null,relT:null,
+ reset(){this.msgs=[];this.unread=0;this.loaded=false;this.draft='';this.mute=null;this.reported=new Set();this.armed=null;this.reply=null;clearTimeout(this.muteT)},
  // Server = sumber kebenaran: pesan yang dihapus admin / tergeser keluar dari 50 terakhir ikut hilang di sini
  async load(){if(!Cloud.user||!Cloud.sb)return;const{data,error}=await Cloud.sb.rpc('get_global_messages');
   if(error){console.warn('global',error);return}
@@ -2001,21 +2022,27 @@ var Global={msgs:[],unread:0,loaded:false,draft:'',focus:false,view:'chat',mute:
  trim(){this.msgs.sort((a,b)=>a.id-b.id);if(this.msgs.length>GLOBAL_MAX)this.msgs=this.msgs.slice(-GLOBAL_MAX)},
  onNew(m){if(!m||this.msgs.some(x=>x.id===m.id))return;this.msgs.push(m);this.trim();
   if((TAB!=='global'||this.view!=='chat')&&this.loaded&&Cloud.user&&m.sender!==Cloud.user.id)this.unread++;this.paint()},
- onDel(id){if(!id||!this.msgs.some(x=>x.id===id))return;this.msgs=this.msgs.filter(x=>x.id!==id);this.paint()},
+ onDel(id){if(!id)return;if(this.reply&&this.reply.id===id){this.reply=null;if(TAB==='global'&&!MODAL_LOCK)render()}
+  // pesan yang dikutip ikut hilang: muat ulang sebentar lagi supaya kutipan yang dihapus admin jadi "pesan dihapus"
+  if(this.msgs.some(x=>x.reply_to===id)){clearTimeout(this.relT);this.relT=setTimeout(()=>this.load(),1500)}
+  if(!this.msgs.some(x=>x.id===id))return;this.msgs=this.msgs.filter(x=>x.id!==id);this.paint()},
  html(){if(!this.loaded)return `<p class="kbd" style="text-align:center;margin:30px 0">${t('so_loading')}</p>`;
   if(!this.msgs.length)return `<p class="kbd" style="text-align:center;margin:30px 0">${t('gc_empty')}</p>`;
-  const me=Cloud.user&&Cloud.user.id,A=Bugs.admin;
+  const me=Cloud.user&&Cloud.user.id,A=Bugs.admin,rp=Cloud.profile&&!this.muted();
   return this.msgs.map(m=>{const mine=m.sender===me;
-   const acts=mine?'':A?`<button type="button" class="gact" data-act="g_del" data-id="${m.id}" title="${t('mod_del')}">${this.armed===m.id?t('mod_sure'):'🗑️'}</button><button type="button" class="gact" data-act="g_mute" data-u="${m.sender}" data-n="${esc(m.username)}" title="${t('mod_mute')}">🔇</button>`
-    :this.reported.has(m.id)?`<span class="gact done" title="${t('gr_done')}">⚑✓</span>`:`<button type="button" class="gact" data-act="g_rep" data-id="${m.id}" title="${t('gr_btn')}">⚑</button>`;
-   return `<div class="bub ${mine?'me':''}"><div class="gname">${mine?t('so_you'):profLink(m.username)}${acts?`<span class="gacts">${acts}</span>`:''}</div><div>${esc(m.body)}</div><span>${hm(m.created_at)}</span></div>`}).join('')},
+   const acts=(rp?rpBtn('g_reply',m.id):'')+(mine?'':A?`<button type="button" class="gact" data-act="g_del" data-id="${m.id}" title="${t('mod_del')}">${this.armed===m.id?t('mod_sure'):'🗑️'}</button><button type="button" class="gact" data-act="g_mute" data-u="${m.sender}" data-n="${esc(m.username)}" title="${t('mod_mute')}">🔇</button>`
+    :this.reported.has(m.id)?`<span class="gact done" title="${t('gr_done')}">⚑✓</span>`:`<button type="button" class="gact" data-act="g_rep" data-id="${m.id}" title="${t('gr_btn')}">⚑</button>`);
+   return `<div class="bub ${mine?'me':''}" id="gm${m.id}"><div class="gname">${mine?t('so_you'):profLink(m.username)}${acts?`<span class="gacts">${acts}</span>`:''}</div>${rqHtml(m,'gm')}<div>${esc(m.body)}</div><span>${hm(m.created_at)}</span></div>`}).join('')},
  paint(){const el=$('glog');if(TAB==='global'&&el){const near=el.scrollHeight-el.scrollTop-el.clientHeight<80;el.innerHTML=this.html();if(near||this.focus)el.scrollTop=el.scrollHeight}else if(TAB==='global'&&!MODAL_LOCK)render();else renderTabs()},
  async send(f){const i=f.querySelector('[name=body]'),body=i.value.trim();if(!body)return;
   if(!Cloud.profile){toast(t('e_no_profile'));return}
-  i.value='';this.draft='';this.focus=true;
-  const{data,error}=await Cloud.sb.rpc('send_global_message',{p_body:body});
-  if(error){i.value=body;this.draft=body;toast(errText(error));if(/muted/.test(error.message||''))this.loadMute();return}
+  i.value='';this.draft='';this.focus=true;const r=this.reply;
+  const{data,error}=await Cloud.sb.rpc('send_global_message',r?{p_body:body,p_reply:r.id}:{p_body:body});
+  if(error){i.value=body;this.draft=body;toast(errText(error));if(/muted/.test(error.message||''))this.loadMute();
+   if(/reply_gone/.test(error.message||'')){this.reply=null;render()}return}
+  if(this.reply){this.reply=null;const b=$('gbar');if(b)b.remove()}
   this.onNew(data)},
+ startReply(id){const m=this.msgs.find(x=>x.id===id);if(!m)return;this.reply={id,name:m.username,body:m.body};this.focus=true;render()},
  // ----- lapor pesan (pemain) -----
  reportForm(id){const m=this.msgs.find(x=>x.id===id);if(!m)return;
   modal(`<h2>⚑ ${t('gr_h')}</h2><p class="sub">${t('gr_sub')}</p>
@@ -2260,10 +2287,10 @@ function vGlobal(){
  let h=`<h2>🌐 ${t('tab_global')}</h2>${sub}<p class="sub">${t('gc_sub',{n:GLOBAL_MAX})}</p>`;
  return h+`<div class="panel gchat"><div class="chatlog" id="glog">${Global.html()}</div>
  ${Cloud.profile&&Global.muted()?`<div class="gmuted">🔇 <b>${t('gm_h',{w:Mod.untilTxt(Global.mute.until)})}</b><div>${t('gm_reason')}: “${esc(Global.mute.reason)}”</div></div>`
-  :Cloud.profile?`<form data-form="gchat" class="row chatin" novalidate><input id="gchatin" name="body" maxlength="${GMSG_MAX}" autocomplete="off" placeholder="${t('gc_ph')}" value="${esc(Global.draft)}"><button class="pri" type="submit">${t('so_send')}</button></form>`
+  :Cloud.profile?`${replyBar(Global.reply,'g')}<form data-form="gchat" class="row chatin" novalidate><input id="gchatin" name="body" maxlength="${GMSG_MAX}" autocomplete="off" placeholder="${t('gc_ph')}" value="${esc(Global.draft)}"><button class="pri" type="submit">${t('so_send')}</button></form>`
   :`<div class="empty" style="border:none">${t('so_needname')}<div class="actions" style="justify-content:center"><button class="pri" data-act="pickname">${t('ac_pick')}</button></div></div>`}</div>`}
 
-var Social={data:null,open:null,msgs:[],draft:'',chatFocus:false,ch:null,timer:null,claiming:false,seen:null,
+var Social={data:null,open:null,msgs:[],draft:'',chatFocus:false,reply:null,ch:null,timer:null,claiming:false,seen:null,
  started(){return !!this.ch},
  start(){
   if(this.ch||!Cloud.user||!Cloud.sb)return;
@@ -2305,7 +2332,7 @@ var Social={data:null,open:null,msgs:[],draft:'',chatFocus:false,ch:null,timer:n
   this.claiming=false;
  },
  async openChat(id){
-  this.open=id;this.msgs=[];this.draft='';this.paint();
+  this.open=id;this.msgs=[];this.draft='';this.reply=null;this.paint();
   const{data,error}=await Cloud.sb.rpc('get_messages',{p_friend:id,p_before:null,p_limit:80});
   if(!error&&this.open===id){this.msgs=data||[];this.markRead(id);this.chatFocus=true;this.paint()}
  },
@@ -2319,9 +2346,10 @@ var Social={data:null,open:null,msgs:[],draft:'',chatFocus:false,ch:null,timer:n
  },
  async send(body){
   if(!this.open||!body.trim())return;
-  const{data,error}=await Cloud.sb.rpc('send_message',{p_to:this.open,p_body:body});
-  if(error){toast(errText(error));return false}
-  this.onMessage(data);return true;
+  const r=this.reply;
+  const{data,error}=await Cloud.sb.rpc('send_message',r?{p_to:this.open,p_body:body,p_reply:r.id}:{p_to:this.open,p_body:body});
+  if(error){toast(errText(error));if(/reply_gone/.test(error.message||''))this.reply=null;return false}
+  this.reply=null;this.onMessage(data);return true;
  }
 };
 function renderTabs(){if(!S||!Cloud.user||!$('tabs'))return;
@@ -2356,8 +2384,8 @@ function vTeman(){
  if(!cur)h+=`<div class="empty" style="border:none">${t('so_chat_pick')}</div>`;
  else{
   h+=`<div class="chathead"><b>🦎 ${esc(cur.username)}</b><span class="row"><button class="sm" data-act="profile" data-u="${esc(cur.username)}">👤 ${t('pf_view')}</button><button class="pri sm" data-act="tr_new" data-uid="${cur.id}">${t('so_trade_btn')}</button><button class="sm ghost" data-act="fr_remove" data-uid="${cur.id}" data-u="${esc(cur.username)}">${t('so_remove')}</button></span></div>
-  <div class="chatlog" id="chatlog">${Social.msgs.length?Social.msgs.map(m=>{const mine=m.sender===Cloud.user.id;return `<div class="bub ${mine?'me':''}"><div>${esc(m.body)}</div><span>${mine?t('so_you'):esc(cur.username)} · ${hm(m.created_at)}</span></div>`}).join(''):`<p class="kbd" style="text-align:center;margin:30px 0">${t('so_chat_empty',{u:esc(cur.username)})}</p>`}</div>
-  <form data-form="chat" class="row chatin" novalidate><input id="chatin" name="body" maxlength="1000" autocomplete="off" placeholder="${t('so_chat_ph')}" value="${esc(Social.draft)}"><button class="pri" type="submit">${t('so_send')}</button></form>`}
+  <div class="chatlog" id="chatlog">${Social.msgs.length?Social.msgs.map(m=>{const mine=m.sender===Cloud.user.id;return `<div class="bub ${mine?'me':''}" id="dm${m.id}">${rqHtml(m,'dm')}<div>${esc(m.body)}</div><span>${mine?t('so_you'):esc(cur.username)} · ${hm(m.created_at)} ${rpBtn('dm_reply',m.id)}</span></div>`}).join(''):`<p class="kbd" style="text-align:center;margin:30px 0">${t('so_chat_empty',{u:esc(cur.username)})}</p>`}</div>
+  ${replyBar(Social.reply,'dm')}<form data-form="chat" class="row chatin" novalidate><input id="chatin" name="body" maxlength="1000" autocomplete="off" placeholder="${t('so_chat_ph')}" value="${esc(Social.draft)}"><button class="pri" type="submit">${t('so_send')}</button></form>`}
  h+=`</div></div>`;
  const tin=d.trades.filter(x=>x.dir==='in'&&x.status==='pending'),tout=d.trades.filter(x=>x.dir==='out'&&x.status==='pending'),hist=d.trades.filter(x=>x.status!=='pending').slice(0,10);
  h+=`<h3>${t('tr_in_h')} (${tin.length})</h3>${tin.length?`<div class="tgrid">${tin.map(tradeCard).join('')}</div>`:`<p class="kbd">${t('tr_none')}</p>`}
