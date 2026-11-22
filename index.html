@@ -311,7 +311,7 @@ id:{
  t_deleted:'Akunmu sudah dihapus. Terima kasih sudah bermain Morph Lab.',e_confirm_mismatch:'Kata konfirmasi tidak cocok.',
  log_title:'Catatan breeder',log_clear:'🗑️ Hapus',log_empty:'Catatan masih kosong.',log_clear_h:'Hapus catatan breeder?',log_clear_q:'Semua catatan akan dihapus permanen. Koleksi, uang, dan progres game tidak berubah.',log_clear_yes:'Ya, hapus catatan',t_logcleared:'Catatan breeder dihapus.',
  // tag kartu
- tag_gravid:p=>`Bunting · bertelur ±${p.n} bln`,tag_gravid_c:p=>`Bunting · clutch ${p.no}/${p.tot} · bertelur ±${p.n} bln`,tag_pairedw:p=>`Dikawinkan dgn ${p.c}`,tag_pairs:p=>`${p.n} pasangan bln ini`,tag_listed:'Diiklankan',tag_ready:'Siap kawin',tag_hatch:'Hatchling',tag_old:p=>`Tua · sisa ${p.a}`,sp_all:'Semua',sp_ball:'Ball python',sp_leo:'Leopard gecko',sp_axo:'Axolotl',r_fage_axo:'Umur belum cukup (min. 18 bulan)',r_mage_axo:'Umur belum cukup (min. 12 bulan)',e_brood_gone:'Kelompok bayi ini sudah diproses.',inc_notemp:'Tidak mengatur kelamin (50:50)',
+ tag_gravid:p=>`Bunting · bertelur ±${p.n} bln`,tag_gravid_c:p=>`Bunting · clutch ${p.no}/${p.tot} · bertelur ±${p.n} bln`,tag_pairedw:p=>`Dikawinkan dgn ${p.c}`,tag_pairs:p=>`${p.n} pasangan bln ini`,tag_listed:'Diiklankan',tag_ready:'Siap kawin',tag_hatch:'Hatchling',tag_old:p=>`Tua · sisa ${p.a}`,sp_all:'Semua',sp_ball:'Ball python',sp_leo:'Leopard gecko',sp_axo:'Axolotl',sp_rs:'Kura-kura brazil',r_fage_rs:'Umur belum cukup (min. 36 bulan)',r_mage_rs:'Umur belum cukup (min. 24 bulan)',gd_eggs_rs:'6–20 per clutch tergantung berat betina, 2–4 clutch dari sekali kawin',br_sub_rs:'Pilih pasangan kura-kura brazil (jantan ≥24 bulan, betina ≥36 bulan). Peluang bertelur ±65%; sekali kawin, betina bertelur 2–4 clutch berturut-turut (6–20 telur per clutch, makin berat makin banyak), lalu istirahat 6 bulan. Suhu inkubator: dingin lebih banyak jantan, panas lebih banyak betina.',r_fage_axo:'Umur belum cukup (min. 18 bulan)',r_mage_axo:'Umur belum cukup (min. 12 bulan)',e_brood_gone:'Kelompok bayi ini sudah diproses.',inc_notemp:'Tidak mengatur kelamin (50:50)',
 brood_h:'Pilih bayi axolotl',brood_n:p=>`${p.n} bayi · simpan maks. ${p.k}`,brood_th_n:'Jumlah',brood_th_v:'Nilai/ekor',brood_th_keep:'Simpan',brood_sum:p=>`Disimpan ${p.k}/${p.max} · ${p.n} ekor sisanya dijual otomatis ≈ ${p.v}`,brood_go:p=>p.k?`Simpan ${p.k} & jual sisanya`:'Jual semua',brood_note:p=>`Kalau belum dipilih saat “Lanjut bulan”, ${p.k} bayi paling bernilai disimpan otomatis dan sisanya dijual.`,t_brood:'🫧 Bayi axolotl dipilih, sisanya sudah terjual.',
 l_brood:p=>`🫧 ${p.born} bayi axolotl menetas dari ${p.dam} × ${p.sire} (♀ ${p.nf} · ♂ ${p.nm}${p.dead?`, ${p.dead} telur gagal`:''}). Pilih sampai ${p.k} ekor di tab Inkubator; sisanya dijual otomatis.`,l_brood_done:p=>`🫧 Bayi dari ${p.d}: ${p.k} disimpan, ${p.n} dijual seharga ${p.v}.`,l_brood_auto:p=>`🫧 Bayi dari ${p.d} belum dipilih: ${p.k} yang paling bernilai disimpan otomatis, ${p.n} dijual seharga ${p.v}.`,h_brood:p=>`${p.n} bayi axolotl menetas, pilih ${p.k}`,
 br_sub_axo:'Pilih pasangan axolotl (jantan ≥12 bulan, betina ≥18 bulan). Peluang bertelur ±60%; betina bertelur sebulan kemudian sampai 100 butir (makin berat makin banyak), lalu istirahat 4 bulan. Setelah menetas, pilih sampai 3 bayi dan sisanya dijual otomatis.',
@@ -324,7 +324,13 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
 <ul><li><b>Kilau</b>: tinggi = <b>High Iridophore</b> (banyak bintik emas/perak berkilau). Golden Albino + High Iridophore = <b>Sunburst</b>, Copper + High Iridophore = <b>Moonburst</b>. Melanoid menutup kilau.</li><li><b>Bintik gelap</b>: tinggi = <b>Dirty Leucistic</b>, sangat tinggi = <b>Piebald</b> (bercak gelap besar). Hanya terlihat pada Leucistic yang tidak albino.</li><li><b>Nada warna</b>: terang = <b>Light Wild</b>, gelap = <b>Dark Wild</b>. Hanya terlihat pada Wild Type.</li></ul><p>Sifat yang tertutup tetap diwariskan ke anak. Label line-bred menambah harga dan ikut tercatat di Morph Dex.</p>
 <h3>4. Siklus breeding</h3><ul><li>Axolotl hanya bisa dikawinkan dengan axolotl. Jantan siap di umur 12 bulan, betina di umur 18 bulan.</li><li>Peluang bertelur ±60%; betina bertelur <b>sebulan kemudian</b>, sampai <b>100 butir</b> (betina ±70 g ±50 butir, ±110 g mendekati 100). ±15% telur tidak subur.</li><li>Telur menetas <b>sebulan</b> kemudian. Betina turun ±10% berat dan istirahat 4 bulan sebelum bisa dikawinkan lagi.</li></ul>
 <h3>5. Memilih bayi</h3><p>Bayi axolotl menetas sebagai <b>satu kelompok</b> di tab Inkubator, dikelompokkan per morph, jenis kelamin, dan tingkat sifat line-bred. Pilih <b>sampai 3 ekor</b> untuk masuk koleksi; sisanya otomatis dijual cepat (60% nilainya). Menjual banyak sekaligus sedikit menurunkan harga pasar morph tersebut. Kalau belum dipilih saat “Lanjut bulan”, 3 bayi paling bernilai disimpan otomatis.</p>
-<h3>6. Suhu &amp; ekonomi</h3><p>Jenis kelamin axolotl ditentukan kromosom, bukan suhu, jadi selalu sekitar 50:50 dan suhu inkubatornya tidak bisa diatur. Axolotl murah per ekor, tapi satu clutch bisa menghasilkan banyak uang dari penjualan otomatis. Batas umurnya 15 tahun.</p>`,d_species:'Spesies',mk_pairnow:'bisa langsung dikawinkan',r_fage_leo:'Umur belum cukup (min. 10 bulan)',r_mage_leo:'Umur belum cukup (min. 9 bulan)',e_species_mismatch:'Hanya hewan dari spesies yang sama yang bisa dikawinkan.',br_sub_ball:'Pilih pasangan ball python, lihat peluang tiap morph keturunannya, lalu pasangkan kapan saja selama keduanya sudah cukup umur (jantan ≥10 bulan, betina ≥24 bulan). Peluang ovulasi ±55% per bulan, 2–9 telur per clutch tergantung berat betina.',br_sub_leo:'Pilih pasangan leopard gecko (jantan ≥9 bulan, betina ≥10 bulan). Peluang ovulasi ±70%. Sekali kawin, betina bertelur 4–6 clutch berturut-turut (1 clutch berisi 1–2 telur tiap bulan), lalu istirahat 3 bulan.',d_life:'Batas umur',d_life_v:p=>`${p.max} · sisa ${p.left}`,
+<h3>6. Suhu &amp; ekonomi</h3><p>Jenis kelamin axolotl ditentukan kromosom, bukan suhu, jadi selalu sekitar 50:50 dan suhu inkubatornya tidak bisa diatur. Axolotl murah per ekor, tapi satu clutch bisa menghasilkan banyak uang dari penjualan otomatis. Batas umurnya 15 tahun.</p>`,guide_rs:`<h3>1. Resesif: Albino, Caramel Pink, Hypo, Charcoal, Leucistic</h3><p>Hampir semua morph kura-kura brazil resesif: butuh <b>dua salinan</b> agar terlihat, dan kura-kura dengan satu salinan disebut het (tampak Normal). Status resesif ini berasal dari catatan komunitas breeder, karena genetika kura-kura belum diteliti serinci ular atau gecko.</p>
+<ul><li><b>Albino</b>: tanpa pigmen gelap, cangkang dan kulit kuning-krem, mata merah.</li><li><b>Caramel Pink</b>: warna karamel kemerahmudaan dengan mata coklat gelap.</li><li><b>Hypo</b> (kadang disebut Ghost): pigmen gelap berkurang, hijaunya lebih terang dan polanya pudar.</li><li><b>Charcoal</b>: abu-abu gelap dengan mata hitam.</li><li><b>Leucistic</b>: cangkang putih tanpa pola, mata biru. Morph paling langka.</li></ul>
+<h3>2. Co-dominan: Golden Flame</h3><p>Corak api kuning-oranye di cangkang. Satu salinan sudah terlihat; dua salinan menjadi <b>Super Golden Flame</b> dengan api yang jauh lebih banyak. Sumber tentang gen ini paling sedikit di antara gen kura-kura brazil.</p>
+<h3>3. Kombinasi bernama</h3><ul><li><b>Snow</b> = Albino + Caramel Pink (putih kemerahmudaan)</li><li><b>Lubino</b> = Leucistic + Albino (putih krem, mata merah)</li><li><b>Hybino</b> = Hypo + Albino (kuning pucat)</li></ul><p>Gabungan lain memakai nama gabungan biasa, misalnya <b>Hypo Caramel Pink</b>, <b>Golden Flame Albino</b>, atau <b>Charcoal Hypo</b>. Kura-kura tanpa gen disebut <b>Normal</b>. Kura-kura brazil tidak punya sifat line-bred.</p>
+<h3>4. Siklus breeding</h3><ul><li>Kura-kura hanya bisa dikawinkan dengan kura-kura. Jantan siap di umur 24 bulan, betina baru di umur 36 bulan.</li><li>Peluang bertelur ±65%. Sekali kawin, betina bertelur <b>2–4 clutch</b> berturut-turut, sebulan sekali, 6–20 telur per clutch (makin berat makin banyak). Berat betina turun ±8% tiap clutch, dan musim bertelur berhenti lebih awal kalau beratnya di bawah 900 g.</li><li>Telur menetas <b>2 bulan</b> kemudian. Betina istirahat 6 bulan sebelum bisa dikawinkan lagi.</li><li>Betina dewasa jauh lebih besar dari jantan (±1,3 kg vs ±550 g).</li></ul>
+<h3>5. Suhu inkubator</h3><p>Seperti di dunia nyata, suhu menentukan jenis kelamin, tapi arahnya <b>kebalikan ball python</b>: 26 °C kebanyakan jantan, 29 °C sekitar 50:50, 32 °C kebanyakan betina (maks. 80% : 20%).</p>
+<h3>6. Catatan dunia nyata</h3><p>Kura-kura brazil termasuk spesies invasif: dari Amerika Utara, kini menyebar di banyak negara dan bersaing dengan kura-kura asli. Di beberapa negara penjualannya dibatasi. Kalau memelihara di dunia nyata, siapkan perawatan untuk puluhan tahun dan <b>jangan pernah melepas kura-kura ke alam</b>.</p>`,d_species:'Spesies',mk_pairnow:'bisa langsung dikawinkan',r_fage_leo:'Umur belum cukup (min. 10 bulan)',r_mage_leo:'Umur belum cukup (min. 9 bulan)',e_species_mismatch:'Hanya hewan dari spesies yang sama yang bisa dikawinkan.',br_sub_ball:'Pilih pasangan ball python, lihat peluang tiap morph keturunannya, lalu pasangkan kapan saja selama keduanya sudah cukup umur (jantan ≥10 bulan, betina ≥24 bulan). Peluang ovulasi ±55% per bulan, 2–9 telur per clutch tergantung berat betina.',br_sub_leo:'Pilih pasangan leopard gecko (jantan ≥9 bulan, betina ≥10 bulan). Peluang ovulasi ±70%. Sekali kawin, betina bertelur 4–6 clutch berturut-turut (1 clutch berisi 1–2 telur tiap bulan), lalu istirahat 3 bulan.',d_life:'Batas umur',d_life_v:p=>`${p.max} · sisa ${p.left}`,
  // koleksi
  col_sub:p=>`${p.n} ekor · nilai koleksi ${p.v} · klik hewan untuk detail, jual, atau iklankan.`,
  f_all:'Semua',f_M:'♂ Jantan',f_F:'♀ Betina',f_ready:'Siap kawin',f_listed:'Diiklankan',
@@ -386,7 +392,7 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  pairs_h:'Pasangan bulan ini',cancel:'Batalkan',
  t_paired:'Pasangan dibuat. Klik <b>Lanjut bulan</b> untuk melihat hasilnya.',
  // inkubator
- inc_sub:'Betina bunting bertelur setelah ovulasi, lalu telurnya menetas di inkubator. Untuk ball python dan leopard gecko, atur suhu tiap clutch untuk mengarahkan jenis kelamin anak (maks. 80% : 20%); suhu hanya bisa diubah selama sepertiga pertama masa inkubasi. Jenis kelamin axolotl tidak dipengaruhi suhu, dan bayinya menetas sebagai satu kelompok: pilih sampai 3 ekor, sisanya dijual otomatis. Detail tiap spesies ada di Panduan spesies.',
+ inc_sub:'Betina bunting bertelur setelah ovulasi, lalu telurnya menetas di inkubator. Untuk ball python, leopard gecko, dan kura-kura brazil, atur suhu tiap clutch untuk mengarahkan jenis kelamin anak (maks. 80% : 20%); suhu hanya bisa diubah selama sepertiga pertama masa inkubasi. Jenis kelamin axolotl tidak dipengaruhi suhu, dan bayinya menetas sebagai satu kelompok: pilih sampai 3 ekor, sisanya dijual otomatis. Detail tiap spesies ada di Panduan spesies.',
  th_temp:'Suhu inkubasi',inc_locked:'Terkunci — jenis kelamin sudah ditentukan suhu ini',inc_open:p=>`Masih bisa diubah sampai ${p.n} kali “Lanjut bulan” lagi`,inc_default:'bawaan',t_temp:p=>`🌡️ Suhu inkubasi diatur ke ${p.t} (${p.o}).`,e_temp_locked:'Suhu sudah terkunci: lewat sepertiga masa inkubasi.',e_bad_temp:'Suhu tidak valid (29–33 °C, kelipatan 0,5).',e_clutch_not_found:'Clutch tidak ditemukan.',
  inc_gravid_h:'Betina bunting',inc_gravid_empty:'Belum ada betina bunting.',inc_clutch_h:'Clutch di inkubator',
  th_dam:'Induk betina',th_sire:'Induk jantan',th_fertile:'Subur',th_slug:'Slug',th_hatch:'Menetas',mo:p=>`${p.n} bln`,inc_empty:'Inkubator kosong.',
@@ -668,7 +674,7 @@ en:{
  dzd_list:'<p>🗑️ Your login, username and game save are permanently deleted.</p><p>👥 All friendships and chats are deleted too.</p><p>🔁 Unanswered trade offers are cancelled; other players’ items go back to them.</p><p>📜 In other players’ trade history you’ll appear as "(deleted account)".</p><p><b>This can’t be undone.</b></p>',
  t_deleted:'Your account has been deleted. Thanks for playing Morph Lab.',e_confirm_mismatch:'The confirmation word doesn’t match.',
  log_title:'Breeder log',log_clear:'🗑️ Clear',log_empty:'No log entries yet.',log_clear_h:'Clear breeder log?',log_clear_q:'All log entries will be permanently deleted. Your collection, money and game progress stay the same.',log_clear_yes:'Yes, clear log',t_logcleared:'Breeder log cleared.',
- tag_gravid:p=>`Gravid · eggs in ~${p.n} mo`,tag_gravid_c:p=>`Gravid · clutch ${p.no}/${p.tot} · eggs in ~${p.n} mo`,tag_pairedw:p=>`Paired with ${p.c}`,tag_pairs:p=>`${p.n} ${p.n===1?'pairing':'pairings'} this month`,tag_listed:'Listed',tag_ready:'Ready to breed',tag_hatch:'Hatchling',tag_old:p=>`Old · ${p.a} left`,sp_all:'All',sp_ball:'Ball python',sp_leo:'Leopard gecko',sp_axo:'Axolotl',r_fage_axo:'Too young (min. 18 months)',r_mage_axo:'Too young (min. 12 months)',e_brood_gone:'This group of babies has already been handled.',inc_notemp:'Doesn’t set sex (50:50)',
+ tag_gravid:p=>`Gravid · eggs in ~${p.n} mo`,tag_gravid_c:p=>`Gravid · clutch ${p.no}/${p.tot} · eggs in ~${p.n} mo`,tag_pairedw:p=>`Paired with ${p.c}`,tag_pairs:p=>`${p.n} ${p.n===1?'pairing':'pairings'} this month`,tag_listed:'Listed',tag_ready:'Ready to breed',tag_hatch:'Hatchling',tag_old:p=>`Old · ${p.a} left`,sp_all:'All',sp_ball:'Ball python',sp_leo:'Leopard gecko',sp_axo:'Axolotl',sp_rs:'Red-eared slider',r_fage_rs:'Too young (min. 36 months)',r_mage_rs:'Too young (min. 24 months)',gd_eggs_rs:'6–20 per clutch depending on the female’s weight, 2–4 clutches from one pairing',br_sub_rs:'Pick a red-eared slider pair (males ≥24 months, females ≥36 months). A paired female has a ~65% chance to ovulate; one pairing gives 2–4 clutches in a row (6–20 eggs each, more when she’s heavier), then she rests for 6 months. Incubator temperature: cool gives more males, warm gives more females.',r_fage_axo:'Too young (min. 18 months)',r_mage_axo:'Too young (min. 12 months)',e_brood_gone:'This group of babies has already been handled.',inc_notemp:'Doesn’t set sex (50:50)',
 brood_h:'Pick axolotl babies',brood_n:p=>`${p.n} babies · keep up to ${p.k}`,brood_th_n:'Count',brood_th_v:'Value each',brood_th_keep:'Keep',brood_sum:p=>`Keeping ${p.k}/${p.max} · the other ${p.n} are sold automatically ≈ ${p.v}`,brood_go:p=>p.k?`Keep ${p.k} & sell the rest`:'Sell them all',brood_note:p=>`If you haven’t picked by “Next month”, the ${p.k} most valuable babies are kept automatically and the rest are sold.`,t_brood:'🫧 Axolotl babies picked; the rest have been sold.',
 l_brood:p=>`🫧 ${p.born} axolotl babies hatched from ${p.dam} × ${p.sire} (♀ ${p.nf} · ♂ ${p.nm}${p.dead?`, ${p.dead} failed eggs`:''}). Pick up to ${p.k} in the Incubator tab; the rest are sold automatically.`,l_brood_done:p=>`🫧 Babies from ${p.d}: kept ${p.k}, sold ${p.n} for ${p.v}.`,l_brood_auto:p=>`🫧 Babies from ${p.d} weren’t picked: the ${p.k} most valuable were kept automatically and ${p.n} sold for ${p.v}.`,h_brood:p=>`${p.n} axolotl babies hatched, pick ${p.k}`,
 br_sub_axo:'Pick an axolotl pair (males ≥12 months, females ≥18 months). A paired female has a ~60% chance to spawn; she lays a month later, up to 100 eggs (more when she’s heavier), then rests for 4 months. After hatching, keep up to 3 babies and the rest are sold automatically.',
@@ -681,7 +687,13 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
 <ul><li><b>Shine</b>: high = <b>High Iridophore</b> (lots of shiny gold/silver flecks). Golden Albino + High Iridophore = <b>Sunburst</b>, Copper + High Iridophore = <b>Moonburst</b>. Melanoid hides shine.</li><li><b>Dark spots</b>: high = <b>Dirty Leucistic</b>, very high = <b>Piebald</b> (large dark patches). Only shows on non-albino Leucistics.</li><li><b>Colour tone</b>: light = <b>Light Wild</b>, dark = <b>Dark Wild</b>. Only shows on Wild Types.</li></ul><p>Hidden traits are still passed on. Line-bred labels add value and are recorded in the Morph Dex.</p>
 <h3>4. Breeding cycle</h3><ul><li>Axolotls can only be paired with axolotls. Males are ready at 12 months, females at 18 months.</li><li>A paired female has a ~60% chance to spawn; she lays <b>a month later</b>, up to <b>100 eggs</b> (~50 at ~70 g, close to 100 at ~110 g). About 15% of eggs are infertile.</li><li>Eggs hatch <b>a month</b> later. The female loses ~10% of her weight and rests 4 months before she can be paired again.</li></ul>
 <h3>5. Picking babies</h3><p>Axolotl babies hatch as <b>one group</b> in the Incubator tab, grouped by morph, sex and line-bred trait level. Keep <b>up to 3</b> for your collection; the rest are quick-sold automatically (60% of their value). Selling many at once slightly lowers that morph’s market price. If you haven’t picked by “Next month”, the 3 most valuable babies are kept automatically.</p>
-<h3>6. Temperature &amp; economy</h3><p>Axolotl sex is set by chromosomes, not temperature, so it’s always about 50:50 and the incubator temperature can’t be changed. Axolotls are cheap per animal, but one clutch can earn a lot from the automatic sale. They live up to 15 years.</p>`,d_species:'Species',mk_pairnow:'can be paired right away',r_fage_leo:'Too young (min. 10 months)',r_mage_leo:'Too young (min. 9 months)',e_species_mismatch:'Only animals of the same species can be paired.',br_sub_ball:'Pick a ball python pair, check the odds for every possible offspring, then pair them any time once both are old enough (males ≥10 months, females ≥24 months). Each month a paired female has a ~55% chance to ovulate, and lays 2–9 eggs depending on her weight.',br_sub_leo:'Pick a leopard gecko pair (males ≥9 months, females ≥10 months). A paired female has a ~70% chance to ovulate. One pairing gives 4–6 clutches in a row (1 clutch of 1–2 eggs every month), then she rests for 3 months.',d_life:'Lifespan',d_life_v:p=>`${p.max} · ${p.left} left`,
+<h3>6. Temperature &amp; economy</h3><p>Axolotl sex is set by chromosomes, not temperature, so it’s always about 50:50 and the incubator temperature can’t be changed. Axolotls are cheap per animal, but one clutch can earn a lot from the automatic sale. They live up to 15 years.</p>`,guide_rs:`<h3>1. Recessive: Albino, Caramel Pink, Hypo, Charcoal, Leucistic</h3><p>Almost every red-eared slider morph is recessive: two copies are needed to show it, and a turtle with one copy is called het (looks Normal). These recessive labels come from breeder community notes, because turtle genetics haven’t been studied as closely as snakes or geckos.</p>
+<ul><li><b>Albino</b>: no dark pigment, yellow-cream shell and skin, red eyes.</li><li><b>Caramel Pink</b>: pinkish caramel colour with dark brown eyes.</li><li><b>Hypo</b> (sometimes called Ghost): less dark pigment, brighter green and a faded pattern.</li><li><b>Charcoal</b>: dark grey with black eyes.</li><li><b>Leucistic</b>: white patternless shell, blue eyes. The rarest morph.</li></ul>
+<h3>2. Co-dominant: Golden Flame</h3><p>Yellow-orange flame markings on the shell. One copy already shows; two copies make <b>Super Golden Flame</b> with far more flames. This gene has the fewest sources of all red-eared slider genes.</p>
+<h3>3. Named combos</h3><ul><li><b>Snow</b> = Albino + Caramel Pink (pinkish white)</li><li><b>Lubino</b> = Leucistic + Albino (cream white, red eyes)</li><li><b>Hybino</b> = Hypo + Albino (pale yellow)</li></ul><p>Other combos use plain combined names, such as <b>Hypo Caramel Pink</b>, <b>Golden Flame Albino</b> or <b>Charcoal Hypo</b>. A turtle without genes is called <b>Normal</b>. Red-eared sliders have no line-bred traits.</p>
+<h3>4. Breeding cycle</h3><ul><li>Turtles can only be paired with turtles. Males are ready at 24 months, females not until 36 months.</li><li>~65% chance to ovulate. One pairing gives <b>2–4 clutches</b> in a row, one a month, with 6–20 eggs each (more when she’s heavier). The female loses ~8% weight per clutch, and the season ends early if she drops below 900 g.</li><li>Eggs hatch <b>2 months</b> later. The female rests 6 months before she can be paired again.</li><li>Adult females are much bigger than males (~1.3 kg vs ~550 g).</li></ul>
+<h3>5. Incubator temperature</h3><p>As in real life, temperature sets the sex, but the <b>opposite way from ball pythons</b>: 26 °C gives mostly males, 29 °C about 50:50, 32 °C mostly females (max 80% : 20%).</p>
+<h3>6. Real-world note</h3><p>The red-eared slider is an invasive species: native to North America, it now lives in many countries and competes with native turtles. Some countries restrict its sale. If you keep one in real life, plan for decades of care and <b>never release a turtle into the wild</b>.</p>`,d_species:'Species',mk_pairnow:'can be paired right away',r_fage_leo:'Too young (min. 10 months)',r_mage_leo:'Too young (min. 9 months)',e_species_mismatch:'Only animals of the same species can be paired.',br_sub_ball:'Pick a ball python pair, check the odds for every possible offspring, then pair them any time once both are old enough (males ≥10 months, females ≥24 months). Each month a paired female has a ~55% chance to ovulate, and lays 2–9 eggs depending on her weight.',br_sub_leo:'Pick a leopard gecko pair (males ≥9 months, females ≥10 months). A paired female has a ~70% chance to ovulate. One pairing gives 4–6 clutches in a row (1 clutch of 1–2 eggs every month), then she rests for 3 months.',d_life:'Lifespan',d_life_v:p=>`${p.max} · ${p.left} left`,
  col_sub:p=>`${p.n} ${p.n===1?'animal':'animals'} · collection value ${p.v} · click an animal to see details, sell it or list it.`,
  f_all:'All',f_M:'♂ Males',f_F:'♀ Females',f_ready:'Ready to breed',f_listed:'Listed',
  sort_by:'Sort by',sort_val:'Value',sort_age:'Age',sort_new:'Newest',sort_id:'ID',sort_w:'Weight',sort_life:'Life left',sort_inb:'Inbreeding',sort_name:'Morph name (A–Z)',col_q_ph:'Search ID, nickname, morph or gene…',col_st:'Status',col_src:'Origin',col_gene:'Gene',col_gene_any:'Any gene',col_gm:'Gene match',
@@ -740,7 +752,7 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  th_morph:'Morph',th_chance:'Chance',th_value:'♂ hatchling value',tag_new:'new',odds_more:p=>`+${p.n} more combinations with lower odds.`,
  pairs_h:'Pairings this month',cancel:'Cancel',
  t_paired:'Pairing set. Click <b>Next month</b> to see the result.',
- inc_sub:'Gravid females lay after ovulating, and the eggs hatch in the incubator. For ball pythons and leopard geckos, set each clutch’s temperature to steer the babies’ sex (up to 80% : 20%); it can only be changed during the first third of incubation. Axolotl sex isn’t affected by temperature, and their babies hatch as one group: keep up to 3 and the rest are sold automatically. See the Species guide for each species’ details.',
+ inc_sub:'Gravid females lay after ovulating, and the eggs hatch in the incubator. For ball pythons, leopard geckos and red-eared sliders, set each clutch’s temperature to steer the babies’ sex (up to 80% : 20%); it can only be changed during the first third of incubation. Axolotl sex isn’t affected by temperature, and their babies hatch as one group: keep up to 3 and the rest are sold automatically. See the Species guide for each species’ details.',
  th_temp:'Incubation temp',inc_locked:'Locked — this temperature has set the sexes',inc_open:p=>`Can still be changed for ${p.n} more “Next month” ${p.n===1?'press':'presses'}`,inc_default:'default',t_temp:p=>`🌡️ Incubation set to ${p.t} (${p.o}).`,e_temp_locked:'The temperature is locked: past the first third of incubation.',e_bad_temp:'Invalid temperature (29–33 °C, steps of 0.5).',e_clutch_not_found:'Clutch not found.',
  inc_gravid_h:'Gravid females',inc_gravid_empty:'No gravid females yet.',inc_clutch_h:'Clutches in the incubator',
  th_dam:'Dam',th_sire:'Sire',th_fertile:'Fertile',th_slug:'Slugs',th_hatch:'Hatches in',mo:p=>`${p.n} mo`,inc_empty:'The incubator is empty.',
@@ -1240,10 +1252,99 @@ function drawAxo(cv,tr,seed,lb){
   if(A.ring){x.fillStyle=sh(A.ring,1);x.beginPath();x.arc(cx,cy,er*1.3,0,6.283);x.fill()}
   x.fillStyle=sh(A.eye,1);x.beginPath();x.arc(cx,cy,er,0,6.283);x.fill();
   x.fillStyle='rgba(255,255,255,.55)';x.beginPath();x.arc(cx-er*.3,cy-er*.3,er*.3,0,6.283);x.fill()}}
+// v60: kura-kura brazil (red-eared slider): gambar dari atas (cangkang bersisik, kepala dengan garis merah, 4 kaki, ekor).
+function rsLook(tr){const s=new Set(tr);
+ // shell = warna cangkang, line = garis/lingkaran kuning, seam = sambungan sisik, skin = kulit, stripe = garis kulit
+ let shell=[76,96,46],line=[208,192,78],seam=[38,46,24],skin=[66,88,44],stripe=[220,204,92],ear=[212,44,36],iris=[156,152,62],pupil=[18,16,10],plast=[214,196,92];
+ const st={lines:1,flame:0,eyeRing:true};
+ if(s.has('rechar')){shell=[74,76,78];line=[132,130,112];seam=[36,36,38];skin=[78,78,80];stripe=[150,144,112];ear=[146,78,68];iris=[24,22,22];pupil=[10,10,10];st.lines=.7}
+ if(s.has('recar')){shell=[206,150,112];line=[238,190,166];seam=[156,104,80];skin=[220,166,150];stripe=[244,206,180];ear=[226,104,94];iris=[70,40,28];pupil=[30,16,12]}
+ if(s.has('rehyp')){shell=lerp(shell,[226,224,170],.32);line=lerp(line,[250,240,170],.35);seam=lerp(seam,shell,.45);skin=lerp(skin,[226,224,170],.3);stripe=lerp(stripe,[250,240,180],.3);st.lines*=.85}
+ if(s.has('realb')){const warm=c=>lerp(c,[246,222,140],.78);shell=warm(shell);line=[240,168,56];seam=lerp(shell,[214,170,96],.6);skin=lerp(skin,[248,232,170],.8);stripe=[252,214,120];ear=[236,96,74];iris=[214,58,74];pupil=[160,24,40];st.eyeRing=false}
+ // kombinasi bernama
+ if(s.has('realb')&&s.has('recar')){shell=[248,228,222];line=[244,196,190];seam=[224,190,184];skin=[250,232,228];stripe=[252,214,206];ear=[238,142,132];st.lines=.55}          // Snow
+ if(s.has('realb')&&s.has('rehyp')){shell=[246,236,184];line=[252,226,150];seam=[228,210,156];skin=[248,240,200];stripe=[252,232,170];st.lines=.6}                         // Hybino
+ if(s.has('releu')){shell=[244,245,246];line=null;seam=[200,206,214];skin=[246,244,238];stripe=null;ear=[240,168,132];iris=[92,150,222];pupil=[30,40,70];st.lines=0;
+  if(s.has('realb')){shell=[250,240,198];seam=[224,208,160];skin=[250,244,214];ear=[244,176,150];iris=[222,80,100];pupil=[170,30,50]}}                                  // Lubino
+ if(s.has('regf'))st.flame=1;if(s.has('resgf'))st.flame=2;
+ if(st.flame&&s.has('releu'))st.flame*=.5;
+ return{shell,line,seam,skin,stripe,ear,iris,pupil,plast,st}}
+
+function drawTurtle(cv,tr,seed,lb){
+ const W=cv.width,H=cv.height,x=cv.getContext('2d');x.clearRect(0,0,W,H);
+ const A=rsLook(tr),st=A.st,rr=rngSeed(seed+11),nz=noise(seed+3),nz2=noise(seed+4),nf=noise(seed+7);
+ const cx=W*.46,cy=H*.5,a=H*.5,b=H*.36;          // cangkang (sumbu panjang ke arah kepala)
+ const turn=(rr()-.5)*.35;                          // kepala sedikit menoleh
+ const sh=(c,f,al)=>`rgba(${c.map(v=>clamp(v*f,0,255)|0).join(',')},${al==null?1:al})`;
+ // bayangan
+ x.fillStyle='rgba(0,0,0,.2)';x.beginPath();x.ellipse(cx+H*.03,cy+H*.05,a*1.04,b*1.04,0,0,6.283);x.fill();
+ // anggota badan berdayung + garis kulit
+ const limb=(ang,len,wid,claws,rot)=>{const ex=cx+Math.cos(ang)*a*.86,ey=cy+Math.sin(ang)*b*.86;x.save();x.translate(ex,ey);x.rotate(rot);
+  x.fillStyle=sh(A.skin,.95);x.beginPath();x.ellipse(len*.5,0,len*.6,wid*.5,0,0,6.283);x.fill();
+  if(A.stripe){x.save();x.beginPath();x.ellipse(len*.5,0,len*.6,wid*.5,0,0,6.283);x.clip();x.strokeStyle=sh(A.stripe,1,.85);x.lineWidth=Math.max(1,H*.012);
+   for(const o of[-.22,.12,.38]){x.beginPath();x.moveTo(-len*.1,wid*o);x.lineTo(len*1.1,wid*o*.7);x.stroke()}x.restore()}
+  if(claws){x.strokeStyle=sh(A.skin,.6);x.lineWidth=Math.max(1,H*.011);x.lineCap='round';for(let k=0;k<claws;k++){const yy=(k/(claws-1)-.5)*wid*.62;x.beginPath();x.moveTo(len*1.02,yy);x.lineTo(len*1.14,yy*1.08);x.stroke()}}
+  x.restore()};
+ for(const sd of[-1,1]){
+  const j1=(rr()-.5)*.35,j2=(rr()-.5)*.35;
+  limb(sd*.95,H*.21,H*.13,5,sd*(.85+j1));           // kaki depan
+  limb(sd*2.3,H*.17,H*.12,4,sd*(2.45+j2))}         // kaki belakang
+ // ekor
+ x.fillStyle=sh(A.skin,.9);x.beginPath();x.moveTo(cx-a*.9,cy-H*.05);x.quadraticCurveTo(cx-a-H*.08,cy+(rr()-.5)*H*.06,cx-a-H*.13,cy+(rr()-.5)*H*.05);x.quadraticCurveTo(cx-a-H*.05,cy+H*.02,cx-a*.9,cy+H*.05);x.fill();
+ // leher + kepala
+ const hx=cx+a+H*.14,hy=cy+turn*H*.25,hrx=H*.15,hry=H*.11,hang=turn*.6;
+ x.save();x.translate(hx,hy);x.rotate(hang);
+ x.fillStyle=sh(A.skin,.95);x.beginPath();x.ellipse(-hrx*1.1,0,hrx*.9,hry*.82,0,0,6.283);x.fill();   // leher
+ x.beginPath();x.ellipse(0,0,hrx*1.05,hry,0,0,6.283);x.fill();
+ x.save();x.beginPath();x.ellipse(0,0,hrx*1.05,hry,0,0,6.283);x.ellipse(-hrx*1.1,0,hrx*.9,hry*.82,0,0,6.283);x.clip();
+ if(A.stripe){x.strokeStyle=sh(A.stripe,1,.9);x.lineWidth=Math.max(1,H*.013);
+  for(const o of[-.62,0,.62]){x.beginPath();x.moveTo(-hrx*2,hry*o);x.quadraticCurveTo(0,hry*o*.95,hrx*.95,hry*o*.3);x.stroke()}}
+ // garis merah "telinga" di kedua sisi, di belakang mata
+ x.fillStyle=sh(A.ear,1);for(const sd of[-1,1]){x.beginPath();x.ellipse(-hrx*.5,sd*hry*.72,hrx*.5,hry*.17,-sd*.12,0,6.283);x.fill()}
+ x.restore();
+ // mata di tepi kepala
+ for(const sd of[-1,1]){const ex=hrx*.32,ey=sd*hry*.66,er=hry*.22;
+  x.fillStyle=sh(A.iris,1);x.beginPath();x.arc(ex,ey,er,0,6.283);x.fill();
+  if(st.eyeRing&&A.stripe){x.strokeStyle=sh(A.stripe,1,.8);x.lineWidth=Math.max(1,H*.008);x.stroke()}
+  x.fillStyle=sh(A.pupil,1);x.beginPath();x.ellipse(ex,ey,er*.55,er*.28,0,0,6.283);x.fill();
+  x.fillStyle='rgba(255,255,255,.5)';x.beginPath();x.arc(ex-er*.3,ey-er*.3,er*.26,0,6.283);x.fill()}
+ x.fillStyle=sh(A.skin,.55);for(const sd of[-1,1]){x.beginPath();x.arc(hrx*.95,sd*hry*.16,H*.007,0,6.283);x.fill()}   // lubang hidung
+ x.restore();
+ // cangkang: dihitung per piksel (sisik, garis kuning, corak api, kubah)
+ const x0=Math.floor(cx-a-2),y0=Math.floor(cy-b-2),w=Math.ceil(2*a+4),h=Math.ceil(2*b+4),img=x.getImageData(x0,y0,w,h),d=img.data;
+ const VC=[-.5,-.17,.17,.5],CC=[-.36,.02,.4],RING=.83,SW=H*.011;
+ const nearest=(v,arr)=>{let m=9;for(const c of arr)m=Math.min(m,Math.abs(v-c));return m};
+ const idx=(v,arr)=>{let i=0;while(i<arr.length&&v>arr[i])i++;return i};
+ for(let py=0;py<h;py++)for(let px=0;px<w;px++){
+  const X=(x0+px+.5-cx)/a,Y=(y0+py+.5-cy)/b,r=Math.hypot(X,Y);if(r>1)continue;
+  const aY=Math.abs(Y);let c=A.shell.slice(),seamD,lineOn=false,flameF=0;
+  if(r>RING){ // sisik tepi (marginal)
+   const ang=Math.atan2(Y,X),seg=(ang/6.2832+1)*24,fs=seg-Math.floor(seg);
+   seamD=Math.min((r-RING)*Math.min(a,b),Math.abs(fs-.5)<.5?Math.min(fs,1-fs)*6.2832/24*r*Math.min(a,b)*1.2:9);
+   if(st.lines&&Math.abs(fs-.5)<.09*st.lines&&r<.97)lineOn=true;
+   if(st.flame&&nf(seg*1.7)>.62-.2*(st.flame-1))flameF=.75;
+  }else{
+   const vb=.27+.05*(1-Math.min(1,nearest(X,VC)/.17));     // batas vertebral sedikit bersudut (heksagon)
+   let ccx,ccy;
+   if(aY<vb){const i=idx(X,VC),lo=i?VC[i-1]:-RING,hi=i<VC.length?VC[i]:RING;ccx=(lo+hi)/2;ccy=0;
+    seamD=Math.min(Math.abs(aY-vb)*b,nearest(X,VC)*a,(RING-r)*Math.min(a,b))}
+   else{const Xs=X-.12*(aY-vb),i=idx(Xs,CC),lo=i?CC[i-1]:-RING,hi=i<CC.length?CC[i]:RING;ccx=(lo+hi)/2;ccy=Math.sign(Y)*.56;
+    seamD=Math.min(Math.abs(aY-vb)*b,nearest(Xs,CC)*a,(RING-r)*Math.min(a,b))}
+   if(st.lines){const dd=Math.hypot((X-ccx)*a,(Y-ccy)*b)/H,ring=dd*8.5+.55*nz(X*6+Y*9+ccx*13+ccy*5);const fr=ring-Math.floor(ring);
+    if(dd>.025&&fr<.13*st.lines)lineOn=true}
+   if(st.flame&&r>.3){const ang=Math.atan2(Y,X),fv=nf(ang*7+3)+.55*r-.15*nz2(r*9);if(fv>1.02-.28*(st.flame-1))flameF=Math.min(1,(fv-1.02+.28*(st.flame-1))*5)}
+  }
+  if(lineOn&&A.line)c=lerp(c,A.line,.85);
+  if(flameF)c=lerp(c,[242,146,40],flameF*.85);
+  if(seamD<SW)c=lerp(c,A.seam,.8*(1-seamD/SW*.6));
+  let f=1.14-.36*r*r;const hl=Math.hypot(X+.2,Y+.3);if(hl<.45)f+=.07*(1-hl/.45);
+  const al=r>.985?(1-r)/.015:1,o=(py*w+px)*4;
+  for(let k=0;k<3;k++)d[o+k]=d[o+k]*(1-al)+clamp(c[k]*f,0,255)*al;d[o+3]=Math.max(d[o+3],al*255)}
+ x.putImageData(img,x0,y0)}
 const TH=new Map();
 // lb = label line-bred yang terlihat (leopard gecko saja), ikut mewarnai gambar
 const sThumb=(s,big)=>thumb(traitsOf(s.g),s.seed,!!big,spOfG(s.g),Core.lbVisibleLabels(s));   // gambar hewan milik siapa pun
-function thumb(tr,seed,big,sp,lb){sp=sp||spOfTr(tr);lb=Core.hasLb(sp)&&lb&&lb.length?lb:null;const k=sp+':'+tr.join('|')+'#'+seed+(big?'B':'')+(lb?'~'+lb.join('|'):'');if(TH.has(k))return TH.get(k);const c=document.createElement('canvas');c.width=big?640:320;c.height=big?296:148;(sp==='leo'?drawGecko:sp==='axo'?drawAxo:drawSnake)(c,tr,seed,lb);const u=c.toDataURL();TH.set(k,u);return u}
+function thumb(tr,seed,big,sp,lb){sp=sp||spOfTr(tr);lb=Core.hasLb(sp)&&lb&&lb.length?lb:null;const k=sp+':'+tr.join('|')+'#'+seed+(big?'B':'')+(lb?'~'+lb.join('|'):'');if(TH.has(k))return TH.get(k);const c=document.createElement('canvas');c.width=big?640:320;c.height=big?296:148;(sp==='leo'?drawGecko:sp==='axo'?drawAxo:sp==='rs'?drawTurtle:drawSnake)(c,tr,seed,lb);const u=c.toDataURL();TH.set(k,u);return u}
 
 /* ========= UI ========= */
 const $=id=>document.getElementById(id);
@@ -1445,6 +1546,8 @@ function planCarrier(s,k){const l=SPECIES[BRSP].loci.find(x=>x.k===TLOC[k]),a=s.
 // Perkiraan bayi menetas per musim dari betina ini (sebelum dikali peluang target), memperhitungkan inbreeding.
 function planHatch(f,F){const P=SPECIES[BRSP],dead=1-Math.min(.95,HATCH_DEAD+INB_DEAD*F),sl=i=>1-Math.min(.95,P.slug+P.slugStep*i+INB_SLUG*F);
  if(BRSP==='leo'){let n=0;for(let i=0;i<5;i++)n+=1.9*sl(i);return{n:n*dead,eggs:9.5}}
+ // v60: kura-kura brazil: 2–4 clutch (rata-rata 3), telur per clutch dari berat betina yang turun ±8% tiap clutch
+ if(BRSP==='rs'){let n=0,w=f.w,e0=0;for(let i=0;i<4;i++){if(i&&w<P.minLayW)break;const e=clamp(Math.round(6+(w-900)/60),6,20);if(!i)e0=e;n+=(i<2?1:i===2?2/3:1/3)*e*sl(i);w*=P.layLoss}return{n:n*dead,eggs:e0}}
  const eggs=BRSP==='axo'?clamp(Math.round(50+(f.w-70)*1.2),30,100):clamp(Math.round(2+(f.w-1300)/170+.25),2,11);
  return{n:eggs*sl(0)*dead,eggs}}
 function vPlanner(){
@@ -1710,7 +1813,7 @@ async function pmSellAsk(id){const s=byId(id);if(!s||pmBlocked(s))return;await P
 async function pmSell(id){const el=$('pmprice');if(!el)return;const price=Math.round(+el.value);
  if(!Number.isFinite(price)||price<1){toast(t('e_bad_price'));return}
  closeModal();const r=await game({type:'market_list',id,price});if(r){PM.list=null;PM.mine=null;PM.load()}}
-const SP_ICON={ball:'🐍',leo:'🦎',axo:'💧'};
+const SP_ICON={ball:'🐍',leo:'🦎',axo:'💧',rs:'🐢'};
 const mkRange=(sp,k)=>{const M=SPECIES[sp].mk[k];const w=v=>v>=1000?(v/1000).toLocaleString(LANG==='id'?'id-ID':'en-US',{maximumFractionDigits:1})+' kg':v+' g';return `${ageTxt(M.a[0])}–${ageTxt(M.a[1])} · ${w(M.w[0])}–${w(M.w[1])}`};
 function repPanel(){const r=S.rep||0,L=repLevel(r),lo=repNeed(L),hi=repNeed(L+1),pc=Math.round((r-lo)/(hi-lo)*100);
  return `<div class="panel reppanel"><div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:6px"><b>⭐ ${t('rep_h',{r:fmt(r),l:L})}</b><span class="kbd">${t('rep_next',{n:fmt(hi-r),l:L+1})}</span></div>
@@ -2595,7 +2698,7 @@ var Rank={cat:'wealth',sp:'',fr:false,data:{},loading:false,
    <td class="num kbd">${fmt(r.turn||0)}</td><td class="num"><b>${this.score(r)}</b></td></tr>`},
  html(){const c=this.data[this.key()],d=c&&c.d;
   const chips=`<div class="toolbar">${RANK_CATS.map(([k,ic])=>`<button class="chip ${this.cat===k?'on':''}" data-act="rk_cat" data-v="${k}">${ic} ${t('rk_'+k)}</button>`).join('')}</div>
-   ${this.cat==='top'?`<div class="toolbar">${['','ball','leo','axo'].map(sp=>`<button class="chip ${this.sp===sp?'on':''}" data-act="rk_sp" data-v="${sp}">${sp?SP_ICON[sp]+' '+t('sp_'+sp):t('rk_allsp')}</button>`).join('')}</div>`:''}
+   ${this.cat==='top'?`<div class="toolbar">${[''].concat(SPECIES_LIST).map(sp=>`<button class="chip ${this.sp===sp?'on':''}" data-act="rk_sp" data-v="${sp}">${sp?SP_ICON[sp]+' '+t('sp_'+sp):t('rk_allsp')}</button>`).join('')}</div>`:''}
    <div class="toolbar"><button class="chip ${!this.fr?'on':''}" data-act="rk_fr" data-v="0">🌐 ${t('rk_all')}</button><button class="chip ${this.fr?'on':''}" data-act="rk_fr" data-v="1">👥 ${t('rk_friends')}</button>
     <button class="ghost sm" style="margin-left:auto" data-act="rk_refresh">↻ ${t('rk_refresh')}</button></div>
    <p class="kbd">${t('rk_d_'+this.cat)}</p>`;

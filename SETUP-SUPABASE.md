@@ -160,6 +160,10 @@ Angka peringkat (kekayaan, Morph Dex, hewan termahal per spesies, bayi menetas, 
 - Fungsi untuk browser: `get_studs` (daftar aktif, het tersembunyi disamarkan), `get_my_studs` (penawaran saya + penyewa), `cancel_stud`.
 - Tabel `stud_listings` dan `stud_bookings` tertutup untuk browser (RLS tanpa policy).
 
+## 13. Spesies baru (v60: kura-kura brazil)
+
+Setiap spesies baru perlu dikenali database. Untuk kura-kura brazil (`rs`), jalankan ulang `social.sql` (`_valid_snake`), `leaderboard.sql`, `market.sql`, dan `stud.sql` (semuanya aman dijalankan ulang), **sebelum** men-deploy Edge Function `game` versi 60. Kalau urutannya terbalik, kura-kura belum bisa di-trade, dijual di Pasar Pemain, atau ditawarkan sebagai pejantan sampai SQL-nya dijalankan.
+
 ## Catatan keamanan
 
 - **Save online hanya bisa diubah server**: Edge Function `game` dan fungsi trading di `social.sql`. Mengubah uang atau ular lewat DevTools hanya mengubah tampilan di layar sendiri, dan akan kembali ke angka server setelah aksi berikutnya.

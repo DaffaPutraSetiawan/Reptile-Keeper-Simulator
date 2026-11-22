@@ -2,6 +2,15 @@
    Terbaru di atas. v = versi game (core.js VERSION). Riwayat teknis lengkap ada di CHANGELOG.md.
    Tambahkan entri baru di paling atas setiap kali versi game naik. */
 window.PATCH_NOTES=[
+ {v:60,d:'2026-11-23',
+  id:['Spesies baru: <b>🐢 Kura-kura brazil</b> (red-eared slider)! Beli di Pasar, lalu kembangkan morph Albino, Caramel Pink, Hypo, Charcoal, Leucistic, dan Golden Flame.',
+   'Kombinasi bernama: <b>Snow</b> (Albino + Caramel Pink), <b>Lubino</b> (Leucistic + Albino), dan <b>Hybino</b> (Hypo + Albino). Morph Dex kura-kura berisi 14 kartu.',
+   'Suhu inkubator kura-kura kebalikan ball python: dingin lebih banyak jantan, panas lebih banyak betina. Betina baru siap kawin di umur 3 tahun, tapi sekali kawin bisa bertelur 2–4 clutch.',
+   'Pasar NPC sekarang menjual 3 hewan dari tiap spesies (12 hewan). Detail lengkap ada di Panduan spesies.'],
+  en:['New species: <b>🐢 Red-eared slider</b>! Buy one in the Market, then work with Albino, Caramel Pink, Hypo, Charcoal, Leucistic and Golden Flame.',
+   'Named combos: <b>Snow</b> (Albino + Caramel Pink), <b>Lubino</b> (Leucistic + Albino) and <b>Hybino</b> (Hypo + Albino). The turtle Morph Dex has 14 cards.',
+   'Turtle incubator temperature works the opposite way from ball pythons: cool gives more males, warm gives more females. Females are ready to breed at 3 years, but one pairing gives 2–4 clutches.',
+   'The NPC market now sells 3 animals of each species (12 animals). See the Species guide for full details.']},
  {v:59,d:'2026-11-22',
   id:['Pesanan pembeli sekarang dibayar <b>200%</b> nilai hewan (sebelumnya 125%), dan pembeli besar <b>250%</b> (sebelumnya 150%), atau hadiah tetap kalau lebih besar.',
    'Harga gen disesuaikan dengan kelangkaan di dunia nyata. Ball python: Banana lebih murah dan lebih sering muncul di toko, Clown dan BEL lebih murah, Axanthic lebih mahal, Albino lebih sering muncul.',

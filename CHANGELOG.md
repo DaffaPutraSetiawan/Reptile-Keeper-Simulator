@@ -6,6 +6,19 @@ Catatan pembaruan untuk pemain (bahasa yang lebih sederhana, ID & EN) ada di `pa
 
 ---
 
+## v60 — 23 Nov 2026
+**Spesies baru: kura-kura brazil (red-eared slider)**
+- `SPECIES.rs` (kode RS): 6 lokus (`RS_LOCI`) — resesif Albino (`realb`), Caramel Pink (`recar`), Hypo (`rehyp`), Charcoal (`rechar`), Leucistic (`releu`); co-dominan Golden Flame (`regf`, dua salinan = Super Golden Flame `resgf`). Status gen mengikuti catatan komunitas MorphMarket; Golden Flame sumbernya paling lemah. Pastel, Clown & Black (hasil suhu inkubasi) dan Pied (belum terbukti) tidak dimasukkan. **Tanpa sifat line-bred** (tidak ada sifat poligenik RES yang terbukti; keputusan pemilik game).
+- Nilai: dasar $10; Albino 40, Caramel Pink 60, Hypo 35, Charcoal 45, Leucistic 200, Golden Flame 30, Super Golden Flame 90. Tiket toko: Normal 8, Albino 10, Hypo 8, Caramel Pink 7, Golden Flame 7, Charcoal 6, Leucistic 2.
+- Kombinasi bernama (`nameRs`): Lubino = Leucistic + Albino, Snow = Albino + Caramel Pink, Hybino = Hypo + Albino (urutan prioritas itu); gabungan lain memakai nama gabungan biasa, mis. "Golden Flame Charcoal".
+- Morph Dex 14: Normal + 7 gen + Snow, Lubino, Hybino + Hypo Caramel Pink, Golden Flame Albino, Charcoal Hypo.
+- Biologi: betina siap kawin 36 bulan, jantan 24 bulan, batas umur 30 tahun; ovulasi ±65%; 2–4 clutch dari sekali kawin, 6–20 telur per clutch tergantung berat (berat turun 8% per clutch, musim berhenti di bawah 900 g); inkubasi 2 bulan; istirahat 6 bulan. Berat dewasa ♀ ±1,3 kg, ♂ ±550 g.
+- Suhu inkubator 26–32 °C, kebalikan ball python: `femaleChance` = 50% + 10%/°C di atas 29 °C (26 °C ♀ 20%, 32 °C ♀ 80%).
+- Toko NPC sekarang 12 hewan (3 per spesies); save lama otomatis mendapat 3 kura-kura tanpa mengganti stok lain.
+- Gambar: kura-kura dari atas (`drawTurtle`) dengan sisik cangkang, garis kuning, garis merah telinga, mata, 4 kaki dayung; warna per gen, corak api Golden Flame, pembeda Snow / Lubino / Hybino / Leucistic.
+- UI: chip & ikon 🐢, panduan spesies (termasuk catatan spesies invasif dan "jangan melepas ke alam"), perkiraan telur di planner, filter papan peringkat per spesies.
+- Database: `_valid_snake` menerima `sp = 'rs'` dan gen kura-kura; `market_listings` & `stud_listings` menerima `rs`; `get_market`, `get_studs`, `get_leaderboard` menerima filter `rs`.
+
 ## v59 — 22 Nov 2026
 **Penyeimbangan gen ball python & axolotl, bayaran pesanan naik**
 - Nilai gen (`TV`) mengikuti kelangkaan dunia nyata. Ball python: Banana 140 → 80, Clown 520 → 420, Axanthic 300 → 360, BEL 600 → 450. Axolotl: Axanthic 12 → 18 (gen alami termahal), Copper 15 → 13.

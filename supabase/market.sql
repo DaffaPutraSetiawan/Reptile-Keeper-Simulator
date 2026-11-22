@@ -16,7 +16,7 @@ create table if not exists public.market_listings (
   id          bigint generated always as identity primary key,
   seller      uuid references auth.users (id) on delete set null,
   seller_name text not null default '',
-  sp          text not null check (sp in ('ball', 'leo', 'axo')),
+  sp          text not null check (sp in ('ball', 'leo', 'axo', 'rs')),
   name        text not null,                         -- nama morph saat dipasang
   sex         text not null check (sex in ('M', 'F')),
   code        text not null default '',              -- ID di koleksi penjual saat dipasang
@@ -32,6 +32,9 @@ create table if not exists public.market_listings (
 );
 -- kolom tambahan (v36): penjualan yang dikeluarkan admin dari riwayat harga; status 'removed' = diturunkan admin
 alter table public.market_listings add column if not exists excluded boolean not null default false;
+-- v60: spesies kura-kura brazil (rs)
+alter table public.market_listings drop constraint if exists market_listings_sp_check;
+alter table public.market_listings add constraint market_listings_sp_check check (sp in ('ball', 'leo', 'axo', 'rs'));
 alter table public.market_listings drop constraint if exists market_listings_status_check;
 alter table public.market_listings add constraint market_listings_status_check
   check (status in ('active', 'sold', 'cancelled', 'expired', 'removed'));
@@ -153,7 +156,7 @@ returns jsonb language plpgsql security definer set search_path = '' as $$
 declare me uuid := public._me();
 begin
   perform public._market_expire();
-  if p_sp is not null and p_sp not in ('ball', 'leo', 'axo') then raise exception 'bad_species'; end if;
+  if p_sp is not null and p_sp not in ('ball', 'leo', 'axo', 'rs') then raise exception 'bad_species'; end if;
   if coalesce(p_sort, 'new') not in ('new', 'cheap', 'ending', 'value') then raise exception 'bad_sort'; end if;
   return coalesce((select jsonb_agg(public._market_row(l, me) order by
       case when p_sort = 'cheap' then l.price end asc,

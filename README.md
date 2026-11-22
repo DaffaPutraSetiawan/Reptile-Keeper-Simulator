@@ -2,7 +2,7 @@
 
 ![Morph Lab — Exotic Breeder Sim](assets/logo.png)
 
-Game simulasi breeding hewan eksotis berbasis web: **ball python, leopard gecko, dan axolotl**, dengan genetika morph yang mengikuti pola pewarisan di dunia nyata.
+Game simulasi breeding hewan eksotis berbasis web: **ball python, leopard gecko, axolotl, dan kura-kura brazil (red-eared slider)**, dengan genetika morph yang mengikuti pola pewarisan di dunia nyata.
 
 ## Cara main
 
@@ -27,6 +27,7 @@ Game **wajib login**. Setiap aksi dikirim ke server (Edge Function `game`), yang
     - Kombinasi bernama: RAPTOR, Dreamsicle, Diablo Blanco, Ember, Nova, Super RAPTOR, RADAR, Calcite, Typhoon, Cyclone, Total Eclipse, Blazing Blizzard, Banana Blizzard, Banana Blazing Blizzard
     - Toko NPC: 3 hewan hasil undian (termasuk Normal). Peluang tiap gen mengikuti kelangkaan di dunia nyata: umum (Tremper, Mack Snow), sedang (Bell, Eclipse, Giant, Enigma, Blizzard, White & Yellow), agak langka (Rainwater, Murphy), langka (Marble Eye, Lemon Frost); makin langka makin mahal
   - **Axolotl** (7 gen): Leucistic, Albino, Melanoid, Axanthic, Copper, GFP, RFP · sampai 100 telur per clutch; pilih maksimal 3 bayi, sisanya otomatis dijual
+  - **Kura-kura brazil / red-eared slider** (6 gen, v60): resesif Albino, Caramel Pink, Hypo, Charcoal, Leucistic · co-dominan Golden Flame (→ Super Golden Flame) · kombinasi Snow, Lubino, Hybino · 2–4 clutch dari sekali kawin, 6–20 telur per clutch · suhu inkubasi kebalikan ball python (dingin = jantan, panas = betina) · tanpa sifat line-bred
 - **Sistem het & pos het**: peluang het dihitung otomatis saat menetas dan tidak bisa diubah pemain. Contoh untuk anak yang tidak visual: induk visual × normal → 100% het, het × het → 66% pos het, het × normal → 50% pos het, 50% pos het × normal → 25% pos het. Hewan pos het "terbukti het" (naik jadi 100%) begitu menghasilkan anak visual. Nilai hewan ikut naik sesuai peluang het-nya. Hewan milik pemain lain (profil, trade, Pasar Pemain) hanya menampilkan catatan het ini, sedangkan gen resesif yang tidak terlihat disembunyikan server; pembeli baru tahu gen aslinya lewat breeding
 - **Tabel peluang keturunan** untuk setiap pasangan
 - **Planner breeding** (di tab Kawinkan): centang gen target, lalu planner menunjukkan hewan pembawa tiap gen dan 5 pasangan terbaik di koleksimu (peluang per bayi, perkiraan bayi target per musim, status siap kawin, dan inbreeding) untuk 1 generasi
@@ -61,7 +62,7 @@ Game **wajib login**. Setiap aksi dikirim ke server (Edge Function `game`), yang
   - Bintik gelap: Dirty Leucistic, lalu Piebald. Hanya terlihat pada Leucistic yang tidak albino
   - Nada warna: Light Wild atau Dark Wild. Hanya terlihat pada Wild Type
   - Kombinasi gen baru: Mac (Axanthic + Copper + Melanoid). Label ikut nama tampilan, gambar, harga, dan Morph Dex
-- **Morph Dex** per spesies, hanya berisi morph target dan kombinasi terkenal (Bumblebee, Killer Bee, RAPTOR, Calcite, Cyclone, White Albino, dan lainnya): ball python 46 (42 morph gen termasuk Pewter, Super Blast, Silver Bullet, Queen Bee, Sterling, Bumble Belly, Killer Pied, Pumpkin Pied, Savannah + 4 label line-bred), leopard gecko 51 (34 morph gen + 17 label line-bred seperti Emerine, SHTCT, Sunglow, Red Stripe), axolotl 28 (21 morph gen termasuk Copper Axanthic, Copper Melanoid, Copper Leucistic, Mac, RFP Leucistic + 7 label line-bred) (termasuk Normal / Wild Type). Label line-bred tercatat saat labelnya terlihat pada gecko milikmu (umur 6 bulan ke atas). Misi Morph Dex dan papan peringkat hanya menghitung morph target ini
+- **Morph Dex** per spesies, hanya berisi morph target dan kombinasi terkenal (Bumblebee, Killer Bee, RAPTOR, Calcite, Cyclone, White Albino, dan lainnya): ball python 46 (42 morph gen termasuk Pewter, Super Blast, Silver Bullet, Queen Bee, Sterling, Bumble Belly, Killer Pied, Pumpkin Pied, Savannah + 4 label line-bred), leopard gecko 51 (34 morph gen + 17 label line-bred seperti Emerine, SHTCT, Sunglow, Red Stripe), axolotl 28 (21 morph gen termasuk Copper Axanthic, Copper Melanoid, Copper Leucistic, Mac, RFP Leucistic + 7 label line-bred), kura-kura brazil 14 (Normal, 7 gen, Snow, Lubino, Hybino, Hypo Caramel Pink, Golden Flame Albino, Charcoal Hypo) (termasuk Normal / Wild Type). Label line-bred tercatat saat labelnya terlihat pada gecko milikmu (umur 6 bulan ke atas). Misi Morph Dex dan papan peringkat hanya menghitung morph target ini
 - **Gambar hewan prosedural** yang dibuat dari genetika tiap hewan
 - **Teman, chat & trading**: tambah teman lewat username, chat real-time & global chat (bisa membalas pesan tertentu dengan tombol ↩: kutipan disimpan bersama balasan, klik kutipan untuk melompat ke pesan asli, kutipan pesan yang dihapus admin atau milik akun yang dihapus jadi "pesan dihapus"), profil dengan etalase, dan tukar hewan/uang dengan sistem escrow yang dijalankan server. Menu trade menampilkan ID hewan, dan setiap tawaran maupun penerimaan trade punya langkah konfirmasi dengan peringatan (nilai timpang, hadiah, hewan terakhir satu spesies, kapasitas rak penuh, uang besar). Riwayat pemilik hewan (origin keeper) ikut tercatat.
 - **Pasar Pemain** (di tab Pasar): jual hewan ke pemain lain dengan harga pas, tanpa biaya. Harga minimal 50% dari nilai hewan (dicek server), tanpa batas atas, dan tidak ada batas jumlah jualan. Jualan tayang 14 hari; kalau tidak laku atau dibatalkan, hewannya kembali otomatis. Pembeli bisa menyaring spesies, kelamin, gen (termasuk het), rentang harga, dan hewan dewasa, lalu mengurutkan berdasarkan terbaru, termurah, segera berakhir, atau nilai. Setiap jualan menampilkan ID, het, penjual + level reputasi, sisa waktu, dan **riwayat harga** 30 hari untuk morph & kelamin yang sama: **median** (harga tengah), **rentang tengah** (harga yang paling sering terjadi, yaitu kuartil 25%–75%; seperempat termurah & termahal tidak dihitung, tampil mulai 5 penjualan), dan **penjualan termahal**. Sebelum membeli ada konfirmasi "Yakin beli?" (dengan peringatan kalau rak jadi penuh). Saat memasang jualan, kolom harga dibiarkan kosong supaya penjual menentukan harganya sendiri (harga minimum dan riwayat harga tampil sebagai panduan). Bagian **Jualan saya** berisi jualan aktif dan riwayatnya.
@@ -106,7 +107,7 @@ Sudah selesai:
 - [x] Login & cloud save (Supabase)
 - [x] Teman, chat & trading antar teman (escrow, divalidasi server)
 - [x] Mode online server-authoritative (breeding & ekonomi dihitung server)
-- [x] Spesies baru: leopard gecko & axolotl
+- [x] Spesies baru: leopard gecko, axolotl & kura-kura brazil (v60)
 - [x] Silsilah 3 generasi & kawin sedarah
 - [x] Penyeimbangan ekonomi dengan simulasi (`scripts/sim-economy.cjs`)
 - [x] Misi pemula (tutorial)
@@ -127,6 +128,7 @@ Berikutnya:
 - [x] Sifat line-bred di breeding planner (tampilan induk saja, pemain menebak)
 - [x] Sifat line-bred tampil di Pasar Pemain & trade (label, tabel sifat, pencarian, riwayat harga per label)
 - ~~Sifat line-bred di pesanan pembeli~~ (tidak jadi, keputusan pemilik game)
-- [ ] Spesies berikutnya (corn snake atau bearded dragon) & sifat line-bred untuk ball python dan axolotl
+- [x] Sifat line-bred untuk ball python dan axolotl
+- [ ] Spesies berikutnya (corn snake atau bearded dragon)
 - [ ] Perawatan & kesehatan (suhu, kelembapan, shedding, mogok makan)
 - [ ] Versi aplikasi (PWA)

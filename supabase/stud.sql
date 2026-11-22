@@ -15,7 +15,7 @@
 create table if not exists public.stud_listings (
   id          bigint generated always as identity primary key,
   owner       uuid not null references auth.users (id) on delete cascade,
-  sp          text not null check (sp in ('ball', 'leo', 'axo')),
+  sp          text not null check (sp in ('ball', 'leo', 'axo', 'rs')),
   snake_id    integer not null,                      -- id jantan di save pemilik
   seed        bigint not null,                       -- seed jantan: memastikan hewannya masih sama
   code        text not null default '',
@@ -29,6 +29,9 @@ create table if not exists public.stud_listings (
   resolved_at timestamptz,
   check (uses between 0 and max_uses)
 );
+-- v60: spesies kura-kura brazil (rs)
+alter table public.stud_listings drop constraint if exists stud_listings_sp_check;
+alter table public.stud_listings add constraint stud_listings_sp_check check (sp in ('ball', 'leo', 'axo', 'rs'));
 create index if not exists stud_active_idx on public.stud_listings (status, sp, id desc) where status = 'active';
 create index if not exists stud_owner_idx on public.stud_listings (owner, id desc);
 -- satu penawaran aktif per jantan
@@ -167,7 +170,7 @@ create or replace function public.get_studs(p_sp text default null, p_sort text 
 returns jsonb language plpgsql security definer set search_path = '' as $$
 declare me uuid := public._me();
 begin
-  if p_sp is not null and p_sp not in ('ball', 'leo', 'axo') then raise exception 'bad_species'; end if;
+  if p_sp is not null and p_sp not in ('ball', 'leo', 'axo', 'rs') then raise exception 'bad_species'; end if;
   if coalesce(p_sort, 'new') not in ('new', 'cheap') then raise exception 'bad_sort'; end if;
   perform public._stud_sweep();
   return coalesce((select jsonb_agg(public._stud_row(l, me) order by case when p_sort = 'cheap' then l.fee end asc, l.id desc)

@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:59,date:'2026-11-22'};
+const VERSION={v:60,date:'2026-11-23'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -54,18 +54,32 @@ const AXO_LOCI=[
  {k:'gfp',t:'dom',a:'GFP'},
  {k:'rfp',t:'dom',a:'RFP'},
 ];
+// v60: Red-eared slider (kura-kura brazil). Gen yang dicatat resesif oleh komunitas MorphMarket, plus Golden Flame
+// (co-dominan, sumbernya paling lemah). Pastel, Clown & Black tidak dimasukkan (hasil suhu inkubasi), Pied belum terbukti.
+// Kuncinya diberi awalan re/rs supaya tidak bentrok dengan gen spesies lain.
+const RS_LOCI=[
+ {k:'realb',t:'rec',a:'Albino'},
+ {k:'recar',t:'rec',a:'Caramel Pink'},
+ {k:'rehyp',t:'rec',a:'Hypo'},
+ {k:'rechar',t:'rec',a:'Charcoal'},
+ {k:'releu',t:'rec',a:'Leucistic'},
+ {k:'regf',t:'id',a:'Golden Flame',sk:'resgf'},
+];
 const LOCI=BALL_LOCI;     // nama lama, tetap dipakai untuk ball python
 const TL={pastel:'Pastel',superpastel:'Super Pastel',mojave:'Mojave',lesser:'Lesser',bel:'BEL',enchi:'Enchi',superenchi:'Super Enchi',yb:'Yellow Belly',ivory:'Ivory',cinnamon:'Cinnamon',supercinnamon:'Super Cinnamon',banana:'Banana',superbanana:'Super Banana',spider:'Spider',pinstripe:'Pinstripe',albino:'Albino',piebald:'Piebald',clown:'Clown',axanthic:'Axanthic',
  tremper:'Tremper Albino',bell:'Bell Albino',rainwater:'Rainwater Albino',eclipse:'Eclipse',blizzard:'Blizzard',murphy:'Murphy Patternless',marble:'Marble Eye',macksnow:'Mack Snow',supersnow:'Super Snow',giant:'Giant',supergiant:'Super Giant',lemonfrost:'Lemon Frost',superlemonfrost:'Super Lemon Frost',enigma:'Enigma',wy:'White & Yellow',
- axleu:'Leucistic',axalb:'Albino',axmel:'Melanoid',axaxa:'Axanthic',axcop:'Copper',gfp:'GFP',rfp:'RFP'};
+ axleu:'Leucistic',axalb:'Albino',axmel:'Melanoid',axaxa:'Axanthic',axcop:'Copper',gfp:'GFP',rfp:'RFP',
+ realb:'Albino',recar:'Caramel Pink',rehyp:'Hypo',rechar:'Charcoal',releu:'Leucistic',regf:'Golden Flame',resgf:'Super Golden Flame'};
 // v59: penyeimbangan mengikuti kelangkaan dunia nyata — ball python Banana 140→80, Clown 520→420, Axanthic 300→360, BEL 600→450;
 // axolotl Axanthic 12→18 (gen alami termahal), Copper 15→13. Tiket toko: Banana 4→7, Albino 5→6, axolotl Axanthic 5→3, Copper 4→5.
 const TV={pastel:45,superpastel:150,mojave:55,lesser:55,bel:450,enchi:60,superenchi:260,yb:40,ivory:280,cinnamon:50,supercinnamon:260,banana:80,superbanana:500,spider:70,pinstripe:60,albino:280,piebald:380,clown:420,axanthic:360,
  tremper:55,bell:75,rainwater:85,eclipse:80,blizzard:75,murphy:85,marble:110,macksnow:45,supersnow:140,giant:55,supergiant:150,lemonfrost:110,superlemonfrost:190,enigma:50,wy:55,
- axleu:6,axalb:9,axmel:6,axaxa:18,axcop:13,gfp:10,rfp:15};
+ axleu:6,axalb:9,axmel:6,axaxa:18,axcop:13,gfp:10,rfp:15,
+ realb:40,recar:60,rehyp:35,rechar:45,releu:200,regf:30,resgf:90};
 const TLOC={pastel:'pastel',superpastel:'pastel',mojave:'bel',lesser:'bel',bel:'bel',enchi:'enchi',superenchi:'enchi',yb:'yb',ivory:'yb',cinnamon:'cinnamon',supercinnamon:'cinnamon',banana:'banana',superbanana:'banana',spider:'spider',pinstripe:'pinstripe',albino:'albino',piebald:'piebald',clown:'clown',axanthic:'axanthic',
  tremper:'tremper',bell:'bell',rainwater:'rainwater',eclipse:'eclipse',blizzard:'blizzard',murphy:'murphy',marble:'marble',macksnow:'macksnow',supersnow:'macksnow',giant:'giant',supergiant:'giant',lemonfrost:'lemonfrost',superlemonfrost:'lemonfrost',enigma:'enigma',wy:'wy',
- axleu:'axleu',axalb:'axalb',axmel:'axmel',axaxa:'axaxa',axcop:'axcop',gfp:'gfp',rfp:'rfp'};
+ axleu:'axleu',axalb:'axalb',axmel:'axmel',axaxa:'axaxa',axcop:'axcop',gfp:'gfp',rfp:'rfp',
+ realb:'realb',recar:'recar',rehyp:'rehyp',rechar:'rechar',releu:'releu',regf:'regf',resgf:'regf'};
 const ALLT=Object.keys(TL);
 
 /* ========= SPESIES ========= */
@@ -100,6 +114,14 @@ const SPECIES={
   mk:{baby:{a:[2,4],w:[6,15]},F:{a:[18,24],w:[85,110]},M:{a:[12,18],w:[70,95]}},
   pool:[['normal',8],['axleu',10],['axalb',8],['axmel',7],['axaxa',3],['axcop',5],['gfp',5],['rfp',3]],
   orderBase:['axleu','axalb','axmel','gfp'],orderSkip:[]},
+ // v60: kura-kura brazil. Betina jauh lebih besar dari jantan; suhu inkubasi kebalikan ball python (dingin = jantan, panas = betina).
+ rs:{name:'red-eared slider',orderBonus:15,code:'RS',loci:RS_LOCI,maxAge:360,base:10,fAge:36,mAge:24,recover:6,ovul:.65,layIn:1,slug:.15,layLoss:.92,gravidLoss:1,clutches:[2,4],minLayW:900,slugStep:.04,
+  K:{F:1300,M:550,H:900},r:{F:.18,M:.22,H:.2},hatchW:[7,11],wBonus:[10,900],foodBase:1,inc:2,
+  temp:{min:26,max:32,mid:29,step:.5},
+  eggs:f=>clamp(Math.round(6+(f.w-900)/60+R()*4-2),6,20),
+  mk:{baby:{a:[1,3],w:[12,22]},F:{a:[36,44],w:[1100,1400]},M:{a:[24,30],w:[450,600]}},
+  pool:[['normal',8],['realb',10],['recar',7],['rehyp',8],['rechar',6],['releu',2],['regf',7]],
+  orderBase:['realb','rehyp','regf','rechar'],orderSkip:['resgf']},
 };
 const SPECIES_LIST=Object.keys(SPECIES);
 const TSP={};for(const sp of SPECIES_LIST)for(const l of SPECIES[sp].loci){TSP[l.k]=sp;if(l.sk)TSP[l.sk]=sp}
@@ -107,10 +129,10 @@ TSP.mojave=TSP.lesser='ball';
 for(const sp of SPECIES_LIST)SPECIES[sp].traits=ALLT.filter(t=>TSP[t]===sp);
 // spesies sebuah objek (ular, clutch, listing pasar, pesanan); data lama tanpa sp = ball python
 const spOf=x=>(x&&x.sp&&SPECIES[x.sp])?x.sp:'ball';
-const spOfG=g=>!g?'ball':g.tremper!==undefined?'leo':g.axalb!==undefined?'axo':'ball';
+const spOfG=g=>!g?'ball':g.tremper!==undefined?'leo':g.axalb!==undefined?'axo':g.realb!==undefined?'rs':'ball';
 const spOfTr=tr=>{for(const t of tr||[])if(TSP[t]&&TSP[t]!=='ball')return TSP[t];return 'ball'};
 const lociOf=g=>SPECIES[spOfG(g)].loci;
-const isRec=k=>[...BALL_LOCI,...LEO_LOCI,...AXO_LOCI].some(l=>l.k===k&&l.t==='rec');
+const isRec=k=>[...BALL_LOCI,...LEO_LOCI,...AXO_LOCI,...RS_LOCI].some(l=>l.k===k&&l.t==='rec');
 // label gen untuk pesan event pasar: gen spesies selain ball python diberi nama spesiesnya
 const tlabel=t=>TL[t]+(TSP[t]&&TSP[t]!=='ball'?' ('+SPECIES[TSP[t]].name+')':'');
 
@@ -212,7 +234,19 @@ function nameAxo(tr){
  const out=[];for(const k of ['gfp','rfp','axcop','axleu','axaxa','axmel'])if(s.has(k))out.push(TL[k]);
  if(mac)out.push('Mac');if(alb)out.push(alb);
  return out.length?out.join(' '):'Wild Type'}
-function nameOf(tr,g,sp){sp=sp||(g?spOfG(g):spOfTr(tr));return sp==='leo'?nameLeo(tr):sp==='axo'?nameAxo(tr):nameBall(tr,g)}
+// v60: nama kura-kura brazil. Kombinasi bernama: Lubino = Leucistic + Albino, Snow = Albino + Caramel Pink,
+// Hybino = Hypo + Albino (urutan prioritas ini kalau albino bertemu lebih dari satu gen). Gen lain disebut di depannya.
+function nameRs(tr){
+ const s=new Set(tr);let combo='';
+ if(s.has('realb')){
+  if(s.has('releu')){s.delete('releu');combo='Lubino'}
+  else if(s.has('recar')){s.delete('recar');combo='Snow'}
+  else if(s.has('rehyp')){s.delete('rehyp');combo='Hybino'}
+  if(combo)s.delete('realb')}
+ const out=[];for(const k of ['resgf','regf','rechar','rehyp','recar','releu','realb'])if(s.has(k))out.push(TL[k]);
+ if(combo)out.push(combo);
+ return out.length?out.join(' '):'Normal'}
+function nameOf(tr,g,sp){sp=sp||(g?spOfG(g):spOfTr(tr));return sp==='leo'?nameLeo(tr):sp==='axo'?nameAxo(tr):sp==='rs'?nameRs(tr):nameBall(tr,g)}
 const fullName=s=>nameOf(traitsOf(s.g),s.g,spOfG(s.g));
 const code=s=>SPECIES[spOfG(s.g)].code+'-'+String(s.id).padStart(4,'0');
 function hetText(s){const v=new Set(traitsOf(s.g));const o=[];for(const l of lociOf(s.g)){if(l.t!=='rec'||v.has(l.k))continue;const p=(s.hp||{})[l.k]||0;if(p<0.01)continue;o.push(p>=0.999?'het '+l.a:Math.round(p*100)+'% pos het '+l.a)}return o.join(', ')}
@@ -515,7 +549,9 @@ const DEX_TARGETS={
   ['blizzard','bell'],['blizzard','rainwater'],['blizzard','murphy','bell'],['blizzard','murphy','rainwater']],
  axo:[[],['axleu'],['axalb'],['axmel'],['axaxa'],['axcop'],['gfp'],['rfp'],
  ['axalb','axleu'],['axalb','axaxa'],['axalb','axmel'],['axleu','axmel'],['axleu','axaxa'],['axaxa','axmel'],['gfp','axleu'],['gfp','axalb'],
- ['axcop','axaxa'],['axcop','axmel'],['axleu','axcop'],['axaxa','axcop','axmel'],['rfp','axleu']]};   // v56: kombinasi Copper, Mac, RFP Leucistic
+ ['axcop','axaxa'],['axcop','axmel'],['axleu','axcop'],['axaxa','axcop','axmel'],['rfp','axleu']],   // v56: kombinasi Copper, Mac, RFP Leucistic
+ // v60: kura-kura brazil: Normal + 7 gen + Snow, Lubino, Hybino + Hypo Caramel Pink, Golden Flame Albino, Charcoal Hypo (14, tanpa line-bred)
+ rs:[[],['realb'],['recar'],['rehyp'],['rechar'],['releu'],['regf'],['resgf'],['realb','recar'],['releu','realb'],['rehyp','realb'],['rehyp','recar'],['regf','realb'],['rechar','rehyp']]};
 // v54: 17 label sifat line-bred leopard gecko ikut jadi target Morph Dex (tercatat saat labelnya terlihat pada gecko milikmu)
 const DEX_LB=['High Yellow','Tangerine','Lavender','Emerine','Black Night','Hypo','Super Hypo','Bold','Jungle','Stripe','Reverse Stripe','SHTCT','Sunglow','Bell Sunglow','Rainwater Sunglow','Red Stripe','Bold Stripe'];
 // v56: 7 label line-bred axolotl ikut jadi target (tercatat saat menetas, karena sifat axolotl langsung terlihat)
@@ -698,6 +734,7 @@ const INC_MONTHS=2,TEMP_MIN=29,TEMP_MAX=33,TEMP_MID=31,TEMP_STEP=.5;   // nilai 
 const tempRange=sp=>SPECIES[sp||'ball'].temp;
 function femaleChance(temp,sp){sp=sp||'ball';if(!tempRange(sp))return .5;const x=temp==null?tempRange(sp).mid:temp;
  if(sp==='leo')return x>33?clamp(0.2+(x-33)*0.6,0.2,0.8):clamp(0.5+(30-x)*0.1,0.2,0.8);
+ if(sp==='rs')return clamp(0.5+(x-29)*0.1,0.2,0.8);   // v60: kura-kura brazil: 26 °C kebanyakan jantan, 29 °C 50:50, 32 °C kebanyakan betina
  return clamp(0.5+(TEMP_MID-x)*0.15,0.2,0.8)}
 const incTotal=c=>c.incTotal||INC_MONTHS;
 const incElapsed=c=>incTotal(c)-c.hatchIn;
@@ -942,7 +979,7 @@ function applyAction(state,a){
 function isState(x){return !!(x&&typeof x==='object'&&Array.isArray(x.snakes)&&typeof x.turn==='number'&&typeof x.money==='number')}
 
 root.MorphCore={
- VERSION,LOCI,BALL_LOCI,LEO_LOCI,AXO_LOCI,tlabel,broodSnake,broodValue,autoBrood,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,POOL,BUYER_COUNT,
+ VERSION,LOCI,BALL_LOCI,LEO_LOCI,AXO_LOCI,RS_LOCI,nameRs,tlabel,broodSnake,broodValue,autoBrood,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,POOL,BUYER_COUNT,
  SPECIES,SPECIES_LIST,spOf,spOfG,spOfTr,lociOf,isRec,
  R,pick,clamp,money,fmt,
  use(s){S=s},state(){return S},

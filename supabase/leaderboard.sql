@@ -26,7 +26,7 @@ create trigger saves_rank_dex_at before insert or update of rank on public.saves
 -- Papan peringkat: 50 teratas + posisi pemain yang meminta.
 --   p_category: wealth | dex | top | hatched | orders | rep
 --   p_friends : true = hanya teman (dan diri sendiri)
---   p_species : untuk kategori top: null (semua spesies) | ball | leo | axo
+--   p_species : untuk kategori top: null (semua spesies) | ball | leo | axo | rs
 create or replace function public.get_leaderboard(p_category text, p_friends boolean default false,
                                                   p_species text default null)
 returns jsonb language plpgsql stable security definer set search_path = '' as $$
@@ -34,7 +34,7 @@ declare me uuid := public._me(); v jsonb;
 begin
   if p_category is null or p_category not in ('wealth', 'dex', 'top', 'hatched', 'orders', 'rep') then
     raise exception 'bad_category'; end if;
-  if p_species is not null and p_species not in ('ball', 'leo', 'axo') then raise exception 'bad_species'; end if;
+  if p_species is not null and p_species not in ('ball', 'leo', 'axo', 'rs') then raise exception 'bad_species'; end if;
   with base as (
     select s.user_id, p.username, s.rank r, s.dex_at, (s.rank ->> 'turn')::int as turn,
       -- hewan termahal: per spesies, atau yang paling mahal dari semua spesies
