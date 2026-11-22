@@ -782,6 +782,9 @@ begin
   delete from public.trades
    where (from_user = old.id and to_user is null) or (to_user = old.id and from_user is null);
   -- Riwayat lainnya tetap ada; kolom akun ini otomatis jadi null (on delete set null).
+  -- 4) kutipan pesan global akun ini di balasan pemain lain jadi "pesan dihapus" (pesannya sendiri ikut terhapus lewat cascade)
+  update public.global_messages set reply_body = null
+   where reply_to in (select id from public.global_messages where sender = old.id) and sender <> old.id;
   return old;
 end $$;
 

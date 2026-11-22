@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:53,date:'2026-11-22'};
+const VERSION={v:54,date:'2026-11-22'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -303,6 +303,10 @@ function lbBonus(s){const v=lbOf(s);if(!v||!lbRevealed(s))return 0;const P=LB_PR
 const lbVisibleLabels=s=>lbRevealed(s)?lbLabels(s):[];
 // Kunci riwayat harga Pasar Pemain (v50): label yang terlihat digabung ' · ' ('' = tanpa label / spesies tanpa sifat line-bred)
 const lbKey=s=>hasLb(spOfG(s.g))?lbVisibleLabels(s).join(' · '):'';
+// Nama tampilan (v54): label line-bred yang terlihat + nama morph gen, mis. "Tangerine Jungle Tremper Albino", "Sunglow RAPTOR";
+// tanpa gen cukup labelnya ("Emerine"). Bayi < 6 bulan & hewan tanpa label = nama gen. Morph Dex, pesanan pembeli,
+// statistik per morph & riwayat harga Pasar Pemain tetap memakai nama gen (fullName).
+function displayName(s){const n=fullName(s);if(!hasLb(spOfG(s.g)))return n;const L=lbVisibleLabels(s);if(!L.length)return n;return L.join(' ')+(n==='Normal'?'':' '+n)}
 // Gecko tanpa nilai (save sebelum v42, termasuk susunan lama v41): beri nilai awal acak.
 const lbOk=()=>S.snakes.every(s=>!hasLb(spOf(s))||lbOf(s));
 function addLb(){let n=0;for(const s of S.snakes)if(hasLb(spOf(s))&&!lbOf(s)){s.lb=lbInit();n++}return n}
@@ -328,7 +332,7 @@ const lifeLeft=s=>Math.max(0,maxAge(s)-s.age);
 function femaleReady(s){const sp=spOf(s),P=SPECIES[sp];if(s.gravid)return 'r_gravid';if(s.age<P.fAge)return sp==='ball'?'r_fage':'r_fage_'+sp;if(S.turn-s.lastLaid<P.recover)return 'r_recover';if(s.listed)return 'r_listed';return ''}
 function maleReady(s){const sp=spOf(s);if(s.age<SPECIES[sp].mAge)return sp==='ball'?'r_mage':'r_mage_'+sp;if(s.pairs>=4)return 'r_mpairs';if(s.listed)return 'r_listed';return ''}
 const readyMsg=s=>s.sex==='M'?maleReady(s):femaleReady(s);
-function snap(s){return{id:s.id,g:JSON.parse(JSON.stringify(s.g)),hp:{...s.hp},label:code(s)+' '+fullName(s),gen:s.gen,pn:pedNode(s),ar:ancRec(s),lb:lbOf(s)?lbOf(s).slice():undefined}}
+function snap(s){return{id:s.id,g:JSON.parse(JSON.stringify(s.g)),hp:{...s.hp},label:code(s)+' '+displayName(s),gen:s.gen,pn:pedNode(s),ar:ancRec(s),lb:lbOf(s)?lbOf(s).slice():undefined}}
 /* ========= SILSILAH ========= */
 // Setiap anak menyimpan ringkasan induknya di s.ped = {s: induk jantan, d: induk betina}, dan tiap induk membawa
 // ringkasan orang tuanya sendiri. Jadi pohon 3 generasi (hewan, induk, kakek-nenek) tetap utuh walaupun induknya
@@ -339,7 +343,7 @@ const pedLite=p=>p?{k:p.k,c:p.c,n:p.n,x:p.x}:null;
 // hewan lama tanpa s.ped: induknya hanya dikenal dari label teks, mis. "BP-0002 Pastel"
 function labelNode(l,x){if(!l||typeof l!=='string')return null;const i=l.indexOf(' ');return{c:i<0?l:l.slice(0,i),n:i<0?'':l.slice(i+1),x}}
 function pedParents(s){return s.ped?{s:s.ped.s||null,d:s.ped.d||null}:{s:labelNode(s.sire,'M'),d:labelNode(s.dam,'F')}}
-function pedNode(s){const o={k:s.seed,c:code(s),n:fullName(s),x:s.sex},h=hetText(s),pp=pedParents(s);if(h)o.h=h;
+function pedNode(s){const o={k:s.seed,c:code(s),n:displayName(s),x:s.sex},h=hetText(s),pp=pedParents(s);if(h)o.h=h;
  if(pp.s)o.s=pedLite(pp.s);if(pp.d)o.d=pedLite(pp.d);return o}
 
 /* ========= KAWIN SEDARAH (INBREEDING) ========= */
@@ -422,7 +426,7 @@ function dexAdd(tr,sp){sp=sp||spOfTr(tr);const k=dexKey(tr,sp);if(S.dex[k])retur
 // Target Morph Dex per spesies (dipakai tampilan Dex, misi Morph Dex & papan peringkat). Semua morph yang ditemukan tetap
 // tercatat di S.dex, tapi hanya morph target yang ditampilkan & dihitung (bagian "morph lain" dihapus).
 //  ball: Normal + 19 gen + 13 kombinasi · leo: Normal + 15 gen + 18 kombinasi (v52: + Calcite, Cyclone, Banana Blizzard & varian
-//  Blazing Blizzard) · axo: Wild Type + 7 gen + 8 kombinasi. v53: morph tanpa gen (Normal / Wild Type) ikut jadi target.
+//  Blazing Blizzard) + 17 label line-bred (DEX_LB, v54) · axo: Wild Type + 7 gen + 8 kombinasi. v53: morph tanpa gen ikut jadi target.
 const DEX_TARGETS={
  ball:[[],['pastel'],['superpastel'],['mojave'],['lesser'],['bel'],['enchi'],['superenchi'],['yb'],['ivory'],['cinnamon'],['supercinnamon'],['banana'],['superbanana'],['spider'],['pinstripe'],['albino'],['piebald'],['clown'],['axanthic'],['pastel','spider'],['superpastel','spider'],['pastel','pinstripe'],['spider','pinstripe'],['pastel','spider','pinstripe'],['albino','axanthic'],['pastel','albino'],['spider','albino'],['enchi','pastel'],['pastel','clown'],['banana','clown'],['piebald','albino'],['enchi','yb']],
  leo:[[],['tremper'],['bell'],['rainwater'],['eclipse'],['blizzard'],['murphy'],['marble'],['macksnow'],['supersnow'],['giant'],['supergiant'],['lemonfrost'],['superlemonfrost'],['enigma'],['wy'],
@@ -431,7 +435,12 @@ const DEX_TARGETS={
   ['blizzard','bell'],['blizzard','rainwater'],['blizzard','murphy','bell'],['blizzard','murphy','rainwater']],
  axo:[[],['axleu'],['axalb'],['axmel'],['axaxa'],['axcop'],['gfp'],['rfp'],
  ['axalb','axleu'],['axalb','axaxa'],['axalb','axmel'],['axleu','axmel'],['axleu','axaxa'],['axaxa','axmel'],['gfp','axleu'],['gfp','axalb']]};
+// v54: 17 label sifat line-bred leopard gecko ikut jadi target Morph Dex (tercatat saat labelnya terlihat pada gecko milikmu)
+const DEX_LB=['High Yellow','Tangerine','Lavender','Emerine','Black Night','Hypo','Super Hypo','Bold','Jungle','Stripe','Reverse Stripe','SHTCT','Sunglow','Bell Sunglow','Rainwater Sunglow','Red Stripe','Bold Stripe'];
+const dexLbKey=L=>'leo:lb:'+L;
+function dexAddLb(L){if(!DEX_LB.includes(L))return false;const k=dexLbKey(L);if(S.dex[k])return false;S.dex[k]={lb:L,wt:S.turn,sp:'leo'};return true}
 const DEX_KEYS=new Set();for(const sp of SPECIES_LIST)for(const tr of DEX_TARGETS[sp])DEX_KEYS.add(dexKey(tr,sp));
+for(const L of DEX_LB)DEX_KEYS.add(dexLbKey(L));
 const isDexTarget=k=>DEX_KEYS.has(k);
 const dexCount=st=>Object.keys(((st||S)&&(st||S).dex)||{}).filter(isDexTarget).length;
 // Gen Giant membuat tubuh lebih besar (1 salinan ×1,25, Super Giant ×1,6).
@@ -576,7 +585,7 @@ function checkQuests(){if(!S.quest||!Array.isArray(S.quest.d))S.quest={d:[]};con
 function rankStats(st){const prev=S;S=st;try{
  let nw=st.money;const top={};
  for(const s of st.snakes){const v=value(s),sp=spOf(s);nw+=v;
-  if(!top[sp]||v>top[sp].v)top[sp]={v,n:fullName(s),c:code(s),x:s.sex,tr:traitsOf(s.g),k:s.seed,nick:s.nick||''}}
+  if(!top[sp]||v>top[sp].v)top[sp]={v,n:displayName(s),c:code(s),x:s.sex,tr:traitsOf(s.g),k:s.seed,nick:s.nick||''}}
  return{turn:st.turn,nw:Math.round(nw),dex:dexCount(st),hatched:(st.stats&&st.stats.hatched)||0,orders:(st.stats&&st.stats.orders)||0,rep:typeof st.rep==='number'?st.rep:((st.stats&&st.stats.orders)||0),top}
 }finally{S=prev}}
 
@@ -682,7 +691,7 @@ function advance(){
   const sp=spOf(f),P=SPECIES[sp],no=f.gravid.no||1,tot=f.gravid.tot||1;
   const m=f.gravid.sire,F=f.gravid.inb||0;const n=P.eggs(f),slugP=Math.min(.95,P.slug+P.slugStep*(no-1)+INB_SLUG*F);
   const eggs=[],lbs=hasLb(sp)?[]:null;let slugs=0;for(let i=0;i<n;i++){if(R()>=slugP){eggs.push(breedGeno(m,f));if(lbs)lbs.push(lbChild(m,f))}else slugs++}
-  const c={cid:Math.floor(R()*1e9),damId:f.id,sireId:m.id,damLabel:code(f)+' '+fullName(f),sireLabel:m.label,eggs,slugs,hatchIn:P.inc,incTotal:P.inc,temp:P.temp?P.temp.mid:null,hp:childHp(m,f),gen:Math.max(f.gen,m.gen)+1,ped:{s:m.pn||labelNode(m.label,'M'),d:pedNode(f)},inb:F,ca:m.ar?childAnc(m.ar,ancRec(f),F):null};
+  const c={cid:Math.floor(R()*1e9),damId:f.id,sireId:m.id,damLabel:code(f)+' '+displayName(f),sireLabel:m.label,eggs,slugs,hatchIn:P.inc,incTotal:P.inc,temp:P.temp?P.temp.mid:null,hp:childHp(m,f),gen:Math.max(f.gen,m.gen)+1,ped:{s:m.pn||labelNode(m.label,'M'),d:pedNode(f)},inb:F,ca:m.ar?childAnc(m.ar,ancRec(f),F):null};
   if(sp!=='ball')c.sp=sp;if(lbs)c.lb=lbs;S.clutches.push(c);
   S.stats.clutches++;{const p=ps();p.cl++;p.laid+=n;p.slug+=slugs}
   log('l_laid',tot>1?{c:code(f),n,good:eggs.length,slug:slugs,m:P.inc,no,tot}:{c:code(f),n,good:eggs.length,slug:slugs,m:P.inc},'good');head.push(['h_laid',{c:code(f),n:eggs.length}]);
@@ -697,11 +706,12 @@ function advance(){
  S.snakes.forEach(s=>{if(s.sex==='M'&&s.pairs){s.w=Math.round(s.w*(1-.015*s.pairs));s.pairs=0}});
  // 4. pertumbuhan
  S.snakes.forEach(s=>{s.age++;grow(s)});
- for(const s of S.snakes)if(hasLb(spOf(s))&&s.age===LB_REVEAL){const L=lbLabels(s);if(L.length)log('l_lbreveal',{c:code(s),l:L.join(' · ')},'star')}   // bayi line-bred: label terungkap di 6 bulan
+ for(const s of S.snakes)if(hasLb(spOf(s))&&s.age===LB_REVEAL){const L=lbLabels(s);if(L.length)log('l_lbreveal',{c:code(s),l:L.join(' · ')},'star')   // bayi line-bred: label terungkap di 6 bulan
+  for(const x of L)if(dexAddLb(x)){log('l_newmorph',{n:'✨ '+x},'star');head.push(['h_new',{n:'✨ '+x}])}}
  // 4b. mati karena tua (betina yang sedang bunting ikut mati bersama telurnya)
- for(const s of S.snakes.slice())if(s.age>=maxAge(s)){log('l_oldage',{c:code(s),n:fullName(s),a:s.age,gr:s.gravid?1:0},'bad');head.push(['h_oldage',{c:code(s)}]);removeSnake(s)}
+ for(const s of S.snakes.slice())if(s.age>=maxAge(s)){log('l_oldage',{c:code(s),n:displayName(s),a:s.age,gr:s.gravid?1:0},'bad');head.push(['h_oldage',{c:code(s)}]);removeSnake(s)}
  // 5. iklan
- for(const s of S.snakes.slice()){if(!s.listed)continue;if(R()<(ev.expo?.7:.35)){const v=value(s);S.money+=v;S.stats.sold++;S.stats.earned+=v;psSale('ad',s,v);traitsOf(s.g).forEach(t=>S.mm[t]=mm(t)*.97);log('l_soldad',{c:code(s),n:fullName(s),v:money(v)},'good');head.push(['h_sold',{c:code(s),v:money(v)}]);removeSnake(s)}}
+ for(const s of S.snakes.slice()){if(!s.listed)continue;if(R()<(ev.expo?.7:.35)){const v=value(s);S.money+=v;S.stats.sold++;S.stats.earned+=v;psSale('ad',s,v);traitsOf(s.g).forEach(t=>S.mm[t]=mm(t)*.97);log('l_soldad',{c:code(s),n:displayName(s),v:money(v)},'good');head.push(['h_sold',{c:code(s),v:money(v)}]);removeSnake(s)}}
  // 6. biaya
  const{food,util,over,total}=monthlyCosts(S.snakes,S.racks,ev);
  S.money-=total;psEx('food',food);psEx('util',util);if(over)psEx('over',over);
@@ -730,7 +740,7 @@ function fail(code){throw new Error(code)}
 const toId=x=>{const n=Number(x);if(!Number.isInteger(n))fail('bad_action');return n};
 function mustSnake(id){const s=byId(toId(id));if(!s)fail('snake_not_found');return s}
 // Pastikan hewan yang baru masuk (mis. dari trade) tercatat di Morph Dex.
-function syncDex(){for(const s of S.snakes){s.hp=s.hp||{};dexAdd(traitsOf(s.g),spOf(s))}}
+function syncDex(){for(const s of S.snakes){s.hp=s.hp||{};dexAdd(traitsOf(s.g),spOf(s));if(hasLb(spOf(s)))for(const L of lbVisibleLabels(s))dexAddLb(L)}}
 const ACTIONS={
  advance(){return{head:advance()}},
  pair(a){const m=mustSnake(a.m),f=mustSnake(a.f);
@@ -747,7 +757,7 @@ const ACTIONS={
   log(s.listed?'l_listed':'l_unlisted',{c:code(s)});return{}},
  quicksell(a){const s=mustSnake(a.id);if(s.gravid)fail('gravid_locked');
   const v=Math.round(value(s)*.6);S.money+=v;S.stats.sold++;S.stats.earned+=v;psSale('quick',s,v);traitsOf(s.g).forEach(g=>S.mm[g]=mm(g)*.97);
-  log('l_quick',{c:code(s),n:fullName(s),v:money(v)},'good');removeSnake(s);return{}},
+  log('l_quick',{c:code(s),n:displayName(s),v:money(v)},'good');removeSnake(s);return{}},
  // Aksi sekaligus dari tampilan daftar koleksi: op = 'list' (iklankan), 'unlist' (batalkan iklan), 'quicksell' (jual cepat 60%).
  // Semua hewan dicek dulu; kalau ada satu yang tidak sah, tidak ada yang diubah. Maks. 200 hewan per aksi.
  bulk(a){const op=a.op;if(!['list','unlist','quicksell'].includes(op))fail('bad_action');
@@ -767,14 +777,14 @@ const ACTIONS={
   const price=Number(a.price);if(!Number.isInteger(price))fail('bad_price');
   const v=value(s),min=Math.max(1,Math.ceil(v*MKT_MIN));if(price<min)fail('price_too_low');if(price>MKT_MAX)fail('price_too_high');
   const snakeCopy=JSON.parse(JSON.stringify(s));snakeCopy.xferAgo=Math.max(0,S.turn-(typeof s.lastLaid==='number'?s.lastLaid:-99));
-  const info={c:code(s),n:fullName(s),l:lbKey(s)};removeSnake(s);log('l_mkt_list',{c:info.c,n:info.n,p:price},'info');
+  const info={c:code(s),n:fullName(s),l:lbKey(s),d:displayName(s)};removeSnake(s);log('l_mkt_list',{c:info.c,n:info.d,p:price},'info');   // n = nama gen (riwayat harga)
   return{toast:'t_mkt_listed',market:{snake:snakeCopy,price,value:v,name:info.n,code:info.c,lbl:info.l}}},
  nick(a){const s=mustSnake(a.id);s.nick=String(a.name==null?'':a.name).replace(/[\u0000-\u001f\u007f]/g,'').trim().slice(0,24);return{}},
  buy(a){const lid=toId(a.lid);const L=S.market.find(x=>x.lid===lid);if(!L)fail('listing_gone');
   if(!Object.prototype.hasOwnProperty.call(BUY_MULT,a.age)||(a.sex!=='M'&&a.sex!=='F'))fail('bad_action');
   const price=marketPrice(L,a.age);if(S.money<price)fail('not_enough_money');
   S.money-=price;psEx('buy',price);const s=addSnake(makeMarketSnake(L,a.age,a.sex));s.src={t:'market',turn:S.turn};const nw=dexAdd(traitsOf(s.g),spOf(s));   // listing tetap ada: bisa dibeli lagi
-  log('l_buy',{c:code(s),n:fullName(s),h:hetText(s),v:money(price)});if(nw)log('l_newmorph',{n:nameOf(traitsOf(s.g),null,spOf(s))},'star');return{}},
+  log('l_buy',{c:code(s),n:displayName(s),h:hetText(s),v:money(price)});if(nw)log('l_newmorph',{n:nameOf(traitsOf(s.g),null,spOf(s))},'star');return{}},
  clearlog(){S.log=[];return{toast:'t_logcleared'}},
  quest_hide(){if(!S.quest)S.quest={d:[]};S.quest.hide=1;return{}},
  brood(a){const b=S.broods.find(x=>x.bid===toId(a.bid));if(!b)fail('brood_gone');
@@ -793,7 +803,7 @@ const ACTIONS={
   if(isBig(o))return bigFulfill(o,a);
   const s=mustSnake(a.sid);
   if(!matches(o).includes(s))fail('order_mismatch');
-  const pay=orderPay(o,s);S.money+=pay;psSale('order',s,pay);S.stats.sold++;S.stats.earned+=pay;S.stats.orders=(S.stats.orders||0)+1;log('l_fulfill',{c:code(s),n:fullName(s),bi:o.bi,b:o.buyer,r:money(pay),rp:REP_ORDER},'star');
+  const pay=orderPay(o,s);S.money+=pay;psSale('order',s,pay);S.stats.sold++;S.stats.earned+=pay;S.stats.orders=(S.stats.orders||0)+1;log('l_fulfill',{c:code(s),n:displayName(s),bi:o.bi,b:o.buyer,r:money(pay),rp:REP_ORDER},'star');
   removeSnake(s);S.orders=S.orders.filter(x=>x!==o);addRep(REP_ORDER);return{}},
 };
 // Pembeli besar: a.sids = [id hewan untuk permintaan 1, id hewan untuk permintaan 2], dikirim sekaligus.
@@ -824,7 +834,7 @@ root.MorphCore={
  emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,
  OLD_WARN,maxAge,lifeLeft,sizeMult,kOf,growW,
  pedNode,pedParents,labelNode,ancRec,kinship,relation,inbOf,inbFromAnc,repairInb,INB_SLUG,INB_DEAD,HATCH_DEAD,
- mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,dexKey,DEX_TARGETS,isDexTarget,dexCount,matches,ORDER_PREMIUM,orderPay,MKT_MIN,MKT_MAX,MKT_DAYS,REP_ORDER,REP_BIG,BIG_LEVEL,ORDER_PREMIUM_BIG,MAX_SMALL,repNeed,repLevel,isBig,genBigOrder,bigPay,orderLabel,
+ mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,dexKey,DEX_TARGETS,DEX_LB,dexLbKey,dexAddLb,isDexTarget,dexCount,displayName,matches,ORDER_PREMIUM,orderPay,MKT_MIN,MKT_MAX,MKT_DAYS,REP_ORDER,REP_BIG,BIG_LEVEL,ORDER_PREMIUM_BIG,MAX_SMALL,repNeed,repLevel,isBig,genBigOrder,bigPay,orderLabel,
  monthlyCosts,previewNext,
  MARKET_SIZE,MARKET_EVERY,BUY_MULT,MARKET_POOL,listingTraits,marketBase,marketPrice,marketLeft,refreshMarket,ensureMarket,marketOk,makeMarketSnake,
  INC_MONTHS,TEMP_MIN,TEMP_MAX,TEMP_MID,TEMP_STEP,tempRange,femaleChance,incTotal,tempOpen,tempMonthsLeft,validTemp,
