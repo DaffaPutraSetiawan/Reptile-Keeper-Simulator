@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:52,date:'2026-11-22'};
+const VERSION={v:53,date:'2026-11-22'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -421,15 +421,15 @@ const dexKey=(tr,sp)=>(sp&&sp!=='ball'?sp+':':'')+nameOf(tr,null,sp||spOfTr(tr))
 function dexAdd(tr,sp){sp=sp||spOfTr(tr);const k=dexKey(tr,sp);if(S.dex[k])return false;S.dex[k]=sp==='ball'?{tr,wt:S.turn}:{tr,wt:S.turn,sp};return true}
 // Target Morph Dex per spesies (dipakai tampilan Dex, misi Morph Dex & papan peringkat). Semua morph yang ditemukan tetap
 // tercatat di S.dex, tapi hanya morph target yang ditampilkan & dihitung (bagian "morph lain" dihapus).
-//  ball: 19 gen + 13 kombinasi · leo: 15 gen + 18 kombinasi (v52: + Calcite, Cyclone, Banana Blizzard & varian Blazing Blizzard)
-//  axo: 7 gen + 8 kombinasi
+//  ball: Normal + 19 gen + 13 kombinasi · leo: Normal + 15 gen + 18 kombinasi (v52: + Calcite, Cyclone, Banana Blizzard & varian
+//  Blazing Blizzard) · axo: Wild Type + 7 gen + 8 kombinasi. v53: morph tanpa gen (Normal / Wild Type) ikut jadi target.
 const DEX_TARGETS={
- ball:[['pastel'],['superpastel'],['mojave'],['lesser'],['bel'],['enchi'],['superenchi'],['yb'],['ivory'],['cinnamon'],['supercinnamon'],['banana'],['superbanana'],['spider'],['pinstripe'],['albino'],['piebald'],['clown'],['axanthic'],['pastel','spider'],['superpastel','spider'],['pastel','pinstripe'],['spider','pinstripe'],['pastel','spider','pinstripe'],['albino','axanthic'],['pastel','albino'],['spider','albino'],['enchi','pastel'],['pastel','clown'],['banana','clown'],['piebald','albino'],['enchi','yb']],
- leo:[['tremper'],['bell'],['rainwater'],['eclipse'],['blizzard'],['murphy'],['marble'],['macksnow'],['supersnow'],['giant'],['supergiant'],['lemonfrost'],['superlemonfrost'],['enigma'],['wy'],
+ ball:[[],['pastel'],['superpastel'],['mojave'],['lesser'],['bel'],['enchi'],['superenchi'],['yb'],['ivory'],['cinnamon'],['supercinnamon'],['banana'],['superbanana'],['spider'],['pinstripe'],['albino'],['piebald'],['clown'],['axanthic'],['pastel','spider'],['superpastel','spider'],['pastel','pinstripe'],['spider','pinstripe'],['pastel','spider','pinstripe'],['albino','axanthic'],['pastel','albino'],['spider','albino'],['enchi','pastel'],['pastel','clown'],['banana','clown'],['piebald','albino'],['enchi','yb']],
+ leo:[[],['tremper'],['bell'],['rainwater'],['eclipse'],['blizzard'],['murphy'],['marble'],['macksnow'],['supersnow'],['giant'],['supergiant'],['lemonfrost'],['superlemonfrost'],['enigma'],['wy'],
  ['tremper','eclipse'],['bell','eclipse'],['rainwater','eclipse'],['tremper','eclipse','blizzard'],['tremper','eclipse','murphy'],['tremper','eclipse','enigma'],['macksnow','enigma','tremper','eclipse'],['supersnow','tremper','eclipse'],['blizzard','tremper'],['supersnow','eclipse'],
   ['bell','eclipse','wy','macksnow','enigma'],['rainwater','eclipse','murphy'],['blizzard','murphy'],['blizzard','murphy','tremper'],
   ['blizzard','bell'],['blizzard','rainwater'],['blizzard','murphy','bell'],['blizzard','murphy','rainwater']],
- axo:[['axleu'],['axalb'],['axmel'],['axaxa'],['axcop'],['gfp'],['rfp'],
+ axo:[[],['axleu'],['axalb'],['axmel'],['axaxa'],['axcop'],['gfp'],['rfp'],
  ['axalb','axleu'],['axalb','axaxa'],['axalb','axmel'],['axleu','axmel'],['axleu','axaxa'],['axaxa','axmel'],['gfp','axleu'],['gfp','axalb']]};
 const DEX_KEYS=new Set();for(const sp of SPECIES_LIST)for(const tr of DEX_TARGETS[sp])DEX_KEYS.add(dexKey(tr,sp));
 const isDexTarget=k=>DEX_KEYS.has(k);
