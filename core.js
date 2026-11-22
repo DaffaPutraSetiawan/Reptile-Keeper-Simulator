@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:58,date:'2026-11-22'};
+const VERSION={v:59,date:'2026-11-22'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -58,9 +58,11 @@ const LOCI=BALL_LOCI;     // nama lama, tetap dipakai untuk ball python
 const TL={pastel:'Pastel',superpastel:'Super Pastel',mojave:'Mojave',lesser:'Lesser',bel:'BEL',enchi:'Enchi',superenchi:'Super Enchi',yb:'Yellow Belly',ivory:'Ivory',cinnamon:'Cinnamon',supercinnamon:'Super Cinnamon',banana:'Banana',superbanana:'Super Banana',spider:'Spider',pinstripe:'Pinstripe',albino:'Albino',piebald:'Piebald',clown:'Clown',axanthic:'Axanthic',
  tremper:'Tremper Albino',bell:'Bell Albino',rainwater:'Rainwater Albino',eclipse:'Eclipse',blizzard:'Blizzard',murphy:'Murphy Patternless',marble:'Marble Eye',macksnow:'Mack Snow',supersnow:'Super Snow',giant:'Giant',supergiant:'Super Giant',lemonfrost:'Lemon Frost',superlemonfrost:'Super Lemon Frost',enigma:'Enigma',wy:'White & Yellow',
  axleu:'Leucistic',axalb:'Albino',axmel:'Melanoid',axaxa:'Axanthic',axcop:'Copper',gfp:'GFP',rfp:'RFP'};
-const TV={pastel:45,superpastel:150,mojave:55,lesser:55,bel:600,enchi:60,superenchi:260,yb:40,ivory:280,cinnamon:50,supercinnamon:260,banana:140,superbanana:500,spider:70,pinstripe:60,albino:280,piebald:380,clown:520,axanthic:300,
+// v59: penyeimbangan mengikuti kelangkaan dunia nyata — ball python Banana 140→80, Clown 520→420, Axanthic 300→360, BEL 600→450;
+// axolotl Axanthic 12→18 (gen alami termahal), Copper 15→13. Tiket toko: Banana 4→7, Albino 5→6, axolotl Axanthic 5→3, Copper 4→5.
+const TV={pastel:45,superpastel:150,mojave:55,lesser:55,bel:450,enchi:60,superenchi:260,yb:40,ivory:280,cinnamon:50,supercinnamon:260,banana:80,superbanana:500,spider:70,pinstripe:60,albino:280,piebald:380,clown:420,axanthic:360,
  tremper:55,bell:75,rainwater:85,eclipse:80,blizzard:75,murphy:85,marble:110,macksnow:45,supersnow:140,giant:55,supergiant:150,lemonfrost:110,superlemonfrost:190,enigma:50,wy:55,
- axleu:6,axalb:9,axmel:6,axaxa:12,axcop:15,gfp:10,rfp:15};
+ axleu:6,axalb:9,axmel:6,axaxa:18,axcop:13,gfp:10,rfp:15};
 const TLOC={pastel:'pastel',superpastel:'pastel',mojave:'bel',lesser:'bel',bel:'bel',enchi:'enchi',superenchi:'enchi',yb:'yb',ivory:'yb',cinnamon:'cinnamon',supercinnamon:'cinnamon',banana:'banana',superbanana:'banana',spider:'spider',pinstripe:'pinstripe',albino:'albino',piebald:'piebald',clown:'clown',axanthic:'axanthic',
  tremper:'tremper',bell:'bell',rainwater:'rainwater',eclipse:'eclipse',blizzard:'blizzard',murphy:'murphy',marble:'marble',macksnow:'macksnow',supersnow:'macksnow',giant:'giant',supergiant:'giant',lemonfrost:'lemonfrost',superlemonfrost:'lemonfrost',enigma:'enigma',wy:'wy',
  axleu:'axleu',axalb:'axalb',axmel:'axmel',axaxa:'axaxa',axcop:'axcop',gfp:'gfp',rfp:'rfp'};
@@ -81,7 +83,7 @@ const SPECIES={
   temp:{min:29,max:33,mid:31,step:.5},
   eggs:f=>clamp(Math.round(2+(f.w-1300)/170+R()*2.5-1),2,11),
   mk:{baby:{a:[1,3],w:[70,180]},F:{a:[24,30],w:[1500,1900]},M:{a:[10,16],w:[550,900]}},
-  pool:[['normal',8],['pastel',10],['mojave',6],['lesser',6],['enchi',6],['yb',7],['cinnamon',6],['banana',4],['spider',6],['pinstripe',6],['albino',5],['piebald',4],['clown',3],['axanthic',4]],
+  pool:[['normal',8],['pastel',10],['mojave',6],['lesser',6],['enchi',6],['yb',7],['cinnamon',6],['banana',7],['spider',6],['pinstripe',6],['albino',6],['piebald',4],['clown',3],['axanthic',4]],
   orderBase:['pastel','spider','albino','enchi'],orderSkip:['bel','superbanana','supercinnamon']},
  leo:{name:'leopard gecko',orderBonus:30,code:'LG',loci:LEO_LOCI,maxAge:240,base:35,fAge:10,mAge:9,recover:3,ovul:.7,layIn:1,slug:.1,layLoss:.94,gravidLoss:1,clutches:[4,6],minLayW:40,slugStep:.04,
   K:{F:65,M:75,H:70},r:{F:.4,M:.4,H:.4},hatchW:[3,5],wBonus:[4,40],foodBase:1,inc:2,
@@ -96,7 +98,7 @@ const SPECIES={
   temp:null,brood:3,
   eggs:f=>clamp(Math.round(50+(f.w-70)*1.2+R()*20-10),30,100),
   mk:{baby:{a:[2,4],w:[6,15]},F:{a:[18,24],w:[85,110]},M:{a:[12,18],w:[70,95]}},
-  pool:[['normal',8],['axleu',10],['axalb',8],['axmel',7],['axaxa',5],['axcop',4],['gfp',5],['rfp',3]],
+  pool:[['normal',8],['axleu',10],['axalb',8],['axmel',7],['axaxa',3],['axcop',5],['gfp',5],['rfp',3]],
   orderBase:['axleu','axalb','axmel','gfp'],orderSkip:[]},
 };
 const SPECIES_LIST=Object.keys(SPECIES);
@@ -584,9 +586,9 @@ function genOrder(){const x=orderSpec();const o={oid:Math.floor(R()*1e9),tr:x.tr
 /* ========= REPUTASI & PEMBELI BESAR =========
    Reputasi hanya bertambah dari pesanan: pesanan biasa +1, pesanan pembeli besar +3 (uang tetap dibayar).
    Level: naik ke level 2 butuh 10, ke level 3 butuh 20 lagi (total 30), ke level 4 butuh 30 lagi (total 60), dst.
-   Mulai level 2 muncul pembeli besar: 1 pesanan berisi 2 hewan berbeda, dikirim sekaligus, dibayar 150% nilai hewan.
+   Mulai level 2 muncul pembeli besar: 1 pesanan berisi 2 hewan berbeda, dikirim sekaligus, dibayar 250% nilai hewan (v59; sebelumnya 150%).
    Maks. 3 pesanan biasa + 1 pesanan pembeli besar. */
-const REP_ORDER=1,REP_BIG=3,BIG_LEVEL=2,ORDER_PREMIUM_BIG=1.5,MAX_SMALL=3;
+const REP_ORDER=1,REP_BIG=3,BIG_LEVEL=2,ORDER_PREMIUM_BIG=2.5,MAX_SMALL=3;   // v59: pembeli besar 250% (sebelumnya 150%)
 const repNeed=L=>5*L*(L-1);                        // total reputasi untuk mencapai level L (1→0, 2→10, 3→30, 4→60 …)
 function repLevel(r){let L=1;while(repNeed(L+1)<=(r||0))L++;return L}
 const isBig=o=>!!(o&&o.big);
@@ -597,7 +599,7 @@ function genBigOrder(){const a=orderSpec();let b=orderSpec(),n=0;while(orderSig(
  return{oid:Math.floor(R()*1e9),big:1,items:[a,b],reward,left:10+Math.floor(R()*7),bi:Math.floor(R()*BUYER_COUNT)}}
 // Nama singkat isi pesanan (untuk catatan): "♀ Albino" atau "♀ Albino + Pastel"
 const orderLabel=o=>(isBig(o)?o.items:[o]).map(x=>(x.sex?(x.sex==='F'?'♀ ':'♂ '):'')+nameOf(x.tr)).join(' + ');
-// Bayaran pembeli besar: hadiah tetap, atau 150% nilai kedua hewan kalau itu lebih tinggi (dibulatkan ke atas).
+// Bayaran pembeli besar: hadiah tetap, atau 250% nilai kedua hewan kalau itu lebih tinggi (dibulatkan ke atas).
 const bigPay=(o,list)=>Math.max(o.reward,Math.ceil(list.reduce((a,s)=>a+value(s),0)*ORDER_PREMIUM_BIG/5)*5);
 function addRep(n){const before=repLevel(S.rep);S.rep=(S.rep||0)+n;const L=repLevel(S.rep);
  if(L>before)log(L===BIG_LEVEL?'l_replevel_big':'l_replevel',{l:L},'star');return L>before?L:0}
@@ -608,10 +610,10 @@ function hasTrait(s,tr,t){if(tr.includes(t))return true;if(SUPER_OF[t]&&tr.inclu
  if((t==='mojave'||t==='lesser')&&tr.includes('bel'))return s.g.bel.includes(t==='mojave'?1:2);return false}
 // Bayaran pesanan: hadiah tetap pesanan, atau ORDER_PREMIUM × nilai hewan yang dikirim kalau itu lebih tinggi.
 // Dengan begitu mengirim ke pembeli selalu lebih untung daripada iklan (100% nilai) dan jual cepat (60%).
-const ORDER_PREMIUM=1.25;
+const ORDER_PREMIUM=2;   // v59: 200% (sebelumnya 125%)
 const MKT_MIN=.5,MKT_MAX=100000000,MKT_DAYS=14;   // Pasar Pemain: harga minimal 50% nilai, tayang 14 hari
 const STUD_MAX=5;   // v58 sewa pejantan: satu penawaran bisa disewa 5 kali (biaya minimal juga 50% nilai jantan)
-const orderPay=(o,s)=>Math.max(o.reward,Math.ceil(value(s)*ORDER_PREMIUM/5)*5);   // dibulatkan ke atas: selalu ≥125%
+const orderPay=(o,s)=>Math.max(o.reward,Math.ceil(value(s)*ORDER_PREMIUM/5)*5);   // dibulatkan ke atas: selalu ≥200%
 function matches(o){if(isBig(o))return[];const sp=spOf(o);return S.snakes.filter(s=>{const tr=traitsOf(s.g);return spOf(s)===sp&&o.tr.every(t=>hasTrait(s,tr,t))&&(!o.sex||s.sex===o.sex)&&!s.gravid&&!s.listed})}
 
 /* ========= STATISTIK PRIBADI =========

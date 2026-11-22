@@ -2,6 +2,15 @@
    Terbaru di atas. v = versi game (core.js VERSION). Riwayat teknis lengkap ada di CHANGELOG.md.
    Tambahkan entri baru di paling atas setiap kali versi game naik. */
 window.PATCH_NOTES=[
+ {v:59,d:'2026-11-22',
+  id:['Pesanan pembeli sekarang dibayar <b>200%</b> nilai hewan (sebelumnya 125%), dan pembeli besar <b>250%</b> (sebelumnya 150%), atau hadiah tetap kalau lebih besar.',
+   'Harga gen disesuaikan dengan kelangkaan di dunia nyata. Ball python: Banana lebih murah dan lebih sering muncul di toko, Clown dan BEL lebih murah, Axanthic lebih mahal, Albino lebih sering muncul.',
+   'Axolotl: Axanthic jadi gen alami termahal dan lebih jarang di toko; Copper sedikit lebih murah dan lebih sering muncul.',
+   'Nilai hewan yang sudah kamu miliki ikut menyesuaikan.'],
+  en:['Buyer orders now pay <b>200%</b> of the animal’s value (was 125%), and big buyers <b>250%</b> (was 150%), or the fixed reward if that’s higher.',
+   'Gene prices now follow real-world rarity. Ball python: Banana is cheaper and shows up more in the shop, Clown and BEL are cheaper, Axanthic is pricier, Albino shows up more often.',
+   'Axolotl: Axanthic is now the priciest natural gene and rarer in the shop; Copper is a bit cheaper and more common.',
+   'The value of animals you already own adjusts too.']},
  {v:58,d:'2026-11-22',
   id:['<b>Sewa pejantan</b>: tawarkan jantan dewasamu untuk disewa pemain lain (buka jantan di koleksi → "Tawarkan sebagai pejantan"). Satu penawaran bisa disewa sampai 5 kali, tanpa batas waktu.',
    'Sewa jantan milik pemain lain di <b>Pasar → 🧬 Pejantan</b>. Jantannya tetap milik pemiliknya, anaknya milikmu. Biaya dibayar di muka dan tidak kembali kalau betina gagal ovulasi.',

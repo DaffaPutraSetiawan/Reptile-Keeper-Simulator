@@ -6,6 +6,13 @@ Catatan pembaruan untuk pemain (bahasa yang lebih sederhana, ID & EN) ada di `pa
 
 ---
 
+## v59 — 22 Nov 2026
+**Penyeimbangan gen ball python & axolotl, bayaran pesanan naik**
+- Nilai gen (`TV`) mengikuti kelangkaan dunia nyata. Ball python: Banana 140 → 80, Clown 520 → 420, Axanthic 300 → 360, BEL 600 → 450. Axolotl: Axanthic 12 → 18 (gen alami termahal), Copper 15 → 13.
+- Tiket undian toko NPC: ball python Banana 4 → 7, Albino 5 → 6; axolotl Axanthic 5 → 3, Copper 4 → 5.
+- Pesanan: `ORDER_PREMIUM` 1,25 → 2 (dibayar hadiah atau 200% nilai hewan), pembeli besar `ORDER_PREMIUM_BIG` 1,5 → 2,5 (250%).
+- Simulasi ekonomi (`scripts/sim-economy.cjs`, 120 game): tanpa utang, waktu beli rak ke-3/4/5 hampir sama dengan v58.
+
 ## v58 — 22 Nov 2026
 **Sewa pejantan (stud service)**
 - Aksi baru `stud_list`: pemilik menawarkan jantan siap kawin dengan biaya per kawin (minimal 50% nilai jantan, maks. $100.000.000). Jantan tetap di save pemilik dan tetap bisa dikawinkan sendiri.
