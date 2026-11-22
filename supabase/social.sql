@@ -721,6 +721,8 @@ begin
         v_data := public._ps_add(v_data, 'ch', 'pmarket', 1, d.money);
         if d.log -> 'p' ? 'k' then v_data := public._ps_add(v_data, 'mp', d.log -> 'p' ->> 'k', 1, d.money); end if;
       end if;
+      -- uang sewa pejantan (stud.sql, v58) ikut tercatat di statistik pribadi pemilik jantan
+      if d.log ->> 'm' = 'l_stud_paid' then v_data := public._ps_add(v_data, 'ch', 'stud', 1, d.money); end if;
     end if;
     update public.deliveries set claimed_at = now() where id = d.id;
     n := n + 1;

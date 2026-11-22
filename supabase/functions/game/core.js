@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:57,date:'2026-11-22'};
+const VERSION={v:58,date:'2026-11-22'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -610,6 +610,7 @@ function hasTrait(s,tr,t){if(tr.includes(t))return true;if(SUPER_OF[t]&&tr.inclu
 // Dengan begitu mengirim ke pembeli selalu lebih untung daripada iklan (100% nilai) dan jual cepat (60%).
 const ORDER_PREMIUM=1.25;
 const MKT_MIN=.5,MKT_MAX=100000000,MKT_DAYS=14;   // Pasar Pemain: harga minimal 50% nilai, tayang 14 hari
+const STUD_MAX=5;   // v58 sewa pejantan: satu penawaran bisa disewa 5 kali (biaya minimal juga 50% nilai jantan)
 const orderPay=(o,s)=>Math.max(o.reward,Math.ceil(value(s)*ORDER_PREMIUM/5)*5);   // dibulatkan ke atas: selalu ≥125%
 function matches(o){if(isBig(o))return[];const sp=spOf(o);return S.snakes.filter(s=>{const tr=traitsOf(s.g);return spOf(s)===sp&&o.tr.every(t=>hasTrait(s,tr,t))&&(!o.sex||s.sex===o.sex)&&!s.gravid&&!s.listed})}
 
@@ -786,7 +787,13 @@ function advance(){
   if(no<tot&&f.w>=P.minLayW)f.gravid={sire:m,layIn:1,no:no+1,tot,inb:F};   // F ikut ke clutch berikutnya
   else{f.gravid=null;if(no<tot)log('l_season_light',{c:code(f),n:no},'info');else if(tot>1)log('l_season_end',{c:code(f),n:tot,r:P.recover},'info')}}
  // 3. ovulasi dari perkawinan bulan lalu
- for(const f of S.snakes){if(!f.pairedWith)continue;const m=byId(f.pairedWith),P=SPECIES[spOf(f)];
+ for(const f of S.snakes){if(!f.pairedWith)continue;const P=SPECIES[spOf(f)];
+  if(f.stud){   // v58: pejantan sewaan milik pemain lain (salinan datanya disimpan saat menyewa)
+   const sm=f.stud.sire,mc=f.stud.c+' ('+f.stud.o+')';
+   if(sm&&R()<P.ovul*(1-inbOf(f))){f.gravid={sire:sm,layIn:P.layIn,no:1,tot:rint(P.clutches),inb:kinship(sm.ar,ancRec(f))};log('l_ovul',{f:code(f),m:mc,n:P.layIn},'good');head.push(['h_gravid',{c:code(f)}])}
+   else log('l_stud_noovul',{f:code(f),m:mc},'info');
+   f.stud=null;f.pairedWith=null;continue}
+  const m=byId(f.pairedWith);
   if(m&&R()<P.ovul*(1-inbOf(f))){const sm=snap(m);f.gravid={sire:sm,layIn:P.layIn,no:1,tot:rint(P.clutches),inb:kinship(sm.ar,ancRec(f))};log('l_ovul',{f:code(f),m:code(m),n:P.layIn},'good');head.push(['h_gravid',{c:code(f)}])}
   else log('l_noovul',{f:code(f)},'info');
   f.pairedWith=null}
@@ -836,8 +843,8 @@ const ACTIONS={
   if(maleReady(m)||femaleReady(f))fail('not_ready');
   if(f.pairedWith)fail('already_paired');
   f.pairedWith=m.id;m.pairs++;log('l_paired',{m:code(m),f:code(f)});return{toast:'t_paired'}},
- unpair(a){const f=mustSnake(a.f);if(!f.pairedWith)return{};const m=byId(f.pairedWith);if(m)m.pairs=Math.max(0,m.pairs-1);f.pairedWith=null;return{}},
- list(a){const s=mustSnake(a.id);if(s.gravid)fail('gravid_locked');
+ unpair(a){const f=mustSnake(a.f);if(!f.pairedWith)return{};if(f.stud)fail('stud_booked');const m=byId(f.pairedWith);if(m)m.pairs=Math.max(0,m.pairs-1);f.pairedWith=null;return{}},
+ list(a){const s=mustSnake(a.id);if(s.gravid)fail('gravid_locked');if(!s.listed&&s.stud)fail('stud_booked');
   s.listed=!s.listed;
   if(s.listed&&s.pairedWith){const m=byId(s.pairedWith);if(m)m.pairs=Math.max(0,m.pairs-1);s.pairedWith=null}
   if(s.listed&&s.sex==='M'){S.snakes.forEach(f=>{if(f.pairedWith===s.id)f.pairedWith=null});s.pairs=0}
@@ -850,13 +857,33 @@ const ACTIONS={
  bulk(a){const op=a.op;if(!['list','unlist','quicksell'].includes(op))fail('bad_action');
   if(!Array.isArray(a.ids)||!a.ids.length||a.ids.length>200)fail('bad_action');
   const ids=a.ids.map(toId);if(new Set(ids).size!==ids.length)fail('bad_action');
-  const list=ids.map(mustSnake);if(list.some(s=>s.gravid))fail('gravid_locked');
+  const list=ids.map(mustSnake);if(list.some(s=>s.gravid))fail('gravid_locked');if(op==='list'&&list.some(s=>s.stud&&!s.listed))fail('stud_booked');
   if(op==='quicksell'){let tot=0;for(const s of list){const v=Math.round(value(s)*.6);tot+=v;S.money+=v;S.stats.sold++;S.stats.earned+=v;psSale('quick',s,v);traitsOf(s.g).forEach(g=>S.mm[g]=mm(g)*.97);removeSnake(s)}
    log('l_bulk_sell',{n:list.length,v:money(tot)},'good');return{toast:'t_bulk_sell'}}
   let n=0;for(const s of list){const on=op==='list';if(s.listed===on)continue;s.listed=on;n++;
    if(on&&s.pairedWith){const m=byId(s.pairedWith);if(m)m.pairs=Math.max(0,m.pairs-1);s.pairedWith=null}
    if(on&&s.sex==='M'){S.snakes.forEach(f=>{if(f.pairedWith===s.id)f.pairedWith=null});s.pairs=0}}
   if(n)log(op==='list'?'l_bulk_list':'l_bulk_unlist',{n},'info');return{toast:op==='list'?'t_bulk_list':'t_bulk_unlist'}},
+ // v58 Sewa pejantan. stud_list: pemilik menawarkan jantan siap kawin dengan biaya per kawin (minimal 50% nilai jantan,
+ // dihitung di sini, maks. $100.000.000). Jantan tetap di save; Edge Function menyimpan penawarannya (maks. 5 sewa).
+ stud_list(a){const s=mustSnake(a.id);if(s.sex!=='M')fail('stud_male');if(s.age<SPECIES[spOf(s)].mAge)fail('stud_not_ready');if(s.listed)fail('snake_listed');
+  const fee=Number(a.fee);if(!Number.isInteger(fee))fail('bad_price');
+  const v=value(s),min=Math.max(1,Math.ceil(v*MKT_MIN));if(fee<min)fail('price_too_low');if(fee>MKT_MAX)fail('price_too_high');
+  log('l_stud_listed',{c:code(s),n:displayName(s),p:fee,k:STUD_MAX},'info');
+  return{toast:'t_stud_listed',stud:{snake:JSON.parse(JSON.stringify(s)),fee,value:v,name:fullName(s),code:code(s)}}},
+ // stud_book: penyewa memasangkan betinanya dengan pejantan sewaan. a.studData diisi Edge Function dari save pemilik
+ // (data dari browser dibuang). Uang sewa langsung terpotong dan tidak kembali kalau betina gagal ovulasi.
+ stud_book(a){const pk=a.studData;if(!pk||typeof pk!=='object'||!pk.snake||typeof pk.snake!=='object')fail('bad_action');
+  const f=mustSnake(a.f),m=pk.snake,fee=Number(pk.fee);if(f.sex!=='F')fail('bad_action');
+  if(spOf(f)!==spOf(m)||spOf(f)!==pk.sp)fail('species_mismatch');
+  if(m.sex!=='M'||m.age<SPECIES[spOf(m)].mAge||m.listed)fail('stud_closed');
+  if(femaleReady(f))fail('not_ready');if(f.pairedWith)fail('already_paired');
+  if(!Number.isInteger(fee)||fee<1)fail('bad_action');if(S.money<fee)fail('not_enough_money');
+  const owner=String(pk.owner||'').slice(0,40),sm=snap(m);sm.id=null;sm.label=code(m)+' '+displayName(m)+' ('+owner+')';
+  S.money-=fee;psEx('stud',fee);
+  f.pairedWith=-Math.abs(Number(pk.id)||1);f.stud={sire:sm,o:owner,c:code(m),n:displayName(m),p:fee,lid:Number(pk.id)||0};
+  log('l_stud_booked',{f:code(f),m:code(m),n:displayName(m),u:owner,p:money(fee)},'info');
+  return{toast:'t_stud_booked',studBook:{lid:Number(pk.id),fee,f:code(f)}}},
  // Pasar Pemain: pasang hewan dengan harga pas. Harga minimal 50% dari nilai pasar hewan (dihitung di sini, di server),
  // maksimal $100.000.000 (batas teknis). Hewan keluar dari save; Edge Function menyimpannya ke escrow & daftar jualan
  // dalam satu transaksi. Tayang 14 hari, tanpa biaya.
@@ -921,7 +948,7 @@ root.MorphCore={
  emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,
  OLD_WARN,maxAge,lifeLeft,sizeMult,kOf,growW,
  pedNode,pedParents,labelNode,ancRec,kinship,relation,inbOf,inbFromAnc,repairInb,INB_SLUG,INB_DEAD,HATCH_DEAD,
- mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,dexKey,DEX_TARGETS,DEX_LB,DEX_LBS,dexLbKey,dexAddLb,isDexTarget,dexCount,displayName,matches,ORDER_PREMIUM,orderPay,MKT_MIN,MKT_MAX,MKT_DAYS,REP_ORDER,REP_BIG,BIG_LEVEL,ORDER_PREMIUM_BIG,MAX_SMALL,repNeed,repLevel,isBig,genBigOrder,bigPay,orderLabel,
+ mm,baseValue,value,newSnake,addSnake,byId,femaleReady,maleReady,readyMsg,removeSnake,dexAdd,dexKey,DEX_TARGETS,DEX_LB,DEX_LBS,dexLbKey,dexAddLb,isDexTarget,dexCount,displayName,matches,ORDER_PREMIUM,orderPay,MKT_MIN,STUD_MAX,MKT_MAX,MKT_DAYS,REP_ORDER,REP_BIG,BIG_LEVEL,ORDER_PREMIUM_BIG,MAX_SMALL,repNeed,repLevel,isBig,genBigOrder,bigPay,orderLabel,
  monthlyCosts,previewNext,
  MARKET_SIZE,MARKET_EVERY,BUY_MULT,MARKET_POOL,listingTraits,marketBase,marketPrice,marketLeft,refreshMarket,ensureMarket,marketOk,makeMarketSnake,
  INC_MONTHS,TEMP_MIN,TEMP_MAX,TEMP_MID,TEMP_STEP,tempRange,femaleChance,incTotal,tempOpen,tempMonthsLeft,validTemp,

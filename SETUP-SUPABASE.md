@@ -149,6 +149,17 @@ Angka peringkat (kekayaan, Morph Dex, hewan termahal per spesies, bayi menetas, 
 - Moderasi di tab Admin: `admin_market` (daftar jualan aktif / terjual + tanda mencurigakan), `admin_market_takedown` (turunkan jualan dengan alasan; hewan kembali ke penjual) dan `admin_market_exclude` (keluarkan / masukkan lagi penjualan ke riwayat harga). Semua tindakan tercatat di `admin_log`, jadi jalankan `market.sql` **setelah** `moderation.sql`.
 - Tabel `market_listings` dan `market_escrow` tertutup untuk browser (RLS tanpa policy); semua akses lewat fungsi server.
 
+## 12. Sewa pejantan
+
+1. Buka **SQL Editor → New query**.
+2. Salin seluruh isi [`supabase/stud.sql`](supabase/stud.sql), tempel, lalu klik **Run**. Jalankan **setelah** `social.sql` (memakai fungsi bantu save dan tabel `deliveries`), lalu deploy ulang Edge Function `game` (aksi `stud_list` & `stud_book`).
+
+- Menawarkan jantan lewat Edge Function `game`: server menghitung nilai jantan dan menolak biaya di bawah 50% nilai atau di atas $100.000.000. Jantannya tetap di save pemilik. `_stud_list` menyimpan save dan penawaran dalam satu transaksi.
+- Menyewa lewat Edge Function: `_stud_peek` membaca jantan asli dari save pemilik (genotipe lengkap, hanya untuk server), logika game memasangkan betina penyewa, lalu `_stud_book` menyimpan save penyewa, menambah hitungan sewa, mencatat penyewa, dan mengirim uang ke pemilik lewat `deliveries`. Baris penawaran dikunci, jadi batas 5 sewa tidak bisa dilewati walaupun ada penyewa bersamaan.
+- Penawaran yang jantannya sudah tidak ada di save pemilik (dijual, di-trade, mati, akun di-reset) atau sedang diiklankan ditutup otomatis setiap kali daftar dibuka.
+- Fungsi untuk browser: `get_studs` (daftar aktif, het tersembunyi disamarkan), `get_my_studs` (penawaran saya + penyewa), `cancel_stud`.
+- Tabel `stud_listings` dan `stud_bookings` tertutup untuk browser (RLS tanpa policy).
+
 ## Catatan keamanan
 
 - **Save online hanya bisa diubah server**: Edge Function `game` dan fungsi trading di `social.sql`. Mengubah uang atau ular lewat DevTools hanya mengubah tampilan di layar sendiri, dan akan kembali ke angka server setelah aksi berikutnya.

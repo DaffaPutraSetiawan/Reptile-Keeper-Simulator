@@ -11,7 +11,10 @@ const MAX_RETRY = 4;
  * @param {object} db    { load(uid) -> {data, rev, rank} | null, insert(uid, data, rank) -> bool, update(uid, data, oldRev, rank) -> bool,
  *                         (rank = angka papan peringkat dari C.rankStats, disimpan di kolom saves.rank)
  *                         beforeReset(uid) -> void,
- *                         marketList(uid, data, oldRev, rank, {snake, price, value, name, code, lbl}) -> id listing | null (save berubah) }
+ *                         marketList(uid, data, oldRev, rank, {snake, price, value, name, code, lbl}) -> id listing | null (save berubah),
+ *                         studPeek(uid, listingId) -> {id, sp, fee, owner, left, snake} (jantan asli dari save pemilik),
+ *                         studList(uid, data, oldRev, rank, {snake, fee, value, name, code}) -> id penawaran | null (save berubah),
+ *                         studBook(uid, data, oldRev, rank, {lid, fee, f}) -> true | null (save berubah) }
  * @returns {Promise<object>} { state, rev, head?, toast? }  (melempar Error(kode) kalau gagal)
  */
 export async function handle(body, uid, db) {
@@ -22,6 +25,8 @@ export async function handle(body, uid, db) {
 async function run(body, uid, db) {
   const action = body && body.action;
   if (!action || typeof action !== 'object' || typeof action.type !== 'string') throw new Error('bad_action');
+  // Data pejantan sewaan hanya boleh berasal dari database (diisi di bawah), bukan dari browser.
+  delete action.studData;
   if (action.type === 'reset') {
     // Mulai ulang akun hanya kalau pemain mengetik RESET.
     if (action.confirm !== 'RESET') throw new Error('confirm_mismatch');
@@ -63,6 +68,11 @@ async function run(body, uid, db) {
 
     if (!valid) throw new Error('no_save');
     const state = row.data;
+    if (action.type === 'stud_book') {
+      // Sewa pejantan: baca penawaran + jantan asli dari save pemiliknya (melempar stud_closed / own_stud / stud_not_found)
+      if (!db.studPeek) throw new Error('bad_action');
+      action.studData = await db.studPeek(uid, Number(action.lid));
+    }
     const result = C.applyAction(state, action);   // melempar Error(kode) kalau aksi tidak sah
     state.rev = row.rev + 1;
     if (result.market) {
@@ -70,6 +80,19 @@ async function run(body, uid, db) {
       if (!db.marketList) throw new Error('bad_action');
       const id = await db.marketList(uid, state, row.rev, C.rankStats(state), result.market);
       if (id) return { state, rev: state.rev, toast: result.toast || null, quests: result.quests || null, listing: id };
+      continue;
+    }
+    if (result.stud) {
+      // Tawarkan pejantan: save + penawaran disimpan dalam satu transaksi database
+      if (!db.studList) throw new Error('bad_action');
+      const id = await db.studList(uid, state, row.rev, C.rankStats(state), result.stud);
+      if (id) return { state, rev: state.rev, toast: result.toast || null, quests: result.quests || null, stud: id };
+      continue;
+    }
+    if (result.studBook) {
+      // Sewa pejantan: save penyewa + hitungan sewa + uang ke pemilik dalam satu transaksi database
+      if (!db.studBook) throw new Error('bad_action');
+      if (await db.studBook(uid, state, row.rev, C.rankStats(state), result.studBook)) return { state, rev: state.rev, toast: result.toast || null, quests: result.quests || null };
       continue;
     }
     if (await db.update(uid, state, row.rev, C.rankStats(state))) return { state, rev: state.rev, head: result.head || null, toast: result.toast || null, quests: result.quests || null };

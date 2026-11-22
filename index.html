@@ -330,6 +330,27 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  f_all:'Semua',f_M:'♂ Jantan',f_F:'♀ Betina',f_ready:'Siap kawin',f_listed:'Diiklankan',
  sort_by:'Urutkan',sort_val:'Nilai',sort_age:'Umur',sort_new:'Terbaru',sort_id:'ID',sort_w:'Berat',sort_life:'Sisa umur',sort_inb:'Inbreeding',sort_name:'Nama morph (A–Z)',col_q_ph:'Cari ID, nama panggilan, morph, atau gen…',col_st:'Status',col_src:'Asal',col_gene:'Gen',col_gene_any:'Semua gen',col_gm:'Cara cocok gen',
  cst_all:'Semua status',cst_ready:'Siap kawin',cst_paired:'Sedang dipasangkan',cst_gravid:'Bunting',cst_baby:'Bayi (belum cukup umur)',cst_old:'Tua (sisa ≤12 bulan)',cst_inbred:'Inbred (>0%)',cst_listed:'Diiklankan',
+ pmv_stud:'🧬 Pejantan',stud_sub:'Sewa jantan milik pemain lain untuk mengawini betinamu. Jantannya tetap di koleksi pemilik; anaknya milikmu. Biaya dibayar di muka dan <b>tidak kembali</b> kalau betina gagal ovulasi.',
+ stud_q_ph:'Cari morph, ID, atau pemilik…',stud_count:p=>`${p.n} pejantan`,stud_none:'Belum ada pejantan yang ditawarkan. Buka jantan dewasa di koleksimu lalu pilih "Tawarkan sebagai pejantan".',stud_none_f:'Tidak ada pejantan yang cocok dengan filter.',
+ stud_owner:'Pemilik',stud_left:p=>`🧬 Sisa sewa: <b>${p.n} dari ${p.m}</b>`,stud_val:p=>`nilai ${p.v}`,stud_per:'/ sekali kawin',stud_rent:p=>`🧬 Sewa pejantan · ${p.p}`,stud_cancel:'✖ Batalkan penawaran',sortst_new:'Terbaru',sortst_cheap:'Termurah',
+ stud_book_h:'Sewa pejantan',stud_book_of:p=>`${p.n} <span class="tbid">${p.c}</span> milik ${p.u} · sisa sewa ${p.l} dari ${p.m}`,stud_pickf:'Betina kamu (siap kawin, spesies sama)',
+ stud_nof:p=>`Kamu belum punya betina ${p.sp} yang siap kawin dan belum dipasangkan.`,stud_odds_note:'Peluang dihitung dari gen yang terlihat dan het yang diketahui. Het tersembunyi jantan ini bisa memberi kejutan.',
+ stud_norel:'✓ Bukan kerabat (inbreeding 0%)',stud_fee:'Biaya sewa',stud_money_now:'Saldo sekarang',stud_money_after:'Saldo sesudah',
+ stud_warn:p=>`⚠ Biaya tidak dikembalikan kalau betina gagal ovulasi bulan depan (peluang ovulasi ${p.sp} ${p.o}%).`,stud_yes:'Ya, sewa & pasangkan',
+ stud_offer:'🧬 Tawarkan sebagai pejantan',stud_offer_h:'Tawarkan sebagai pejantan',stud_fee_l:'Biaya sewa per kawin ($)',stud_fee_min:p=>`Minimal ${p.m} (50% dari nilai jantan ${p.v}), tanpa batas atas.`,
+ stud_rules:p=>`<li>Bisa disewa pemain lain <b>maksimal ${p.n} kali</b>. Penawaran tidak punya batas waktu: berakhir setelah ${p.n} sewa terpakai atau kamu batalkan.</li><li>Jantan tetap di koleksimu dan tetap bisa kamu kawinkan sendiri.</li><li>Uang sewa masuk ke saldomu setiap kali disewa (lewat kiriman), dan tidak dikembalikan ke penyewa kalau betinanya gagal ovulasi.</li><li>Penawaran otomatis batal kalau jantan ini kamu jual, trade, iklankan, atau mati.</li>`,
+ stud_offer_yes:'Tawarkan',stud_offered:p=>`🧬 Sedang ditawarkan sebagai pejantan · ${p.p} per kawin · sisa sewa ${p.l} dari ${p.m}`,stud_need_age:p=>`Bisa ditawarkan sebagai pejantan mulai umur ${p.a}.`,stud_need_unlist:'Batalkan iklan dulu untuk menawarkan sebagai pejantan.',
+ stud_mine_h:p=>`🧬 Penawaran pejantan aktif (${p.n})`,stud_hist_h:'🧬 Riwayat penawaran pejantan',stud_renters:'Penyewa',stud_no_renters:'Belum ada yang menyewa.',
+ studs_done:p=>`Selesai (${p.n} sewa)`,studs_cancelled:'Dibatalkan',studs_gone:'Batal otomatis (jantan dijual, di-trade, diiklankan, atau mati)',
+ stud_cancel_h:'Batalkan penawaran pejantan?',stud_cancel_b:'Penawaran hilang dari daftar Pejantan. Sewa yang sudah terjadi tetap berlaku.',stud_cancel_yes:'Ya, batalkan',
+ tag_studw:p=>`Kawin sewa dgn ${p.c} (${p.u})`,stud_pair_row:p=>`🧬 sewa dari ${p.u} · ${p.p} · tidak bisa dibatalkan`,br_stud_hint:'Tidak punya jantan yang cocok? Sewa pejantan milik pemain lain.',br_stud_go:'🧬 Cari pejantan',
+ t_stud_listed:'🧬 Jantan ditawarkan sebagai pejantan.',t_stud_booked:'🧬 Pejantan disewa. Betina dipasangkan bulan ini.',t_stud_cancelled:'Penawaran pejantan dibatalkan.',
+ l_stud_listed:p=>`🧬 ${p.c} ${p.n} ditawarkan sebagai pejantan (${money(p.p)} per kawin, maks. ${p.k} sewa).`,
+ l_stud_booked:p=>`🧬 ${p.f} dipasangkan dengan pejantan sewaan ${p.m} ${p.n} milik ${p.u} (${p.p}).`,
+ l_stud_noovul:p=>`${p.f} tidak berovulasi setelah kawin dengan pejantan sewaan ${p.m}. Biaya sewa tidak kembali.`,
+ l_stud_paid:p=>`💰 Pejantan ${p.c} ${p.n} disewa ${p.u}: +${money(p.p)} (sisa sewa ${p.left}).`,
+ ch_stud:'Sewa pejantan',ex_stud:'Sewa pejantan',
+ e_stud_male:'Hanya jantan yang bisa ditawarkan sebagai pejantan.',e_stud_not_ready:'Jantan ini belum cukup umur untuk kawin.',e_stud_closed:'Penawaran pejantan ini sudah tidak tersedia.',e_stud_not_found:'Penawaran pejantan tidak ditemukan.',e_own_stud:'Kamu tidak bisa menyewa jantanmu sendiri.',e_stud_exists:'Jantan ini sudah ditawarkan sebagai pejantan.',e_stud_booked:'Betina ini sedang kawin dengan pejantan sewaan (biaya sudah dibayar), jadi tidak bisa dibatalkan atau diiklankan.',
  pmv_npc:'🏬 Toko NPC',pmv_pm:'🧑‍🤝‍🧑 Pasar Pemain',pmv_mine:'📋 Jualan saya',csrc_pmarket:'Pasar Pemain',og_got_pmarket:p=>`Dibeli dari ${p.u} di Pasar Pemain`,
  pm_sub:'Hewan yang dijual pemain lain dengan harga pas, tanpa biaya. Gen het yang tidak terlihat hanya tampil sebagai "het/pos het" sesuai catatan penjual.',pm_q_ph:'Cari morph, ID, atau penjual…',pm_min:'Harga min $',pm_max:'Harga maks $',pm_adult:'Sudah dewasa',pm_refresh:'Muat ulang',
  pm_count:p=>`${p.n} dari ${p.t} jualan`,pm_none:'Belum ada yang berjualan. Jadilah yang pertama: buka hewan di koleksi lalu pilih "Jual di Pasar Pemain".',pm_none_f:'Tidak ada jualan yang cocok dengan filter.',pm_seller:'Penjual',
@@ -665,6 +686,27 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  f_all:'All',f_M:'♂ Males',f_F:'♀ Females',f_ready:'Ready to breed',f_listed:'Listed',
  sort_by:'Sort by',sort_val:'Value',sort_age:'Age',sort_new:'Newest',sort_id:'ID',sort_w:'Weight',sort_life:'Life left',sort_inb:'Inbreeding',sort_name:'Morph name (A–Z)',col_q_ph:'Search ID, nickname, morph or gene…',col_st:'Status',col_src:'Origin',col_gene:'Gene',col_gene_any:'Any gene',col_gm:'Gene match',
  cst_all:'Any status',cst_ready:'Ready to breed',cst_paired:'Paired',cst_gravid:'Gravid',cst_baby:'Babies (too young)',cst_old:'Old (≤12 months left)',cst_inbred:'Inbred (>0%)',cst_listed:'Listed',
+ pmv_stud:'🧬 Studs',stud_sub:'Rent another player’s male to breed your female. The male stays in the owner’s collection; the babies are yours. The fee is paid up front and is <b>not refunded</b> if the female doesn’t ovulate.',
+ stud_q_ph:'Search morph, ID or owner…',stud_count:p=>`${p.n} ${p.n===1?'stud':'studs'}`,stud_none:'No studs offered yet. Open an adult male in your collection and choose "Offer as stud".',stud_none_f:'No studs match your filters.',
+ stud_owner:'Owner',stud_left:p=>`🧬 Rentals left: <b>${p.n} of ${p.m}</b>`,stud_val:p=>`value ${p.v}`,stud_per:'/ pairing',stud_rent:p=>`🧬 Rent stud · ${p.p}`,stud_cancel:'✖ Cancel offer',sortst_new:'Newest',sortst_cheap:'Cheapest',
+ stud_book_h:'Rent a stud',stud_book_of:p=>`${p.n} <span class="tbid">${p.c}</span> owned by ${p.u} · ${p.l} of ${p.m} rentals left`,stud_pickf:'Your female (ready to breed, same species)',
+ stud_nof:p=>`You don’t have a ${p.sp} female that is ready to breed and not paired yet.`,stud_odds_note:'Odds use the visible genes and known hets. This male’s hidden hets can bring surprises.',
+ stud_norel:'✓ Not related (inbreeding 0%)',stud_fee:'Stud fee',stud_money_now:'Balance now',stud_money_after:'Balance after',
+ stud_warn:p=>`⚠ The fee isn’t refunded if the female doesn’t ovulate next month (${p.sp} ovulation chance ${p.o}%).`,stud_yes:'Yes, rent & pair',
+ stud_offer:'🧬 Offer as stud',stud_offer_h:'Offer as stud',stud_fee_l:'Stud fee per pairing ($)',stud_fee_min:p=>`At least ${p.m} (50% of the male’s value ${p.v}), no upper limit.`,
+ stud_rules:p=>`<li>Other players can rent him <b>up to ${p.n} times</b>. The offer has no time limit: it ends after ${p.n} rentals or when you cancel it.</li><li>The male stays in your collection and you can still breed him yourself.</li><li>The fee reaches your balance each time he is rented (as a delivery) and isn’t refunded to the renter if their female doesn’t ovulate.</li><li>The offer is cancelled automatically if you sell, trade, advertise this male, or he dies.</li>`,
+ stud_offer_yes:'Offer',stud_offered:p=>`🧬 Offered as stud · ${p.p} per pairing · ${p.l} of ${p.m} rentals left`,stud_need_age:p=>`Can be offered as a stud from ${p.a} old.`,stud_need_unlist:'Cancel the ad first to offer him as a stud.',
+ stud_mine_h:p=>`🧬 Active stud offers (${p.n})`,stud_hist_h:'🧬 Stud offer history',stud_renters:'Renters',stud_no_renters:'Nobody has rented yet.',
+ studs_done:p=>`Done (${p.n} rentals)`,studs_cancelled:'Cancelled',studs_gone:'Cancelled automatically (male sold, traded, advertised or died)',
+ stud_cancel_h:'Cancel this stud offer?',stud_cancel_b:'The offer disappears from the Studs list. Rentals that already happened still count.',stud_cancel_yes:'Yes, cancel',
+ tag_studw:p=>`Stud rental with ${p.c} (${p.u})`,stud_pair_row:p=>`🧬 rented from ${p.u} · ${p.p} · can’t be cancelled`,br_stud_hint:'No suitable male? Rent another player’s stud.',br_stud_go:'🧬 Find a stud',
+ t_stud_listed:'🧬 Male offered as stud.',t_stud_booked:'🧬 Stud rented. Your female is paired this month.',t_stud_cancelled:'Stud offer cancelled.',
+ l_stud_listed:p=>`🧬 ${p.c} ${p.n} offered as stud (${money(p.p)} per pairing, up to ${p.k} rentals).`,
+ l_stud_booked:p=>`🧬 ${p.f} paired with rented stud ${p.m} ${p.n} owned by ${p.u} (${p.p}).`,
+ l_stud_noovul:p=>`${p.f} didn’t ovulate after pairing with rented stud ${p.m}. The fee isn’t refunded.`,
+ l_stud_paid:p=>`💰 Stud ${p.c} ${p.n} rented by ${p.u}: +${money(p.p)} (${p.left} rentals left).`,
+ ch_stud:'Stud fees',ex_stud:'Stud rentals',
+ e_stud_male:'Only males can be offered as studs.',e_stud_not_ready:'This male isn’t old enough to breed yet.',e_stud_closed:'This stud offer is no longer available.',e_stud_not_found:'Stud offer not found.',e_own_stud:'You can’t rent your own male.',e_stud_exists:'This male is already offered as a stud.',e_stud_booked:'This female is paired with a rented stud (fee already paid), so it can’t be cancelled or advertised.',
  pmv_npc:'🏬 NPC shop',pmv_pm:'🧑‍🤝‍🧑 Player market',pmv_mine:'📋 My listings',csrc_pmarket:'Player market',og_got_pmarket:p=>`Bought from ${p.u} on the player market`,
  pm_sub:'Animals other players sell at a fixed price, no fees. Hidden het genes only show as "het/pos het" from the seller’s records.',pm_q_ph:'Search morph, ID or seller…',pm_min:'Min price $',pm_max:'Max price $',pm_adult:'Adults only',pm_refresh:'Reload',
  pm_count:p=>`${p.n} of ${p.t} listings`,pm_none:'Nobody is selling yet. Be the first: open an animal in your collection and choose "Sell on the player market".',pm_none_f:'No listings match your filters.',pm_seller:'Seller',
@@ -1210,7 +1252,7 @@ const ageTxt=m=>t('age',{m});
 const sexIcon=s=>`<span class="sx ${s}">${s==='M'?'♂':'♀'}</span>`;
 function tags(s){const o=[];
  if(s.gravid)o.push(`<span class="tag p">${(s.gravid.tot||1)>1?t('tag_gravid_c',{n:s.gravid.layIn,no:s.gravid.no,tot:s.gravid.tot}):t('tag_gravid',{n:s.gravid.layIn})}</span>`);
- if(s.pairedWith)o.push(`<span class="tag p">${t('tag_pairedw',{c:code(byId(s.pairedWith)||{id:0})})}</span>`);
+ if(s.pairedWith)o.push(`<span class="tag p">${s.stud?t('tag_studw',{c:esc(s.stud.c),u:esc(s.stud.o)}):t('tag_pairedw',{c:code(byId(s.pairedWith)||{id:0})})}</span>`);
  if(s.sex==='M'&&s.pairs)o.push(`<span class="tag p">${t('tag_pairs',{n:s.pairs})}</span>`);
  if(s.listed)o.push(`<span class="tag a">${t('tag_listed')}</span>`);
  if(!readyMsg(s))o.push(`<span class="tag g">${t('tag_ready')}</span>`);
@@ -1441,7 +1483,7 @@ function vBreeding(){
  if(!M.find(s=>s.id===SEL.m))SEL.m=(M.find(s=>!maleReady(s))||M[0]||{}).id||null;
  if(!F.find(s=>s.id===SEL.f))SEL.f=(F.find(s=>!femaleReady(s)&&!s.pairedWith)||F[0]||{}).id||null;
  const m=byId(SEL.m),f=byId(SEL.f);
- let html=`<h2>${t('tab_breeding')}</h2><p class="sub">${t('br_sub_'+BRSP)}</p>${spChips(BRSP,'brsp')}${vPlanner()}`;
+ let html=`<h2>${t('tab_breeding')}</h2><p class="sub">${t('br_sub_'+BRSP)}</p>${spChips(BRSP,'brsp')}${vPlanner()}<p class="kbd">🧬 ${t('br_stud_hint')} <button class="ghost sm" data-act="stud_go">${t('br_stud_go')}</button></p>`;
  if(!m||!f)return html+`<div class="empty">${t('br_need')}</div>`;
  const rm=maleReady(m),rf=femaleReady(f);
  const can=!rm&&!rf&&!f.pairedWith;
@@ -1459,7 +1501,7 @@ function vBreeding(){
  </table>${od.length>18?`<p class="kbd">${t('odds_more',{n:od.length-18})}</p>`:''}</div>`;
  html+=lbPlan(m,f);
  const P=S.snakes.filter(s=>s.pairedWith);
- if(P.length)html+=`<h3>${t('pairs_h')}</h3><div class="panel">${P.map(s=>`<div class="row" style="justify-content:space-between;padding:4px 0"><span>${code(s)} ${esc(dispName(s))} × ${code(byId(s.pairedWith))} ${esc(dispName(byId(s.pairedWith)))}</span><button class="ghost" data-act="unpair" data-id="${s.id}">${t('cancel')}</button></div>`).join('')}</div>`;
+ if(P.length)html+=`<h3>${t('pairs_h')}</h3><div class="panel">${P.map(s=>s.stud?`<div class="row" style="justify-content:space-between;padding:4px 0"><span>${code(s)} ${esc(dispName(s))} × ${esc(s.stud.c)} ${esc(s.stud.n)}</span><span class="kbd">${t('stud_pair_row',{u:esc(s.stud.o),p:money(s.stud.p)})}</span></div>`:`<div class="row" style="justify-content:space-between;padding:4px 0"><span>${code(s)} ${esc(dispName(s))} × ${code(byId(s.pairedWith))} ${esc(dispName(byId(s.pairedWith)))}</span><button class="ghost" data-act="unpair" data-id="${s.id}">${t('cancel')}</button></div>`).join('')}</div>`;
  return html}
 // Suhu inkubasi: pilihan 29–33 °C, hanya bisa diubah selama sepertiga pertama masa inkubasi
 const fmtTemp=x=>(+x).toFixed(1).replace('.',LANG==='id'?',':'.')+' °C';
@@ -1511,7 +1553,7 @@ function vPasarNpc(sub){
 /* ========= PASAR PEMAIN (jual-beli antarpemain) ========= */
 const PM_KEY='ml_pm_v1',PM_DEF={sp:'all',sex:'all',gene:'',gm:'any',min:'',max:'',adult:false,sort:'new'};
 var PM={view:'npc',list:null,mine:null,prices:null,loading:false,err:'',q:'',f:Object.assign({},PM_DEF),
- restore(){try{const o=JSON.parse(localStorage.getItem(PM_KEY)||'{}');for(const k in PM_DEF)if(o[k]!==undefined)this.f[k]=o[k];if(['npc','pm','mine'].includes(o.view))this.view=o.view}catch(e){}},
+ restore(){try{const o=JSON.parse(localStorage.getItem(PM_KEY)||'{}');for(const k in PM_DEF)if(o[k]!==undefined)this.f[k]=o[k];if(['npc','pm','stud','mine'].includes(o.view))this.view=o.view}catch(e){}},
  save(){try{localStorage.setItem(PM_KEY,JSON.stringify(Object.assign({view:this.view},this.f)))}catch(e){}},
  async load(){if(!Cloud.user||!Cloud.sb||this.loading)return;this.loading=true;
   try{const sb=Cloud.sb,[a,b,c]=await Promise.all([sb.rpc('get_market',{p_sp:this.f.sp==='all'?null:this.f.sp,p_sort:this.f.sort}),sb.rpc('get_market_prices',{p_sp:null}),sb.rpc('get_my_listings')]);
@@ -1547,15 +1589,19 @@ function pmBody(){if(PM.list===null)return `<div class="empty">${t('so_loading')
  return `${PM.err?`<div class="warn">${t('pm_err')}</div>`:''}<div class="row colcount"><span class="kbd">${t('pm_count',{n:L.length,t:PM.list.length})}</span></div>`+
   (L.length?`<div class="grid">${L.map(pmCard).join('')}</div>`:`<div class="empty">${t(PM.list.length?'pm_none_f':'pm_none')}</div>`)}
 function paintPM(){const el=$('pmbody');if(el)el.innerHTML=pmBody()}
-function vPasar(){const sub=`<div class="toolbar">${['npc','pm','mine'].map(k=>`<button class="chip ${PM.view===k?'on':''}" data-act="pm_view" data-v="${k}">${t('pmv_'+k)}</button>`).join('')}</div>`;
+function vPasar(){const sub=`<div class="toolbar">${['npc','pm','stud','mine'].map(k=>`<button class="chip ${PM.view===k?'on':''}" data-act="pm_view" data-v="${k}">${t('pmv_'+k)}</button>`).join('')}</div>`;
  if(PM.view==='npc')return vPasarNpc(sub);
  if((PM.view==='pm'?PM.list:PM.mine)===null&&!PM.loading)setTimeout(()=>PM.load(),0);
  const head=`<h2>${t('tab_pasar')}</h2>${sub}`,rf=`<button class="ghost sm" data-act="pm_refresh">↻ ${t('pm_refresh')}</button>`;
+ if(PM.view==='stud')return vStud(head,rf);
+ if(PM.view==='mine'&&STD.mine===null&&!STD.loading)setTimeout(()=>STD.load(),0);
  if(PM.view==='mine'){const M=PM.mine;let h=head+`<div class="toolbar"><span class="kbd">${t('pm_mine_sub')}</span>${rf}</div>`;
   if(!M)return h+`<div class="empty">${t('so_loading')}</div>`;
-  if(!M.active.length&&!M.history.length)return h+`<div class="empty">${t('pm_mine_none')}</div>`;
+  const sm=studMineHtml();
+  if(!M.active.length&&!M.history.length)return h+(sm||`<div class="empty">${t('pm_mine_none')}</div>`);
   h+=`<h3>${t('pm_active',{n:M.active.length})}</h3>`+(M.active.length?`<div class="grid">${M.active.map(pmCard).join('')}</div>`:'');
   if(M.history.length)h+=`<h3>${t('pm_history')}</h3><div class="panel pmhist">${M.history.map(L=>{const s=L.snake;return `<div class="mini-row"><img class="mini" src="${sThumb(s)}" alt=""><div><div><span class="tbid">${esc(L.code)}</span> ${sexIcon(L.sex)} ${esc(dispName(L.snake))} · <b>${money(L.price)}</b></div><div class="meta">${L.status==='sold'?t('pms_sold',{u:profLink(L.buyer_name)}):t('pms_'+L.status)} · ${esc(new Date(L.resolved_at).toLocaleDateString(LANG==='id'?'id-ID':'en-US'))}</div></div></div>`}).join('')}</div>`;
+  h+=sm;
   return h}
  const f=PM.f,gsp=f.sp==='all'?SPECIES_LIST:[f.sp],opt=(v,cur,l)=>`<option value="${v}" ${v===cur?'selected':''}>${l}</option>`;
  return head+`<p class="sub">${t('pm_sub')}</p>${spChips(f.sp,'pm_sp',true)}
@@ -1583,6 +1629,77 @@ async function pmCancel(id){closeModal(true);
  try{const{error}=await Cloud.sb.rpc('cancel_listing',{p_listing:id});if(error)throw new Error(error.message);toast(t('t_mkt_cancelled'));Social.claim()}
  catch(e){toast(errText(e))}
  PM.load()}
+/* ========= SEWA PEJANTAN (v58) =========
+   Tab Pasar → 🧬 Pejantan: jantan milik pemain lain yang bisa disewa (maks. STUD_MAX kali per penawaran).
+   Penawaran & penyewaan dikirim lewat Edge Function (aksi stud_list / stud_book); daftar dibaca dari stud.sql. */
+var STD={list:null,mine:null,loading:false,err:'',sp:'all',sort:'new',q:'',
+ async load(){if(!Cloud.user||!Cloud.sb||this.loading)return;this.loading=true;
+  try{const sb=Cloud.sb,[a,b]=await Promise.all([sb.rpc('get_studs',{p_sp:this.sp==='all'?null:this.sp,p_sort:this.sort}),sb.rpc('get_my_studs')]);
+   this.err=a.error?a.error.message:'';this.list=a.error?(this.list||[]):(a.data||[]);
+   this.mine=b.error?(this.mine||{active:[],history:[]}):(b.data||{active:[],history:[]})}
+  catch(e){this.err=String(e&&e.message||e);if(!this.list)this.list=[];if(!this.mine)this.mine={active:[],history:[]}}
+  finally{this.loading=false}
+  if(TAB==='pasar'&&(PM.view==='stud'||PM.view==='mine')&&!MODAL_LOCK&&!$('modal').innerHTML)render()},
+ find(id){return (this.list||[]).concat(this.mine?this.mine.active:[]).find(x=>x.id===id)},
+ offerOf(s){return this.mine&&this.mine.active.find(L=>L.snake&&L.snake.seed===s.seed)},
+ filtered(){const q=this.q.toLowerCase().trim();return (this.list||[]).filter(L=>L.snake&&(!q||[L.name,dispName(L.snake),L.code,L.owner_name,hetText(L.snake),lbVisibleLabels(L.snake).join(' ')].some(x=>String(x||'').toLowerCase().includes(q))))}
+};
+// betina penyewa yang bisa dipasangkan dengan pejantan spesies sp
+const studFemales=sp=>S.snakes.filter(f=>f.sex==='F'&&spOf(f)===sp&&!femaleReady(f)&&!f.pairedWith);
+function studCard(L){const s=L.snake,ht=hetText(s),left=L.max_uses-L.uses;
+ return `<div class="card pm${L.mine?' mine':''}"><img class="snk" src="${sThumb(s)}" alt="${esc(dispName(s))}"><div class="nm">${sexIcon('M')} ${esc(dispName(s))}</div>${ht?`<div class="het">${esc(ht)}</div>`:''}${lbLine(s)}${lbViewBtn(s,'st'+L.id)}
+  <div class="meta"><span class="tbid">${esc(L.code)}</span> · ${ageTxt(s.age)} · ${fmt(s.w)} g</div>
+  <div class="meta">${t('stud_owner')}: ${L.mine?t('og_you'):profLink(L.owner_name)} · ⭐ Lv ${repLevel(L.rep||0)}</div>
+  <div class="meta">${t('stud_left',{n:left,m:L.max_uses})} · ${t('stud_val',{v:money(value(s))})}</div>
+  <div class="val">${money(L.fee)} <span class="kbd" style="font-size:12px">${t('stud_per')}</span></div>
+  ${L.mine?`<button class="ghost" style="width:100%" data-act="stud_cancel" data-id="${L.id}">${t('stud_cancel')}</button>`:`<button class="pri" style="width:100%" data-act="stud_ask" data-id="${L.id}" ${S.money<L.fee?'disabled':''}>${t('stud_rent',{p:money(L.fee)})}</button>`}</div>`}
+function vStud(head,rf){const D=STD;if(D.list===null&&!D.loading)setTimeout(()=>D.load(),0);
+ const L=D.filtered(),opt=(v,l)=>`<option value="${v}" ${D.sort===v?'selected':''}>${l}</option>`;
+ return head+`<p class="sub">${t('stud_sub')}</p>${spChips(D.sp,'stud_sp',true)}
+ <div class="toolbar"><input id="studq" type="search" placeholder="${t('stud_q_ph')}" value="${esc(D.q)}" autocomplete="off" style="max-width:280px"><select id="studsort" style="width:auto">${opt('new',t('sortst_new'))}${opt('cheap',t('sortst_cheap'))}</select>${rf}</div>
+ <div id="studbody">${D.list===null?`<div class="empty">${t('so_loading')}</div>`:`${D.err?`<div class="warn">${t('pm_err')}</div>`:''}<div class="row colcount"><span class="kbd">${t('stud_count',{n:L.length})}</span></div>`+
+  (L.length?`<div class="grid">${L.map(studCard).join('')}</div>`:`<div class="empty">${t(D.list.length?'stud_none_f':'stud_none')}</div>`)}</div>`}
+function paintStud(){const el=$('studbody');if(el&&PM.view==='stud'){const h=vStud('','');const b=document.createElement('div');b.innerHTML=h;const nb=b.querySelector('#studbody');if(nb)el.innerHTML=nb.innerHTML}}
+// Bagian "Jualan saya": penawaran pejantan aktif + riwayat, dengan daftar penyewa
+function studMineHtml(){const M=STD.mine;if(!M||(!M.active.length&&!M.history.length))return '';
+ const bk=L=>L.bookings&&L.bookings.length?L.bookings.map(b=>`${b.deleted_user?`<i>${t('tr_gone')}</i>`:profLink(b.u)} (${esc(b.f)}, ${money(b.p)})`).join(', '):t('stud_no_renters');
+ let h='';
+ if(M.active.length)h+=`<h3>${t('stud_mine_h',{n:M.active.length})}</h3><div class="grid">${M.active.filter(L=>L.snake).map(L=>studCard(L).replace(/<\/div>$/,`<div class="meta">${t('stud_renters')}: ${bk(L)}</div></div>`)).join('')}</div>`;
+ if(M.history.length)h+=`<h3>${t('stud_hist_h')}</h3><div class="panel pmhist">${M.history.map(L=>`<div class="mini-row">${L.snake?`<img class="mini" src="${sThumb(L.snake)}" alt="">`:'<span class="mini"></span>'}<div><div><span class="tbid">${esc(L.code)}</span> ♂ ${esc(L.snake?dispName(L.snake):L.name)} · <b>${money(L.fee)}</b> ${t('stud_per')}</div><div class="meta">${L.status==='done'?t('studs_done',{n:L.uses}):t('studs_'+L.status)} · ${esc(new Date(L.resolved_at||L.created_at).toLocaleDateString(LANG==='id'?'id-ID':'en-US'))}</div><div class="meta">${t('stud_renters')}: ${bk(L)}</div></div></div>`).join('')}</div>`;
+ return h}
+// Penyewa: pilih betina, lihat peluang anak & biaya, lalu sewa
+function studAsk(id,fid){const L=STD.find(id);if(!L||!L.snake)return;const m=L.snake,sp=L.sp,F=studFemales(sp);
+ const head=`<h2>🧬 ${t('stud_book_h')}</h2><p class="sub">${t('stud_book_of',{n:esc(dispName(m)),c:esc(L.code),u:esc(L.owner_name),l:L.max_uses-L.uses,m:L.max_uses})}</p>${miniList([m])}`;
+ if(!F.length){modal(head+`<div class="warn">${t('stud_nof',{sp:t('sp_'+sp)})}</div><div class="actions"><button class="ghost" data-act="close">${t('close')}</button></div>`);return}
+ const f=F.find(x=>x.id===fid)||F[0],od=odds(m,f),rel=relation(m,f);
+ const rows=od.slice(0,6).map(o=>{const n=nameOf(o.tr,null,sp);return `<tr><td style="width:90px"><img class="mini" src="${thumb(o.tr,strHash(n),false,sp)}"></td><td>${esc(n)}${S.dex[dexKey(o.tr,sp)]?'':` <span class="tag a">${t('tag_new')}</span>`}</td><td class="num">${(o.p*100).toFixed(o.p<.01?2:1)}%</td><td class="num">${money(Math.round(baseValue(o.tr,sp)/5)*5)}</td></tr>`}).join('');
+ modal(head+`<label style="display:flex;flex-direction:column;gap:4px;margin-top:8px">${t('stud_pickf')}<select id="studf" data-lid="${id}">${F.map(x=>`<option value="${x.id}" ${x.id===f.id?'selected':''}>${code(x)} · ${esc(dispName(x))}${hetText(x)?' · '+esc(hetText(x)):''}</option>`).join('')}</select></label>
+  <h3 style="margin-top:12px">${t('odds_h')}</h3><div class="panel" style="padding:4px 8px"><table><tr><th></th><th>${t('th_morph')}</th><th class="num">${t('th_chance')}</th><th class="num">${t('th_value')}</th></tr>${rows}</table>${od.length>6?`<p class="kbd">${t('odds_more',{n:od.length-6})}</p>`:''}</div>
+  <p class="kbd">${t('stud_odds_note')}</p>
+  ${rel?`<div class="inbwarn">⚠️ <b>${t('inb_h',{r:t(rel.r),f:pct(rel.F)})}</b><div>${inbEff(rel.F)}</div></div>`:`<p class="kbd">${t('stud_norel')}</p>`}
+  <div class="panel" style="padding:4px 8px"><table><tr><td>${t('stud_fee')}</td><td class="num"><b>${money(L.fee)}</b></td></tr><tr><td>${t('stud_money_now')}</td><td class="num">${money(S.money)}</td></tr><tr><td>${t('stud_money_after')}</td><td class="num">${money(S.money-L.fee)}</td></tr></table></div>
+  <div class="warn" style="margin-top:10px">${t('stud_warn',{sp:t('sp_'+sp),o:Math.round(SPECIES[sp].ovul*100)})}</div>
+  <div class="actions"><button class="pri" data-act="stud_yes" data-id="${id}" data-f="${f.id}" ${S.money<L.fee?'disabled':''}>${t('stud_yes')}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`)}
+async function studBook(id,fid){closeModal(true);const r=await game({type:'stud_book',lid:id,f:fid});STD.list=null;STD.load()}
+// Pemilik: tawarkan jantan
+function studOfferAsk(id){const s=byId(id);if(!s||s.sex!=='M')return;const v=value(s),min=Math.max(1,Math.ceil(v*Core.MKT_MIN));
+ modal(`<h2>🧬 ${t('stud_offer_h')}</h2>${miniList([s])}
+  <label style="display:flex;flex-direction:column;gap:4px;margin-top:8px">${t('stud_fee_l')}<input id="studfee" type="number" min="${min}" max="${Core.MKT_MAX}" step="1" value="" autocomplete="off"></label>
+  <p class="kbd">${t('stud_fee_min',{m:money(min),v:money(v)})}</p>
+  <ul class="kbd" style="margin:8px 0;padding-left:18px;line-height:1.6">${t('stud_rules',{n:Core.STUD_MAX})}</ul>
+  <div class="actions"><button class="pri" data-act="stud_offer_yes" data-id="${id}">${t('stud_offer_yes')}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`)}
+async function studOffer(id){const el=$('studfee');if(!el)return;const fee=Math.round(+el.value);
+ if(!Number.isFinite(fee)||fee<1){toast(t('e_bad_price'));return}
+ closeModal();const r=await game({type:'stud_list',id,fee});if(r){STD.mine=null;STD.list=null;STD.load()}}
+function studCancelAsk(id){modal(`<h2>${t('stud_cancel_h')}</h2><p class="sub">${t('stud_cancel_b')}</p><div class="actions"><button class="danger" data-act="stud_cancel_yes" data-id="${id}">${t('stud_cancel_yes')}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`)}
+async function studCancel(id){closeModal(true);
+ try{const{error}=await Cloud.sb.rpc('cancel_stud',{p_listing:id});if(error)throw new Error(error.message);toast(t('t_stud_cancelled'))}catch(e){toast(errText(e))}
+ STD.list=null;STD.load()}
+// tombol & status di detail hewan jantan
+function studDetail(s){if(s.sex!=='M')return '';const o=STD.offerOf(s),P=SPECIES[spOf(s)];
+ if(o)return `<p class="kbd">${t('stud_offered',{p:money(o.fee),l:o.max_uses-o.uses,m:o.max_uses})}</p>`;
+ const why=s.age<P.mAge?t('stud_need_age',{a:ageTxt(P.mAge)}):s.listed?t('stud_need_unlist'):'';
+ return `<div class="actions" style="margin-top:6px"><button data-act="stud_offer" data-id="${s.id}" ${why?'disabled':''}>${t('stud_offer')}</button></div>${why?`<p class="kbd">${why}</p>`:''}`}
 async function pmSellAsk(id){const s=byId(id);if(!s||pmBlocked(s))return;await PM.loadPrices();
  const v=value(s),min=Math.max(1,Math.ceil(v*Core.MKT_MIN)),ph=PM.price(spOfG(s.g),fullName(s),s.sex,lbKey(s));
  modal(`<h2>${t('pm_sell_h')}</h2>${miniList([s])}
@@ -1683,10 +1800,10 @@ function openSnake(id){const s=byId(id);if(!s)return;const tr=traitsOf(s.g),r=re
  <div class="row"><input id="nick" maxlength="24" placeholder="${t('nick_ph')}" value="${esc(s.nick)}"><button data-act="nick" data-id="${s.id}">${t('save')}</button></div>
  <div class="actions"><button class="pri" data-act="list" data-id="${s.id}" ${s.gravid?'disabled':''}>${s.listed?t('unlist'):t('list',{v:money(value(s))})}</button><button data-act="quicksell" data-id="${s.id}" ${s.gravid?'disabled':''}>${t('quick',{v:money(value(s)*.6)})}</button><button data-act="tobreed" data-id="${s.id}">${t('plan')}</button><button class="ghost" data-act="close">${t('close')}</button></div>
  <div class="actions"><button data-act="pm_sell" data-id="${s.id}" ${pmBlocked(s)?'disabled':''}>${t('pm_sell')}</button></div>
- ${s.gravid?`<p class="kbd">${t('gravid_nosale')}</p>`:pmBlocked(s)?`<p class="kbd">${t('pm_blocked')}</p>`:''}`)}
+ ${s.gravid?`<p class="kbd">${t('gravid_nosale')}</p>`:pmBlocked(s)?`<p class="kbd">${t('pm_blocked')}</p>`:''}${studDetail(s)}`)}
 
 const SOCIAL_ACTS=new Set(['openchat','fr_accept','fr_decline','fr_remove','fr_remove_yes','tr_new','tb_close','tr_send','tr_send_yes','tb_back','tr_accept','tr_accept_yes','tr_decline','tr_cancel']);
-const FREE_ACTS=new Set(['prof_stats','st_range','pm_view','pm_sp','pm_sex','pm_refresh','pm_buy','pm_cancel','quest_go','col_sex','col_dir','col_view','col_reset','col_selnone','pl_open','pl_g','pl_sex','pl_clear','pl_pick','gview','rk_cat','rk_sp','rk_fr','rk_refresh','bug_new','bug_cancel','bug_open','bug_mine','bug_kind','bug_voted','bug_sort','idea_new','idea_vote','patchnotes','bug_more','bug_rmimg','bug_delc','bug_del','bs_inc','bs_dec','spf','brsp','dexsp','guidesp','mk_sex','settings','theme','preview','profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
+const FREE_ACTS=new Set(['stud_sp','stud_ask','stud_offer','stud_cancel','stud_cancel_yes','stud_go','prof_stats','st_range','pm_view','pm_sp','pm_sex','pm_refresh','pm_buy','pm_cancel','quest_go','col_sex','col_dir','col_view','col_reset','col_selnone','pl_open','pl_g','pl_sex','pl_clear','pl_pick','gview','rk_cat','rk_sp','rk_fr','rk_refresh','bug_new','bug_cancel','bug_open','bug_mine','bug_kind','bug_voted','bug_sort','idea_new','idea_vote','patchnotes','bug_more','bug_rmimg','bug_delc','bug_del','bs_inc','bs_dec','spf','brsp','dexsp','guidesp','mk_sex','settings','theme','preview','profile','profile_me','profile_lookup','prof_edit','prof_back','prof_auto','prof_clear','prof_chat','tab','lang','filter','close','login','authmode','account','acctinfo','togglepw','forgot','pickname','tobreed','reset']);
 // Jalankan aksi game: dikirim ke server (Edge Function "game") yang menghitung hasilnya.
 async function game(a){
  if(!Cloud.user||!S)return null;
@@ -1719,15 +1836,23 @@ function act(a,id,el){
   case 'close':closeModal();return;
   case 'tobreed':{const s=byId(id);BRSP=spOf(s);if(s.sex==='M')SEL.m=id;else SEL.f=id;TAB='breeding';closeModal();break}
   case 'spf':SPF=el.dataset.v;colSave();break;
-  case 'pm_view':PM.view=el.dataset.v;PM.save();if(PM.view!=='npc')PM.load();break;
+  case 'pm_view':PM.view=el.dataset.v;PM.save();if(PM.view==='pm'||PM.view==='mine')PM.load();if(PM.view==='stud'||PM.view==='mine')STD.load();break;
   case 'pm_sp':PM.f.sp=el.dataset.v;if(PM.f.gene&&PM.f.sp!=='all'&&!colGenes(PM.f.sp).includes(PM.f.gene))PM.f.gene='';PM.save();PM.load();break;
   case 'pm_sex':PM.f.sex=el.dataset.v;PM.save();break;
-  case 'pm_refresh':PM.load();return;
+  case 'pm_refresh':if(PM.view==='stud'){STD.list=null;STD.load();render();return}PM.load();if(PM.view==='mine')STD.load();return;
   case 'pm_buy':pmBuyAsk(id);return;
   case 'lbv':lbView(el.dataset.k);return;
   case 'pm_buy_yes':pmBuy(id);return;
   case 'pm_cancel':pmCancelAsk(id);return;
   case 'pm_cancel_yes':pmCancel(id);return;
+  case 'stud_sp':STD.sp=el.dataset.v;STD.list=null;STD.load();break;
+  case 'stud_ask':studAsk(id);return;
+  case 'stud_yes':studBook(id,+el.dataset.f);return;
+  case 'stud_offer':studOfferAsk(id);return;
+  case 'stud_offer_yes':studOffer(id);return;
+  case 'stud_cancel':studCancelAsk(id);return;
+  case 'stud_cancel_yes':studCancel(id);return;
+  case 'stud_go':TAB='pasar';PM.view='stud';PM.save();STD.load();break;
   case 'pm_sell':pmSellAsk(id);return;
   case 'pm_sell_yes':pmSell(id);return;
   case 'brsp':BRSP=el.dataset.v;break;
@@ -2070,7 +2195,7 @@ async function saveProfile(f){const e=Profile.edit;const m=f.querySelector('.msg
    Data dari S.ps (dicatat server sejak v36). Warna seri: slot 1 biru (kekayaan bersih), slot 2 oranye (uang) —
    palet referensi yang lolos uji CVD & kontras di ketiga tema. */
 var StatV={range:12,pts:[]};
-const ST_CH=['order','big','ad','quick','brood','pmarket'],ST_EX=['food','util','over','buy','pbuy','rack'];
+const ST_CH=['order','big','ad','quick','brood','pmarket','stud'],ST_EX=['food','util','over','buy','pbuy','stud','rack'];
 const stYear=tn=>1+Math.floor((8+tn)/12);
 const kfmt=v=>{const a=Math.abs(v),sg=v<0?'-':'';return a>=1e6?sg+'$'+(a/1e6).toFixed(a>=1e7?0:1)+'M':a>=1e3?sg+'$'+Math.round(a/1e3)+'k':sg+'$'+Math.round(a)};
 function stPoints(){const p=S.ps||{},h=(p.hist||[]).map(x=>({lbl:t('st_month',{t:x.t,y:stYear(x.t)}),y:stYear(x.t),m:x.m,w:x.w,n:x.n,e:x.e}));
@@ -2715,6 +2840,8 @@ function boot(){
   else if(el.id==='pmgene'||el.id==='pmgm'){PM.f[el.id.slice(2)]=el.value;PM.save();render()}
   else if(el.id==='pmadult'){PM.f.adult=el.checked;PM.save();paintPM()}
   else if(el.id==='pmsort'){PM.f.sort=el.value;PM.save();PM.load()}
+  else if(el.id==='studsort'){STD.sort=el.value;STD.list=null;STD.load();render()}
+  else if(el.id==='studf'){studAsk(+el.dataset.lid,+el.value)}
   else if(el.id==='colst'||el.id==='colsrc'||el.id==='colgene'||el.id==='colgm'){COL[el.id.slice(3)]=el.value;colSave();render()}
   else if(el.dataset&&el.dataset.colsel){const id=+el.dataset.colsel;el.checked?COL.sel.add(id):COL.sel.delete(id);paintCol()}
   else if(el.dataset&&el.dataset.colall){const L=colList().filter(s=>!s.gravid);if(el.checked)L.forEach(s=>COL.sel.add(s.id));else L.forEach(s=>COL.sel.delete(s.id));paintCol()}});
@@ -2727,6 +2854,7 @@ function boot(){
    else if(el.dataset.sc){const id=+el.dataset.sc,sel=Profile.edit.sel;const i=sel.indexOf(id);if(el.checked&&i<0&&sel.length<SHOW_MAX)sel.push(id);else if(!el.checked&&i>=0)sel.splice(i,1);paintProfileEdit()}}
   else if(el.name==='confirm'&&el.form&&/^dz_/.test(el.form.dataset.form||'')){const d=DZ[el.form.dataset.form.slice(3)];el.form.querySelector('button[type=submit]').disabled=el.value.trim()!==d.w;el.form.querySelector('.msg').innerHTML=''}
   else if(el.id==='colq'){COL.q=el.value;paintCol()}
+  else if(el.id==='studq'){STD.q=el.value;paintStud()}
   else if(el.name==='title'&&el.form&&el.form.dataset.form==='bug'){Bugs.simSoon(el.form.kind.value,el.value)}
   else if(el.id==='pmq'){PM.q=el.value;paintPM()}
   else if(el.id==='pmmin'||el.id==='pmmax'){PM.f[el.id.slice(2)]=el.value===''?'':String(Math.max(0,Math.floor(+el.value||0)));PM.save();paintPM()}

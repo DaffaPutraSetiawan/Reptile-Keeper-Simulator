@@ -2,6 +2,15 @@
    Terbaru di atas. v = versi game (core.js VERSION). Riwayat teknis lengkap ada di CHANGELOG.md.
    Tambahkan entri baru di paling atas setiap kali versi game naik. */
 window.PATCH_NOTES=[
+ {v:58,d:'2026-11-22',
+  id:['<b>Sewa pejantan</b>: tawarkan jantan dewasamu untuk disewa pemain lain (buka jantan di koleksi → "Tawarkan sebagai pejantan"). Satu penawaran bisa disewa sampai 5 kali, tanpa batas waktu.',
+   'Sewa jantan milik pemain lain di <b>Pasar → 🧬 Pejantan</b>. Jantannya tetap milik pemiliknya, anaknya milikmu. Biaya dibayar di muka dan tidak kembali kalau betina gagal ovulasi.',
+   'Biaya sewa minimal 50% dari nilai jantan. Uang sewa masuk ke saldo pemilik setiap kali jantannya disewa.',
+   'Statistik saya mencatat uang sewa pejantan yang diterima dan dibayar.'],
+  en:['<b>Stud service</b>: offer your adult males for other players to rent (open a male in your collection → "Offer as stud"). Each offer can be rented up to 5 times, with no time limit.',
+   'Rent other players’ males in <b>Market → 🧬 Studs</b>. The male stays with his owner; the babies are yours. The fee is paid up front and isn’t refunded if your female doesn’t ovulate.',
+   'The stud fee is at least 50% of the male’s value. The owner gets the fee every time the male is rented.',
+   'My statistics track stud fees received and paid.']},
  {v:57.1,d:'2026-11-22',label:'v57 (web)',
   id:['Tab Laporan bug jadi <b>Masukan</b>: selain melaporkan bug, kamu bisa <b>mengirim saran</b> untuk game.',
    'Dukung saran pemain lain dengan tombol 👍 dan urutkan saran berdasarkan dukungan terbanyak.',

@@ -6,6 +6,17 @@ Catatan pembaruan untuk pemain (bahasa yang lebih sederhana, ID & EN) ada di `pa
 
 ---
 
+## v58 — 22 Nov 2026
+**Sewa pejantan (stud service)**
+- Aksi baru `stud_list`: pemilik menawarkan jantan siap kawin dengan biaya per kawin (minimal 50% nilai jantan, maks. $100.000.000). Jantan tetap di save pemilik dan tetap bisa dikawinkan sendiri.
+- Satu penawaran bisa disewa total 5 kali (`STUD_MAX`), tanpa batas waktu. Satu penawaran aktif per jantan. Penawaran otomatis batal kalau jantannya dijual, di-trade, diiklankan, mati, atau akunnya di-reset.
+- Aksi baru `stud_book`: Edge Function membaca jantan asli dari save pemilik (`_stud_peek`). Betina penyewa dipasangkan dengan salinan data jantan itu (`f.stud`, `pairedWith` negatif). Uang terpotong langsung dan tidak kembali kalau gagal ovulasi.
+- `_stud_book` menyimpan save penyewa, menambah hitungan sewa (dikunci, tidak bisa lewat 5), mencatat penyewa, dan mengirim uang ke pemilik lewat kiriman, semuanya dalam satu transaksi.
+- Ovulasi dari pejantan sewaan memakai peluang biasa. Silsilah anak memakai jantan pemilik (tidak menunjuk hewan penyewa); kawin sedarah dihitung dari data leluhurnya.
+- Betina yang sedang kawin sewaan tidak bisa dibatalkan, diiklankan, dijual di Pasar Pemain, atau di-trade.
+- `supabase/stud.sql` baru: `stud_listings`, `stud_bookings`, `get_studs`, `get_my_studs`, `cancel_stud`. `claim_deliveries` mencatat uang sewa di statistik pribadi pemilik.
+- UI: Pasar → 🧬 Pejantan, layar sewa (pilih betina, peluang anak, inbreeding, biaya), tombol "Tawarkan sebagai pejantan" di detail jantan, penawaran & daftar penyewa di Jualan saya, pasangan sewaan di tab Kawinkan, statistik "Sewa pejantan".
+
 ## v57 — 22 Nov 2026
 **Ball python: sifat line-bred, kombinasi baru, Morph Dex 46**
 - 3 nilai line-bred ball python (`fade`, `inten`, `btone`), belum jelas sampai umur 12 bulan (`LB_REVEAL_SP`):

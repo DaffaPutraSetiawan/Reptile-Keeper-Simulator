@@ -43,6 +43,24 @@ const db = {
     if (error) { const c = (error.message || '').match(/^[a-z_]{2,40}$/); throw new Error(c ? c[0] : 'db_error'); }
     return data || null;
   },
+  // Sewa pejantan (stud.sql): baca penawaran + jantan asli dari save pemilik
+  async studPeek(uid: string, lid: number) {
+    const { data, error } = await admin.rpc('_stud_peek', { p_user: uid, p_listing: lid });
+    if (error) { const c = (error.message || '').match(/^[a-z_]{2,40}$/); throw new Error(c ? c[0] : 'db_error'); }
+    return data;
+  },
+  async studList(uid: string, state: Record<string, unknown>, oldRev: number, rank: unknown, m: Record<string, unknown>) {
+    const { data, error } = await admin.rpc('_stud_list', { p_user: uid, p_data: state, p_old_rev: oldRev, p_rank: rank,
+      p_snake: m.snake, p_fee: m.fee, p_value: m.value, p_name: m.name, p_code: m.code });
+    if (error) { const c = (error.message || '').match(/^[a-z_]{2,40}$/); throw new Error(c ? c[0] : 'db_error'); }
+    return data || null;
+  },
+  async studBook(uid: string, state: Record<string, unknown>, oldRev: number, rank: unknown, b: Record<string, unknown>) {
+    const { data, error } = await admin.rpc('_stud_book', { p_user: uid, p_data: state, p_old_rev: oldRev, p_rank: rank,
+      p_listing: b.lid, p_fee: b.fee, p_female: b.f });
+    if (error) { const c = (error.message || '').match(/^[a-z_]{2,40}$/); throw new Error(c ? c[0] : 'db_error'); }
+    return data || null;
+  },
   async update(uid: string, state: Record<string, unknown>, oldRev: number, rank: unknown) {
     const { data, error } = await admin.from('saves')
       .update({ data: state, game_turn: state.turn, rev: oldRev + 1, rank })
