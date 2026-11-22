@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:49,date:'2026-11-22'};
+const VERSION={v:50,date:'2026-11-22'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -297,6 +297,8 @@ function lbBonus(s){const v=lbOf(s);if(!v||!lbRevealed(s))return 0;const P=LB_PR
  return sum*(1+P.step*Math.min(P.maxSteps,Math.max(0,n-1)))+(lbSunglow(s)?P.sunglow:0)+(lbStripe(s)?P.stripe:0)}
 // label yang boleh dilihat pemain: bayi belum punya label
 const lbVisibleLabels=s=>lbRevealed(s)?lbLabels(s):[];
+// Kunci riwayat harga Pasar Pemain (v50): label yang terlihat digabung ' · ' ('' = tanpa label / spesies tanpa sifat line-bred)
+const lbKey=s=>hasLb(spOfG(s.g))?lbVisibleLabels(s).join(' · '):'';
 // Gecko tanpa nilai (save sebelum v42, termasuk susunan lama v41): beri nilai awal acak.
 const lbOk=()=>S.snakes.every(s=>!hasLb(spOf(s))||lbOf(s));
 function addLb(){let n=0;for(const s of S.snakes)if(hasLb(spOf(s))&&!lbOf(s)){s.lb=lbInit();n++}return n}
@@ -746,8 +748,8 @@ const ACTIONS={
   const price=Number(a.price);if(!Number.isInteger(price))fail('bad_price');
   const v=value(s),min=Math.max(1,Math.ceil(v*MKT_MIN));if(price<min)fail('price_too_low');if(price>MKT_MAX)fail('price_too_high');
   const snakeCopy=JSON.parse(JSON.stringify(s));snakeCopy.xferAgo=Math.max(0,S.turn-(typeof s.lastLaid==='number'?s.lastLaid:-99));
-  const info={c:code(s),n:fullName(s)};removeSnake(s);log('l_mkt_list',{c:info.c,n:info.n,p:price},'info');
-  return{toast:'t_mkt_listed',market:{snake:snakeCopy,price,value:v,name:info.n,code:info.c}}},
+  const info={c:code(s),n:fullName(s),l:lbKey(s)};removeSnake(s);log('l_mkt_list',{c:info.c,n:info.n,p:price},'info');
+  return{toast:'t_mkt_listed',market:{snake:snakeCopy,price,value:v,name:info.n,code:info.c,lbl:info.l}}},
  nick(a){const s=mustSnake(a.id);s.nick=String(a.name==null?'':a.name).replace(/[\u0000-\u001f\u007f]/g,'').trim().slice(0,24);return{}},
  buy(a){const lid=toId(a.lid);const L=S.market.find(x=>x.lid===lid);if(!L)fail('listing_gone');
   if(!Object.prototype.hasOwnProperty.call(BUY_MULT,a.age)||(a.sex!=='M'&&a.sex!=='F'))fail('bad_action');
@@ -804,7 +806,7 @@ root.MorphCore={
  monthlyCosts,previewNext,
  MARKET_SIZE,MARKET_EVERY,BUY_MULT,MARKET_POOL,listingTraits,marketBase,marketPrice,marketLeft,refreshMarket,ensureMarket,marketOk,makeMarketSnake,
  INC_MONTHS,TEMP_MIN,TEMP_MAX,TEMP_MID,TEMP_STEP,tempRange,femaleChance,incTotal,tempOpen,tempMonthsLeft,validTemp,
- LB_KEYS,LB_COLORS,LB_SD,LB_INIT,LB_LABEL,LB_SUPER,LB_REVERSE,LB_BOLD,LB_REVEAL,LB_TIERS,LB_PRICE,lbOf,lbInit,lbChild,lbTier,lbRevealed,lbShownTier,lbVisibleLabels,lbGrade,lbDark,LB_MASK,lbMaskGene,lbCover,lbShownCover,lbSunglow,lbStripe,lbLabels,lbBonus,lbOk,addLb,
+ LB_KEYS,LB_COLORS,LB_SD,LB_INIT,LB_LABEL,LB_SUPER,LB_REVERSE,LB_BOLD,LB_REVEAL,LB_TIERS,LB_PRICE,lbOf,lbInit,lbChild,lbTier,lbRevealed,lbShownTier,lbVisibleLabels,lbKey,lbGrade,lbDark,LB_MASK,lbMaskGene,lbCover,lbShownCover,lbSunglow,lbStripe,lbLabels,lbBonus,lbOk,addLb,
  QUESTS,checkQuests,rankStats,HIST_MAX,MP_MAX,ps,netWorth,psKey,
  newGame,advance,applyAction,syncDex,isState,ACTION_TYPES:Object.keys(ACTIONS)
 };

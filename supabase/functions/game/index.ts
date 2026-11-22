@@ -39,7 +39,7 @@ const db = {
   // Pasar Pemain: simpan save (cek rev) + buat jualan + escrow dalam satu fungsi database
   async marketList(uid: string, state: Record<string, unknown>, oldRev: number, rank: unknown, m: Record<string, unknown>) {
     const { data, error } = await admin.rpc('_market_list', { p_user: uid, p_data: state, p_old_rev: oldRev, p_rank: rank,
-      p_snake: m.snake, p_price: m.price, p_value: m.value, p_name: m.name, p_code: m.code });
+      p_snake: m.snake, p_price: m.price, p_value: m.value, p_name: m.name, p_code: m.code, p_lbl: m.lbl ?? null });
     if (error) { const c = (error.message || '').match(/^[a-z_]{2,40}$/); throw new Error(c ? c[0] : 'db_error'); }
     return data || null;
   },

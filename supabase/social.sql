@@ -158,7 +158,8 @@ begin
   return jsonb_build_object('id', s -> 'id', 'sp', coalesce(s -> 'sp', '"ball"'::jsonb), 'sex', s -> 'sex', 'age', s -> 'age', 'w', s -> 'w',
     'g', g, 'hp', coalesce(s -> 'hp', '{}'::jsonb), 'gen', s -> 'gen', 'seed', s -> 'seed',
     'sire', s -> 'sire', 'dam', s -> 'dam', 'nick', coalesce(s -> 'nick', '""'::jsonb),
-    'src', s -> 'src', 'origin', s -> 'origin', 'keepers', s -> 'keepers');
+    'src', s -> 'src', 'origin', s -> 'origin', 'keepers', s -> 'keepers',
+    'lb', s -> 'lb');   -- v50: nilai sifat line-bred (leopard gecko), supaya pemain lain melihat label, tingkat & nilainya
 end $$;
 
 -- Validasi dasar data ular (menolak data rusak / tidak masuk akal).

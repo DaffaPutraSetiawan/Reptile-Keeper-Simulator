@@ -5,7 +5,8 @@
 -- * Pembeli membeli langsung (buy_listing): uang terpotong, hewan masuk ke save pembeli, uang dikirim ke penjual
 --   lewat deliveries (diklaim otomatis seperti hasil trade).
 -- * Tanpa biaya, tanpa batas jumlah jualan. Tayang 14 hari; yang tidak laku kembali ke penjual.
--- * Riwayat harga: rata-rata harga terjual per morph & kelamin dalam 30 hari terakhir.
+-- * Riwayat harga: harga terjual per morph, kelamin & label sifat line-bred dalam 30 hari terakhir (v50),
+--   ditambah ringkasan per morph & kelamin saja sebagai cadangan.
 -- * Admin (tab Admin): daftar jualan aktif & terjual, menurunkan jualan (hewan kembali ke penjual + alasan),
 --   dan mengeluarkan penjualan palsu dari riwayat harga. Semua tercatat di admin_log.
 -- Jalankan SETELAH schema.sql, social.sql (fungsi bantu trade) dan moderation.sql (admin_log). Aman dijalankan ulang.
@@ -34,6 +35,11 @@ alter table public.market_listings add column if not exists excluded boolean not
 alter table public.market_listings drop constraint if exists market_listings_status_check;
 alter table public.market_listings add constraint market_listings_status_check
   check (status in ('active', 'sold', 'cancelled', 'expired', 'removed'));
+-- kolom tambahan (v50): label sifat line-bred yang terlihat saat dipasang (mis. 'Tangerine · Jungle'; '' = tanpa label).
+-- null = dipasang sebelum v50 (labelnya tidak diketahui): hanya ikut ringkasan cadangan per morph.
+-- Spesies tanpa sifat line-bred (ball python, axolotl) selalu ''.
+alter table public.market_listings add column if not exists lbl text;
+update public.market_listings set lbl = '' where lbl is null and sp <> 'leo';
 -- tindakan admin pasar ikut tercatat di admin_log (moderation.sql)
 alter table public.admin_log drop constraint if exists admin_log_action_check;
 alter table public.admin_log add constraint admin_log_action_check check (action in ('delete_msg', 'mute', 'unmute',
@@ -58,8 +64,10 @@ revoke all on public.market_listings, public.market_escrow from anon, authentica
 -- ---------------------------------------------------------------------
 -- p_data = save baru (hewan sudah dikeluarkan, rev = p_old_rev + 1). Mengembalikan id jualan,
 -- atau null kalau save berubah di tengah jalan (Edge Function lalu mengulang aksinya).
+-- p_lbl (v50) = label sifat line-bred yang terlihat, dihitung Edge Function dengan logika game yang sama dengan browser.
+drop function if exists public._market_list(uuid, jsonb, bigint, jsonb, jsonb, integer, integer, text, text);
 create or replace function public._market_list(p_user uuid, p_data jsonb, p_old_rev bigint, p_rank jsonb,
-  p_snake jsonb, p_price integer, p_value integer, p_name text, p_code text)
+  p_snake jsonb, p_price integer, p_value integer, p_name text, p_code text, p_lbl text default null)
 returns bigint language plpgsql security definer set search_path = '' as $$
 declare v_name text := public._username(p_user); v_id bigint;
 begin
@@ -73,9 +81,10 @@ begin
   update public.saves set data = p_data, rev = p_old_rev + 1, game_turn = coalesce((p_data ->> 'turn')::int, game_turn), rank = p_rank
    where user_id = p_user and rev = p_old_rev;
   if not found then return null; end if;
-  insert into public.market_listings (seller, seller_name, sp, name, sex, code, preview, price, value)
+  insert into public.market_listings (seller, seller_name, sp, name, sex, code, preview, price, value, lbl)
   values (p_user, v_name, coalesce(p_snake ->> 'sp', 'ball'), left(coalesce(p_name, ''), 80), p_snake ->> 'sex', left(coalesce(p_code, ''), 20),
-          public._public_snake(p_snake), p_price, greatest(0, coalesce(p_value, 0)))
+          public._public_snake(p_snake), p_price, greatest(0, coalesce(p_value, 0)),
+          case when coalesce(p_snake ->> 'sp', 'ball') = 'leo' then left(p_lbl, 120) else '' end)
   returning id into v_id;
   insert into public.market_escrow (listing_id, snake) values (v_id, p_snake);
   return v_id;
@@ -172,20 +181,27 @@ begin
                            order by resolved_at desc limit 30) l), '[]'::jsonb));
 end $$;
 
--- Riwayat harga per morph & kelamin dalam 30 hari terakhir:
+-- Riwayat harga dalam 30 hari terakhir:
 --   med = median (harga tengah), lo–hi = rentang tengah (kuartil 25%–75%: seperempat termurah & termahal dibuang),
 --   max = penjualan termahal, n = jumlah terjual. Browser menampilkan rentang tengah mulai 5 penjualan.
+-- v50: baris per morph + kelamin + label sifat line-bred (lbl), dan baris cadangan per morph + kelamin saja (all = true,
+--   semua penjualan termasuk yang labelnya tidak diketahui). Browser memakai cadangan kalau kombinasi labelnya belum pernah terjual.
 create or replace function public.get_market_prices(p_sp text default null)
 returns jsonb language sql stable security definer set search_path = '' as $$
-  select coalesce(jsonb_agg(jsonb_build_object('sp', sp, 'name', name, 'sex', sex, 'n', n, 'med', med, 'lo', lo, 'hi', hi, 'max', mx)), '[]'::jsonb)
-    from (select sp, name, sex, count(*) n,
-                 round(percentile_cont(0.5) within group (order by price))::int med,
-                 round(percentile_cont(0.25) within group (order by price))::int lo,
-                 round(percentile_cont(0.75) within group (order by price))::int hi,
-                 max(price) mx
-            from public.market_listings
-           where status = 'sold' and not excluded and resolved_at > now() - interval '30 days' and (p_sp is null or sp = p_sp)
-           group by sp, name, sex) x;
+  with sold as (select sp, name, sex, lbl, price from public.market_listings
+                 where status = 'sold' and not excluded and resolved_at > now() - interval '30 days' and (p_sp is null or sp = p_sp))
+  select coalesce(jsonb_agg(r), '[]'::jsonb) from (
+    select jsonb_build_object('sp', sp, 'name', name, 'sex', sex, 'lbl', lbl, 'n', count(*),
+             'med', round(percentile_cont(0.5) within group (order by price))::int,
+             'lo', round(percentile_cont(0.25) within group (order by price))::int,
+             'hi', round(percentile_cont(0.75) within group (order by price))::int, 'max', max(price)) r
+      from sold where lbl is not null group by sp, name, sex, lbl
+    union all
+    select jsonb_build_object('sp', sp, 'name', name, 'sex', sex, 'all', true, 'n', count(*),
+             'med', round(percentile_cont(0.5) within group (order by price))::int,
+             'lo', round(percentile_cont(0.25) within group (order by price))::int,
+             'hi', round(percentile_cont(0.75) within group (order by price))::int, 'max', max(price))
+      from sold group by sp, name, sex) x;
 $$;
 
 -- Beli: atomik. Kalau dua pembeli bersamaan, hanya satu yang berhasil (baris jualan dikunci).
@@ -296,12 +312,12 @@ end $$;
 do $$
 declare f text;
 begin
-  foreach f in array array['_market_list(uuid, jsonb, bigint, jsonb, jsonb, integer, integer, text, text)',
+  foreach f in array array['_market_list(uuid, jsonb, bigint, jsonb, jsonb, integer, integer, text, text, text)',
                            '_market_return(public.market_listings, text, text)', '_market_expire()', '_market_reset(uuid)',
                            '_market_row(public.market_listings, uuid)', '_market_on_user_deleted()'] loop
     execute format('revoke all on function public.%s from public, anon, authenticated', f);
   end loop;
-  execute 'grant execute on function public._market_list(uuid, jsonb, bigint, jsonb, jsonb, integer, integer, text, text) to service_role';
+  execute 'grant execute on function public._market_list(uuid, jsonb, bigint, jsonb, jsonb, integer, integer, text, text, text) to service_role';
   foreach f in array array['get_market(text, text)', 'get_my_listings()', 'get_market_prices(text)',
                            'buy_listing(bigint, bigint)', 'cancel_listing(bigint)',
                            'admin_market(text, bigint)', 'admin_market_takedown(bigint, text)', 'admin_market_exclude(bigint, boolean)'] loop
@@ -309,3 +325,7 @@ begin
     execute format('grant execute on function public.%s to authenticated', f);
   end loop;
 end $$;
+
+-- v50: jualan yang sedang tayang sebelum v50: tampilan hewan diisi ulang dari data aslinya di escrow (nilai line-bred ikut terlihat)
+update public.market_listings l set preview = public._public_snake(e.snake)
+  from public.market_escrow e where e.listing_id = l.id and l.status = 'active' and l.sp = 'leo' and not (l.preview ? 'lb');

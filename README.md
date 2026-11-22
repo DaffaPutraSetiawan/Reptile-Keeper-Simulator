@@ -38,6 +38,7 @@ Game **wajib login**. Setiap aksi dikirim ke server (Edge Function `game`), yang
   - Breeding planner hanya menampilkan sifat kedua induk, tanpa perkiraan anak: pemain menebak sendiri
   - Warna (5): High Yellow, Tangerine (sudah termasuk Carrot Tail), Lavender, Emerine, Black Night. Label muncul di tingkat Tinggi. Black Night tinggi menutupi warna lain (labelnya hilang dan tidak menambah harga, tapi tetap diwariskan)
   - Gen penutup (seperti di dunia nyata): Blizzard menutup semua 7 sifat, Murphy Patternless menutup bintik & pola, Super Snow menutup 5 warna, Enigma menutup pola. Mack Snow tidak menutup. Sifat yang tertutup (termasuk oleh Black Night) tampil "Tidak terlihat" di detail hewan dan breeding planner, tanpa label & bonus harga, tapi nilainya tetap diwariskan. Kombinasi yang memakai sifat tertutup (Sunglow, SHTCT, Red/Bold Stripe) ikut hilang
+  - Pasar Pemain & trade (v50): kartu jualan dan daftar hewan trade menampilkan label ✨ dan tombol "Lihat sifat" (tabel 7 sifat), pencarian Pasar Pemain mengenali label, dan riwayat harga dipisah per morph gen + kelamin + label. Kalau kombinasi label itu belum pernah terjual, yang tampil riwayat morph gen secara umum dengan catatan
   - Bintik (1 sumbu): Bold ↔ Normal ↔ Hypo → Super Hypo. Semua gecko mulai di Normal
   - Pola (1 sumbu): belang → Jungle → Stripe → Reverse Stripe (varian langka)
   - Super Hypo + Tangerine = SHTCT; kalau gecko itu juga albino jadi Sunglow (Tremper), Bell Sunglow, atau Rainwater Sunglow (bonus harga tambahan). Stripe + Tangerine = Red Stripe, Stripe + Bold = Bold Stripe (bonus tambahan). Sifat berlabel menaikkan harga hewan
@@ -106,7 +107,8 @@ Berikutnya:
 - [ ] Event berkala & kompetisi morph
 - [x] Sifat line-bred (poligenik) untuk leopard gecko: 7 nilai (warna, bintik, pola), pewarisan, label & harga
 - [x] Sifat line-bred di breeding planner (tampilan induk saja, pemain menebak)
-- [ ] Sifat line-bred: tampil di Pasar Pemain & trade, pesanan pembeli
+- [x] Sifat line-bred tampil di Pasar Pemain & trade (label, tabel sifat, pencarian, riwayat harga per label)
+- [ ] Sifat line-bred di pesanan pembeli
 - [ ] Spesies berikutnya (corn snake atau bearded dragon) & sifat line-bred untuk ball python dan axolotl
 - [ ] Perawatan & kesehatan (suhu, kelembapan, shedding, mogok makan)
 - [ ] Versi aplikasi (PWA)

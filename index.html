@@ -63,7 +63,7 @@ h3{font-family:Fraunces,serif;font-weight:600;font-size:16px;margin:18px 0 8px}
 .snk{width:100%;aspect-ratio:320/148;display:block;border-radius:10px;background:radial-gradient(120% 90% at 50% 40%,var(--img1) 0,var(--img2) 75%)}
 .nm{font-weight:700;margin-top:8px;line-height:1.25}
 .het{font-size:12px;color:var(--acc);min-height:16px}
-.lbtag{font-size:12px;color:var(--good)}.lbgrid{display:grid;grid-template-columns:1fr auto;gap:5px 12px;font-size:13px;align-items:center}.lbt{font-size:12px;padding:1px 9px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);white-space:nowrap;text-align:center}.lbt.t0{color:var(--mut)}.lbt.t3{color:var(--good);border-color:var(--good)}.lbt.t4{color:var(--acc);border-color:var(--acc);font-weight:700}
+.lbtag{font-size:12px;color:var(--good)}.lbv{margin-top:4px}.lbgrid{display:grid;grid-template-columns:1fr auto;gap:5px 12px;font-size:13px;align-items:center}.lbt{font-size:12px;padding:1px 9px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);white-space:nowrap;text-align:center}.lbt.t0{color:var(--mut)}.lbt.t3{color:var(--good);border-color:var(--good)}.lbt.t4{color:var(--acc);border-color:var(--acc);font-weight:700}
 .meta{font-size:12px;color:var(--mut)}
 .val{font-weight:700;margin-top:6px}
 .sx{font-weight:700}.sx.M{color:var(--blue)}.sx.F{color:var(--pink)}
@@ -229,7 +229,7 @@ button.danger{background:var(--bad);border-color:var(--bad);color:#1b0a07;font-w
 'use strict';
 /* ========= LOGIKA INTI (core.js, sama dengan yang dipakai server) ========= */
 const Core=window.MorphCore;
-const {lbOf,lbTier,lbGrade,lbShownCover,lbLabels,lbRevealed,lbShownTier,lbVisibleLabels,LB_KEYS,LB_REVEAL,QUESTS,relation,inbOf,INB_SLUG,INB_DEAD,pedParents,orderPay,broodSnake,broodValue,SPECIES,SPECIES_LIST,spOf,spOfG,spOfTr,lociOf,isRec,tempRange,dexKey,maxAge,lifeLeft,OLD_WARN,rackPrice,RACK_STEP,marketOk,marketBase,marketPrice,marketLeft,listingTraits,BUY_MULT,previewNext,TEMP_MIN,TEMP_MAX,TEMP_STEP,TEMP_MID,femaleChance,tempOpen,tempMonthsLeft,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches,repLevel,repNeed,isBig,bigPay,REP_ORDER,REP_BIG,BIG_LEVEL,HATCH_DEAD}=Core;
+const {lbOf,lbKey,lbTier,lbGrade,lbShownCover,lbLabels,lbRevealed,lbShownTier,lbVisibleLabels,LB_KEYS,LB_REVEAL,QUESTS,relation,inbOf,INB_SLUG,INB_DEAD,pedParents,orderPay,broodSnake,broodValue,SPECIES,SPECIES_LIST,spOf,spOfG,spOfTr,lociOf,isRec,tempRange,dexKey,maxAge,lifeLeft,OLD_WARN,rackPrice,RACK_STEP,marketOk,marketBase,marketPrice,marketLeft,listingTraits,BUY_MULT,previewNext,TEMP_MIN,TEMP_MAX,TEMP_STEP,TEMP_MID,femaleChance,tempOpen,tempMonthsLeft,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches,repLevel,repNeed,isBig,bigPay,REP_ORDER,REP_BIG,BIG_LEVEL,HATCH_DEAD}=Core;
 
 /* ========= UTIL ========= */
 const lerp=(a,b,t)=>a.map((x,i)=>x+(b[i]-x)*t);
@@ -327,7 +327,7 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  pm_buy_h:'Yakin beli?',pm_buy_final:p=>`Kamu akan membeli <b>${p.n}</b> dari ${p.u} seharga <b>${p.p}</b>. Pembelian tidak bisa dibatalkan.`,pm_buy_yes:p=>`Ya, beli ${p.p}`,
  pmw_cap:p=>`Setelah membeli kamu punya ${p.n} hewan, melebihi kapasitas ${p.c}. ${p.x} hewan kena biaya space darurat ${p.v}/bulan.`,
  pm_cancel_h:'Batalkan jualan?',pm_cancel_q:p=>`${p.n} akan dikembalikan ke koleksimu lewat kiriman.`,pm_cancel_yes:'Ya, batalkan',
- pm_sell:'🏪 Jual di Pasar Pemain',pm_sell_h:'Jual di Pasar Pemain',pm_minp:'Harga minimum (50% nilai)',pm_hist:'Riwayat harga (30 hari)',pm_hist_v:p=>`📊 median <b>${p.m}</b>${p.lo?` · kebanyakan terjual ${p.lo}–${p.hi}`:''} · termahal ${p.mx} · ${p.n}× terjual`,pm_hist_none:'Belum ada yang terjual',
+ pm_sell:'🏪 Jual di Pasar Pemain',pm_sell_h:'Jual di Pasar Pemain',pm_minp:'Harga minimum (50% nilai)',pm_hist:'Riwayat harga (30 hari)',pm_hist_v:p=>`📊 median <b>${p.m}</b>${p.lo?` · kebanyakan terjual ${p.lo}–${p.hi}`:''} · termahal ${p.mx} · ${p.n}× terjual`,pm_hist_none:'Belum ada yang terjual',pm_hist_fb:'Kombinasi sifat line-bred ini belum pernah terjual. Ini riwayat morph gen secara umum (belum memperhitungkan sifat line-bred):',lb_view:'Lihat sifat',
  pm_price:'Harga jual ($)',pm_sell_note:p=>`Selama dijual, hewan keluar dari koleksimu (tidak bisa dikawinkan atau dijual di toko). Tayang ${p.d} hari; kalau tidak laku, hewan kembali otomatis. Tanpa biaya.`,pm_sell_yes:'Pasang jualan',
  pm_blocked:'Tidak bisa dijual di Pasar Pemain selama bunting, diiklankan di toko NPC, atau dipasangkan.',pm_mine_sub:'Jualanmu yang masih tayang dan riwayat 30 jualan terakhir.',pm_active:p=>`Sedang dijual (${p.n})`,pm_history:'Riwayat',pm_mine_none:'Kamu belum menjual apa pun di Pasar Pemain.',
  pms_sold:p=>`✅ Terjual ke ${p.u}`,pms_cancelled:'✖ Dibatalkan',pms_expired:'↩️ Tidak laku (kembali)',
@@ -639,7 +639,7 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  pm_buy_h:'Are you sure you want to buy?',pm_buy_final:p=>`You’re about to buy <b>${p.n}</b> from ${p.u} for <b>${p.p}</b>. Purchases can’t be undone.`,pm_buy_yes:p=>`Yes, buy for ${p.p}`,
  pmw_cap:p=>`After buying you’ll have ${p.n} animals, over your capacity of ${p.c}. ${p.x} animals will cost ${p.v}/month in emergency space.`,
  pm_cancel_h:'Cancel listing?',pm_cancel_q:p=>`${p.n} will be returned to your collection as a delivery.`,pm_cancel_yes:'Yes, cancel',
- pm_sell:'🏪 Sell on the player market',pm_sell_h:'Sell on the player market',pm_minp:'Minimum price (50% of value)',pm_hist:'Price history (30 days)',pm_hist_v:p=>`📊 median <b>${p.m}</b>${p.lo?` · most sold for ${p.lo}–${p.hi}`:''} · highest ${p.mx} · ${p.n}× sold`,pm_hist_none:'None sold yet',
+ pm_sell:'🏪 Sell on the player market',pm_sell_h:'Sell on the player market',pm_minp:'Minimum price (50% of value)',pm_hist:'Price history (30 days)',pm_hist_v:p=>`📊 median <b>${p.m}</b>${p.lo?` · most sold for ${p.lo}–${p.hi}`:''} · highest ${p.mx} · ${p.n}× sold`,pm_hist_none:'None sold yet',pm_hist_fb:'This line-bred trait combination hasn’t sold yet. This is the history for the gene morph in general (line-bred traits not taken into account):',lb_view:'View traits',
  pm_price:'Sale price ($)',pm_sell_note:p=>`While listed, the animal leaves your collection (it can’t be bred or sold in the shop). Listed for ${p.d} days; if it doesn’t sell, it comes back automatically. No fees.`,pm_sell_yes:'Create listing',
  pm_blocked:'Can’t be sold on the player market while gravid, listed in the NPC shop or paired.',pm_mine_sub:'Your active listings and your last 30 finished ones.',pm_active:p=>`For sale (${p.n})`,pm_history:'History',pm_mine_none:'You haven’t sold anything on the player market yet.',
  pms_sold:p=>`✅ Sold to ${p.u}`,pms_cancelled:'✖ Cancelled',pms_expired:'↩️ Didn’t sell (returned)',
@@ -1089,11 +1089,17 @@ const lbLine=s=>{if(lbOf(s)&&!lbRevealed(s))return `<div class="lbtag" style="co
 // sifat yang tertutup gen penutup / Black Night tampil "Tidak terlihat" (tanpa tingkat & tanpa tebakan)
 const lbTierTxt=(s,i)=>{const k=LB_KEYS[i];if(lbShownCover(s,k))return t('lb_unseen');const pre=k==='spots'?'lbs_':k==='pattern'?'lbp_':'lbt_';return t(pre+lbShownTier(s,i))+(lbRevealed(s)?'':'?')};
 const lbCoverName=c=>c==='dark'?'Black Night':TL[c];
-function lbSection(s){const v=lbOf(s);if(!v)return'';const rv=lbRevealed(s);
+function lbSection(s,noLine){const v=lbOf(s);if(!v)return'';const rv=lbRevealed(s);
  const covers=[...new Set(LB_KEYS.map(k=>lbShownCover(s,k)).filter(Boolean))].map(lbCoverName);
  const row=(k,i)=>{const g=rv?lbGrade(k,v[i]):0,hid=!!lbShownCover(s,k);
   return `<span>${t('lb_'+k)}</span><span class="lbt ${hid?'t0':g>=2?'t4':g?'t3':''}">${lbTierTxt(s,i)}</span>`};
- return `<h3 style="margin:14px 0 6px">✨ ${t('lb_h')}</h3>${lbLine(s)}<div class="lbgrid" id="lbgrid">${LB_KEYS.map(row).join('')}</div>${rv?'':`<p class="kbd" style="margin-top:6px">🥚 ${t('lb_young_note',{a:LB_REVEAL,n:Math.max(1,LB_REVEAL-s.age)})}</p>`}${covers.length?`<p class="kbd" style="margin-top:6px" id="lbcover">🙈 ${t('lb_cover_note',{g:covers.join(', ')})}</p>`:''}<p class="kbd" style="margin-top:6px">${t('lb_note')}</p>`}
+ return `<h3 style="margin:14px 0 6px">✨ ${t('lb_h')}</h3>${noLine?'':lbLine(s)}<div class="lbgrid" id="lbgrid">${LB_KEYS.map(row).join('')}</div>${rv?'':`<p class="kbd" style="margin-top:6px">🥚 ${t('lb_young_note',{a:LB_REVEAL,n:Math.max(1,LB_REVEAL-s.age)})}</p>`}${covers.length?`<p class="kbd" style="margin-top:6px" id="lbcover">🙈 ${t('lb_cover_note',{g:covers.join(', ')})}</p>`:''}<p class="kbd" style="margin-top:6px">${t('lb_note')}</p>`}
+// Hewan pemain lain (Pasar Pemain & trade): tombol ✨ membuka tabel 7 sifat line-bred. Data hewannya disimpan di LBV
+// dengan kunci per kartu (ditimpa setiap kali digambar ulang).
+const LBV=new Map();
+const lbViewBtn=(s,k)=>{if(!lbOf(s))return'';LBV.set(k,s);return `<button class="ghost sm lbv" data-act="lbv" data-k="${esc(k)}">✨ ${t('lb_view')}</button>`};
+function lbView(k){const s=LBV.get(k);if(!s)return;
+ modal(`<h2>${sexIcon(s.sex)} ${esc(code(s))} ${esc(fullName(s))}</h2><p class="kbd">${ageTxt(s.age)} · ${fmt(s.w)} g · ${money(value(s))}</p>${lbSection(s)}<div class="actions"><button class="ghost" data-act="close">${t('close')}</button></div>`)}
 // Breeding planner: hanya tampilan kedua induk (tanpa perkiraan anak), pemain menebak sendiri
 function lbPlan(m,f){if(!lbOf(m)||!lbOf(f))return'';
  return `<h3>✨ ${t('lb_plan_h')}</h3><p class="sub">${t('lb_plan_hint',{a:LB_REVEAL})}</p><div class="panel" style="padding:4px 8px" id="lbplan"><table><tr><th>${t('lb_h')}</th><th>♂ ${code(m)}</th><th>♀ ${code(f)}</th></tr>${LB_KEYS.map((k,i)=>`<tr><td>${t('lb_'+k)}</td><td>${lbTierTxt(m,i)}</td><td>${lbTierTxt(f,i)}</td></tr>`).join('')}</table></div>`}
@@ -1372,21 +1378,24 @@ var PM={view:'npc',list:null,mine:null,prices:null,loading:false,err:'',q:'',f:O
   catch(e){this.err=String(e&&e.message||e);if(!this.list)this.list=[];if(!this.mine)this.mine={active:[],history:[]}}
   finally{this.loading=false}
   if(TAB==='pasar'&&this.view!=='npc'&&!MODAL_LOCK&&!$('modal').innerHTML)render()},
- setPrices(arr){const m={};arr.forEach(p=>m[p.sp+'|'+p.name+'|'+p.sex]=p);this.prices=m},
- price(sp,name,sex){return this.prices&&this.prices[sp+'|'+name+'|'+sex]||null},
+ setPrices(arr){const m={};arr.forEach(p=>m[p.sp+'|'+p.name+'|'+p.sex+'|'+(p.all?'*':p.lbl)]=p);this.prices=m},
+ // v50: riwayat per morph + kelamin + label sifat line-bred; kalau kombinasi itu belum pernah terjual, pakai riwayat
+ // morph secara umum (fb = cadangan, belum memperhitungkan sifat line-bred; hanya ditandai untuk leopard gecko)
+ price(sp,name,sex,lbl){if(!this.prices)return null;const b=sp+'|'+name+'|'+sex,e=this.prices[b+'|'+(lbl||'')];if(e)return{ph:e};
+  const a=this.prices[b+'|*'];return a?{ph:a,fb:sp==='leo'}:null},
  async loadPrices(){if(this.prices||!Cloud.sb)return;try{const{data,error}=await Cloud.sb.rpc('get_market_prices',{p_sp:null});if(!error)this.setPrices(data||[])}catch(e){}},
  find(id){return (this.list||[]).concat(this.mine?this.mine.active:[]).find(x=>x.id===id)}
 };
 PM.restore();
 // Riwayat harga: median + rentang tengah (mulai 5 penjualan) + termahal
-const pmHist=ph=>t('pm_hist_v',{m:money(ph.med),lo:ph.n>=5?money(ph.lo):'',hi:money(ph.hi),mx:money(ph.max),n:ph.n});
+const pmHist=r=>{const ph=r.ph;return (r.fb?`<span class="kbd">⚠️ ${t('pm_hist_fb')}</span><br>`:'')+t('pm_hist_v',{m:money(ph.med),lo:ph.n>=5?money(ph.lo):'',hi:money(ph.hi),mx:money(ph.max),n:ph.n})};
 const pmBlocked=s=>!!(s.gravid||s.listed||s.pairedWith||s.pairs);
 function pmLeft(iso){const ms=Math.max(0,new Date(iso)-Date.now());return t('pm_left',{d:Math.floor(ms/864e5),h:Math.floor(ms%864e5/36e5)})}
 function pmList(){const f=PM.f,q=PM.q.toLowerCase().trim(),mn=+f.min||0,mx=f.max===''?Infinity:+f.max;
  return (PM.list||[]).filter(L=>(f.sp==='all'||L.sp===f.sp)&&(f.sex==='all'||L.sex===f.sex)&&L.price>=mn&&L.price<=mx&&(!f.adult||!isBaby(L.snake))&&(!f.gene||colGene(L.snake,f.gene,f.gm))
-  &&(!q||[L.name,L.code,L.seller_name,hetText(L.snake),L.snake.nick||''].some(x=>String(x).toLowerCase().includes(q))))}
-function pmCard(L){const s=L.snake,tr=traitsOf(s.g),sp=spOfG(s.g),ph=PM.price(L.sp,L.name,L.sex),ht=hetText(s);
- return `<div class="card pm${L.mine?' mine':''}"><img class="snk" src="${thumb(tr,s.seed,false,sp)}" alt="${esc(L.name)}"><div class="nm">${sexIcon(L.sex)} ${esc(L.name)}</div>${ht?`<div class="het">${esc(ht)}</div>`:''}
+  &&(!q||[L.name,L.code,L.seller_name,hetText(L.snake),L.snake.nick||'',lbVisibleLabels(L.snake).join(' ')].some(x=>String(x).toLowerCase().includes(q))))}
+function pmCard(L){const s=L.snake,tr=traitsOf(s.g),sp=spOfG(s.g),ph=PM.price(L.sp,L.name,L.sex,lbKey(s)),ht=hetText(s);
+ return `<div class="card pm${L.mine?' mine':''}"><img class="snk" src="${thumb(tr,s.seed,false,sp)}" alt="${esc(L.name)}"><div class="nm">${sexIcon(L.sex)} ${esc(L.name)}</div>${ht?`<div class="het">${esc(ht)}</div>`:''}${lbLine(s)}${lbViewBtn(s,'pm'+L.id)}
   <div class="meta"><span class="tbid">${esc(L.code)}</span> · ${ageTxt(s.age)} · ${fmt(s.w)} g${s.nick?' · '+esc(s.nick):''}</div>
   <div class="meta">${t('pm_seller')}: ${L.mine?t('og_you'):profLink(L.seller_name)} · ⭐ Lv ${repLevel(L.rep||0)}</div>
   <div class="meta">⏳ ${pmLeft(L.expires_at)} · ${t('pm_val',{v:money(value(s))})}</div>${ph?`<div class="meta">${pmHist(ph)}</div>`:''}
@@ -1419,7 +1428,7 @@ function vPasar(){const sub=`<div class="toolbar">${['npc','pm','mine'].map(k=>`
  <div id="pmbody">${pmBody()}</div>`}
 function pmBuyAsk(id){const L=PM.find(id);if(!L)return;const n=S.snakes.length+1,w=[];
  if(n>cap())w.push(t('pmw_cap',{n,c:cap(),x:n-cap(),v:money((n-cap())*15)}));   // satu-satunya peringatan: rak penuh
- modal(`<h2>${t('pm_buy_h')}</h2>${miniList([L.snake])}<p class="kbd">${t('pm_seller')}: ${esc(L.seller_name)} · ⭐ Lv ${repLevel(L.rep||0)} · ⏳ ${pmLeft(L.expires_at)}</p>
+ modal(`<h2>${t('pm_buy_h')}</h2>${miniList([L.snake])}${lbOf(L.snake)?lbSection(L.snake,1):''}<p class="kbd">${t('pm_seller')}: ${esc(L.seller_name)} · ⭐ Lv ${repLevel(L.rep||0)} · ⏳ ${pmLeft(L.expires_at)}</p>
   ${w.length?warnBlock({w},t('pm_buy_final',{p:money(L.price),u:esc(L.seller_name),n:esc(L.name)})):`<p class="sub">${t('pm_buy_final',{p:money(L.price),u:esc(L.seller_name),n:esc(L.name)})}</p>`}
   <div class="actions"><button class="pri" data-act="pm_buy_yes" data-id="${id}">${t('pm_buy_yes',{p:money(L.price)})}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`)}
 async function pmBuy(id){const L=PM.find(id);if(!L)return;
@@ -1433,7 +1442,7 @@ async function pmCancel(id){closeModal(true);
  catch(e){toast(errText(e))}
  PM.load()}
 async function pmSellAsk(id){const s=byId(id);if(!s||pmBlocked(s))return;await PM.loadPrices();
- const v=value(s),min=Math.max(1,Math.ceil(v*Core.MKT_MIN)),ph=PM.price(spOfG(s.g),fullName(s),s.sex);
+ const v=value(s),min=Math.max(1,Math.ceil(v*Core.MKT_MIN)),ph=PM.price(spOfG(s.g),fullName(s),s.sex,lbKey(s));
  modal(`<h2>${t('pm_sell_h')}</h2>${miniList([s])}
   <dl><dt>${t('d_value')}</dt><dd>${money(v)}</dd><dt>${t('pm_minp')}</dt><dd><b>${money(min)}</b></dd><dt>${t('pm_hist')}</dt><dd>${ph?pmHist(ph):t('pm_hist_none')}</dd></dl>
   <label>${t('pm_price')}<input id="pmprice" type="number" min="${min}" max="${Core.MKT_MAX}" step="1" value="" autocomplete="off"></label>
@@ -1553,6 +1562,7 @@ function act(a,id,el){
   case 'pm_sex':PM.f.sex=el.dataset.v;PM.save();break;
   case 'pm_refresh':PM.load();return;
   case 'pm_buy':pmBuyAsk(id);return;
+  case 'lbv':lbView(el.dataset.k);return;
   case 'pm_buy_yes':pmBuy(id);return;
   case 'pm_cancel':pmCancelAsk(id);return;
   case 'pm_cancel_yes':pmCancel(id);return;
@@ -2309,7 +2319,7 @@ function renderTabs(){if(!S||!Cloud.user||!$('tabs'))return;
  const T=[['koleksi',S.snakes.length],['breeding'],['inkubator',S.clutches.length+S.snakes.filter(s=>s.gravid).length+(S.broods||[]).length],['pasar'],['pesanan',S.orders.length],['dex',Object.keys(S.dex).length],['teman',Social.badge()||null,true],['global',Global.unread||null,true],['panduan'],['bugs',Bugs.unread||null,true]].concat(Bugs.admin?[['admin',Mod.open||null,true]]:[]);
  $('tabs').innerHTML=T.map(([k,c,hot])=>`<button class="${TAB===k?'on':''}" data-act="tab" data-tab="${k}">${t('tab_'+k)}${c!=null?`<span class="cnt${hot?' hot':''}">${c}</span>`:''}</button>`).join('')}
 
-function miniList(arr,money_,owner){const items=(arr||[]).map(s=>{const tr=traitsOf(s.g);return `<div class="mini-row"><img class="mini" src="${thumb(tr,s.seed,false,spOfG(s.g))}" alt=""><div><div><span class="tbid">${code(s)}</span> ${sexIcon(s.sex)} ${esc(nameOf(tr,s.g))}</div><div class="het">${esc(hetText(s))}</div><div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g · ${money(value(s))}</div>${owner===undefined?'':originLine(s,owner)}</div></div>`});
+function miniList(arr,money_,owner,vk){const items=(arr||[]).map((s,i)=>{const tr=traitsOf(s.g);return `<div class="mini-row"><img class="mini" src="${thumb(tr,s.seed,false,spOfG(s.g))}" alt=""><div><div><span class="tbid">${code(s)}</span> ${sexIcon(s.sex)} ${esc(nameOf(tr,s.g))}</div><div class="het">${esc(hetText(s))}</div>${lbLine(s)}<div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g · ${money(value(s))}</div>${owner===undefined?'':originLine(s,owner)}${vk?lbViewBtn(s,vk+'_'+i):''}</div></div>`});
  if(money_)items.push(`<div class="mini-row money">💵 ${money(money_)}</div>`);
  return items.length?items.join(''):`<div class="kbd">${t('tr_nothing')}</div>`}
 function tradeCard(x){
@@ -2317,7 +2327,7 @@ function tradeCard(x){
  const pend=x.status==='pending';
  return `<div class="panel trade ${pend?'':'done'}"><div class="row" style="justify-content:space-between"><b>${(()=>{const u=x.username?profLink(x.username):`<i class="gone">${t('tr_gone')}</i>`;return x.dir==='in'?t('tr_from',{u}):t('tr_to',{u})})()}</b><span class="tag ${x.status==='accepted'?'g':pend?'a':''}">${t('tr_st_'+x.status)}</span></div>
  ${x.note?`<p class="note">“${esc(x.note)}”</p>`:''}
- <div class="grid2" style="margin-top:8px"><div><div class="lbl">${t('tr_get')}</div>${miniList(get[0],get[1],x.username||false)}</div><div><div class="lbl">${t('tr_give')}</div>${miniList(give[0],give[1],null)}</div></div>
+ <div class="grid2" style="margin-top:8px"><div><div class="lbl">${t('tr_get')}</div>${miniList(get[0],get[1],x.username||false,'tg'+x.id)}</div><div><div class="lbl">${t('tr_give')}</div>${miniList(give[0],give[1],null,'tv'+x.id)}</div></div>
  ${pend&&x.dir==='in'?`<div class="actions"><button class="pri" data-act="tr_accept" data-tid="${x.id}">${t('tr_accept')}</button><button data-act="tr_decline" data-tid="${x.id}">${t('tr_decline')}</button></div>`:''}
  ${pend&&x.dir==='out'?`<p class="kbd">${t('tr_escrow')}</p><div class="actions"><button data-act="tr_cancel" data-tid="${x.id}">${t('tr_cancel')}</button></div>`:''}</div>`}
 function vTeman(){
@@ -2364,7 +2374,7 @@ async function openTradeBuilder(uid){
  TB.coll=data.snakes||[];paintTB();
 }
 function tbRow(s,side){const tr=traitsOf(s.g),blk=tradeBlock(s),on=TB[side].has(s.id);
- return `<label class="tbrow ${blk?'off':''} ${on?'on':''}"><input type="checkbox" data-tb="${side}" data-sid="${s.id}" ${on?'checked':''} ${blk?'disabled':''}><img class="mini" src="${thumb(tr,s.seed,false,spOfG(s.g))}" alt=""><div><div><span class="tbid">${code(s)}</span> ${sexIcon(s.sex)} ${esc(nameOf(tr,s.g))}</div><div class="het">${esc(hetText(s))}</div><div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g · ${money(value(s))}${blk?` · <span class="warn">${t(blk)}</span>`:''}</div>${originLine(s,side==='mine'?null:TB.u,true)}</div></label>`}
+ return `<label class="tbrow ${blk?'off':''} ${on?'on':''}"><input type="checkbox" data-tb="${side}" data-sid="${s.id}" ${on?'checked':''} ${blk?'disabled':''}><img class="mini" src="${thumb(tr,s.seed,false,spOfG(s.g))}" alt=""><div><div><span class="tbid">${code(s)}</span> ${sexIcon(s.sex)} ${esc(nameOf(tr,s.g))}</div><div class="het">${esc(hetText(s))}</div>${lbLine(s)}<div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g · ${money(value(s))}${blk?` · <span class="warn">${t(blk)}</span>`:''}</div>${originLine(s,side==='mine'?null:TB.u,true)}</div></label>`}
 function paintTB(){
  if(!TB||!TB.coll)return;
  const gv=S.snakes.filter(s=>TB.mine.has(s.id)).reduce((a,s)=>a+value(s),0)+TB.om,rv=TB.coll.filter(s=>TB.theirs.has(s.id)).reduce((a,s)=>a+value(s),0)+TB.rm;
