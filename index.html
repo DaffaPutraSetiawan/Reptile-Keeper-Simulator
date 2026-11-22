@@ -256,7 +256,7 @@ id:{
  l_welcome:p=>`Selamat datang di Morph Lab! Kamu mulai dengan sepasang ball python — jantan Normal het Albino dan betina Albino — ${p.v} dan 2 rak (20 space). Keduanya sudah cukup umur dan bisa langsung dikawinkan: rata-rata separuh anaknya Albino!`,
  l_hatch:p=>`🥚 Clutch ${p.dam} × ${p.sire} menetas: ${p.born} bayi${p.nm!=null?` (♂ ${p.nm} · ♀ ${p.nf})`:''}${p.dead?`, ${p.dead} mati dalam telur`:''}.`,
  l_newmorph:p=>`✨ Morph baru tercatat di Morph Dex: ${p.n}!`,
- l_proven:p=>`🔬 ${p.c} terbukti het ${p.g} (keturunannya visual).`,l_lbreveal:p=>`✨ ${p.c} sudah 6 bulan dan ternyata ${p.l}!`,
+ l_proven:p=>`🔬 ${p.c} terbukti het ${p.g} (keturunannya visual).`,l_lbreveal:p=>`✨ ${p.c} sudah ${p.a||6} bulan dan ternyata ${p.l}!`,
  l_laid:p=>`🥚 ${p.c} bertelur ${p.n} butir${p.tot?` (clutch ${p.no} dari ${p.tot})`:''}: ${p.good} subur, ${p.slug} slug. Masuk inkubator (${p.m?`±${p.m} bulan`:'±58 hari'}).`,l_season_end:p=>`🌙 ${p.c} selesai musim bertelur (${p.n} clutch) dan istirahat ${p.r} bulan sebelum bisa dikawinkan lagi.`,l_season_light:p=>`⚠️ ${p.c} berhenti bertelur lebih awal setelah ${p.n} clutch karena beratnya terlalu turun. Biarkan ia makan dan pulih dulu.`,
  l_ovul:p=>`💛 ${p.f} berovulasi setelah kawin dengan ${p.m}. Akan bertelur dalam ±${p.n||2} bulan.`,
  l_noovul:p=>`${p.f} tidak berovulasi bulan ini. Coba pasangkan lagi.`,
@@ -426,8 +426,11 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  lb_iri:'Kilau (High Iridophore)',lb_dspot:'Bintik gelap (Dirty Leucistic)',lb_tone:'Nada warna (Light ↔ Dark Wild)',lbn_iri:'Kilau',lbn_dspot:'Bintik gelap',lbn_tone:'Nada',lbx_0:'Sangat terang',lbx_1:'Terang',lbx_2:'Normal',lbx_3:'Gelap',lbx_4:'Sangat gelap',
  lb_note_axo:'Perkiraan dari tampilan hewan. Nilai anak kira-kira rata-rata kedua induk, ditambah sedikit acak, dan langsung terlihat sejak menetas. Kilau Tinggi = High Iridophore; Golden Albino + High Iridophore = Sunburst, Copper + High Iridophore = Moonburst. Bintik gelap Tinggi = Dirty Leucistic, Sangat tinggi = Piebald (hanya pada Leucistic). Nada warna Terang = Light Wild, Gelap = Dark Wild (hanya pada Wild Type).',
  lb_plan_hint_axo:'Anak biasanya mirip campuran kedua induk, tapi tiap anak bisa sedikit lebih baik atau lebih buruk. Sifat axolotl langsung terlihat saat menetas, jadi kamu bisa memilih bayi terbaik.',
- lb_cover_note_axo:p=>`Sebagian sifat tidak terlihat pada axolotl ini: ${p.g}. Labelnya tidak tampil dan tidak menambah harga, tapi nilainya tetap diwariskan ke anak.`,
- lbc_iri:'kilau tertutup Melanoid',lbc_dspot_alb:'bintik gelap tertutup Albino',lbc_dspot:'bintik gelap hanya terlihat pada Leucistic',lbc_tone:'nada warna hanya terlihat pada Wild Type',
+ lb_cover_note_axo:p=>`Sebagian sifat tidak terlihat pada hewan ini: ${p.g}. Labelnya tidak tampil dan tidak menambah harga, tapi nilainya tetap diwariskan ke anak.`,
+ lb_fade:'Pudar (Fader)',lb_inten:'Intensitas warna (High Intensity)',lb_btone:'Nada warna (Light ↔ Dark Line)',lbn_fade:'Pudar',lbn_inten:'Intensitas',lbn_btone:'Nada',
+ lb_note_ball:'Perkiraan dari tampilan hewan. Nilai anak kira-kira rata-rata kedua induk, ditambah sedikit acak. Pudar Tinggi = Fader (pola memudar). Intensitas Tinggi = High Intensity (warna gen seperti Pastel atau Banana jadi lebih pekat; hanya pada ular dengan gen warna). Nada warna Terang = Light Line, Gelap = Dark Line. BEL menutup semua sifat, Albino menutup nada warna.',
+ lbc_fade_bel:'pudar tertutup BEL',lbc_inten_bel:'intensitas tertutup BEL',lbc_inten:'intensitas hanya terlihat pada ular dengan gen warna (Pastel, Banana, Enchi, Yellow Belly, Cinnamon)',lbc_btone_bel:'nada warna tertutup BEL',lbc_btone:'nada warna tertutup Albino',
+ lbc_iri:'kilau tertutup Melanoid',lbc_dspot_axalb:'bintik gelap tertutup Albino',lbc_dspot:'bintik gelap hanya terlihat pada Leucistic',lbc_tone:'nada warna hanya terlihat pada Wild Type',
  
  ped_h:'Silsilah',ped_c0:'Hewan ini',ped_c1:'Induk',ped_c2:'Kakek & nenek',ped_unk:'Tidak diketahui',ped_open:'Buka hewan ini',ped_note:'Kode yang tertulis adalah kode saat anak lahir. Kotak berbingkai bisa diklik karena hewannya masih milikmu.',d_status:'Status kawin',d_value:'Nilai pasar',
  nick_ph:'Nama panggilan',save:'Simpan',unlist:'Batalkan iklan',list:p=>'Iklankan · '+p.v,quick:p=>'Jual cepat · '+p.v,plan:'Rencanakan kawin',close:'Tutup',gravid_nosale:'Betina bunting tidak bisa dijual sampai bertelur.',
@@ -555,7 +558,9 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
 <h3>2. Co-dominan: Pastel, Enchi, Yellow Belly, Cinnamon, Banana, Mojave, Lesser</h3><p>Satu salinan sudah terlihat. Dua salinan menghasilkan <b>bentuk super</b> yang berbeda: Super Pastel, Super Enchi, Ivory (super Yellow Belly), Super Cinnamon, Super Banana.</p><ul><li>Pastel × Normal → 50% Pastel, 50% Normal</li><li>Pastel × Pastel → 25% Super Pastel, 50% Pastel, 25% Normal</li></ul>
 <h3>3. BEL complex (Mojave &amp; Lesser)</h3><p>Mojave dan Lesser adalah <b>alel di lokus yang sama</b>. Kombinasi dua alel apa pun (Super Mojave, Super Lesser, Mojave Lesser) menghasilkan <b>Blue-Eyed Leucistic</b>: putih bersih bermata biru. Karena satu lokus, ular BEL selalu menurunkan tepat satu alel Mojave/Lesser ke tiap bayinya.</p>
 <h3>4. Dominan: Spider, Pinstripe</h3><p>Satu salinan sudah terlihat penuh, dan dua salinan tampak sama.</p>
-<h3>5. Kombinasi terkenal</h3><p>Pastel + Spider = <b>Bumblebee</b> · Super Pastel + Spider = <b>Killer Bee</b> · Pastel + Pinstripe = <b>Lemon Blast</b> · Spider + Pinstripe = <b>Spinner</b> · Pastel + Spider + Pinstripe = <b>Spinnerblast</b> · Albino + Axanthic = <b>Snow</b>.</p>
+<h3>5. Kombinasi terkenal</h3><p>Pastel + Spider = <b>Bumblebee</b> · Super Pastel + Spider = <b>Killer Bee</b> · Pastel + Pinstripe = <b>Lemon Blast</b> · Spider + Pinstripe = <b>Spinner</b> · Pastel + Spider + Pinstripe = <b>Spinnerblast</b> · Albino + Axanthic = <b>Snow</b> · Super Pastel + Pinstripe = <b>Super Blast</b> · Lesser + Pastel + Spider = <b>Queen Bee</b> · Pastel + Spider + Yellow Belly = <b>Bumble Belly</b> · Cinnamon + Pastel = <b>Pewter</b> · Super Cinnamon + Pastel = <b>Silver Bullet</b> · Cinnamon + Super Pastel = <b>Sterling</b> · Cinnamon + Mojave = <b>Savannah</b> · Piebald + Super Pastel = <b>Killer Pied</b> · Piebald + Yellow Belly = <b>Pumpkin Pied</b>.</p>
+<h3>Sifat line-bred (poligenik)</h3><p>Selain gen, tiap ball python punya 3 nilai sifat yang naik turun pelan-pelan lewat seleksi (nilai anak ≈ rata-rata kedua induk ± sedikit acak). Sifat bayi <b>belum jelas sampai umur 12 bulan</b>: tingkatnya hanya tebakan bertanda ?, dan bonus harganya baru dihitung saat itu.</p>
+<ul><li><b>Pudar</b>: tinggi = <b>Fader</b> (pola memudar).</li><li><b>Intensitas</b>: tinggi = <b>High Intensity</b> (warna gen seperti Pastel atau Banana jadi lebih pekat). Hanya terlihat pada ular dengan gen warna (Pastel, Banana, Enchi, Yellow Belly, Cinnamon).</li><li><b>Nada warna</b>: terang = <b>Light Line</b>, gelap = <b>Dark Line</b>. Albino menutup nada warna.</li></ul><p>BEL (putih polos) menutup semua sifat. Sifat yang tertutup tetap diwariskan ke anak. Label line-bred menambah harga dan ikut tercatat di Morph Dex.</p>
 <h3>6. Siklus breeding</h3><ul><li>Tidak ada musim kawin: ular bisa dikawinkan kapan saja asal umurnya cukup.</li><li>Jantan bisa dipasangkan dengan maksimal 4 betina per bulan, tapi beratnya turun ±1,5% untuk tiap pasangan.</li><li>Betina siap kawin lagi 8 bulan setelah bertelur.</li><li>Setelah ovulasi, betina bertelur ±2 bulan kemudian, dan telur menetas ±2 bulan setelah itu.</li><li><b>Jumlah telur bergantung berat betina saat bertelur:</b> ±1.300 g → 2 telur, ±1.750 g → ±5 telur, ±2.000 g → ±6 telur, ±2.300 g → ±8 telur. ±12% telur adalah slug (tidak subur).</li><li>Betina turun ±28% berat setelah bertelur dan 1% per bulan selama bunting.</li></ul>
 <h3>7. Suhu inkubasi</h3><p>29 °C = ♀80% / ♂20% · 31 °C = 50/50 · 33 °C = ♀20% / ♂80%. Suhu hanya bisa diubah di tab Inkubator selama sepertiga pertama masa inkubasi.</p>
 <h3>8. Kesehatan &amp; ekonomi</h3><p>Catatan dunia nyata: Spider membawa masalah neurologis ("wobble"), dan banyak breeder memilih tidak memproduksinya lagi. Di game ini gen tersebut tetap ada untuk keperluan edukasi.</p><p>Harga tiap gen naik turun. Kalau kamu terus menjual morph yang sama, pasar jadi jenuh dan harganya turun. Betina lebih mahal, dan ular yang lebih berat lebih mahal (bonus berat maksimal tercapai di ±1.840 g). Jual cepat memberi 60% nilai langsung, sedangkan iklan memberi 100% nilai tapi butuh waktu.</p>`,
@@ -580,7 +585,7 @@ en:{
  l_welcome:p=>`Welcome to Morph Lab! You start with a pair of ball pythons — a Normal het Albino male and an Albino female — ${p.v} and 2 racks (20 spaces). Both are old enough to pair right away: on average half of the babies will be Albino!`,
  l_hatch:p=>`🥚 Clutch ${p.dam} × ${p.sire} hatched: ${p.born} ${p.born===1?'baby':'babies'}${p.nm!=null?` (♂ ${p.nm} · ♀ ${p.nf})`:''}${p.dead?`, ${p.dead} died in the egg`:''}.`,
  l_newmorph:p=>`✨ New morph added to the Morph Dex: ${p.n}!`,
- l_proven:p=>`🔬 ${p.c} is proven het ${p.g} (it produced a visual offspring).`,l_lbreveal:p=>`✨ ${p.c} is now 6 months old and turns out to be ${p.l}!`,
+ l_proven:p=>`🔬 ${p.c} is proven het ${p.g} (it produced a visual offspring).`,l_lbreveal:p=>`✨ ${p.c} is now ${p.a||6} months old and turns out to be ${p.l}!`,
  l_laid:p=>`🥚 ${p.c} laid ${p.n} ${p.n===1?'egg':'eggs'}${p.tot?` (clutch ${p.no} of ${p.tot})`:''}: ${p.good} fertile, ${p.slug} ${p.slug===1?'slug':'slugs'}. Moved to the incubator (${p.m?`~${p.m} ${p.m===1?'month':'months'}`:'~58 days'}).`,l_season_end:p=>`🌙 ${p.c} finished her laying season (${p.n} clutches) and will rest ${p.r} months before she can be paired again.`,l_season_light:p=>`⚠️ ${p.c} stopped laying early after ${p.n} ${p.n===1?'clutch':'clutches'} because she lost too much weight. Let her eat and recover first.`,
  l_ovul:p=>`💛 ${p.f} ovulated after pairing with ${p.m}. Expect eggs in about ${p.n||2} ${(p.n||2)===1?'month':'months'}.`,
  l_noovul:p=>`${p.f} didn’t ovulate this month. Try pairing again.`,
@@ -741,8 +746,11 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  lb_iri:'Shine (High Iridophore)',lb_dspot:'Dark spots (Dirty Leucistic)',lb_tone:'Colour tone (Light ↔ Dark Wild)',lbn_iri:'Shine',lbn_dspot:'Dark spots',lbn_tone:'Tone',lbx_0:'Very light',lbx_1:'Light',lbx_2:'Normal',lbx_3:'Dark',lbx_4:'Very dark',
  lb_note_axo:'Estimated from how the animal looks. Offspring values are roughly the average of both parents plus a little randomness, and show right from hatching. High shine = High Iridophore; Golden Albino + High Iridophore = Sunburst, Copper + High Iridophore = Moonburst. High dark spots = Dirty Leucistic, very high = Piebald (Leucistic only). Light tone = Light Wild, dark tone = Dark Wild (Wild Type only).',
  lb_plan_hint_axo:'Offspring usually look like a mix of both parents, but each one can be a little better or worse. Axolotl traits show right at hatching, so you can pick the best babies.',
- lb_cover_note_axo:p=>`Some traits can’t be seen on this axolotl: ${p.g}. Their labels don’t show and don’t add value, but the values are still passed on to offspring.`,
- lbc_iri:'shine is hidden by Melanoid',lbc_dspot_alb:'dark spots are hidden by Albino',lbc_dspot:'dark spots only show on Leucistic',lbc_tone:'colour tone only shows on Wild Type',
+ lb_cover_note_axo:p=>`Some traits can’t be seen on this animal: ${p.g}. Their labels don’t show and don’t add value, but the values are still passed on to offspring.`,
+ lb_fade:'Fading (Fader)',lb_inten:'Colour intensity (High Intensity)',lb_btone:'Colour tone (Light ↔ Dark Line)',lbn_fade:'Fading',lbn_inten:'Intensity',lbn_btone:'Tone',
+ lb_note_ball:'Estimated from how the animal looks. Offspring values are roughly the average of both parents plus a little randomness. High fading = Fader (pattern fades). High intensity = High Intensity (gene colours like Pastel or Banana look richer; only on snakes with a colour gene). Light tone = Light Line, dark tone = Dark Line. BEL hides every trait, Albino hides colour tone.',
+ lbc_fade_bel:'fading is hidden by BEL',lbc_inten_bel:'intensity is hidden by BEL',lbc_inten:'intensity only shows on snakes with a colour gene (Pastel, Banana, Enchi, Yellow Belly, Cinnamon)',lbc_btone_bel:'colour tone is hidden by BEL',lbc_btone:'colour tone is hidden by Albino',
+ lbc_iri:'shine is hidden by Melanoid',lbc_dspot_axalb:'dark spots are hidden by Albino',lbc_dspot:'dark spots only show on Leucistic',lbc_tone:'colour tone only shows on Wild Type',
  
  ped_h:'Pedigree',ped_c0:'This animal',ped_c1:'Parents',ped_c2:'Grandparents',ped_unk:'Unknown',ped_open:'Open this animal',ped_note:'IDs shown are the IDs at the time of hatching. Outlined boxes can be clicked because you still own that animal.',d_status:'Breeding status',d_value:'Market value',
  nick_ph:'Nickname',save:'Save',unlist:'Cancel listing',list:p=>'List for sale · '+p.v,quick:p=>'Quick sell · '+p.v,plan:'Plan a pairing',close:'Close',gravid_nosale:'Gravid females can’t be sold until they lay.',
@@ -868,7 +876,9 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
 <h3>2. Co-dominant: Pastel, Enchi, Yellow Belly, Cinnamon, Banana, Mojave, Lesser</h3><p>One copy is already visible. Two copies produce a distinct <b>super form</b>: Super Pastel, Super Enchi, Ivory (super Yellow Belly), Super Cinnamon, Super Banana.</p><ul><li>Pastel × Normal → 50% Pastel, 50% Normal</li><li>Pastel × Pastel → 25% Super Pastel, 50% Pastel, 25% Normal</li></ul>
 <h3>3. BEL complex (Mojave &amp; Lesser)</h3><p>Mojave and Lesser are <b>alleles at the same locus</b>. Any combination of two of them (Super Mojave, Super Lesser, Mojave Lesser) produces a <b>Blue-Eyed Leucistic</b>: solid white with blue eyes. Because it is one locus, a BEL always passes exactly one Mojave/Lesser allele to each baby.</p>
 <h3>4. Dominant: Spider, Pinstripe</h3><p>One copy shows fully, and two copies look the same.</p>
-<h3>5. Famous combos</h3><p>Pastel + Spider = <b>Bumblebee</b> · Super Pastel + Spider = <b>Killer Bee</b> · Pastel + Pinstripe = <b>Lemon Blast</b> · Spider + Pinstripe = <b>Spinner</b> · Pastel + Spider + Pinstripe = <b>Spinnerblast</b> · Albino + Axanthic = <b>Snow</b>.</p>
+<h3>5. Famous combos</h3><p>Pastel + Spider = <b>Bumblebee</b> · Super Pastel + Spider = <b>Killer Bee</b> · Pastel + Pinstripe = <b>Lemon Blast</b> · Spider + Pinstripe = <b>Spinner</b> · Pastel + Spider + Pinstripe = <b>Spinnerblast</b> · Albino + Axanthic = <b>Snow</b> · Super Pastel + Pinstripe = <b>Super Blast</b> · Lesser + Pastel + Spider = <b>Queen Bee</b> · Pastel + Spider + Yellow Belly = <b>Bumble Belly</b> · Cinnamon + Pastel = <b>Pewter</b> · Super Cinnamon + Pastel = <b>Silver Bullet</b> · Cinnamon + Super Pastel = <b>Sterling</b> · Cinnamon + Mojave = <b>Savannah</b> · Piebald + Super Pastel = <b>Killer Pied</b> · Piebald + Yellow Belly = <b>Pumpkin Pied</b>.</p>
+<h3>Line-bred (polygenic) traits</h3><p>Besides genes, every ball python has 3 trait values that shift slowly through selection (offspring ≈ average of both parents ± a little randomness). A baby’s traits <b>aren’t clear until 12 months old</b>: levels are only a guess marked ?, and the price bonus only counts from then.</p>
+<ul><li><b>Fading</b>: high = <b>Fader</b> (pattern fades).</li><li><b>Intensity</b>: high = <b>High Intensity</b> (gene colours like Pastel or Banana look richer). Only shows on snakes with a colour gene (Pastel, Banana, Enchi, Yellow Belly, Cinnamon).</li><li><b>Colour tone</b>: light = <b>Light Line</b>, dark = <b>Dark Line</b>. Albino hides colour tone.</li></ul><p>BEL (plain white) hides every trait. Hidden traits are still passed on. Line-bred labels add value and are recorded in the Morph Dex.</p>
 <h3>6. Breeding cycle</h3><ul><li>There is no breeding season: snakes can be paired any time once they’re old enough.</li><li>A male can be paired with up to 4 females per month, but loses ~1.5% of his weight for each pairing.</li><li>Females can be paired again 8 months after laying.</li><li>After ovulating, a female lays about 2 months later, and the eggs hatch about 2 months after that.</li><li><b>Clutch size depends on the female’s weight when she lays:</b> ~1,300 g → 2 eggs, ~1,750 g → ~5 eggs, ~2,000 g → ~6 eggs, ~2,300 g → ~8 eggs. About 12% of eggs are slugs (infertile).</li><li>Females lose about 28% of their weight after laying, and 1% per month while gravid.</li></ul>
 <h3>7. Incubation temperature</h3><p>29 °C = ♀80% / ♂20% · 31 °C = 50/50 · 33 °C = ♀20% / ♂80%. You can change it in the Incubator tab only during the first third of incubation.</p>
 <h3>8. Health &amp; economy</h3><p>Real-world note: Spider is linked to a neurological problem ("wobble"), and many breeders have stopped producing it. It stays in this game for educational purposes.</p><p>Prices for each gene rise and fall. If you keep selling the same morph, the market gets saturated and its price drops. Females are worth more, and heavier snakes are worth more (the weight bonus maxes out at ~1,840 g). Quick selling pays 60% of the value right away; a listing pays 100% but takes time.</p>`,
@@ -898,49 +908,66 @@ const dateTxt=()=>dateOf(S.turn);
 function setS(x){S=x;if(S)Core.use(S)}
 
 /* ========= RENDER ULAR (prosedural) ========= */
-function appearance(tr){
+function appearance(tr,lb){
  const s=new Set(tr);let g=[176,118,52],p=[40,28,20],eye=[25,18,12],belly=[236,228,206];
  const st={spider:s.has('spider'),pin:s.has('pinstripe'),clown:s.has('clown'),reduce:0,solid:0,pied:s.has('piebald'),dorsal:null,speckle:null,outline:null,flame:false};
  if(s.has('pastel')){g=lerp(g,[222,178,58],.6);p=lerp(p,[78,58,40],.4);st.reduce+=.06}
  if(s.has('superpastel')){g=[240,206,72];p=[112,88,58];st.reduce+=.14}
- if(s.has('cinnamon')){g=lerp(g,[146,82,44],.65);p=lerp(p,[38,20,12],.5)}
+ if(s.has('cinnamon')){g=lerp(g,[124,64,34],.75);p=lerp(p,[30,16,10],.6)}   // v57: cokelat kayu manis lebih gelap
  if(s.has('supercinnamon')){g=[74,43,28];p=[50,29,20];st.solid=.85}
- if(s.has('enchi')){g=lerp(g,[224,140,44],.55);st.reduce+=.16}
+ if(s.has('enchi')){g=lerp(g,[232,138,38],.68);st.reduce+=.22}   // v57: lebih oranye, pola lebih sedikit
  if(s.has('superenchi')){g=lerp(g,[232,138,36],.85);p=lerp(p,[128,80,42],.6);st.reduce+=.38}
  if(s.has('banana')){g=lerp(g,[242,196,96],.7);p=[178,146,178];st.speckle=[64,42,36]}
  if(s.has('superbanana')){g=[248,226,152];p=[216,202,216];st.speckle=[120,90,80]}
- if(s.has('mojave')){g=lerp(g,[200,152,96],.5);p=lerp(p,[58,50,54],.35);st.outline=[232,218,186]}
- if(s.has('lesser')){g=lerp(g,[206,162,98],.6);p=lerp(p,[98,72,52],.5);st.outline=[226,206,166]}
- if(s.has('yb')){st.flame=true;st.reduce+=.03}
+ if(s.has('mojave')){g=lerp(g,[134,90,54],.62);p=lerp(p,[34,28,30],.5);st.outline=[236,222,190];st.keyhole=1}   // v57: lebih gelap, pola lubang kunci
+ if(s.has('lesser')){g=lerp(g,[214,178,116],.65);p=lerp(p,[112,82,60],.55);st.outline=[230,212,172];st.blush=1}   // v57: lebih pucat, kepala terang
+ if(s.has('yb')){st.flame=true;st.clean=1;st.reduce+=.03}   // v57: pinggiran lebih bersih
  if(s.has('clown'))g=lerp(g,[208,146,62],.4);
  if(s.has('albino')){p=[250,246,234];g=lerp([Math.min(255,g[0]+45),Math.min(255,g[1]+40),Math.max(0,g[2]-25)],[250,204,72],.5);eye=[214,58,72];if(st.speckle)st.speckle=[232,170,160];belly=[252,248,236];st.solid=Math.min(st.solid,.2)}
  if(s.has('axanthic')){const ds=c=>{const l=c[0]*.3+c[1]*.59+c[2]*.11;return lerp(c,[l*.97,l*.97,l*1.03],.88)};g=ds(g);p=ds(p);if(!s.has('albino'))p=lerp(p,[22,22,26],.3);belly=[226,226,228];if(st.speckle)st.speckle=ds(st.speckle)}
  if(s.has('albino')&&s.has('axanthic')){g=[244,238,222];p=[252,250,244];belly=[255,255,252]}
  if(s.has('ivory')){g=[238,230,206];p=[234,224,198];st.dorsal=[226,196,104];st.solid=1;st.speckle=null}
+ // v57: kombinasi warna bernama punya tampilan sendiri (perak/abu, pola memudar)
+ if(s.has('cinnamon')&&s.has('pastel')){g=[184,162,140];p=[112,92,82];st.reduce=Math.max(st.reduce,.28)}          // Pewter
+ if(s.has('supercinnamon')&&s.has('pastel')){g=[168,164,166];p=[118,112,116];st.solid=.55}                         // Silver Bullet
+ if(s.has('cinnamon')&&s.has('superpastel')){g=[204,192,172];p=[146,130,116];st.reduce=Math.max(st.reduce,.42)}  // Sterling
  if(s.has('bel')){g=[247,247,243];p=[247,247,243];eye=[86,148,222];st.solid=1;st.dorsal=null;st.speckle=null;st.outline=null;belly=[252,252,250]}
+ // v57: label line-bred yang terlihat (BEL menutup semua, jadi tidak pernah sampai sini dengan label)
+ const L=new Set(lb||[]);
+ if(L.has('High Intensity')){const sat=(c,f)=>{const m=(c[0]+c[1]+c[2])/3;return c.map(v=>clamp(m+(v-m)*f,0,255))};g=sat(g,1.45);if(s.has('banana')||s.has('superbanana'))p=sat(p,1.4)}
+ if(L.has('Light Line')){g=lerp(g,[252,238,208],.42);p=lerp(p,g,.28)}
+ if(L.has('Dark Line')){g=lerp(g,[58,34,18],.72);p=lerp(p,[8,6,4],.6)}
+ if(L.has('Fader'))st.fade=1;
  return{g,p,eye,belly,st}}
 function colorAt(t,u,A,st,n1,n2,n3,bands,seed){
  const au=Math.abs(u),g=A.g,p=A.p;
  const v=Math.sin((t*bands+.45*n1(t*7)+.55*au*au+(u<0?.08:0))*6.2832);
  const T=-.05-st.reduce*1.6;let pat=false,faint=0;
  if(st.clown)pat=au<.16+.06*n2(t*12)||(au>.5&&au<.8&&v>.9);
- else if(st.spider&&st.pin)pat=au<.05||(Math.abs(v)<.05&&au>.3);
+ else if(st.spider&&st.pin)pat=au<.035||(Math.abs(v)<.03&&au>.45&&au<.7);   // Spinner: hampir polos, garis punggung tipis
  else if(st.spider)pat=au<.07||(Math.abs(v)<.09+.04*n3(t*10)&&au>.16);
  else if(st.pin){pat=au<.055;if(!pat&&au>.55&&au<.62&&v>.2){pat=true;faint=.5}}
  else if(au<.22){const v2=Math.sin((t*bands+.5+.3*n2(t*9))*6.2832);pat=!(v2>.45-st.reduce*1.4)}
  else{pat=!(v>T);if(!pat&&st.reduce<.3&&au>.55&&au<.86&&v>.8&&v<.97)pat=true}
  let c;
+ // Fader: pola memudar (kontras turun, makin pudar ke arah ekor)
+ if(pat&&st.fade)faint=Math.max(faint,.35+.35*t);
+ // Mojave: bercak gelap berlubang terang (pola "keyhole")
+ if(pat&&st.keyhole&&au>=.22&&v<T-.82){c=lerp(g,[244,232,206],.25);pat=null}
  if(pat)c=lerp(p,g,Math.max(st.solid,faint));
+ else if(pat===null){}
  else{c=g.slice();if(st.outline&&!st.clown&&!st.spider&&!st.pin&&Math.abs(v-T)<.14&&au>=.22)c=lerp(c,st.outline,.65);
   if(st.speckle&&hash3(Math.floor(t*150),Math.floor((u+1)*5),seed)<.07)c=lerp(c,st.speckle,.8)}
  if(au>.8)c=lerp(c,A.belly,(au-.8)/.2*(st.flame?.55:.25));
+ if(st.clean&&au>.62&&au<=.8)c=lerp(c,A.g,.55);   // Yellow Belly: sisi bawah lebih bersih
+ if(st.blush&&t<.24)c=lerp(c,[244,226,190],.32*(1-t/.24));   // Lesser: kepala & leher lebih terang
  if(st.dorsal&&au<.14)c=lerp(c,st.dorsal,.75*(1-au/.14));
  if(st.pied){const wm=n2(t*3.1+20)+.3*au-(t<.13?1:0)-(t>.9?.15:0);if(wm>.52)c=[250,249,245]}
  let f=1.06-.34*au*au;if(u>-.55&&u<-.15)f+=.07;
  return[clamp(c[0]*f,0,255),clamp(c[1]*f,0,255),clamp(c[2]*f,0,255)]}
-function drawSnake(cv,tr,seed){
+function drawSnake(cv,tr,seed,lb){
  const W=cv.width,H=cv.height,x=cv.getContext('2d');x.clearRect(0,0,W,H);
- const A=appearance(tr),st=A.st,n1=noise(seed+1),n2=noise(seed+2),n3=noise(seed+3),rr=rngSeed(seed+9);
+ const A=appearance(tr,lb),st=A.st,n1=noise(seed+1),n2=noise(seed+2),n3=noise(seed+3),rr=rngSeed(seed+9);
  const R0=H*.12,amp=H*.22,mx=W*.12,ph=rr()*6.283,fq=1.2+rr()*.35,bands=8.5+rr()*2;
  const pos=t=>[mx+t*(W-2*mx),H*.5+amp*Math.sin(t*6.283*fq+ph)*(.5+.5*t)];
  const rad=t=>t<.22?R0*(.6+.4*t/.22):t<.66?R0:R0*Math.max(.1,1-(t-.66)/.34*.92);
@@ -1166,13 +1193,15 @@ function tags(s){const o=[];
 const lbLine=s=>lbOf(s)&&!lbRevealed(s)?`<div class="lbtag" style="color:var(--mut)">✨ ${t('lb_young')}</div>`:'';
 // sifat yang tertutup gen penutup / Black Night tampil "Tidak terlihat" (tanpa tingkat & tanpa tebakan)
 const LBK=s=>Core.lbKeysOf(Core.lbSpOf(s))||LB_KEYS;   // kunci sifat per spesies (leopard gecko 7, axolotl 3)
-const lbTierTxt=(s,i)=>{const k=LBK(s)[i];if(lbShownCover(s,k))return t('lb_unseen');const pre=k==='spots'?'lbs_':k==='pattern'?'lbp_':k==='tone'?'lbx_':'lbt_';return t(pre+lbShownTier(s,i))+(lbRevealed(s)?'':'?')};
+const lbTierTxt=(s,i)=>{const k=LBK(s)[i];if(lbShownCover(s,k))return t('lb_unseen');const pre=k==='spots'?'lbs_':k==='pattern'?'lbp_':k==='tone'||k==='btone'?'lbx_':'lbt_';return t(pre+lbShownTier(s,i))+(lbRevealed(s)?'':'?')};
 const lbCoverName=c=>c==='dark'?'Black Night':TL[c];
-function lbSection(s,noLine){const v=lbOf(s);if(!v)return'';const rv=lbRevealed(s),K=LBK(s),axo=Core.lbSpOf(s)==='axo';
- const covers=axo?K.filter(k=>lbShownCover(s,k)).map(k=>t(k==='dspot'&&lbShownCover(s,k)==='axalb'?'lbc_dspot_alb':'lbc_'+k)):[...new Set(K.map(k=>lbShownCover(s,k)).filter(Boolean))].map(lbCoverName);
+// teks penutup per sifat untuk axolotl & ball python (gecko memakai nama gen penutupnya)
+const lbCoverTxt=(k,c)=>t(I18N[LANG]['lbc_'+k+'_'+c]!=null?'lbc_'+k+'_'+c:'lbc_'+k);
+function lbSection(s,noLine){const v=lbOf(s);if(!v)return'';const lsp=Core.lbSpOf(s),rv=lbRevealed(s),K=LBK(s),x=lsp!=='leo',ra=Core.lbRevealAge(lsp);
+ const covers=x?K.filter(k=>lbShownCover(s,k)).map(k=>lbCoverTxt(k,lbShownCover(s,k))):[...new Set(K.map(k=>lbShownCover(s,k)).filter(Boolean))].map(lbCoverName);
  const row=(k,i)=>{const g=rv?lbGrade(k,v[i]):0,hid=!!lbShownCover(s,k);
   return `<span>${t('lb_'+k)}</span><span class="lbt ${hid?'t0':g>=2?'t4':g?'t3':''}">${lbTierTxt(s,i)}</span>`};
- return `<h3 style="margin:14px 0 6px">✨ ${t('lb_h')}</h3>${noLine?'':lbLine(s)}<div class="lbgrid" id="lbgrid">${K.map(row).join('')}</div>${rv?'':`<p class="kbd" style="margin-top:6px">🥚 ${t('lb_young_note',{a:LB_REVEAL,n:Math.max(1,LB_REVEAL-s.age)})}</p>`}${covers.length?`<p class="kbd" style="margin-top:6px" id="lbcover">🙈 ${t(axo?'lb_cover_note_axo':'lb_cover_note',{g:covers.join(axo?'; ':', ')})}</p>`:''}<p class="kbd" style="margin-top:6px">${t(axo?'lb_note_axo':'lb_note')}</p>`}
+ return `<h3 style="margin:14px 0 6px">✨ ${t('lb_h')}</h3>${noLine?'':lbLine(s)}<div class="lbgrid" id="lbgrid">${K.map(row).join('')}</div>${rv?'':`<p class="kbd" style="margin-top:6px">🥚 ${t('lb_young_note',{a:ra,n:Math.max(1,ra-s.age)})}</p>`}${covers.length?`<p class="kbd" style="margin-top:6px" id="lbcover">🙈 ${t(x?'lb_cover_note_axo':'lb_cover_note',{g:covers.join(x?'; ':', ')})}</p>`:''}<p class="kbd" style="margin-top:6px">${t(lsp==='axo'?'lb_note_axo':lsp==='ball'?'lb_note_ball':'lb_note')}</p>`}
 // Hewan pemain lain (Pasar Pemain & trade): tombol ✨ membuka tabel 7 sifat line-bred. Data hewannya disimpan di LBV
 // dengan kunci per kartu (ditimpa setiap kali digambar ulang).
 const LBV=new Map();
@@ -1180,8 +1209,8 @@ const lbViewBtn=(s,k)=>{if(!lbOf(s))return'';LBV.set(k,s);return `<button class=
 function lbView(k){const s=LBV.get(k);if(!s)return;
  modal(`<h2>${sexIcon(s.sex)} ${esc(code(s))} ${esc(dispName(s))}</h2><p class="kbd">${ageTxt(s.age)} · ${fmt(s.w)} g · ${money(value(s))}</p>${lbSection(s)}<div class="actions"><button class="ghost" data-act="close">${t('close')}</button></div>`)}
 // Breeding planner: hanya tampilan kedua induk (tanpa perkiraan anak), pemain menebak sendiri
-function lbPlan(m,f){if(!lbOf(m)||!lbOf(f))return'';const axo=Core.lbSpOf(f)==='axo';
- return `<h3>✨ ${t('lb_plan_h')}</h3><p class="sub">${axo?t('lb_plan_hint_axo'):t('lb_plan_hint',{a:LB_REVEAL})}</p><div class="panel" style="padding:4px 8px" id="lbplan"><table><tr><th>${t('lb_h')}</th><th>♂ ${code(m)}</th><th>♀ ${code(f)}</th></tr>${LBK(f).map((k,i)=>`<tr><td>${t('lb_'+k)}</td><td>${lbTierTxt(m,i)}</td><td>${lbTierTxt(f,i)}</td></tr>`).join('')}</table></div>`}
+function lbPlan(m,f){if(!lbOf(m)||!lbOf(f))return'';const lsp=Core.lbSpOf(f);
+ return `<h3>✨ ${t('lb_plan_h')}</h3><p class="sub">${lsp==='axo'?t('lb_plan_hint_axo'):t('lb_plan_hint',{a:Core.lbRevealAge(lsp)})}</p><div class="panel" style="padding:4px 8px" id="lbplan"><table><tr><th>${t('lb_h')}</th><th>♂ ${code(m)}</th><th>♀ ${code(f)}</th></tr>${LBK(f).map((k,i)=>`<tr><td>${t('lb_'+k)}</td><td>${lbTierTxt(m,i)}</td><td>${lbTierTxt(f,i)}</td></tr>`).join('')}</table></div>`}
 function card(s){const tr=traitsOf(s.g);return `<div class="card click" data-open="${s.id}"><img class="snk" src="${sThumb(s)}" alt="${esc(dispName(s))}"><div class="nm">${sexIcon(s.sex)} ${esc(dispName(s))}</div><div class="het">${esc(hetText(s))}</div>${lbLine(s)}<div class="meta">${s.nick?esc(s.nick)+' · ':''}${code(s)} · ${ageTxt(s.age)} · ${fmt(s.w)} g</div><div class="tags">${tags(s)}</div><div class="val">${money(value(s))}</div></div>`}
 function logLine(l){const d=l.m?dateOf(l.w):l.d;const txt=l.m?t(l.m,l.p):l.t;return `<li class="${l.k}"><span class="d">${esc(d)}</span>${esc(txt)}</li>`}
 
@@ -1562,7 +1591,7 @@ const dexWhen=e=>e.wt!=null?dateOf(e.wt):(e.when||'');
 function vDex(){
  const sp=DEXSP,TG=DEX_T[sp],LBT=Core.DEX_LBS[sp]||[];
  // gen contoh untuk gambar kartu label (label yang hanya muncul bersama gen tertentu)
- const LB_DEX_TR={Sunglow:['tremper'],'Bell Sunglow':['bell'],'Rainwater Sunglow':['rainwater'],Sunburst:['axalb'],Moonburst:['axcop'],'Dirty Leucistic':['axleu'],Piebald:['axleu']};
+ const LB_DEX_TR={Sunglow:['tremper'],'Bell Sunglow':['bell'],'Rainwater Sunglow':['rainwater'],Sunburst:['axalb'],Moonburst:['axcop'],'Dirty Leucistic':['axleu'],Piebald:['axleu'],'High Intensity':['pastel']};
  const found=TG.filter(x=>S.dex[dexKey(x,sp)]).length+LBT.filter(L=>S.dex[Core.dexLbKey(L,sp)]).length;
  const cell=(tr,e)=>{const n=nameOf(tr,null,sp);return `<div class="card"><div class="qwrap"><img class="snk ${e?'':'dexq'}" src="${thumb(tr,strHash(n),false,sp)}"></div><div class="nm">${e?esc(n):'???'}</div><div class="meta">${e?esc(t('dex_found',{d:dexWhen(e)})):t('dex_notfound')}</div>${e?`<div class="val">${money(Math.round(baseValue(tr,sp)/5)*5)}</div>`:''}</div>`};
  // label line-bred: gambar gecko biasa + tanda ✨ (gambar belum menampilkan warna line-bred)
