@@ -229,7 +229,7 @@ button.danger{background:var(--bad);border-color:var(--bad);color:#1b0a07;font-w
 'use strict';
 /* ========= LOGIKA INTI (core.js, sama dengan yang dipakai server) ========= */
 const Core=window.MorphCore;
-const {lbOf,lbKey,lbTier,lbGrade,lbShownCover,lbLabels,lbRevealed,lbShownTier,lbVisibleLabels,LB_KEYS,LB_REVEAL,QUESTS,relation,inbOf,INB_SLUG,INB_DEAD,pedParents,orderPay,broodSnake,broodValue,SPECIES,SPECIES_LIST,spOf,spOfG,spOfTr,lociOf,isRec,tempRange,dexKey,maxAge,lifeLeft,OLD_WARN,rackPrice,RACK_STEP,marketOk,marketBase,marketPrice,marketLeft,listingTraits,BUY_MULT,previewNext,TEMP_MIN,TEMP_MAX,TEMP_STEP,TEMP_MID,femaleChance,tempOpen,tempMonthsLeft,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches,repLevel,repNeed,isBig,bigPay,REP_ORDER,REP_BIG,BIG_LEVEL,HATCH_DEAD}=Core;
+const {lbOf,lbKey,lbTier,lbGrade,lbShownCover,lbLabels,lbRevealed,lbShownTier,lbVisibleLabels,LB_KEYS,LB_REVEAL,QUESTS,relation,inbOf,INB_SLUG,INB_DEAD,pedParents,orderPay,broodSnake,broodValue,SPECIES,SPECIES_LIST,spOf,spOfG,spOfTr,lociOf,isRec,tempRange,dexKey,maxAge,lifeLeft,OLD_WARN,rackPrice,RACK_STEP,rackRefund,START_RACKS,marketOk,marketBase,marketPrice,marketLeft,listingTraits,BUY_MULT,previewNext,TEMP_MIN,TEMP_MAX,TEMP_STEP,TEMP_MID,femaleChance,tempOpen,tempMonthsLeft,LOCI,TL,TV,TLOC,ALLT,INC_ORDER,BLABEL,R,pick,clamp,money,fmt,mi,yr,cap,emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,mm,baseValue,value,newSnake,byId,femaleReady,maleReady,readyMsg,dexAdd,matches,repLevel,repNeed,isBig,bigPay,REP_ORDER,REP_BIG,BIG_LEVEL,HATCH_DEAD}=Core;
 
 /* ========= UTIL ========= */
 const lerp=(a,b,t)=>a.map((x,i)=>x+(b[i]-x)*t);
@@ -268,7 +268,7 @@ id:{
  l_quick:p=>`💰 ${p.c} ${p.n} dijual cepat: ${p.v}.`,
  l_paired:p=>`${p.m} dipasangkan dengan ${p.f}. Hasil ovulasi terlihat bulan depan.`,
  l_buy:p=>`🛒 Membeli ${p.c} ${p.n}${p.h?' '+p.h:''} seharga ${p.v}.`,
- l_rack:p=>`Membeli rak baru${p.v?' seharga '+p.v:''}. Kapasitas sekarang ${p.cap} space.`,
+ l_rack:p=>`Membeli rak baru${p.v?' seharga '+p.v:''}. Kapasitas sekarang ${p.cap} space.`,l_rack_sell:p=>`Menjual 1 rak, uang kembali ${p.v}. Kapasitas sekarang ${p.cap} space.`,
  l_fulfill:p=>`📦 ${p.c} ${p.n} dikirim ke ${buyerName(p)}. Hadiah ${p.r}!${p.rp?` ⭐ +${p.rp} reputasi.`:''}`,l_fulfill_big:p=>`📦📦 ${p.c} dikirim ke ${buyerName(p)}. Hadiah ${p.r}! ⭐ +${p.rp} reputasi.`,l_replevel:p=>`⭐ Reputasi naik ke level ${p.l}!`,l_replevel_big:p=>`⭐ Reputasi naik ke level ${p.l}! Pembeli besar mulai datang: pesanan 2 hewan sekaligus, dibayar 150% nilai hewan.`,
  l_cloud:'☁️ Akun tersambung. Progres di perangkat ini sekarang tersimpan juga di cloud.',
  // event
@@ -361,7 +361,7 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  // pasar
  mk_sub:'Stok penjual berganti tiap bulan. Status het dari penjual selalu jujur, tapi "pos het" artinya belum pasti.',
  mk_sub2:'Pasar menjual 3 hewan per spesies, masing-masing dengan gen tunggal (atau Normal) yang berbeda-beda. Beli sebanyak yang kamu mau: pilih jenis kelamin, lalu beli sebagai bayi (10× harga dasar) atau siap kawin (20× harga dasar).',mk_reset:p=>`Stok berganti dalam ${p.n} turn`,mk_base:p=>`harga dasar ${p.v}`,mk_kind_one:'Gen tunggal',mk_kind_rec:'Gen tunggal (resesif, visual)',mk_kind_normal:'Tanpa gen',mk_f:'Betina',mk_m:'Jantan',mk_baby:'Bayi',mk_baby_d:'1–3 bulan · 70–180 g',mk_adult:'Siap kawin',mk_adult_f:'2 th+ · ±1,5–1,9 kg · bisa langsung dikawinkan',mk_adult_m:'10 bln+ · ±550–900 g · bisa langsung dikawinkan',
- rack_btn:p=>`Beli rak baru (+10 space) · ${p.v}`,rack_h:'Beli rak baru?',rack_q:p=>`Kamu akan membeli 1 rak seharga <b>${p.v}</b>. Kapasitas naik dari ${p.c} menjadi ${p.n} space.`,rack_price:'Harga rak',rack_after:'Saldo setelah beli',rack_n_next:p=>`Harga rak naik $5.000 setiap pembelian: rak berikutnya ${p.v}.`,rack_n_util:'Setiap rak menambah biaya listrik $8/bulan.',rack_yes:p=>`Ya, beli · ${p.v}`,rack_note:p=>`Kapasitas sekarang ${p.n} space. Lewat kapasitas kena biaya space darurat $15/ekor/bulan.`,buy:'Beli',
+ rack_btn:p=>`Beli rak baru (+10 space) · ${p.v}`,rack_h:'Beli rak baru?',rack_q:p=>`Kamu akan membeli 1 rak seharga <b>${p.v}</b>. Kapasitas naik dari ${p.c} menjadi ${p.n} space.`,rack_price:'Harga rak',rack_after:'Saldo setelah beli',rack_n_next:p=>`Harga rak naik $5.000 setiap pembelian: rak berikutnya ${p.v}.`,rack_n_util:'Setiap rak menambah biaya listrik $8/bulan.',rack_yes:p=>`Ya, beli · ${p.v}`,racks_btn:p=>`Jual 1 rak · +${p.v}`,racks_h:'Jual 1 rak?',racks_q:p=>`Kamu mendapat kembali <b>${p.v}</b> (50% dari harga rak terakhir). Kapasitas turun dari ${p.c} menjadi ${p.n} space.`,racks_back:'Uang kembali',racks_after:'Saldo setelah jual',racks_over:p=>`Kamu punya ${p.n} hewan, ${p.x} lebih banyak dari kapasitas baru (${p.c} space). Kelebihannya kena biaya space darurat $15/ekor/bulan (sekarang ${p.v}/bulan) sampai kamu menjual hewan atau membeli rak lagi.`,racks_n_next:p=>`Harga beli rak berikutnya turun jadi ${p.v}.`,racks_n_util:'Biaya listrik berkurang $8/bulan.',racks_n_min:p=>`${p.n} rak awal tidak bisa dijual.`,racks_yes:p=>`Ya, jual · +${p.v}`,rack_note:p=>`Kapasitas sekarang ${p.n} space. Lewat kapasitas kena biaya space darurat $15/ekor/bulan.`,buy:'Beli',
  // pesanan
  ord_h:'Pesanan pembeli',ord_sub:'Pembeli membayar hadiah pesanan, atau 125% dari nilai hewan yang kamu kirim kalau itu lebih tinggi, langsung saat dikirim. Jadi mengirim ke pembeli selalu lebih untung daripada iklan atau jual cepat. Hewan yang dikirim harus punya semua gen visual yang diminta; gen tambahan boleh, dan bentuk super juga memenuhi gen aslinya (mis. Super Cinnamon untuk Cinnamon).',pl_h:'Planner breeding',pl_sub:'Centang gen yang ingin kamu dapatkan. Planner mencari hewan pembawa tiap gen dan pasangan terbaik di koleksimu untuk 1 generasi.',pl_open:'Buka planner',pl_close:'Tutup',pl_genes:'Gen target',pl_sex:'Jenis kelamin',pl_sex_any:'Bebas',pl_f:'Betina',pl_m:'Jantan',pl_clear:'Hapus pilihan',
  pl_none_sel:'Pilih minimal satu gen target.',pl_target:'Target',pl_map_h:'Hewan pembawa gen',pl_th_gene:'Gen',pl_het:'het',pl_pos:p=>`${p.p}% pos het`,pl_more:p=>`+${p.n} lagi`,
@@ -512,7 +512,7 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  tw_money:p=>`Uang yang kamu berikan (${p.v}) setara setengah atau lebih dari saldomu (${p.b}).`,tw_escrow:'Setelah dikirim, hewan & uang yang kamu tawarkan langsung dititipkan sampai tawaran dijawab. Kamu masih bisa membatalkannya selama belum diterima.',
  tw_final:'Trade langsung dijalankan dan tidak bisa dibatalkan.',tw_values:p=>`Nilai pasar: kamu berikan ${p.g} · kamu terima ${p.r}.`,
  e_request_unavailable:'Hewan yang diminta sudah tidak tersedia (dijual, diiklankan, bunting, atau dipasangkan).',
- e_not_enough_money:'Uang tidak cukup.',e_trade_closed:'Tawaran ini sudah ditutup.',e_trade_not_found:'Tawaran tidak ditemukan.',
+ e_not_enough_money:'Uang tidak cukup.',e_rack_min:'Rak awal tidak bisa dijual.',e_trade_closed:'Tawaran ini sudah ditutup.',e_trade_not_found:'Tawaran tidak ditemukan.',
  e_not_friends:'Kalian sudah tidak berteman.',e_stale_save:'Save-mu baru saja berubah (mis. dari perangkat lain). Data sudah dimuat ulang, coba lagi.',
  e_snake_not_tradeable:'Ada hewan yang tidak bisa ditukar (bunting, diiklankan, atau dipasangkan).',e_snake_not_found:'Ada hewan yang sudah tidak kamu miliki.',
  e_too_many_trades:'Terlalu banyak tawaran yang masih menunggu (maks. 20).',e_rate_limited:'Terlalu banyak pesan. Tunggu sebentar.',
@@ -585,7 +585,7 @@ en:{
  l_quick:p=>`💰 ${p.c} ${p.n} quick-sold for ${p.v}.`,
  l_paired:p=>`${p.m} paired with ${p.f}. You’ll know next month whether she ovulated.`,
  l_buy:p=>`🛒 Bought ${p.c} ${p.n}${p.h?' '+p.h:''} for ${p.v}.`,
- l_rack:p=>`Bought a new rack${p.v?' for '+p.v:''}. Capacity is now ${p.cap} spaces.`,
+ l_rack:p=>`Bought a new rack${p.v?' for '+p.v:''}. Capacity is now ${p.cap} spaces.`,l_rack_sell:p=>`Sold 1 rack and got ${p.v} back. Capacity is now ${p.cap} spaces.`,
  l_fulfill:p=>`📦 ${p.c} ${p.n} shipped to ${buyerName(p)}. Reward ${p.r}!${p.rp?` ⭐ +${p.rp} reputation.`:''}`,l_fulfill_big:p=>`📦📦 ${p.c} shipped to ${buyerName(p)}. Reward ${p.r}! ⭐ +${p.rp} reputation.`,l_replevel:p=>`⭐ Reputation reached level ${p.l}!`,l_replevel_big:p=>`⭐ Reputation reached level ${p.l}! Big buyers start coming: orders for 2 animals at once, paying 150% of their value.`,
  l_cloud:'☁️ Account connected. Progress on this device is now also saved to the cloud.',
  ev_expo:'Exotic animal expo this month! Listings sell twice as fast.',
@@ -670,7 +670,7 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  th_dam:'Dam',th_sire:'Sire',th_fertile:'Fertile',th_slug:'Slugs',th_hatch:'Hatches in',mo:p=>`${p.n} mo`,inc_empty:'The incubator is empty.',
  mk_sub:'Sellers restock every month. Het claims from sellers are always honest, but "pos het" means it isn’t certain.',
  mk_sub2:'The market sells 3 animals per species, each with a different single gene (or Normal). Buy as many as you like: pick a sex, then buy as a baby (10× base price) or breeding-ready (20× base price).',mk_reset:p=>`Restocks in ${p.n} ${p.n===1?'turn':'turns'}`,mk_base:p=>`base price ${p.v}`,mk_kind_one:'Single gene',mk_kind_rec:'Single gene (recessive, visual)',mk_kind_normal:'No genes',mk_f:'Female',mk_m:'Male',mk_baby:'Baby',mk_baby_d:'1–3 months · 70–180 g',mk_adult:'Breeding-ready',mk_adult_f:'2 yr+ · ~1.5–1.9 kg · can be paired right away',mk_adult_m:'10 mo+ · ~550–900 g · can be paired right away',
- rack_btn:p=>`Buy a new rack (+10 spaces) · ${p.v}`,rack_h:'Buy a new rack?',rack_q:p=>`You’re about to buy 1 rack for <b>${p.v}</b>. Capacity goes from ${p.c} to ${p.n} spaces.`,rack_price:'Rack price',rack_after:'Balance after buying',rack_n_next:p=>`Rack prices go up by $5,000 with every purchase: the next one costs ${p.v}.`,rack_n_util:'Each rack adds $8/month in power costs.',rack_yes:p=>`Yes, buy · ${p.v}`,rack_note:p=>`Current capacity: ${p.n} spaces. Going over capacity costs $15 per animal per month for emergency space.`,buy:'Buy',
+ rack_btn:p=>`Buy a new rack (+10 spaces) · ${p.v}`,rack_h:'Buy a new rack?',rack_q:p=>`You’re about to buy 1 rack for <b>${p.v}</b>. Capacity goes from ${p.c} to ${p.n} spaces.`,rack_price:'Rack price',rack_after:'Balance after buying',rack_n_next:p=>`Rack prices go up by $5,000 with every purchase: the next one costs ${p.v}.`,rack_n_util:'Each rack adds $8/month in power costs.',rack_yes:p=>`Yes, buy · ${p.v}`,racks_btn:p=>`Sell 1 rack · +${p.v}`,racks_h:'Sell 1 rack?',racks_q:p=>`You get back <b>${p.v}</b> (50% of the last rack’s price). Capacity goes down from ${p.c} to ${p.n} spaces.`,racks_back:'Money back',racks_after:'Balance after selling',racks_over:p=>`You have ${p.n} animals, ${p.x} more than the new capacity (${p.c} spaces). The extra ones cost $15 each per month for emergency space (${p.v}/month right now) until you sell animals or buy another rack.`,racks_n_next:p=>`The next rack will cost ${p.v} to buy.`,racks_n_util:'Power costs go down by $8/month.',racks_n_min:p=>`The ${p.n} starting racks can’t be sold.`,racks_yes:p=>`Yes, sell · +${p.v}`,rack_note:p=>`Current capacity: ${p.n} spaces. Going over capacity costs $15 per animal per month for emergency space.`,buy:'Buy',
  ord_h:'Buyer orders',ord_sub:'Buyers pay the order reward, or 125% of the value of the animal you ship if that’s higher, right when you ship. So shipping to a buyer always beats listing or quick selling. The animal you ship must show every requested visual gene; extra genes are fine, and a super form also covers its base gene (e.g. Super Cinnamon for Cinnamon).',pl_h:'Breeding planner',pl_sub:'Tick the genes you want. The planner finds animals that carry each gene and the best pairs in your collection for 1 generation.',pl_open:'Open planner',pl_close:'Close',pl_genes:'Target genes',pl_sex:'Sex',pl_sex_any:'Any',pl_f:'Female',pl_m:'Male',pl_clear:'Clear',
  pl_none_sel:'Pick at least one target gene.',pl_target:'Target',pl_map_h:'Animals carrying each gene',pl_th_gene:'Gene',pl_het:'het',pl_pos:p=>`${p.p}% pos het`,pl_more:p=>`+${p.n} more`,
  pl_pairs_h:'Best pairs (1 generation)',pl_th_pair:'Pair',pl_th_p:'Chance per baby',pl_th_exp:'Target babies per season',pl_th_st:'Status',pl_th_inb:'Inbreeding',pl_ready:'Ready',pl_pick:'Select',pl_picked:'Selected',
@@ -818,7 +818,7 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  tw_money:p=>`The money you give (${p.v}) is half or more of your balance (${p.b}).`,tw_escrow:'Once sent, the animals & money you offer are held in escrow until the offer is answered. You can still cancel it until it’s accepted.',
  tw_final:'The trade happens right away and can’t be undone.',tw_values:p=>`Market value: you give ${p.g} · you get ${p.r}.`,
  e_request_unavailable:'A requested animal is no longer available (sold, listed, gravid or paired).',
- e_not_enough_money:'Not enough money.',e_trade_closed:'This offer is already closed.',e_trade_not_found:'Offer not found.',
+ e_not_enough_money:'Not enough money.',e_rack_min:'The starting racks can’t be sold.',e_trade_closed:'This offer is already closed.',e_trade_not_found:'Offer not found.',
  e_not_friends:'You’re no longer friends.',e_stale_save:'Your save just changed (e.g. on another device). It has been reloaded; try again.',
  e_snake_not_tradeable:'Some animals can’t be traded (gravid, listed or paired).',e_snake_not_found:'You no longer own one of these animals.',
  e_too_many_trades:'Too many pending offers (max. 20).',e_rate_limited:'Too many messages. Wait a moment.',
@@ -1357,7 +1357,7 @@ function eventText(e){return e.e?t(e.e,e):(e.txt||'')}
 const MKSEX={};
 function vPasarNpc(sub){
  let h=`<h2>${t('tab_pasar')}</h2>${sub}<p class="sub">${t('mk_sub2')}${S.event?' <b>📢 '+esc(eventText(S.event))+'</b>':''}</p>
- <div class="toolbar"><span class="tag a">🔄 ${t('mk_reset',{n:marketLeft()})}</span><button data-act="rack" ${S.money<rackPrice()?'disabled':''}>${t('rack_btn',{v:money(rackPrice())})}</button><span class="kbd">${t('rack_note',{n:cap()})}</span></div><div class="grid">`;
+ <div class="toolbar"><span class="tag a">🔄 ${t('mk_reset',{n:marketLeft()})}</span><button data-act="rack" ${S.money<rackPrice()?'disabled':''}>${t('rack_btn',{v:money(rackPrice())})}</button>${S.racks>START_RACKS?`<button class="ghost" data-act="rack_sell">${t('racks_btn',{v:money(rackRefund())})}</button>`:''}<span class="kbd">${t('rack_note',{n:cap()})}</span></div><div class="grid">`;
  if(!marketOk())return h+`</div><div class="empty">${t('so_loading')}</div>`;
  h+='</div>'+SPECIES_LIST.map(sp=>`<h3>${SP_ICON[sp]} ${t('sp_'+sp)}</h3><div class="grid">`+S.market.filter(L=>spOf(L)===sp).map(L=>{const tr=listingTraits(L),sx=MKSEX[L.lid]||'F',base=marketBase(L),pb=marketPrice(L,'baby'),pa=marketPrice(L,'adult');
   const rec=tr.length&&isRec(tr[0]);
@@ -1642,6 +1642,13 @@ function act(a,id,el){
    <ul class="pvnotes"><li>${t('rack_n_next',{v:money(p+RACK_STEP)})}</li><li>${t('rack_n_util')}</li></ul>
    <div class="actions"><button class="pri" data-act="rackyes">${t('rack_yes',{v:money(p)})}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`);return}
   case 'rackyes':closeModal();game({type:'rack'});return;
+  case 'rack_sell':{if(S.racks<=START_RACKS)return;const v=rackRefund(),nc=cap()-10,n=S.snakes.length,x=Math.max(0,n-nc);
+   modal(`<h2>🗄️ ${t('racks_h')}</h2><p class="sub">${t('racks_q',{v:money(v),c:cap(),n:nc})}</p>
+   <table class="pv"><tbody><tr><td>💰 ${t('pv_now')}</td><td class="num">${money(S.money)}</td></tr><tr><td>🗄️ ${t('racks_back')}</td><td class="num">+ ${money(v)}</td></tr><tr class="big"><td>${t('racks_after')}</td><td class="num">${money(S.money+v)}</td></tr></tbody></table>
+   ${x?`<div class="warnbox" id="rackwarn"><p>⚠️ ${t('racks_over',{n,c:nc,x,v:money(x*15)})}</p></div>`:''}
+   <ul class="pvnotes"><li>${t('racks_n_next',{v:money(rackPrice()-RACK_STEP)})}</li><li>${t('racks_n_util')}</li><li>${t('racks_n_min',{n:START_RACKS})}</li></ul>
+   <div class="actions"><button class="danger" data-act="rack_sell_yes">${t('racks_yes',{v:money(v)})}</button><button class="ghost" data-act="close">${t('btn_cancel')}</button></div>`);return}
+  case 'rack_sell_yes':closeModal();game({type:'rack_sell'});return;
   case 'fulfill':{const o=S.orders.find(x=>x.oid===id);if(!o)return;
    if(isBig(o)){const a=$('ord-'+id+'-0'),b=$('ord-'+id+'-1');if(!a||!b)return;if(a.value===b.value){toast(t('e_order_same_animal'));return}
     game({type:'fulfill',oid:id,sids:[+a.value,+b.value]});return}

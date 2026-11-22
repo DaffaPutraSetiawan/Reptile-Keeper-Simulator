@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:50,date:'2026-11-22'};
+const VERSION={v:51,date:'2026-11-22'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -127,6 +127,10 @@ const cap=()=>S.racks*10;
 // Harga rak naik $5.000 setiap pembelian: rak ke-3 $5.000, ke-4 $10.000, ke-5 $15.000, ke-6 $20.000, dst. (2 rak pertama gratis dari awal)
 const RACK_BASE=5000,RACK_STEP=5000,START_RACKS=2;
 const rackPrice=()=>RACK_BASE+RACK_STEP*Math.max(0,S.racks-START_RACKS);
+// Jual rak: uang kembali 50% dari harga rak terakhir yang dibeli; 2 rak awal (gratis) tidak bisa dijual.
+// Hewan boleh melebihi kapasitas baru (kena biaya space darurat seperti biasa).
+const RACK_REFUND=.5;
+const rackRefund=()=>S.racks>START_RACKS?Math.round((RACK_BASE+RACK_STEP*(S.racks-1-START_RACKS))*RACK_REFUND):0;
 // Catatan disimpan sebagai kunci + parameter supaya ikut berganti bahasa.
 // Catatan breeder maksimal LOG_MAX entri: entri baru masuk di atas, yang paling lama terhapus.
 const LOG_MAX=100;
@@ -767,6 +771,9 @@ const ACTIONS={
   const tp=Number(a.temp);if(!validTemp(tp,spOf(c)))fail('bad_temp');
   c.temp=tp;S.qf=S.qf||{};S.qf.temp=1;return{}},
  rack(){const price=rackPrice();if(S.money<price)fail('not_enough_money');S.money-=price;S.racks++;psEx('rack',price);log('l_rack',{cap:cap(),v:money(price)});return{}},
+ // statistik pengeluaran rak dicatat bersih (dikurangi uang kembali, tidak kurang dari 0)
+ rack_sell(){if(S.racks<=START_RACKS)fail('rack_min');const v=rackRefund();S.racks--;S.money+=v;{const e=ps().ex;e.rack=Math.max(0,(e.rack||0)-v)}
+  log('l_rack_sell',{cap:cap(),v:money(v)});return{}},
  fulfill(a){const o=S.orders.find(x=>x.oid===toId(a.oid));if(!o)fail('order_gone');
   if(isBig(o))return bigFulfill(o,a);
   const s=mustSnake(a.sid);
@@ -798,7 +805,7 @@ root.MorphCore={
  SPECIES,SPECIES_LIST,spOf,spOfG,spOfTr,lociOf,isRec,
  R,pick,clamp,money,fmt,
  use(s){S=s},state(){return S},
- mi,yr,cap,log,LOG_MAX,rackPrice,RACK_STEP,
+ mi,yr,cap,log,LOG_MAX,rackPrice,RACK_STEP,rackRefund,RACK_REFUND,START_RACKS,
  emptyGeno,G,locusTraits,traitsOf,nameOf,fullName,code,hetText,transmitP,childHp,breedGeno,odds,
  OLD_WARN,maxAge,lifeLeft,sizeMult,kOf,growW,
  pedNode,pedParents,labelNode,ancRec,kinship,relation,inbOf,inbFromAnc,repairInb,INB_SLUG,INB_DEAD,HATCH_DEAD,
