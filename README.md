@@ -72,6 +72,7 @@ Game **wajib login**. Setiap aksi dikirim ke server (Edge Function `game`), yang
 - **Laporan bug**: pemain melapor dengan judul, deskripsi, kategori, dan 1–3 screenshot. Semua pemain bisa membaca & berkomentar; admin mengubah status, membalas, dan menghapus. Pelapor mendapat notifikasi saat ada balasan.
 - **Dua bahasa: Indonesia & Inggris**, bisa diganti kapan saja. Bahasa awal mengikuti bahasa browser, lalu pilihan pemain diingat.
 - **3 tema warna** (Terrarium, Hutan Hujan, Samudra Malam) di Pengaturan
+- **Catatan pembaruan** di Pengaturan → Tentang (semua versi, ID & EN), plus popup sekali saat ada versi baru. Riwayat teknis per versi ada di [`CHANGELOG.md`](CHANGELOG.md)
 
 ## Struktur
 
@@ -80,6 +81,8 @@ Game **wajib login**. Setiap aksi dikirim ke server (Edge Function `game`), yang
 | `index.html` | Tampilan game (HTML + CSS + JavaScript) |
 | `core.js` | Logika inti game (genetika, ekonomi, aksi, misi, angka peringkat); dihitung di server, dipakai browser untuk tampilan |
 | `config.js` | URL & publishable key Supabase |
+| `patchnotes.js` | Catatan pembaruan untuk pemain (ID & EN), tampil di game |
+| `CHANGELOG.md` | Riwayat perubahan per versi |
 | `supabase/functions/game/` | Edge Function `game` (`index.ts`, `handler.js`, salinan `core.js`) |
 | `supabase/schema.sql` | Tabel `profiles` & `saves` dengan Row Level Security |
 | `supabase/social.sql` | Teman, chat, global chat, profil, trading (escrow) + fungsi server & realtime |

@@ -168,6 +168,8 @@ button.sm{padding:4px 10px;font-size:12.5px}
 .tbrow.on{border-color:var(--acc);background:var(--accbg)}.tbrow.off{opacity:.5;cursor:not-allowed}.tbrow img.mini{width:84px}
 .tbrow input{width:auto}.tbm{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px}.tbm input{width:120px}
 .mbox:has(.tb){max-width:860px}
+.pnl .pn{border-top:1px solid var(--line);padding:10px 0 4px}.pnl .pn:first-child{border-top:0;padding-top:2px}
+.pnh{display:flex;gap:8px;align-items:baseline}.pn ul{margin:6px 0 0;padding-left:20px}.pn li{margin:3px 0;line-height:1.45}
 .gated nav,.gated aside{display:none}.gated main{grid-template-columns:minmax(0,1fr);max-width:860px}
 .gate{padding:26px}.gate h2{font-size:26px}
 .gate-logo{display:block;width:min(340px,78%);height:auto;margin:2px auto 20px}
@@ -227,6 +229,7 @@ button.danger{background:var(--bad);border-color:var(--bad);color:#1b0a07;font-w
 <div id="toast"></div>
 <script src="config.js"></script>
 <script src="core.js"></script>
+<script src="patchnotes.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 'use strict';
@@ -458,7 +461,7 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  t_uname:p=>`Username <b>${p.u}</b> tersimpan.`,t_pw:'Password baru tersimpan.',t_cloudload:p=>`☁️ Save dari akunmu dimuat: <b>${p.d}</b>`,t_logout:'Kamu sudah keluar. Progresmu aman tersimpan di server.',
  nolib_h:'Cloud save tidak tersedia',nolib_b:'Library Supabase gagal dimuat (koneksi internet atau pemblokir iklan). Game tetap jalan dan progres tersimpan di browser ini. Muat ulang halaman untuk mencoba lagi.',
  fg_need:'Isi email dulu, lalu klik "Lupa password?" lagi.',fg_sent:p=>`Link reset password dikirim ke <b>${p.e}</b>.`,
- set_about:'Tentang',ver_server:'Versi server game',ver_web:'Versi web',ver_ok:'Web & server sudah versi terbaru yang sama.',ver_old_web:'Halaman ini masih versi lama. Muat ulang (Ctrl+Shift+R) untuk memakai versi terbaru.',ver_old_server:'Server sedang diperbarui; versi web lebih baru dari server.',ver_reload:'Muat ulang halaman',
+ set_about:'Tentang',pn_btn:'📜 Catatan pembaruan',pn_h:'Catatan pembaruan',pn_sub:'Perubahan game dari versi terbaru sampai rilis awal.',pn_new_h:'Yang baru di Morph Lab',pn_new_sub:'Ringkasan pembaruan sejak terakhir kamu bermain.',pn_all:'Lihat semua catatan',pn_ok:'Oke',pn_more:'+{n} versi lainnya di Catatan pembaruan.',ver_server:'Versi server game',ver_web:'Versi web',ver_ok:'Web & server sudah versi terbaru yang sama.',ver_old_web:'Halaman ini masih versi lama. Muat ulang (Ctrl+Shift+R) untuk memakai versi terbaru.',ver_old_server:'Server sedang diperbarui; versi web lebih baru dari server.',ver_reload:'Muat ulang halaman',
  set_title:'Pengaturan',set_lang:'Bahasa',set_theme:'Tema warna',th_terra:'Terrarium',th_terra_d:'Cokelat hangat & amber (bawaan)',th_forest:'Hutan Hujan',th_forest_d:'Hijau gelap & zamrud',th_ocean:'Samudra Malam',th_ocean_d:'Biru tua & biru langit',
  pv_open:'Lihat perkiraan saldo bulan depan',pv_h:'Perkiraan saldo bulan depan',pv_sub:'Biaya ini dipotong otomatis saat kamu menekan “Lanjut bulan”.',pv_now:'Saldo sekarang',pv_food:p=>`Pakan · ${p.n} ekor`,pv_util:p=>`Listrik & rak · ${p.r} rak × $8`,pv_over:p=>`Space darurat · ${p.n} ekor di atas kapasitas (${p.c}) × $15`,pv_total:'Total pengeluaran',pv_after:'Perkiraan saldo',pv_formula:'Pakan per hewan: $2 (ball python) atau $1 (leopard gecko) + $1 per 250 g berat (dihitung dari berat setelah tumbuh bulan depan).',pv_debt:'⚠️ Saldo akan minus! Jual, iklankan, atau kirim hewan ke pesanan dulu.',pv_n_born:p=>`Termasuk ${p.n} bayi yang akan menetas (bisa kurang kalau ada telur yang mati).`,pv_n_lay:p=>`${p.n} betina akan bertelur, beratnya turun ±28% sehingga pakannya lebih murah.`,pv_n_foodx:'Harga pakan sedang naik +50% (event bulan ini).',pv_n_listed:p=>`Belum termasuk uang dari ${p.n} hewan yang diiklankan kalau terjual.`,pv_n_old:p=>`${p.n} hewan akan mati karena tua bulan depan, jadi tidak dihitung biaya pakannya.`,pv_n_random:'Ini perkiraan: pertumbuhan & event baru bersifat acak.',
  tab_teman:'Teman',tab_global:'Global',gc_sub:p=>`Ngobrol dengan semua pemain Morph Lab. Hanya ${p.n} pesan terakhir yang disimpan; pesan yang lebih lama terhapus otomatis.`,gc_ph:'Tulis pesan untuk semua pemain…',gc_empty:'Belum ada pesan. Jadilah yang pertama menyapa!',e_empty_message:'Pesan masih kosong.',e_message_too_long:'Pesan terlalu panjang.',busy:'Tunggu sebentar, sedang memproses…',
@@ -776,7 +779,7 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  t_uname:p=>`Username <b>${p.u}</b> saved.`,t_pw:'New password saved.',t_cloudload:p=>`☁️ Loaded the save from your account: <b>${p.d}</b>`,t_logout:'You’re logged out. Your progress is safe on the server.',
  nolib_h:'Cloud save unavailable',nolib_b:'The Supabase library failed to load (internet connection or an ad blocker). The game still works and progress is saved in this browser. Reload the page to try again.',
  fg_need:'Enter your email first, then click "Forgot password?" again.',fg_sent:p=>`A password reset link was sent to <b>${p.e}</b>.`,
- set_about:'About',ver_server:'Game server version',ver_web:'Web version',ver_ok:'Web & server are on the same latest version.',ver_old_web:'This page is an older version. Reload (Ctrl+Shift+R) to get the latest.',ver_old_server:'The server is being updated; the web version is newer than the server.',ver_reload:'Reload page',
+ set_about:'About',pn_btn:'📜 Patch notes',pn_h:'Patch notes',pn_sub:'Game changes, from the latest version back to the first release.',pn_new_h:'What’s new in Morph Lab',pn_new_sub:'A summary of updates since you last played.',pn_all:'See all notes',pn_ok:'OK',pn_more:'+{n} more versions in Patch notes.',ver_server:'Game server version',ver_web:'Web version',ver_ok:'Web & server are on the same latest version.',ver_old_web:'This page is an older version. Reload (Ctrl+Shift+R) to get the latest.',ver_old_server:'The server is being updated; the web version is newer than the server.',ver_reload:'Reload page',
  set_title:'Settings',set_lang:'Language',set_theme:'Color theme',th_terra:'Terrarium',th_terra_d:'Warm brown & amber (default)',th_forest:'Rainforest',th_forest_d:'Deep green & emerald',th_ocean:'Night Ocean',th_ocean_d:'Navy & sky blue',
  pv_open:'See next month’s balance forecast',pv_h:'Next month’s balance forecast',pv_sub:'These costs are deducted automatically when you press “Next month”.',pv_now:'Current balance',pv_food:p=>`Feeders · ${p.n} ${p.n===1?'animal':'animals'}`,pv_util:p=>`Power & racks · ${p.r} ${p.r===1?'rack':'racks'} × $8`,pv_over:p=>`Emergency space · ${p.n} over capacity (${p.c}) × $15`,pv_total:'Total costs',pv_after:'Expected balance',pv_formula:'Feeders per animal: $2 (ball python) or $1 (leopard gecko) + $1 per 250 g of body weight (using next month’s weight after growth).',pv_debt:'⚠️ Your balance will go negative! Sell, list, or ship animals to orders first.',pv_n_born:p=>`Includes ${p.n} ${p.n===1?'hatchling':'hatchlings'} due to hatch (could be fewer if an egg fails).`,pv_n_lay:p=>`${p.n} ${p.n===1?'female':'females'} will lay eggs and lose ~28% of their weight, so feeding them costs less.`,pv_n_foodx:'Feeder prices are up +50% (this month’s event).',pv_n_listed:p=>`Doesn’t include money from ${p.n} listed ${p.n===1?'animal':'animals'} if they sell.`,pv_n_old:p=>`${p.n} ${p.n===1?'animal':'animals'} will die of old age next month, so they aren’t counted in feeder costs.`,pv_n_random:'This is an estimate: growth and new events are random.',
  tab_teman:'Friends',tab_global:'Global',gc_sub:p=>`Chat with every Morph Lab player. Only the last ${p.n} messages are kept; older ones are deleted automatically.`,gc_ph:'Write a message to everyone…',gc_empty:'No messages yet. Be the first to say hi!',e_empty_message:'The message is empty.',e_message_too_long:'The message is too long.',busy:'One moment, still working…',
@@ -1612,6 +1615,26 @@ function guideFacts(sp){const P=SPECIES[sp],gw=v=>v>=1000?(v/1000).toLocaleStrin
  </table></div>`}
 function vPanduan(){const sp=GUIDESP;return `<div class="guide"><h2>${SP_ICON[sp]} ${t('gd_h')}</h2><p class="sub">${t('gd_sub')}</p>${spChips(sp,'guidesp')}${guideFacts(sp)}${t('guide_'+sp)}</div>`}
 
+// Catatan pembaruan (patchnotes.js): daftar lengkap di Pengaturan → Tentang, popup sekali tiap versi baru.
+const PN={
+ KEY:'morphlab_seen_v',
+ list(){return (window.PATCH_NOTES||[]).slice().sort((a,b)=>b.v-a.v)},
+ latest(){const l=this.list();return l.length?l[0].v:0},
+ entry(n){const items=n[LANG]||n.id||[];return `<div class="pn"><div class="pnh"><b>${n.label||'v'+n.v}</b> <span class="kbd">${longDate(n.d+'T12:00:00')}</span></div><ul>${items.map(x=>`<li>${x}</li>`).join('')}</ul></div>`},
+ seen(){try{return +localStorage.getItem(this.KEY)||0}catch(e){return 0}},
+ mark(){try{localStorage.setItem(this.KEY,String(this.latest()))}catch(e){}},
+ showAll(){this.mark();modal(`<h2>${t('pn_h')}</h2><p class="sub">${t('pn_sub')}</p><div class="pnl">${this.list().map(n=>this.entry(n)).join('')}</div><div class="actions"><button data-act="close">${t('close')}</button></div>`)},
+ // Dipanggil setelah game dimuat. Pemain baru (turn 0, belum pernah lihat) tidak diberi popup.
+ maybeShow(){
+  const L=this.latest();if(!L||!S)return;
+  let seen=this.seen();
+  if(!seen){if(!(S.turn>0)){this.mark();return}seen=L-1}
+  if(seen>=L)return;
+  if(!$('modal').classList.contains('hidden'))return;
+  const nw=this.list().filter(n=>n.v>seen&&n.v>0),show=nw.slice(0,3),more=nw.length-show.length;
+  this.mark();
+  modal(`<h2>🆕 ${t('pn_new_h')}</h2><p class="sub">${t('pn_new_sub')}</p><div class="pnl">${show.map(n=>this.entry(n)).join('')}</div>${more>0?`<p class="kbd">${t('pn_more',{n:more})}</p>`:''}<div class="actions"><button class="ghost" data-act="patchnotes">${t('pn_all')}</button><button data-act="close">${t('pn_ok')}</button></div>`)}
+};
 let MODAL_LOCK=false;
 function modal(h,lock){MODAL_LOCK=!!lock;const m=$('modal');m.innerHTML=`<div class="mbox">${h}</div>`;m.classList.remove('hidden')}
 function closeModal(force){if(MODAL_LOCK&&!force)return;MODAL_LOCK=false;$('modal').classList.add('hidden');$('modal').innerHTML=''}
@@ -1811,6 +1834,7 @@ var Cloud={sb:null,user:null,profile:null,status:'checking',err:'',lastSaved:0,r
    await this.ensureProfile();
    await Online.act({type:'init'});
    SEL={m:null,f:null};render();toast(t('t_online'));
+   setTimeout(()=>{try{PN.maybeShow()}catch(e){console.warn('pn',e)}},400);
    try{Social.start()}catch(e){console.warn('social',e)}
   }catch(e){this.fail(e)}
  },
@@ -1889,7 +1913,7 @@ function showSettings(){const c=Cloud;const tm=c.lastSaved?new Date(c.lastSaved)
  const lang=`<section class="set"><div class="lbl">🌐 ${t('set_lang')}</div><div class="opts">${[['id','Bahasa Indonesia'],['en','English']].map(([k,n])=>`<button class="opt ${LANG===k?'on':''}" data-act="lang" data-v="${k}" aria-pressed="${LANG===k}" lang="${k}">${n}${LANG===k?' <span class="chk">✓</span>':''}</button>`).join('')}</div></section>`;
  const theme=`<section class="set"><div class="lbl">🎨 ${t('set_theme')}</div><div class="opts themes">${THEMES.map(x=>`<button class="opt theme ${THEME===x.k?'on':''}" data-act="theme" data-v="${x.k}" aria-pressed="${THEME===x.k}"><span class="sw">${x.sw.map(c=>`<i style="background:${c}"></i>`).join('')}</span><b>${t('th_'+x.k)}</b><small>${t('th_'+x.k+'_d')}</small>${THEME===x.k?'<span class="chk">✓</span>':''}</button>`).join('')}</div></section>`;
  const sv=Online.server,wv=Core.VERSION,vtxt=v=>v?`v${v.v} <span class="kbd">(${longDate(v.date+'T12:00:00')})</span>`:'—';
- const about=`<section class="set"><div class="lbl">ℹ️ ${t('set_about')}</div><dl><dt>${t('ver_server')}</dt><dd>${vtxt(sv)}</dd><dt>${t('ver_web')}</dt><dd>${vtxt(wv)}</dd></dl>
+ const about=`<section class="set"><div class="lbl">ℹ️ ${t('set_about')}</div><dl><dt>${t('ver_server')}</dt><dd>${vtxt(sv)}</dd><dt>${t('ver_web')}</dt><dd>${vtxt(wv)}</dd></dl><div class="actions" style="justify-content:flex-start;margin-top:8px"><button class="ghost sm" data-act="patchnotes">${t('pn_btn')}</button></div>
   ${sv&&wv&&sv.v!==wv.v?`<p class="warn" style="margin:6px 0 0">${t(sv.v>wv.v?'ver_old_web':'ver_old_server')}</p><div class="actions"><button data-act="gate_reload">${t('ver_reload')}</button></div>`:sv?`<p class="kbd" style="margin:6px 0 0">✓ ${t('ver_ok')}</p>`:''}</section>`;
  const danger=c.user?`<div class="dzone"><div class="lbl">${t('dz_title')}</div>
   ${S?`<div class="dzrow"><div><b>${t('dzr_h')}</b><p>${t('dzr_short')}</p></div><button class="danger sm" data-act="dz_open" data-k="reset">${t('dzr_btn')}</button></div>`:''}
@@ -1941,6 +1965,7 @@ function cloudAct(a,el){
   settings:()=>showSettings(),
   theme:()=>{applyTheme(el.dataset.v);if(settingsOpen())showSettings()},
   acctinfo:()=>modal(`<h2>${t('nolib_h')}</h2><p class="sub">${t('nolib_b')}</p><div class="actions"><button class="ghost" data-act="close">${t('close')}</button></div>`),
+  patchnotes:()=>PN.showAll(),
   syncnow:()=>{closeModal();Online.act({type:'init'}).then(()=>toast(t('t_reloaded'))).catch(e=>toast(errText(e)))},
   pickname:()=>showUsername(''),
   togglepw:()=>{const i=el.parentElement.querySelector('input');const show=i.type==='password';i.type=show?'text':'password';el.innerHTML=show?EYE_OFF:EYE;const tt=show?t('pw_hide'):t('pw_show');el.title=tt;el.setAttribute('aria-label',tt);el.setAttribute('aria-pressed',show);i.focus()},
