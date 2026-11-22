@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:47,date:'2026-11-22'};
+const VERSION={v:48,date:'2026-11-22'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -666,6 +666,7 @@ function advance(){
  S.snakes.forEach(s=>{if(s.sex==='M'&&s.pairs){s.w=Math.round(s.w*(1-.015*s.pairs));s.pairs=0}});
  // 4. pertumbuhan
  S.snakes.forEach(s=>{s.age++;grow(s)});
+ for(const s of S.snakes)if(hasLb(spOf(s))&&s.age===LB_REVEAL){const L=lbLabels(s);if(L.length)log('l_lbreveal',{c:code(s),l:L.join(' · ')},'star')}   // bayi line-bred: label terungkap di 6 bulan
  // 4b. mati karena tua (betina yang sedang bunting ikut mati bersama telurnya)
  for(const s of S.snakes.slice())if(s.age>=maxAge(s)){log('l_oldage',{c:code(s),n:fullName(s),a:s.age,gr:s.gravid?1:0},'bad');head.push(['h_oldage',{c:code(s)}]);removeSnake(s)}
  // 5. iklan
