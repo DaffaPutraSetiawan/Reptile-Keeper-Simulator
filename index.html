@@ -1848,7 +1848,7 @@ const longDate=d=>new Date(d).toLocaleDateString(LANG==='id'?'id-ID':'en-GB',{da
 const profLink=u=>u?`<button type="button" class="linkbtn" data-act="profile" data-u="${esc(u)}">${esc(u)}</button>`:'';
 function profAvatar(p){const s=p.showcase[0];return s?`<img src="${thumb(traitsOf(s.g),s.seed,false,spOfG(s.g))}" alt="">`:`<span>${esc(p.username.charAt(0).toUpperCase())}</span>`}
 function showcaseCard(s,i){const tr=traitsOf(s.g),nm=nameOf(tr,s.g),ht=hetText(s);
- return `<div class="sc-card"><div class="sc-rank">#${i+1}</div><img src="${thumb(tr,s.seed,false,spOfG(s.g))}" alt=""><div class="sc-name">${sexIcon(s.sex)} ${esc(s.nick||nm)}</div>${s.nick?`<div class="meta">${esc(nm)}</div>`:''}${ht?`<div class="het">${esc(ht)}</div>`:''}
+ return `<div class="sc-card"><div class="sc-rank">#${i+1}</div><img src="${thumb(tr,s.seed,false,spOfG(s.g))}" alt=""><div class="sc-name">${sexIcon(s.sex)} ${esc(s.nick||nm)}</div>${s.nick?`<div class="meta">${esc(nm)}</div>`:''}${ht?`<div class="het">${esc(ht)}</div>`:''}${lbLine(s)}
  <div class="meta">${ageTxt(s.age)} · ${fmt(s.w)} g</div><div class="sc-val">≈ ${money(value(s))}</div>${originLine(s,Profile.cur?Profile.cur.username:false)}</div>`}
 async function openProfile(u){u=String(u||'').trim();if(!u)return;
  modal(`<div class="empty" style="border:none">${t('pf_loading')}</div>`);
