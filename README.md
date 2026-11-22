@@ -108,7 +108,7 @@ Berikutnya:
 - [x] Sifat line-bred (poligenik) untuk leopard gecko: 7 nilai (warna, bintik, pola), pewarisan, label & harga
 - [x] Sifat line-bred di breeding planner (tampilan induk saja, pemain menebak)
 - [x] Sifat line-bred tampil di Pasar Pemain & trade (label, tabel sifat, pencarian, riwayat harga per label)
-- [ ] Sifat line-bred di pesanan pembeli
+- ~~Sifat line-bred di pesanan pembeli~~ (tidak jadi, keputusan pemilik game)
 - [ ] Spesies berikutnya (corn snake atau bearded dragon) & sifat line-bred untuk ball python dan axolotl
 - [ ] Perawatan & kesehatan (suhu, kelembapan, shedding, mogok makan)
 - [ ] Versi aplikasi (PWA)
