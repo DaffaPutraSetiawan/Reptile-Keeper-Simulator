@@ -282,8 +282,8 @@ id:{
  hdr_date:'Turn dimainkan',hdr_bal:'Saldo',hdr_tubs:'Space terpakai',hdr_season:'Musim',season_on:'Kawin 🌙',season_off:'Istirahat',advance:'Lanjut bulan ▶',
  tab_koleksi:'Koleksi',tab_breeding:'Kawinkan',tab_inkubator:'Inkubator',tab_pasar:'Pasar',tab_pesanan:'Pesanan',tab_dex:'Morph Dex',tab_panduan:'Panduan spesies',gd_h:'Panduan spesies',gd_sub:'Pilih spesies untuk melihat genetika, siklus breeding, suhu inkubasi, dan angka-angka pentingnya di game ini.',gd_facts:'Sekilas',gd_size:'Berat dewasa',gd_size_v:p=>`♀ ±${p.f} · ♂ ±${p.m}`,gd_giant:p=>` (Giant ±${p.g}, Super Giant ±${p.s})`,gd_life:'Batas umur',gd_mature:'Siap kawin',gd_mature_v:p=>`♂ ${p.m} · ♀ ${p.f}`,gd_ovul:'Peluang ovulasi',gd_lay:'Bertelur',gd_lay_v:p=>`${p.n} bulan setelah ovulasi`+(p.more?', lalu 1 clutch tiap bulan':''),gd_eggs:'Telur per clutch',gd_eggs_ball:'2–9, tergantung berat betina',gd_eggs_leo:'1–2 per clutch, 4–6 clutch dari sekali kawin',gd_recover:'Jeda kawin lagi',gd_recover_v:p=>`${p.n} bulan setelah clutch terakhir`,gd_inc:'Inkubasi',gd_inc_v:p=>`±${p.n} bulan`,gd_temp:'Suhu inkubator',gd_temp_v:p=>`${p.a}–${p.b} (50:50 di ${p.m})`,gd_food:'Pakan',gd_food_v:p=>`$${p.b} + $1 per 250 g per bulan`,
  og_got:'Didapat dari',og_origin:'Origin keeper',og_chain:'Riwayat keeper',og_you:'kamu',
- og_got_starter:'Ular awal',og_got_market:'Dibeli dari pasar',og_got_bred:'Hasil breeding-mu',og_got_trade:p=>`Trade dengan ${p.u}`,og_got_unknown:'Tidak tercatat (ular lama)',
- og_bred:'hasil breeding',og_market:'beli dari pasar',og_starter:'ular awal',og_unknown:'asal tidak tercatat',
+ og_got_market:'Dibeli dari pasar',og_got_bred:'Hasil breeding-mu',og_got_trade:p=>`Trade dengan ${p.u}`,og_got_unknown:'Tidak tercatat (ular lama)',
+ og_bred:'hasil breeding',og_market:'beli dari pasar',og_unknown:'asal tidak tercatat',
  og_line:p=>`Origin: ${p.u} (${p.how})`,og_prev:p=>`${p.n} keeper sebelumnya`,
  pf_title:'Profil',pf_mine:'Profil saya',pf_view:'Lihat profil',pf_loading:'Memuat profil…',pf_you:'kamu',pf_joined:p=>`Bergabung ${p.d}`,pf_rep:p=>`Reputasi ${p.r} · Level ${p.l}`,
  pf_turn:'Turn dimainkan',pf_snakes:'Hewan',pf_morphs:'Morph ditemukan',pf_hatched:'Menetas',pf_friends:'Teman',
@@ -336,7 +336,7 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  l_mkt_sold:p=>`💰 ${p.c} ${p.n} terjual ke ${p.u} di Pasar Pemain seharga ${money(p.p)}.`,l_mkt_back:p=>p.why==='removed'?`🛡️ ${p.c} ${p.n} diturunkan dari Pasar Pemain oleh admin: “${p.r||''}”. Hewannya kembali ke koleksimu.`:`↩️ ${p.c} ${p.n} ${p.why==='expired'?'tidak laku dalam 14 hari':'batal dijual'} dan kembali ke koleksimu.`,
  e_price_too_low:'Harga di bawah minimum (50% nilai hewan).',e_price_too_high:'Harga terlalu tinggi (maks. $100.000.000).',e_bad_price:'Harga harus angka bulat.',e_listing_closed:'Jualan ini sudah tidak tersedia.',e_listing_not_found:'Jualan tidak ditemukan.',e_own_listing:'Itu jualanmu sendiri.',
  e_snake_listed:'Hewan ini sedang diiklankan di toko NPC. Batalkan iklannya dulu.',e_snake_paired:'Hewan ini sedang dipasangkan. Pisahkan dulu.',
- csrc_all:'Semua asal',csrc_bred:'Hasil breeding',csrc_market:'Beli di pasar',csrc_trade:'Dari trade',csrc_starter:'Hewan awal',
+ csrc_all:'Semua asal',csrc_bred:'Hasil breeding',csrc_market:'Beli di pasar',csrc_trade:'Dari trade',
  cgm_vis:'Visual saja',cgm_het:'Visual + het',cgm_any:'Semua pembawa (termasuk pos het)',col_dir:'Balik arah urutan',col_v_card:'Kartu',col_v_list:'Daftar',
  col_count:p=>`${p.n} dari ${p.t} hewan`,col_reset:'Reset filter',col_nomatch:'Tidak ada hewan yang cocok dengan pencarian & filter ini.',
  col_sel:p=>`${p.n} dipilih`,col_sel_v:p=>`nilai ${p.v}`,col_b_list:p=>`Iklankan (${p.n})`,col_b_unlist:p=>`Batalkan iklan (${p.n})`,col_b_sell:p=>`Jual cepat · ${p.v}`,col_selnone:'Hapus pilihan',col_selall:'Pilih semua yang tampil',
@@ -596,8 +596,8 @@ en:{
  hdr_date:'Turns played',hdr_bal:'Balance',hdr_tubs:'Space used',hdr_season:'Season',season_on:'Breeding 🌙',season_off:'Off-season',advance:'Next month ▶',
  tab_koleksi:'Collection',tab_breeding:'Breeding',tab_inkubator:'Incubator',tab_pasar:'Market',tab_pesanan:'Orders',tab_dex:'Morph Dex',tab_panduan:'Species guide',gd_h:'Species guide',gd_sub:'Pick a species to see its genetics, breeding cycle, incubation temperatures and key numbers in this game.',gd_facts:'At a glance',gd_size:'Adult weight',gd_size_v:p=>`♀ ~${p.f} · ♂ ~${p.m}`,gd_giant:p=>` (Giant ~${p.g}, Super Giant ~${p.s})`,gd_life:'Lifespan',gd_mature:'Breeding age',gd_mature_v:p=>`♂ ${p.m} · ♀ ${p.f}`,gd_ovul:'Ovulation chance',gd_lay:'Laying',gd_lay_v:p=>`${p.n} ${p.n===1?'month':'months'} after ovulation`+(p.more?', then 1 clutch every month':''),gd_eggs:'Eggs per clutch',gd_eggs_ball:'2–9, depending on the female’s weight',gd_eggs_leo:'1–2 per clutch, 4–6 clutches from one pairing',gd_recover:'Next pairing',gd_recover_v:p=>`${p.n} months after the last clutch`,gd_inc:'Incubation',gd_inc_v:p=>`~${p.n} months`,gd_temp:'Incubator temperature',gd_temp_v:p=>`${p.a}–${p.b} (50:50 at ${p.m})`,gd_food:'Feeding',gd_food_v:p=>`$${p.b} + $1 per 250 g per month`,
  og_got:'Acquired',og_origin:'Origin keeper',og_chain:'Keeper history',og_you:'you',
- og_got_starter:'Starter snake',og_got_market:'Bought from the market',og_got_bred:'Bred by you',og_got_trade:p=>`Traded with ${p.u}`,og_got_unknown:'Not recorded (older snake)',
- og_bred:'bred',og_market:'bought from market',og_starter:'starter',og_unknown:'origin not recorded',
+ og_got_market:'Bought from the market',og_got_bred:'Bred by you',og_got_trade:p=>`Traded with ${p.u}`,og_got_unknown:'Not recorded (older snake)',
+ og_bred:'bred',og_market:'bought from market',og_unknown:'origin not recorded',
  og_line:p=>`Origin: ${p.u} (${p.how})`,og_prev:p=>`${p.n} previous ${p.n===1?'keeper':'keepers'}`,
  pf_title:'Profile',pf_mine:'My profile',pf_view:'View profile',pf_loading:'Loading profile…',pf_you:'you',pf_joined:p=>`Joined ${p.d}`,pf_rep:p=>`Reputation ${p.r} · Level ${p.l}`,
  pf_turn:'Turns played',pf_snakes:'Animals',pf_morphs:'Morphs found',pf_hatched:'Hatched',pf_friends:'Friends',
@@ -648,7 +648,7 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  l_mkt_sold:p=>`💰 ${p.c} ${p.n} sold to ${p.u} on the player market for ${money(p.p)}.`,l_mkt_back:p=>p.why==='removed'?`🛡️ ${p.c} ${p.n} was taken down from the player market by an admin: “${p.r||''}”. It returned to your collection.`:`↩️ ${p.c} ${p.n} ${p.why==='expired'?'didn’t sell within 14 days':'was taken off the market'} and returned to your collection.`,
  e_price_too_low:'Price is below the minimum (50% of the animal’s value).',e_price_too_high:'Price is too high (max $100,000,000).',e_bad_price:'Price must be a whole number.',e_listing_closed:'This listing is no longer available.',e_listing_not_found:'Listing not found.',e_own_listing:'That’s your own listing.',
  e_snake_listed:'This animal is listed in the NPC shop. Unlist it first.',e_snake_paired:'This animal is paired. Separate it first.',
- csrc_all:'Any origin',csrc_bred:'Bred by you',csrc_market:'Bought at market',csrc_trade:'From a trade',csrc_starter:'Starter animals',
+ csrc_all:'Any origin',csrc_bred:'Bred by you',csrc_market:'Bought at market',csrc_trade:'From a trade',
  cgm_vis:'Visual only',cgm_het:'Visual + het',cgm_any:'All carriers (incl. pos het)',col_dir:'Reverse sort order',col_v_card:'Cards',col_v_list:'List',
  col_count:p=>`${p.n} of ${p.t} animals`,col_reset:'Reset filters',col_nomatch:'No animals match this search & filter.',
  col_sel:p=>`${p.n} selected`,col_sel_v:p=>`worth ${p.v}`,col_b_list:p=>`List for sale (${p.n})`,col_b_unlist:p=>`Unlist (${p.n})`,col_b_sell:p=>`Quick sell · ${p.v}`,col_selnone:'Clear selection',col_selall:'Select all shown',
@@ -1174,7 +1174,8 @@ const COL_KEY='ml_col_v1',COL_DEF={sex:'all',st:'all',src:'all',gene:'',gm:'any'
 const COL=Object.assign({},COL_DEF,(()=>{try{return JSON.parse(localStorage.getItem(COL_KEY)||'{}')}catch(e){return{}}})(),{q:'',sel:new Set()});
 function colSave(){try{const o={};for(const k in COL_DEF)o[k]=COL[k];o.spf=SPF;localStorage.setItem(COL_KEY,JSON.stringify(o))}catch(e){}}
 try{const o=JSON.parse(localStorage.getItem(COL_KEY)||'{}');if(o.spf&&(o.spf==='all'||SPECIES[o.spf]))SPF=o.spf}catch(e){}
-const COL_ST=['all','ready','paired','gravid','baby','old','inbred','listed'],COL_SRC=['all','bred','market','pmarket','trade','starter'];
+const COL_ST=['all','ready','paired','gravid','baby','old','inbred','listed'],COL_SRC=['all','bred','market','pmarket','trade'];
+if(!COL_SRC.includes(COL.src))COL.src='all';   // filter "Hewan awal" lama (sekarang ikut "Beli di pasar")
 const COL_SORT={val:[s=>value(s),-1],age:[s=>s.age,-1],new:[s=>s.id,-1],id:[s=>s.id,1],w:[s=>s.w,-1],life:[s=>lifeLeft(s),1],inb:[s=>inbOf(s),-1],name:[s=>fullName(s).toLowerCase(),1]};
 const colSrcOf=s=>{const r=srcOf(s);return r?r.t:''};
 const isBaby=s=>s.age<(s.sex==='M'?SPECIES[spOf(s)].mAge:SPECIES[spOf(s)].fAge);
@@ -1833,9 +1834,10 @@ function cloudAct(a,el){
 
 /* ========= ASAL-USUL (ORIGIN KEEPER) ========= */
 // owner: null = milikku, string = username pemilik sekarang, false = pemilik tidak diketahui (akun dihapus)
-const OG_HOW={bred:'og_bred',market:'og_market',starter:'og_starter',unknown:'og_unknown'};
-const srcOf=s=>s.src||(s.gen>0?{t:'bred'}:null);
-function originOf(s,owner){if(s.origin&&s.origin.u)return{u:s.origin.u,how:s.origin.how};const r=srcOf(s);return{u:owner,how:r&&r.t!=='trade'&&r.t!=='pmarket'?r.t:'unknown'}}
+const OG_HOW={bred:'og_bred',market:'og_market',unknown:'og_unknown'};
+// Hewan awal (src/origin 'starter' di data) ditampilkan & difilter sebagai "dibeli dari pasar" (keputusan pemilik game)
+const srcOf=s=>{const r=s.src||(s.gen>0?{t:'bred'}:null);return r&&r.t==='starter'?Object.assign({},r,{t:'market'}):r};
+function originOf(s,owner){if(s.origin&&s.origin.u)return{u:s.origin.u,how:s.origin.how==='starter'?'market':s.origin.how};const r=srcOf(s);return{u:owner,how:r&&r.t!=='trade'&&r.t!=='pmarket'?r.t:'unknown'}}
 function whoTxt(u,plain){return u===null?t('og_you'):u===false?t('tr_gone'):plain?esc(u):profLink(u)}
 function originLine(s,owner,plain){const o=originOf(s,owner),n=(s.keepers||[]).length;
  return `<div class="origin">🏷️ ${t('og_line',{u:whoTxt(o.u,plain),how:t(OG_HOW[o.how]||'og_unknown')})}${n?' · '+t('og_prev',{n}):''}</div>`}
