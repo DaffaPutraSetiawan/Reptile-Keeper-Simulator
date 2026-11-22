@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:45,date:'2026-11-22'};
+const VERSION={v:46,date:'2026-11-22'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -160,7 +160,8 @@ function nameBall(tr,g){
  if(s.has('clown'))out.push('Clown');if(s.has('piebald'))out.push('Piebald');
  if(s.has('albino')&&s.has('axanthic'))out.push('Snow');else{if(s.has('axanthic'))out.push('Axanthic');if(s.has('albino'))out.push('Albino')}
  return out.length?out.join(' '):'Normal'}
-// Nama kombinasi leopard gecko (RAPTOR = Tremper Albino + Eclipse, dst.)
+// Nama kombinasi leopard gecko (RAPTOR = Tremper Albino + Eclipse, dst.).
+// v46: Calcite = Bell + Eclipse + W&Y + Mack Snow + Enigma · Cyclone = Rainwater + Eclipse + Murphy · Banana (Blazing) Blizzard
 function nameLeo(tr){
  const s=new Set(tr);let combo='';
  const take=(...k)=>{if(k.every(x=>s.has(x))){k.forEach(x=>s.delete(x));return true}return false};
@@ -172,11 +173,13 @@ function nameLeo(tr){
   else if(take('supersnow'))combo='Super RAPTOR';
   else combo='RAPTOR';
  }
- else if(take('bell','eclipse'))combo='RADAR';
- else if(take('rainwater','eclipse'))combo='Typhoon';
+ else if(take('bell','eclipse'))combo=take('wy','macksnow','enigma')?'Calcite':'RADAR';
+ else if(take('rainwater','eclipse'))combo=take('murphy')?'Cyclone':'Typhoon';
  else if(take('supersnow','eclipse'))combo='Total Eclipse';
- if(!combo&&s.has('blizzard')){const a=['tremper','bell','rainwater'].find(x=>s.has(x));
-  if(a){s.delete('blizzard');s.delete(a);combo=(a==='tremper'?'':TL[a].replace(' Albino','')+' ')+'Blazing Blizzard'}}
+ // Blizzard + albino = Blazing Blizzard; Blizzard + Murphy = Banana Blizzard; ketiganya = Banana Blazing Blizzard
+ if(!combo&&s.has('blizzard')){const a=['tremper','bell','rainwater'].find(x=>s.has(x)),ban=s.has('murphy');
+  const pre=a&&a!=='tremper'?TL[a].replace(' Albino','')+' ':'';
+  if(a||ban){s.delete('blizzard');if(a)s.delete(a);if(ban)s.delete('murphy');combo=pre+(ban?'Banana ':'')+(a?'Blazing ':'')+'Blizzard'}}
  const out=[];for(const k of LEO_ORDER)if(s.has(k))out.push(TL[k]);
  if(combo)out.push(combo);
  return out.length?out.join(' '):'Normal'}
@@ -222,6 +225,8 @@ function odds(m,f){
    Pola (1 sumbu): normal (belang) → Jungle 60+ → Stripe 85+ → Reverse Stripe 95+ (varian langka).
    Kombinasi: Super Hypo + Tangerine = SHTCT. Kalau gecko itu juga albino (visual): Tremper = Sunglow, Bell = Bell Sunglow,
      Rainwater = Rainwater Sunglow (menggantikan SHTCT, bonus tambahan $110 di luar pengali antar-sifat).
+   Pola Stripe (85–94) + Tangerine = Red Stripe (menggantikan label Tangerine); Stripe + Bold = Bold Stripe (menggantikan
+     label Bold). Kalau keduanya, Red Stripe yang dipakai. Bonus tambahan $50 di luar pengali antar-sifat.
    Nilai awal (hewan toko NPC & gecko yang dibuka pertama kali sejak v42): acak 0–15, kecuali bintik 44–55.
    Pemain hanya melihat perkiraan 5 tingkat (pola 6 tingkat), bukan angka.
    Bonus harga per sifat (LB_PRICE): label $50, tingkat tertinggi $110, Reverse Stripe $160; warna & pola 40–59 naik pelan
@@ -233,7 +238,7 @@ const LB_SD=6,LB_LABEL=60,LB_SUPER=85,LB_REVERSE=95,LB_BOLD=19;
 const LB_INIT={spots:[44,55]},LB_INIT_DEF=[0,15];
 // batas tingkat perkiraan per sifat (jumlah batas yang dilewati = nomor tingkat)
 const LB_TIERS={def:[20,40,60,85],spots:[20,40,60,85],pattern:[20,40,60,85,95]};
-const LB_PRICE={mid:40,midMax:20,label:50,sup:110,reverse:160,sunglow:110,step:.1,maxSteps:5};
+const LB_PRICE={mid:40,midMax:20,label:50,sup:110,reverse:160,sunglow:110,stripe:50,step:.1,maxSteps:5};
 const LB_NAME={yellow:'High Yellow',orange:'Tangerine',lav:'Lavender',emer:'Emerine',dark:'Black Night'};
 const hasLb=sp=>sp==='leo';
 const LBI=k=>LB_KEYS.indexOf(k);
@@ -255,19 +260,22 @@ const lbHidden=(v,k)=>lbDark(v)&&LB_COLORS.includes(k);  // warna yang tertutup 
 function lbSunglow(s){const v=lbOf(s);if(!v||!s.g)return'';
  if(!(v[LBI('spots')]>=LB_SUPER&&v[LBI('orange')]>=LB_LABEL&&!lbHidden(v,'orange')))return'';
  const tr=traitsOf(s.g);return tr.includes('tremper')?'Sunglow':tr.includes('bell')?'Bell Sunglow':tr.includes('rainwater')?'Rainwater Sunglow':''}
-// Label sifat line-bred yang terlihat, mis. ['High Yellow','Hypo','Jungle'], ['SHTCT'] atau ['Sunglow']
+// Kombinasi pola Stripe: 'red' = Red Stripe (Stripe + Tangerine terlihat), 'bold' = Bold Stripe (Stripe + Bold), '' = tidak ada
+function lbStripe(v){const p=v[LBI('pattern')];if(!(p>=LB_SUPER&&p<LB_REVERSE))return'';
+ if(v[LBI('orange')]>=LB_LABEL&&!lbHidden(v,'orange'))return'red';return v[LBI('spots')]<=LB_BOLD?'bold':''}
+// Label sifat line-bred yang terlihat, mis. ['High Yellow','Hypo','Jungle'], ['SHTCT'], ['Sunglow'] atau ['Red Stripe']
 function lbLabels(s){const v=lbOf(s);if(!v)return[];const H=k=>v[LBI(k)],o=[];
  const show=k=>!lbHidden(v,k)&&H(k)>=LB_LABEL;
- const sh=H('spots')>=LB_SUPER,shtct=sh&&show('orange'),sg=lbSunglow(s);
- for(const k of ['yellow','orange','lav','emer','dark'])if(show(k)&&!(k==='orange'&&shtct))o.push(LB_NAME[k]);
- if(sg)o.push(sg);else if(shtct)o.push('SHTCT');else if(sh)o.push('Super Hypo');else if(H('spots')>=LB_LABEL)o.push('Hypo');else if(H('spots')<=LB_BOLD)o.push('Bold');
- const p=H('pattern');if(p>=LB_REVERSE)o.push('Reverse Stripe');else if(p>=LB_SUPER)o.push('Stripe');else if(p>=LB_LABEL)o.push('Jungle');
+ const sh=H('spots')>=LB_SUPER,shtct=sh&&show('orange'),sg=lbSunglow(s),st=lbStripe(v);
+ for(const k of ['yellow','orange','lav','emer','dark'])if(show(k)&&!(k==='orange'&&(shtct||st==='red')))o.push(LB_NAME[k]);
+ if(sg)o.push(sg);else if(shtct)o.push('SHTCT');else if(sh)o.push('Super Hypo');else if(H('spots')>=LB_LABEL)o.push('Hypo');else if(H('spots')<=LB_BOLD&&st!=='bold')o.push('Bold');
+ const p=H('pattern');if(p>=LB_REVERSE)o.push('Reverse Stripe');else if(p>=LB_SUPER)o.push(st==='red'?'Red Stripe':st==='bold'?'Bold Stripe':'Stripe');else if(p>=LB_LABEL)o.push('Jungle');
  return o}
 function lbBonus(s){const v=lbOf(s);if(!v)return 0;const P=LB_PRICE;let sum=0,n=0;
  LB_KEYS.forEach((k,i)=>{if(lbHidden(v,k))return;const x=v[i],g=lbGrade(k,x);
   if(g){sum+=g===3?P.reverse:g===2?P.sup:P.label;n++}
   else if(k!=='spots'&&x>=P.mid)sum+=P.midMax*(x-P.mid)/(LB_LABEL-P.mid)});
- return sum*(1+P.step*Math.min(P.maxSteps,Math.max(0,n-1)))+(lbSunglow(s)?P.sunglow:0)}
+ return sum*(1+P.step*Math.min(P.maxSteps,Math.max(0,n-1)))+(lbSunglow(s)?P.sunglow:0)+(lbStripe(v)?P.stripe:0)}
 // Gecko tanpa nilai (save sebelum v42, termasuk susunan lama v41): beri nilai awal acak.
 const lbOk=()=>S.snakes.every(s=>!hasLb(spOf(s))||lbOf(s));
 function addLb(){let n=0;for(const s of S.snakes)if(hasLb(spOf(s))&&!lbOf(s)){s.lb=lbInit();n++}return n}
@@ -774,7 +782,7 @@ root.MorphCore={
  monthlyCosts,previewNext,
  MARKET_SIZE,MARKET_EVERY,BUY_MULT,MARKET_POOL,listingTraits,marketBase,marketPrice,marketLeft,refreshMarket,ensureMarket,marketOk,makeMarketSnake,
  INC_MONTHS,TEMP_MIN,TEMP_MAX,TEMP_MID,TEMP_STEP,tempRange,femaleChance,incTotal,tempOpen,tempMonthsLeft,validTemp,
- LB_KEYS,LB_COLORS,LB_SD,LB_INIT,LB_LABEL,LB_SUPER,LB_REVERSE,LB_BOLD,LB_TIERS,LB_PRICE,lbOf,lbInit,lbChild,lbTier,lbGrade,lbDark,lbSunglow,lbLabels,lbBonus,lbOk,addLb,
+ LB_KEYS,LB_COLORS,LB_SD,LB_INIT,LB_LABEL,LB_SUPER,LB_REVERSE,LB_BOLD,LB_TIERS,LB_PRICE,lbOf,lbInit,lbChild,lbTier,lbGrade,lbDark,lbSunglow,lbStripe,lbLabels,lbBonus,lbOk,addLb,
  QUESTS,checkQuests,rankStats,HIST_MAX,MP_MAX,ps,netWorth,psKey,
  newGame,advance,applyAction,syncDex,isState,ACTION_TYPES:Object.keys(ACTIONS)
 };
