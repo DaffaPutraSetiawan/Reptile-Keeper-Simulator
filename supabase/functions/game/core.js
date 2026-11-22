@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:48,date:'2026-11-22'};
+const VERSION={v:49,date:'2026-11-22'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -221,6 +221,8 @@ function odds(m,f){
    Warna (5 nilai): yellow = High Yellow · orange = Tangerine (dianggap sudah termasuk Carrot Tail) · lav = Lavender ·
      emer = Emerine · dark = Black Night. Label di 60+ (LB_LABEL), tingkat tertinggi di 85+ (LB_SUPER).
      Black Night 60+ menutupi warna lain: labelnya tidak tampil & tidak menambah harga (nilainya tetap diwariskan).
+   Gen penutup (v49, LB_MASK): Blizzard menutup ke-7 sifat, Murphy Patternless bintik & pola, Super Snow 5 warna,
+     Enigma pola. Sifat yang tertutup tampil "Tidak terlihat", tanpa label & bonus harga, tapi tetap diwariskan.
    Bintik (1 sumbu): rendah = Bold (0–19), 40–59 normal, Hypo 60+, Super Hypo 85+. Nilai awal 44–55 (normal).
    Pola (1 sumbu): normal (belang) → Jungle 60+ → Stripe 85+ → Reverse Stripe 95+ (varian langka).
    Kombinasi: Super Hypo + Tangerine = SHTCT. Kalau gecko itu juga albino (visual): Tremper = Sunglow, Bell = Bell Sunglow,
@@ -264,27 +266,35 @@ function lbGrade(k,x){
  if(k==='pattern'&&x>=LB_REVERSE)return 3;
  return x>=LB_SUPER?2:x>=LB_LABEL?1:0}
 const lbDark=v=>v[LBI('dark')]>=LB_LABEL;
-const lbHidden=(v,k)=>lbDark(v)&&LB_COLORS.includes(k);  // warna yang tertutup Black Night
+// v49: gen penutup (seperti di dunia nyata). Sifat yang tertutup tidak terlihat, tidak berlabel & tidak menambah harga,
+// tapi nilainya tetap diwariskan. Urutan = gen yang disebut kalau ada lebih dari satu penutup.
+const LB_MASK={blizzard:LB_KEYS,murphy:['spots','pattern'],supersnow:['yellow','orange','lav','emer','dark'],enigma:['pattern']};
+// gen visual yang menutup sifat k ('' kalau tidak ada)
+function lbMaskGene(s,k){if(!s||!s.g)return'';const tr=traitsOf(s.g);for(const g in LB_MASK)if(tr.includes(g)&&LB_MASK[g].includes(k))return g;return''}
+// penutup sifat k: kunci gen, 'dark' (Black Night menutup 4 warna lain), atau ''
+function lbCover(s,k){const m=lbMaskGene(s,k);if(m)return m;const v=lbOf(s);return v&&lbDark(v)&&LB_COLORS.includes(k)?'dark':''}
+// penutup yang terlihat oleh pemain: gen penutup selalu terlihat; Black Night baru terlihat setelah umur LB_REVEAL
+function lbShownCover(s,k){const c=lbCover(s,k);return c==='dark'&&!lbRevealed(s)?'':c}
 // Sunglow = SHTCT (Super Hypo + Tangerine yang terlihat) pada gecko albino; nama mengikuti strain albinonya
 function lbSunglow(s){const v=lbOf(s);if(!v||!s.g)return'';
- if(!(v[LBI('spots')]>=LB_SUPER&&v[LBI('orange')]>=LB_LABEL&&!lbHidden(v,'orange')))return'';
+ if(!(v[LBI('spots')]>=LB_SUPER&&v[LBI('orange')]>=LB_LABEL&&!lbCover(s,'orange')&&!lbCover(s,'spots')))return'';
  const tr=traitsOf(s.g);return tr.includes('tremper')?'Sunglow':tr.includes('bell')?'Bell Sunglow':tr.includes('rainwater')?'Rainwater Sunglow':''}
 // Kombinasi pola Stripe: 'red' = Red Stripe (Stripe + Tangerine terlihat), 'bold' = Bold Stripe (Stripe + Bold), '' = tidak ada
-function lbStripe(v){const p=v[LBI('pattern')];if(!(p>=LB_SUPER&&p<LB_REVERSE))return'';
- if(v[LBI('orange')]>=LB_LABEL&&!lbHidden(v,'orange'))return'red';return v[LBI('spots')]<=LB_BOLD?'bold':''}
+function lbStripe(s){const v=lbOf(s);if(!v||lbCover(s,'pattern'))return'';const p=v[LBI('pattern')];if(!(p>=LB_SUPER&&p<LB_REVERSE))return'';
+ if(v[LBI('orange')]>=LB_LABEL&&!lbCover(s,'orange'))return'red';return v[LBI('spots')]<=LB_BOLD&&!lbCover(s,'spots')?'bold':''}
 // Label sifat line-bred yang terlihat, mis. ['High Yellow','Hypo','Jungle'], ['SHTCT'], ['Sunglow'] atau ['Red Stripe']
-function lbLabels(s){const v=lbOf(s);if(!v)return[];const H=k=>v[LBI(k)],o=[];
- const show=k=>!lbHidden(v,k)&&H(k)>=LB_LABEL;
- const sh=H('spots')>=LB_SUPER,shtct=sh&&show('orange'),sg=lbSunglow(s),st=lbStripe(v);
+function lbLabels(s){const v=lbOf(s);if(!v)return[];const H=k=>v[LBI(k)],o=[],cv=k=>!!lbCover(s,k);
+ const show=k=>!cv(k)&&H(k)>=LB_LABEL;
+ const sh=!cv('spots')&&H('spots')>=LB_SUPER,shtct=sh&&show('orange'),sg=lbSunglow(s),st=lbStripe(s);
  for(const k of ['yellow','orange','lav','emer','dark'])if(show(k)&&!(k==='orange'&&(shtct||st==='red')))o.push(LB_NAME[k]);
- if(sg)o.push(sg);else if(shtct)o.push('SHTCT');else if(sh)o.push('Super Hypo');else if(H('spots')>=LB_LABEL)o.push('Hypo');else if(H('spots')<=LB_BOLD&&st!=='bold')o.push('Bold');
- const p=H('pattern');if(p>=LB_REVERSE)o.push('Reverse Stripe');else if(p>=LB_SUPER)o.push(st==='red'?'Red Stripe':st==='bold'?'Bold Stripe':'Stripe');else if(p>=LB_LABEL)o.push('Jungle');
+ if(!cv('spots')){if(sg)o.push(sg);else if(shtct)o.push('SHTCT');else if(sh)o.push('Super Hypo');else if(H('spots')>=LB_LABEL)o.push('Hypo');else if(H('spots')<=LB_BOLD&&st!=='bold')o.push('Bold')}
+ const p=H('pattern');if(!cv('pattern')){if(p>=LB_REVERSE)o.push('Reverse Stripe');else if(p>=LB_SUPER)o.push(st==='red'?'Red Stripe':st==='bold'?'Bold Stripe':'Stripe');else if(p>=LB_LABEL)o.push('Jungle')}
  return o}
 function lbBonus(s){const v=lbOf(s);if(!v||!lbRevealed(s))return 0;const P=LB_PRICE;let sum=0,n=0;   // bayi: belum dihitung
- LB_KEYS.forEach((k,i)=>{if(lbHidden(v,k))return;const x=v[i],g=lbGrade(k,x);
+ LB_KEYS.forEach((k,i)=>{if(lbCover(s,k))return;const x=v[i],g=lbGrade(k,x);
   if(g){sum+=g===3?P.reverse:g===2?P.sup:P.label;n++}
   else if(k!=='spots'&&x>=P.mid)sum+=P.midMax*(x-P.mid)/(LB_LABEL-P.mid)});
- return sum*(1+P.step*Math.min(P.maxSteps,Math.max(0,n-1)))+(lbSunglow(s)?P.sunglow:0)+(lbStripe(v)?P.stripe:0)}
+ return sum*(1+P.step*Math.min(P.maxSteps,Math.max(0,n-1)))+(lbSunglow(s)?P.sunglow:0)+(lbStripe(s)?P.stripe:0)}
 // label yang boleh dilihat pemain: bayi belum punya label
 const lbVisibleLabels=s=>lbRevealed(s)?lbLabels(s):[];
 // Gecko tanpa nilai (save sebelum v42, termasuk susunan lama v41): beri nilai awal acak.
@@ -794,7 +804,7 @@ root.MorphCore={
  monthlyCosts,previewNext,
  MARKET_SIZE,MARKET_EVERY,BUY_MULT,MARKET_POOL,listingTraits,marketBase,marketPrice,marketLeft,refreshMarket,ensureMarket,marketOk,makeMarketSnake,
  INC_MONTHS,TEMP_MIN,TEMP_MAX,TEMP_MID,TEMP_STEP,tempRange,femaleChance,incTotal,tempOpen,tempMonthsLeft,validTemp,
- LB_KEYS,LB_COLORS,LB_SD,LB_INIT,LB_LABEL,LB_SUPER,LB_REVERSE,LB_BOLD,LB_REVEAL,LB_TIERS,LB_PRICE,lbOf,lbInit,lbChild,lbTier,lbRevealed,lbShownTier,lbVisibleLabels,lbGrade,lbDark,lbSunglow,lbStripe,lbLabels,lbBonus,lbOk,addLb,
+ LB_KEYS,LB_COLORS,LB_SD,LB_INIT,LB_LABEL,LB_SUPER,LB_REVERSE,LB_BOLD,LB_REVEAL,LB_TIERS,LB_PRICE,lbOf,lbInit,lbChild,lbTier,lbRevealed,lbShownTier,lbVisibleLabels,lbGrade,lbDark,LB_MASK,lbMaskGene,lbCover,lbShownCover,lbSunglow,lbStripe,lbLabels,lbBonus,lbOk,addLb,
  QUESTS,checkQuests,rankStats,HIST_MAX,MP_MAX,ps,netWorth,psKey,
  newGame,advance,applyAction,syncDex,isState,ACTION_TYPES:Object.keys(ACTIONS)
 };
