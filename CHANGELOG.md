@@ -6,6 +6,14 @@ Catatan pembaruan untuk pemain (bahasa yang lebih sederhana, ID & EN) ada di `pa
 
 ---
 
+## v62 — 23 Nov 2026
+**Morph Dex: hanya gen tunggal & combo bernama; MAC**
+- `DEX_TARGETS` hanya berisi gen tunggal (termasuk bentuk super, Normal / Wild Type) dan kombinasi yang punya nama sendiri (keputusan pemilik game). Label line-bred tetap jadi target.
+- Dihapus 21 kartu gabungan yang namanya hanya nama gen-gennya — ball python (7): Pastel Albino, Spider Albino, Pastel Enchi, Pastel Clown, Banana Clown, Piebald Albino, Enchi Yellow Belly; axolotl (11): Axanthic Albino, Melanoid Albino, Leucistic Melanoid, Leucistic Axanthic, Axanthic Melanoid, GFP Leucistic, GFP Golden Albino, RFP Leucistic, Copper Axanthic, Copper Melanoid, Copper Leucistic; kura-kura (3): Hypo Caramel Pink, Golden Flame Albino, Charcoal Hypo.
+- Jumlah kartu: ball python 46 → 39, leopard gecko 51, axolotl 28 → 17, kura-kura 14 → 11. Morph yang sudah ditemukan tetap tercatat di `S.dex`, hanya tidak ditampilkan & tidak dihitung (misi Morph Dex, papan peringkat).
+- Axolotl `Mac` → **MAC** (singkatan Melanoid + Axanthic + Copper); target Dex & panduan menulis urutan M-A-C. Belum ada save, jualan, atau penawaran pejantan bernama "Mac" di database, jadi tidak perlu perbaikan data.
+- Panduan axolotl & kura-kura diperbarui: bagian "Kombinasi bernama" hanya berisi combo bernama.
+
 ## v61 (web) — 23 Nov 2026
 **6 tema warna baru**
 - Salju (`snow`, terang), Obsidian (`obsidian`, hitam pekat dengan aksen perak), Lavender (`lavender`, ungu redup).

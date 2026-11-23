@@ -2,6 +2,13 @@
    Terbaru di atas. v = versi game (core.js VERSION). Riwayat teknis lengkap ada di CHANGELOG.md.
    Tambahkan entri baru di paling atas setiap kali versi game naik. */
 window.PATCH_NOTES=[
+ {v:62,d:'2026-11-23',
+  id:['<b>Morph Dex</b> sekarang hanya berisi gen tunggal dan kombinasi yang punya nama sendiri (mis. Bumblebee, RAPTOR, White Albino, Lubino), ditambah label line-bred. Gabungan yang namanya hanya nama gen-gennya (mis. Pastel Albino, Copper Leucistic, Charcoal Hypo) tidak lagi punya kartu.',
+   'Jumlah kartu: ball python 39, leopard gecko 51, axolotl 17, kura-kura brazil 11. Hitungan Morph Dex di profil & papan peringkat ikut menyesuaikan; hewanmu tidak berubah.',
+   'Axolotl <b>Mac</b> sekarang ditulis <b>MAC</b>, singkatan dari <b>M</b>elanoid + <b>A</b>xanthic + <b>C</b>opper.'],
+  en:['The <b>Morph Dex</b> now only lists single genes and combos with their own name (e.g. Bumblebee, RAPTOR, White Albino, Lubino), plus line-bred labels. Combos named only after their genes (e.g. Pastel Albino, Copper Leucistic, Charcoal Hypo) no longer have a card.',
+   'Card counts: ball python 39, leopard gecko 51, axolotl 17, red-eared slider 11. Morph Dex counts on profiles & the leaderboard adjust too; your animals don’t change.',
+   'The axolotl <b>Mac</b> is now written <b>MAC</b>, short for <b>M</b>elanoid + <b>A</b>xanthic + <b>C</b>opper.']},
  {v:61.1,d:'2026-11-23',label:'v61 (web)',
   id:['6 tema warna baru di <b>Pengaturan → Tema warna</b>: <b>Salju</b> (putih terang), <b>Obsidian</b> (hitam pekat), <b>Lavender</b> (ungu redup yang lembut di mata), serta tema terang <b>Daun Mint</b>, <b>Langit Pagi</b>, dan <b>Sakura</b>.',
    'Pasar Pemain: riwayat harga <b>ball python</b> dan <b>axolotl</b> sekarang dipisah per label sifat line-bred (mis. Fader, High Iridophore), seperti leopard gecko. Kalau kombinasi labelnya belum pernah terjual, riwayat morph umumnya dipakai dengan catatan.'],
@@ -63,11 +70,11 @@ window.PATCH_NOTES=[
    'You can open these patch notes any time from Settings → About.']},
  {v:56,d:'2026-11-22',
   id:['Axolotl punya 3 sifat line-bred yang langsung terlihat saat menetas: <b>High Iridophore</b> (kilau), <b>Dirty Leucistic / Piebald</b> (bintik gelap), dan <b>Light Wild / Dark Wild</b>.',
-   'Golden Albino + High Iridophore = <b>Sunburst</b>, Copper + High Iridophore = <b>Moonburst</b>. Kombinasi baru <b>Mac</b> = Axanthic + Copper + Melanoid.',
+   'Golden Albino + High Iridophore = <b>Sunburst</b>, Copper + High Iridophore = <b>Moonburst</b>. Kombinasi baru <b>MAC</b> = Melanoid + Axanthic + Copper.',
    'Saat memilih bayi axolotl, kelompok bayi menampilkan tingkat sifatnya.',
    'Morph Dex axolotl sekarang 28 kartu.'],
   en:['Axolotls get 3 line-bred traits that show right at hatching: <b>High Iridophore</b> (shine), <b>Dirty Leucistic / Piebald</b> (dark spots), and <b>Light Wild / Dark Wild</b>.',
-   'Golden Albino + High Iridophore = <b>Sunburst</b>, Copper + High Iridophore = <b>Moonburst</b>. New combo <b>Mac</b> = Axanthic + Copper + Melanoid.',
+   'Golden Albino + High Iridophore = <b>Sunburst</b>, Copper + High Iridophore = <b>Moonburst</b>. New combo <b>MAC</b> = Melanoid + Axanthic + Copper.',
    'When picking axolotl babies, each group shows its trait levels.',
    'The axolotl Morph Dex now has 28 cards.']},
  {v:55,d:'2026-11-22',

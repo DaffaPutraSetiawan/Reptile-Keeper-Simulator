@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:61,date:'2026-11-23'};
+const VERSION={v:62,date:'2026-11-23'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -224,7 +224,7 @@ function nameLeo(tr){
 // Nama axolotl: albino digabung dengan gen lain jadi White / Axanthic / Melanoid / Golden Albino; tanpa gen = Wild Type.
 function nameAxo(tr){
  const s=new Set(tr);let alb='',mac=false;
- // v56: Mac = Axanthic + Copper + Melanoid (tanpa albino)
+ // v56: MAC = Melanoid + Axanthic + Copper (tanpa albino). v62: ditulis kapital karena singkatan dari ketiga gen itu
  if(!s.has('axalb')&&s.has('axaxa')&&s.has('axcop')&&s.has('axmel')){['axaxa','axcop','axmel'].forEach(k=>s.delete(k));mac=true}
  if(s.has('axalb')){s.delete('axalb');
   if(s.has('axleu')){s.delete('axleu');alb='White Albino'}
@@ -232,7 +232,7 @@ function nameAxo(tr){
   else if(s.has('axmel')){s.delete('axmel');alb='Melanoid Albino'}
   else alb='Golden Albino'}
  const out=[];for(const k of ['gfp','rfp','axcop','axleu','axaxa','axmel'])if(s.has(k))out.push(TL[k]);
- if(mac)out.push('Mac');if(alb)out.push(alb);
+ if(mac)out.push('MAC');if(alb)out.push(alb);
  return out.length?out.join(' '):'Wild Type'}
 // v60: nama kura-kura brazil. Kombinasi bernama: Lubino = Leucistic + Albino, Snow = Albino + Caramel Pink,
 // Hybino = Hypo + Albino (urutan prioritas ini kalau albino bertemu lebih dari satu gen). Gen lain disebut di depannya.
@@ -537,21 +537,22 @@ const dexKey=(tr,sp)=>(sp&&sp!=='ball'?sp+':':'')+nameOf(tr,null,sp||spOfTr(tr))
 function dexAdd(tr,sp){sp=sp||spOfTr(tr);const k=dexKey(tr,sp);if(S.dex[k])return false;S.dex[k]=sp==='ball'?{tr,wt:S.turn}:{tr,wt:S.turn,sp};return true}
 // Target Morph Dex per spesies (dipakai tampilan Dex, misi Morph Dex & papan peringkat). Semua morph yang ditemukan tetap
 // tercatat di S.dex, tapi hanya morph target yang ditampilkan & dihitung (bagian "morph lain" dihapus).
-//  ball: Normal + 19 gen + 22 kombinasi (v57: + 9) + 4 label line-bred (v57) · leo: Normal + 15 gen + 18 kombinasi (v52: + Calcite, Cyclone, Banana Blizzard & varian
-//  Blazing Blizzard) + 17 label line-bred (DEX_LB, v54) · axo: Wild Type + 7 gen + 13 kombinasi (v56: + Copper Axanthic, Copper Melanoid,
-//  Copper Leucistic, Mac, RFP Leucistic) + 7 label line-bred (v56). v53: morph tanpa gen ikut jadi target.
+//  v62: Dex hanya berisi gen tunggal (termasuk bentuk super & Normal / Wild Type) dan kombinasi yang punya NAMA SENDIRI
+//  (keputusan pemilik game). Gabungan yang namanya hanya nama gen-gennya (mis. Pastel Albino, Copper Leucistic, Charcoal Hypo)
+//  dihapus dari target; morph itu tetap tercatat di S.dex tapi tidak ditampilkan & tidak dihitung. Label line-bred tetap jadi target.
+//  ball: Normal + 19 gen + 15 combo bernama + 4 label line-bred = 39 · leo: Normal + 15 gen + 18 combo bernama + 17 label = 51 ·
+//  axo: Wild Type + 7 gen + White Albino & MAC + 7 label = 17 · rs: Normal + 7 gen + Snow, Lubino, Hybino = 11.
 const DEX_TARGETS={
- ball:[[],['pastel'],['superpastel'],['mojave'],['lesser'],['bel'],['enchi'],['superenchi'],['yb'],['ivory'],['cinnamon'],['supercinnamon'],['banana'],['superbanana'],['spider'],['pinstripe'],['albino'],['piebald'],['clown'],['axanthic'],['pastel','spider'],['superpastel','spider'],['pastel','pinstripe'],['spider','pinstripe'],['pastel','spider','pinstripe'],['albino','axanthic'],['pastel','albino'],['spider','albino'],['enchi','pastel'],['pastel','clown'],['banana','clown'],['piebald','albino'],['enchi','yb'],
+ ball:[[],['pastel'],['superpastel'],['mojave'],['lesser'],['bel'],['enchi'],['superenchi'],['yb'],['ivory'],['cinnamon'],['supercinnamon'],['banana'],['superbanana'],['spider'],['pinstripe'],['albino'],['piebald'],['clown'],['axanthic'],['pastel','spider'],['superpastel','spider'],['pastel','pinstripe'],['spider','pinstripe'],['pastel','spider','pinstripe'],['albino','axanthic'],
   ['cinnamon','pastel'],['superpastel','pinstripe'],['supercinnamon','pastel'],['lesser','pastel','spider'],['cinnamon','superpastel'],['pastel','spider','yb'],['superpastel','piebald'],['piebald','yb'],['cinnamon','mojave']],   // v57: Pewter, Super Blast, Silver Bullet, Queen Bee, Sterling, Bumble Belly, Killer Pied, Pumpkin Pied, Savannah
  leo:[[],['tremper'],['bell'],['rainwater'],['eclipse'],['blizzard'],['murphy'],['marble'],['macksnow'],['supersnow'],['giant'],['supergiant'],['lemonfrost'],['superlemonfrost'],['enigma'],['wy'],
  ['tremper','eclipse'],['bell','eclipse'],['rainwater','eclipse'],['tremper','eclipse','blizzard'],['tremper','eclipse','murphy'],['tremper','eclipse','enigma'],['macksnow','enigma','tremper','eclipse'],['supersnow','tremper','eclipse'],['blizzard','tremper'],['supersnow','eclipse'],
   ['bell','eclipse','wy','macksnow','enigma'],['rainwater','eclipse','murphy'],['blizzard','murphy'],['blizzard','murphy','tremper'],
   ['blizzard','bell'],['blizzard','rainwater'],['blizzard','murphy','bell'],['blizzard','murphy','rainwater']],
  axo:[[],['axleu'],['axalb'],['axmel'],['axaxa'],['axcop'],['gfp'],['rfp'],
- ['axalb','axleu'],['axalb','axaxa'],['axalb','axmel'],['axleu','axmel'],['axleu','axaxa'],['axaxa','axmel'],['gfp','axleu'],['gfp','axalb'],
- ['axcop','axaxa'],['axcop','axmel'],['axleu','axcop'],['axaxa','axcop','axmel'],['rfp','axleu']],   // v56: kombinasi Copper, Mac, RFP Leucistic
- // v60: kura-kura brazil: Normal + 7 gen + Snow, Lubino, Hybino + Hypo Caramel Pink, Golden Flame Albino, Charcoal Hypo (14, tanpa line-bred)
- rs:[[],['realb'],['recar'],['rehyp'],['rechar'],['releu'],['regf'],['resgf'],['realb','recar'],['releu','realb'],['rehyp','realb'],['rehyp','recar'],['regf','realb'],['rechar','rehyp']]};
+ ['axalb','axleu'],['axmel','axaxa','axcop']],   // White Albino, MAC (urutan M-A-C)
+ // v60: kura-kura brazil: Normal + 7 gen + Snow, Lubino, Hybino (tanpa line-bred)
+ rs:[[],['realb'],['recar'],['rehyp'],['rechar'],['releu'],['regf'],['resgf'],['realb','recar'],['releu','realb'],['rehyp','realb']]};
 // v54: 17 label sifat line-bred leopard gecko ikut jadi target Morph Dex (tercatat saat labelnya terlihat pada gecko milikmu)
 const DEX_LB=['High Yellow','Tangerine','Lavender','Emerine','Black Night','Hypo','Super Hypo','Bold','Jungle','Stripe','Reverse Stripe','SHTCT','Sunglow','Bell Sunglow','Rainwater Sunglow','Red Stripe','Bold Stripe'];
 // v56: 7 label line-bred axolotl ikut jadi target (tercatat saat menetas, karena sifat axolotl langsung terlihat)
