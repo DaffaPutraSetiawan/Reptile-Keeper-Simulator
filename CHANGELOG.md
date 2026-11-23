@@ -6,6 +6,13 @@ Catatan pembaruan untuk pemain (bahasa yang lebih sederhana, ID & EN) ada di `pa
 
 ---
 
+## v61 — 23 Nov 2026
+**Pilih bayi untuk ball python & kura-kura brazil**
+- `SPECIES.ball.brood = 3` dan `SPECIES.rs.brood = 1`: bayi kedua spesies ini menetas sebagai satu kelompok (brood) seperti axolotl. Ball python: simpan maks. 3 per clutch; kura-kura: 1 per clutch. Sisanya dijual otomatis 60% nilainya. Brood yang belum dipilih saat "Lanjut bulan" disimpan otomatis yang paling bernilai. Leopard gecko tidak berubah.
+- Tiap bayi brood sekarang menyimpan `seed` dan berat sendiri (`it.seed`, `it.w`), jadi tebakan sifat line-bred ball python yang belum jelas tetap sama di layar pilih bayi, dan berat bayi yang disimpan acak seperti biasa (sebelumnya selalu berat minimum). Bayi ball python yang disimpan tetap tanpa `sp` (format lama).
+- Teks UI dibuat umum (bukan "axolotl" saja): judul "Pilih bayi", catatan menetas, toast, dan saluran statistik "Bayi tidak dipilih (otomatis)". Panduan ball python & kura-kura, keterangan Kawinkan, dan Inkubator ikut diperbarui.
+- Simulasi ekonomi (`scripts/sim-economy.cjs`, 120 game): tanpa utang; uang median tahun ke-20 sedikit lebih rendah dari v60 ($14.950 vs $17.993), rak ke-4/5 sedikit lebih cepat.
+
 ## v60 — 23 Nov 2026
 **Spesies baru: kura-kura brazil (red-eared slider)**
 - `SPECIES.rs` (kode RS): 6 lokus (`RS_LOCI`) — resesif Albino (`realb`), Caramel Pink (`recar`), Hypo (`rehyp`), Charcoal (`rechar`), Leucistic (`releu`); co-dominan Golden Flame (`regf`, dua salinan = Super Golden Flame `resgf`). Status gen mengikuti catatan komunitas MorphMarket; Golden Flame sumbernya paling lemah. Pastel, Clown & Black (hasil suhu inkubasi) dan Pied (belum terbukti) tidak dimasukkan. **Tanpa sifat line-bred** (tidak ada sifat poligenik RES yang terbukti; keputusan pemilik game).

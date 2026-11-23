@@ -2,6 +2,13 @@
    Terbaru di atas. v = versi game (core.js VERSION). Riwayat teknis lengkap ada di CHANGELOG.md.
    Tambahkan entri baru di paling atas setiap kali versi game naik. */
 window.PATCH_NOTES=[
+ {v:61,d:'2026-11-23',
+  id:['Bayi <b>ball python</b> sekarang menetas sebagai satu kelompok seperti axolotl: pilih <b>sampai 3 ekor</b> di tab Inkubator, sisanya dijual otomatis (60% nilainya).',
+   'Bayi <b>kura-kura brazil</b> juga dipilih per clutch: simpan <b>1 ekor</b> dari tiap clutch, sisanya dijual otomatis.',
+   'Kalau belum dipilih saat “Lanjut bulan”, bayi paling bernilai disimpan otomatis. Leopard gecko tidak berubah.'],
+  en:['<b>Ball python</b> babies now hatch as one group like axolotls: keep <b>up to 3</b> in the Incubator tab and the rest are sold automatically (60% of their value).',
+   '<b>Red-eared slider</b> babies are picked per clutch too: keep <b>1</b> from each clutch, the rest are sold automatically.',
+   'If you haven’t picked by “Next month”, the most valuable babies are kept automatically. Leopard geckos are unchanged.']},
  {v:60,d:'2026-11-23',
   id:['Spesies baru: <b>🐢 Kura-kura brazil</b> (red-eared slider)! Beli di Pasar, lalu kembangkan morph Albino, Caramel Pink, Hypo, Charcoal, Leucistic, dan Golden Flame.',
    'Kombinasi bernama: <b>Snow</b> (Albino + Caramel Pink), <b>Lubino</b> (Leucistic + Albino), dan <b>Hybino</b> (Hypo + Albino). Morph Dex kura-kura berisi 14 kartu.',

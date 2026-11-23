@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:60,date:'2026-11-23'};
+const VERSION={v:61,date:'2026-11-23'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -94,7 +94,7 @@ const ALLT=Object.keys(TL);
 const SPECIES={
  ball:{name:'ball python',orderBonus:60,code:'BP',loci:BALL_LOCI,maxAge:360,base:40,fAge:24,mAge:10,recover:8,ovul:.55,layIn:2,slug:.12,layLoss:.72,gravidLoss:.99,clutches:[1,1],minLayW:0,slugStep:0,
   K:{F:2300,M:1400,H:1850},r:{F:.14,M:.18,H:.16},hatchW:[55,95],wBonus:[80,1100],foodBase:2,inc:2,
-  temp:{min:29,max:33,mid:31,step:.5},
+  temp:{min:29,max:33,mid:31,step:.5},brood:3,   // v61: bayi menetas sebagai satu kelompok, simpan maks. 3 per clutch
   eggs:f=>clamp(Math.round(2+(f.w-1300)/170+R()*2.5-1),2,11),
   mk:{baby:{a:[1,3],w:[70,180]},F:{a:[24,30],w:[1500,1900]},M:{a:[10,16],w:[550,900]}},
   pool:[['normal',8],['pastel',10],['mojave',6],['lesser',6],['enchi',6],['yb',7],['cinnamon',6],['banana',7],['spider',6],['pinstripe',6],['albino',6],['piebald',4],['clown',3],['axanthic',4]],
@@ -117,7 +117,7 @@ const SPECIES={
  // v60: kura-kura brazil. Betina jauh lebih besar dari jantan; suhu inkubasi kebalikan ball python (dingin = jantan, panas = betina).
  rs:{name:'red-eared slider',orderBonus:15,code:'RS',loci:RS_LOCI,maxAge:360,base:10,fAge:36,mAge:24,recover:6,ovul:.65,layIn:1,slug:.15,layLoss:.92,gravidLoss:1,clutches:[2,4],minLayW:900,slugStep:.04,
   K:{F:1300,M:550,H:900},r:{F:.18,M:.22,H:.2},hatchW:[7,11],wBonus:[10,900],foodBase:1,inc:2,
-  temp:{min:26,max:32,mid:29,step:.5},
+  temp:{min:26,max:32,mid:29,step:.5},brood:1,   // v61: simpan 1 bayi per clutch, sisanya dijual otomatis
   eggs:f=>clamp(Math.round(6+(f.w-900)/60+R()*4-2),6,20),
   mk:{baby:{a:[1,3],w:[12,22]},F:{a:[36,44],w:[1100,1400]},M:{a:[24,30],w:[450,600]}},
   pool:[['normal',8],['realb',10],['recar',7],['rehyp',8],['rechar',6],['releu',2],['regf',7]],
@@ -765,11 +765,15 @@ function previewNext(){
  return{...c,count:list.length,born,laying,dying,racks:S.racks,cap:cap(),overN:Math.max(0,list.length-cap()),foodx:ev.food||1,
   listed:S.snakes.filter(s=>s.listed).length,money:S.money,after:S.money-c.total}}
 
-/* ========= BROOD AXOLOTL ========= */
-// Bayi axolotl menetas sebagai satu kelompok (brood). Pemain memilih maksimal SPECIES[sp].brood ekor untuk disimpan;
-// sisanya otomatis dijual cepat (60% nilai). Brood yang belum dipilih saat "Lanjut bulan" diproses otomatis:
-// bayi yang paling bernilai disimpan.
-function broodSnake(b,it){const P=SPECIES[b.sp],o={sp:b.sp,sex:it.sex,age:0,w:P.hatchW[0],g:it.g,hp:{...b.hp},sire:b.sireLabel,dam:b.damLabel,gen:b.gen,src:{t:'bred',turn:b.turn}};
+/* ========= BROOD (PILIH BAYI) ========= */
+// Bayi menetas sebagai satu kelompok (brood) untuk spesies dengan SPECIES[sp].brood: axolotl maks. 3, ball python maks. 3 (v61),
+// kura-kura brazil 1 per clutch (v61). Pemain memilih bayi yang disimpan; sisanya otomatis dijual cepat (60% nilai).
+// Brood yang belum dipilih saat "Lanjut bulan" diproses otomatis: bayi yang paling bernilai disimpan.
+// v61: tiap bayi menyimpan seed & berat sendiri (it.seed, it.w), supaya tebakan sifat line-bred ball python yang belum jelas
+// tidak berubah-ubah di layar pilih bayi dan hewan yang disimpan sama dengan yang dilihat. Brood lama tanpa itu: seed acak, berat minimum.
+function broodSnake(b,it){const P=SPECIES[b.sp],o={sp:b.sp,sex:it.sex,age:0,w:it.w||P.hatchW[0],g:it.g,hp:{...b.hp},sire:b.sireLabel,dam:b.damLabel,gen:b.gen,src:{t:'bred',turn:b.turn}};
+ if(typeof it.seed==='number')o.seed=it.seed;
+ if(b.sp==='ball')delete o.sp;   // ball python tanpa sp (format lama)
  if(hasLb(b.sp)){if(!lbOf({lb:it.lb,g:it.g}))it.lb=lbInit(b.sp);o.lb=it.lb.slice()}   // brood lama tanpa nilai: diberi sekali (tetap sama setelahnya)
  if(b.ped)o.ped=b.ped;if(b.ca)Object.assign(o,b.ca);const tr=traitsOf(it.g);for(const l of P.loci)if(l.t==='rec'&&tr.includes(l.k))o.hp[l.k]=1;return newSnake(o)}
 const broodValue=(b,i)=>value(broodSnake(b,b.items[i]));
@@ -784,7 +788,7 @@ function autoBrood(b){const P=SPECIES[b.sp];return b.items.map((_,i)=>[i,broodVa
 function advance(){
  const ev=S.event||{};const head=[];ps();
  if(!Array.isArray(S.broods))S.broods=[];
- // 0. brood axolotl yang belum dipilih bulan lalu: simpan yang paling bernilai, sisanya dijual
+ // 0. brood (axolotl, ball python, kura-kura) yang belum dipilih bulan lalu: simpan yang paling bernilai, sisanya dijual
  for(const b of S.broods.slice())resolveBrood(b,autoBrood(b),true);
  S.turn++;
  // 1. inkubator
@@ -799,7 +803,7 @@ function advance(){
    const lbv=hasLb(sp)?((c.lb&&lbOf({lb:c.lb[ei],g}))?c.lb[ei]:lbInit(sp)):null;
    // sifat line-bred axolotl langsung terlihat: labelnya tercatat di Morph Dex saat menetas
    if(lbv)for(const L of lbVisibleLabels({g,lb:lbv,age:0}))if(dexAddLb(L,sp))newNames.push('\u2728 '+L);
-   if(brood)brood.items.push(lbv?{g,sex,lb:lbv}:{g,sex});
+   if(brood){const it={g,sex,w:rint(P.hatchW),seed:Math.floor(R()*1e9)};if(lbv)it.lb=lbv;brood.items.push(it)}
    else{const o={sex,w:rint(P.hatchW),g,hp:{...c.hp},sire:c.sireLabel,dam:c.damLabel,gen:c.gen,src:{t:'bred',turn:S.turn}};if(sp!=='ball')o.sp=sp;if(c.ped)o.ped=c.ped;if(c.ca)Object.assign(o,c.ca);if(lbv)o.lb=lbv;
     const s=addSnake(newSnake(o));const tr=traitsOf(g);for(const l of P.loci)if(l.t==='rec'&&tr.includes(l.k))s.hp[l.k]=1}
    const tr=traitsOf(g);tr.forEach(t=>{if(isRec(t))vis.add(t)});
