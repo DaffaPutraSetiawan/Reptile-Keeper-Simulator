@@ -6,6 +6,12 @@ Catatan pembaruan untuk pemain (bahasa yang lebih sederhana, ID & EN) ada di `pa
 
 ---
 
+## v61 (web) — 23 Nov 2026
+**3 tema warna baru**
+- Salju (`snow`, satu-satunya tema terang), Obsidian (`obsidian`, hitam pekat dengan aksen perak), Lavender (`lavender`, ungu redup).
+- Warna yang dulu tetap di CSS (warna catatan breeder, garis tag, teks panduan, kotak peringatan, latar jendela, dll.) dijadikan variabel CSS dengan nilai bawaan yang sama, jadi tema lama tidak berubah dan tema terang bisa mengaturnya sendiri.
+- Logo bertulisan krem digelapkan dengan filter di tema Salju supaya terbaca.
+
 ## v61 — 23 Nov 2026
 **Pilih bayi untuk ball python & kura-kura brazil**
 - `SPECIES.ball.brood = 3` dan `SPECIES.rs.brood = 1`: bayi kedua spesies ini menetas sebagai satu kelompok (brood) seperti axolotl. Ball python: simpan maks. 3 per clutch; kura-kura: 1 per clutch. Sisanya dijual otomatis 60% nilainya. Brood yang belum dipilih saat "Lanjut bulan" disimpan otomatis yang paling bernilai. Leopard gecko tidak berubah.

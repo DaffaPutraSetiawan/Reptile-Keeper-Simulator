@@ -2,6 +2,9 @@
    Terbaru di atas. v = versi game (core.js VERSION). Riwayat teknis lengkap ada di CHANGELOG.md.
    Tambahkan entri baru di paling atas setiap kali versi game naik. */
 window.PATCH_NOTES=[
+ {v:61.1,d:'2026-11-23',label:'v61 (web)',
+  id:['3 tema warna baru di <b>Pengaturan → Tema warna</b>: <b>Salju</b> (putih terang), <b>Obsidian</b> (hitam pekat), dan <b>Lavender</b> (ungu redup yang lembut di mata).'],
+  en:['3 new color themes in <b>Settings → Color theme</b>: <b>Snow</b> (bright white), <b>Obsidian</b> (pure black), and <b>Lavender</b> (soft muted purple).']},
  {v:61,d:'2026-11-23',
   id:['Bayi <b>ball python</b> sekarang menetas sebagai satu kelompok seperti axolotl: pilih <b>sampai 3 ekor</b> di tab Inkubator, sisanya dijual otomatis (60% nilainya).',
    'Bayi <b>kura-kura brazil</b> juga dipilih per clutch: simpan <b>1 ekor</b> dari tiap clutch, sisanya dijual otomatis.',

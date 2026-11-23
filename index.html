@@ -10,10 +10,23 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#13120e;--panel:#1d1b16;--panel2:#26231c;--line:#39342a;--text:#efe8d6;--mut:#a59d88;--acc:#e3a63b;--good:#8cc06a;--bad:#e0675a;--blue:#7fb2e5;--pink:#e58fb0;
- --glow:#2b2619;--hover:#2e2a21;--lineh:#6a604a;--line2:#5d5541;--onacc:#1b1407;--acc2:#f0b54a;--img1:#3a3324;--img2:#211e17;--panel3:#221f19;--toast:#2a271f;--accbg:#2c261a;--me:#3a2f17;--meline:#6b5426;--input:#15130f;--hdr:rgba(19,18,14,.94)}
+ --glow:#2b2619;--hover:#2e2a21;--lineh:#6a604a;--line2:#5d5541;--onacc:#1b1407;--acc2:#f0b54a;--img1:#3a3324;--img2:#211e17;--panel3:#221f19;--toast:#2a271f;--accbg:#2c261a;--me:#3a2f17;--meline:#6b5426;--input:#15130f;--hdr:rgba(19,18,14,.94);
+ --prose:#dcd4c0;--logg:#cfe6bd;--logb:#f0b3ab;--logs:#f5d38c;--tg:#4f6b3a;--tb:#7a3a33;--ta:#7a5b22;--tp:#7a4a5c;--neg:#e9a397;--origin:#c9b98f;
+ --warnline:#7a3d34;--warnbg:#2a1714;--dzline:#4a2b26;--swline:rgba(255,255,255,.15);--ondanger:#1b0a07;--dangerh:#ec7d71;--overlay:rgba(8,7,5,.7)}
 /* Tema warna (Pengaturan → Tema warna). Default = Terrarium di atas. */
 html[data-theme=forest]{--bg:#0d1511;--panel:#14201a;--panel2:#1a2a22;--line:#2a3f33;--text:#e4f0e7;--mut:#94ad9d;--acc:#4fc884;--good:#a6dc7c;--bad:#e5705f;
  --glow:#16301f;--hover:#203429;--lineh:#46685a;--line2:#3d5c4d;--onacc:#06190e;--acc2:#6fdc9c;--img1:#21392b;--img2:#111c16;--panel3:#15231c;--toast:#182a20;--accbg:#173323;--me:#173a26;--meline:#2f6a47;--input:#0a120e;--hdr:rgba(13,21,17,.94)}
+/* v61 (web): Salju (terang), Obsidian (hitam), Lavender (ungu redup) */
+html[data-theme=snow]{--bg:#f3f1ec;--panel:#ffffff;--panel2:#f3f0ea;--line:#dcd6cb;--text:#221f19;--mut:#6c6658;--acc:#a8691a;--good:#3d7f37;--bad:#bf3f33;--blue:#2c68ad;--pink:#b04a74;
+ --glow:#ffffff;--hover:#ebe7df;--lineh:#b3aa99;--line2:#c8c0b1;--onacc:#ffffff;--acc2:#bd7a24;--img1:#d8d2c6;--img2:#b9b1a3;--panel3:#f7f5f1;--toast:#ffffff;--accbg:#fbf0dc;--me:#fbeed3;--meline:#dcb466;--input:#ffffff;--hdr:rgba(243,241,236,.94);
+ --prose:#3b362d;--logg:#2f6e2a;--logb:#a8372c;--logs:#8a5a12;--tg:#8fbb88;--tb:#e0a39b;--ta:#e3bf85;--tp:#dfa7bf;--neg:#b5463b;--origin:#7d6c47;
+ --warnline:#e3a99f;--warnbg:#fdecea;--dzline:#efc6c0;--swline:rgba(0,0,0,.18);--ondanger:#ffffff;--dangerh:#d4544a;--overlay:rgba(40,36,30,.45)}
+html[data-theme=obsidian]{--bg:#000000;--panel:#0f0f0f;--panel2:#181818;--line:#2b2b2b;--text:#ececec;--mut:#9b9b9b;--acc:#e8e8e8;--good:#8fd18f;--bad:#ff6f66;--blue:#86b6ec;--pink:#ea94b8;
+ --glow:#141414;--hover:#1f1f1f;--lineh:#555555;--line2:#444444;--onacc:#0a0a0a;--acc2:#ffffff;--img1:#222222;--img2:#0b0b0b;--panel3:#131313;--toast:#1b1b1b;--accbg:#202020;--me:#262626;--meline:#5c5c5c;--input:#060606;--hdr:rgba(0,0,0,.92);
+ --prose:#d6d6d6;--logg:#bfe5bf;--logb:#f6b2ac;--logs:#f2f2f2;--tg:#3f6b3f;--tb:#7a3330;--ta:#6a6a6a;--tp:#6e4458;--origin:#b5b5b5;--warnline:#6e302c;--warnbg:#1f0d0c;--dzline:#45201e}
+html[data-theme=lavender]{--bg:#16131d;--panel:#1f1a29;--panel2:#282235;--line:#3a3249;--text:#ece6f5;--mut:#a89fba;--acc:#b9a0f0;--good:#8fd1a6;--bad:#ef7d88;--blue:#88b5f0;--pink:#f0a2c8;
+ --glow:#2a2140;--hover:#2d2640;--lineh:#63577d;--line2:#53486b;--onacc:#170f26;--acc2:#cdb8ff;--img1:#332b45;--img2:#1a1624;--panel3:#211c2c;--toast:#272033;--accbg:#2a2240;--me:#33285a;--meline:#6a55a8;--input:#120f18;--hdr:rgba(22,19,29,.94);
+ --prose:#ddd5ea;--logg:#c6ead3;--logb:#f5b8be;--logs:#e1d2ff;--tg:#3f6b52;--tb:#7a3a44;--ta:#5e4a8c;--tp:#7a4a68;--origin:#bcaed6}
 html[data-theme=ocean]{--bg:#0c111d;--panel:#131a2b;--panel2:#1a2338;--line:#2a3550;--text:#e5eaf6;--mut:#97a3c0;--acc:#5fa4ff;--good:#7fd6a0;--bad:#f0707a;
  --glow:#18264a;--hover:#212c46;--lineh:#4b5d87;--line2:#3e4e74;--onacc:#06101f;--acc2:#82b9ff;--img1:#22304f;--img2:#0f1525;--panel3:#141c2e;--toast:#18213a;--accbg:#172743;--me:#1b2f55;--meline:#33558f;--input:#090d17;--hdr:rgba(12,17,29,.94)}
 *{box-sizing:border-box}
@@ -21,12 +34,14 @@ body{margin:0;background:radial-gradient(1100px 520px at 15% -10%,var(--glow) 0,
 header{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:12px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--hdr);backdrop-filter:blur(6px);z-index:5}
 #hdr{display:contents}
 .brand{margin:0 auto 0 0;line-height:0}.brand img{height:52px;width:auto;display:block}
+/* logo bertulisan krem: di tema terang digelapkan supaya terbaca */
+html[data-theme=snow] .brand img,html[data-theme=snow] img.gate-logo{filter:brightness(.42) sepia(.35) saturate(1.6)}
 @media(max-width:640px){.brand img{height:40px}}
 .stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:5px 12px;min-width:84px}
 .stat b{display:block;font-size:15px}.statbtn{text-align:left;font:inherit;color:inherit;cursor:pointer}.statbtn:hover{border-color:var(--acc)}.stat small{display:block;font-size:10.5px;color:var(--mut);margin-top:1px}.stat small.bad{color:var(--bad)}
-table.pv{width:100%;border-collapse:collapse;margin-top:6px}table.pv td{padding:7px 4px;border-bottom:1px solid var(--line)}table.pv td.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}table.pv tr.neg td.num{color:#e9a397}table.pv tr.sum td{font-weight:700}table.pv tr.big td{font-weight:800;font-size:16px;border-bottom:0}table.pv tr.big.bad td.num{color:var(--bad)}.pvnotes{margin:8px 0 0;padding-left:18px;font-size:12.5px;color:var(--mut)}.pvnotes li{margin:3px 0}.stat span{font-size:10.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.07em}
+table.pv{width:100%;border-collapse:collapse;margin-top:6px}table.pv td{padding:7px 4px;border-bottom:1px solid var(--line)}table.pv td.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}table.pv tr.neg td.num{color:var(--neg)}table.pv tr.sum td{font-weight:700}table.pv tr.big td{font-weight:800;font-size:16px;border-bottom:0}table.pv tr.big.bad td.num{color:var(--bad)}.pvnotes{margin:8px 0 0;padding-left:18px;font-size:12.5px;color:var(--mut)}.pvnotes li{margin:3px 0}.stat span{font-size:10.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.07em}
 .stat.neg b{color:var(--bad)}
-.season{border-color:#4f6b3a}.season b{color:var(--good)}
+.season{border-color:var(--tg)}.season b{color:var(--good)}
 button{font:inherit;cursor:pointer;border-radius:9px;border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:7px 12px;transition:background .12s,border-color .12s}
 button:hover:not(:disabled){border-color:var(--lineh);background:var(--hover)}
 button.pri{background:var(--acc);color:var(--onacc);border-color:var(--acc);font-weight:700}
@@ -69,7 +84,7 @@ h3{font-family:Fraunces,serif;font-weight:600;font-size:16px;margin:18px 0 8px}
 .sx{font-weight:700}.sx.M{color:var(--blue)}.sx.F{color:var(--pink)}
 .tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
 .tag{font-size:11px;padding:2px 7px;border-radius:20px;background:var(--panel2);border:1px solid var(--line);color:var(--mut)}
-.tag.g{color:var(--good);border-color:#4f6b3a}.tag.b{color:var(--bad);border-color:#7a3a33}.tag.a{color:var(--acc);border-color:#7a5b22}.tag.p{color:var(--pink);border-color:#7a4a5c}
+.tag.g{color:var(--good);border-color:var(--tg)}.tag.b{color:var(--bad);border-color:var(--tb)}.tag.a{color:var(--acc);border-color:var(--ta)}.tag.p{color:var(--pink);border-color:var(--tp)}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
 .pair{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:start}
 @media(max-width:640px){.pair{grid-template-columns:1fr}.pair .x{display:none}}
@@ -89,8 +104,8 @@ aside .panel{position:sticky;top:96px;max-height:calc(100vh - 120px);overflow:au
 .logh{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}.logh h3{margin:0}
 i.gone{color:var(--mut);font-weight:400}
 .log li .d{color:var(--mut);font-size:11px;display:block}
-.log li.good{color:#cfe6bd}.log li.bad{color:#f0b3ab}.log li.star{color:#f5d38c}
-#modal{position:fixed;inset:0;background:rgba(8,7,5,.7);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
+.log li.good{color:var(--logg)}.log li.bad{color:var(--logb)}.log li.star{color:var(--logs)}
+#modal{position:fixed;inset:0;background:var(--overlay);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
 #modal.hidden{display:none}
 .mbox{background:var(--panel);border:1px solid var(--line);border-radius:16px;max-width:640px;width:100%;max-height:92vh;overflow:auto;padding:18px}
 .mbox img.big{width:100%;aspect-ratio:640/296;border-radius:12px;display:block;background:radial-gradient(120% 90% at 50% 40%,var(--img1) 0,var(--img2) 75%)}
@@ -102,13 +117,13 @@ dl{display:grid;grid-template-columns:130px 1fr;gap:4px 10px;margin:12px 0;font-
 .dexq{filter:brightness(0);opacity:.55}
 .qwrap{border-radius:10px;background:radial-gradient(120% 90% at 50% 40%,var(--img1) 0,var(--img2) 75%)}
 .qwrap .snk{background:none}
-.guide p,.guide li{color:#dcd4c0;max-width:72ch}
+.guide p,.guide li{color:var(--prose);max-width:72ch}
 .guide code{background:var(--panel2);padding:1px 6px;border-radius:5px}
 .kbd{font-size:12px;color:var(--mut)}
 .gsub{margin-top:-4px}.rank table{width:100%}.rank td.pos{width:48px;font-weight:700}.rank tr.me td{background:color-mix(in srgb,var(--acc) 12%,transparent)}.rank tr.gap td{text-align:center;color:var(--mut)}.rkan{display:flex;align-items:center;gap:8px}.rkan img.mini{width:72px}
 .buglist{display:flex;flex-direction:column;gap:8px}.bugrow{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px;cursor:pointer}.bugrow:hover{background:var(--hover)}
 .bugrow .bt b{overflow-wrap:anywhere}.bugrow .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--bad);margin-right:6px;vertical-align:middle}
-.bst{font-size:11px;padding:2px 8px;border-radius:20px;border:1px solid var(--line);background:var(--panel2);white-space:nowrap}.bst.new{color:var(--text)}.bst.review{color:var(--acc);border-color:#7a5b22}.bst.fixed{color:var(--good);border-color:var(--good)}.bst.rejected{color:var(--bad);border-color:var(--bad)}.bst.duplicate{color:var(--mut)}.bst.planned,.bst.progress{color:var(--acc);border-color:var(--acc)}.bst.done{color:var(--good);border-color:var(--good)}
+.bst{font-size:11px;padding:2px 8px;border-radius:20px;border:1px solid var(--line);background:var(--panel2);white-space:nowrap}.bst.new{color:var(--text)}.bst.review{color:var(--acc);border-color:var(--ta)}.bst.fixed{color:var(--good);border-color:var(--good)}.bst.rejected{color:var(--bad);border-color:var(--bad)}.bst.duplicate{color:var(--mut)}.bst.planned,.bst.progress{color:var(--acc);border-color:var(--acc)}.bst.done{color:var(--good);border-color:var(--good)}
 .bugrow{display:flex;gap:10px;align-items:flex-start}.bugrow .bm{flex:1;min-width:0}.vbtn{flex:none;min-width:58px}.vbtn.on{background:color-mix(in srgb,var(--acc) 22%,transparent);border-color:var(--acc);color:var(--text)}.vcnt{flex:none;font-size:13px;color:var(--mut);padding:4px 6px}
 .votebox{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}.bugsim{border:1px dashed var(--line);border-radius:10px;padding:8px 10px;font-size:13px}.bugsim .sr{display:flex;gap:8px;align-items:center;padding:3px 0}.bugsim .sr span.t{flex:1;min-width:0;overflow-wrap:anywhere}
 .pncred{color:var(--acc)}
@@ -139,7 +154,7 @@ dl{display:grid;grid-template-columns:130px 1fr;gap:4px 10px;margin:12px 0;font-
 .langsw button:hover:not(.on){color:var(--text);background:var(--panel2)}
 .acct{display:flex;align-items:center;gap:7px;padding:7px 12px;border-radius:10px;white-space:nowrap}
 .acct small{color:var(--mut);font-size:11px;margin-left:2px}
-.acct.warnb{border-color:#7a3d34}
+.acct.warnb{border-color:var(--warnline)}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--mut)}.dot.saved{background:var(--good)}.dot.sync{background:var(--acc);animation:pulse 1s infinite}.dot.error,.dot.conflict{background:var(--bad)}
 @keyframes pulse{50%{opacity:.35}}
 .form{display:grid;gap:10px;margin-top:6px}.form label{display:grid;gap:4px;font-size:12.5px;color:var(--mut)}
@@ -164,7 +179,7 @@ button.sm{padding:4px 10px;font-size:12.5px}
 .bub span{display:block;font-size:10.5px;color:var(--mut);margin-top:3px}
 .chatin{padding-top:10px;border-top:1px solid var(--line)}.chatin input{flex:1}
 .tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
-.trade.done{opacity:.75}.trade .note{font-style:italic;color:#dcd4c0;margin:6px 0 0}
+.trade.done{opacity:.75}.trade .note{font-style:italic;color:var(--prose);margin:6px 0 0}
 .mini-row{display:flex;gap:8px;align-items:center;padding:4px 0;font-size:13px}.mini-row img.mini{width:84px}.mini-row.money{font-weight:700}
 .tb .tblist{max-height:300px;overflow:auto;display:grid;gap:6px;padding-right:4px}
 .tbrow{display:flex;gap:8px;align-items:center;padding:6px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:13px}
@@ -176,7 +191,7 @@ button.sm{padding:4px 10px;font-size:12.5px}
 .gated nav,.gated aside{display:none}.gated main{grid-template-columns:minmax(0,1fr);max-width:860px}
 .gate{padding:26px}.gate h2{font-size:26px}
 .gate-logo{display:block;width:min(340px,78%);height:auto;margin:2px auto 20px}
-.gate-f{list-style:none;padding:0;margin:0 0 6px;display:grid;gap:6px;color:#dcd4c0}
+.gate-f{list-style:none;padding:0;margin:0 0 6px;display:grid;gap:6px;color:var(--prose)}
 .gchat .chatlog{max-height:460px;min-height:300px}.bub .gname{display:flex;align-items:center;gap:6px}.gacts{margin-left:auto;display:inline-flex;gap:2px}
 .gact{background:none;border:0;padding:0 4px;font-size:12px;line-height:1.4;color:var(--mut);cursor:pointer;opacity:.55;border-radius:6px}.gact:hover{opacity:1;background:var(--hover)}.gact.done{cursor:default;opacity:.7}
 .bub:hover .gact{opacity:.9}
@@ -187,7 +202,7 @@ button.sm{padding:4px 10px;font-size:12.5px}
 .grreasons{display:grid;grid-template-columns:1fr 1fr;gap:6px}label.rad{display:flex;flex-direction:row!important;align-items:center;gap:7px;cursor:pointer;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 10px}label.rad input{width:auto;margin:0}
 .modstats{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin:6px 0 16px}.modstats .stat{min-width:0;padding:9px 12px}
 .modrep{padding:10px 14px;display:flex;flex-direction:column;gap:6px}.modrep .actions{margin-top:2px}.modlog{padding:7px 2px;border-bottom:1px solid var(--line);font-size:13px;overflow-wrap:anywhere}.bub .gname{font-size:11.5px;font-weight:700;color:var(--acc);margin-bottom:2px}.bub.me .gname{color:var(--mut)}
-.origin{font-size:11.5px;color:#c9b98f;margin-top:2px}.origin .linkbtn{color:inherit}
+.origin{font-size:11.5px;color:var(--origin);margin-top:2px}.origin .linkbtn{color:inherit}
 .linkbtn{background:none;border:0;padding:0;color:inherit;font:inherit;font-weight:inherit;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}.linkbtn:hover{color:var(--acc)}
 .prof .profhead{display:flex;gap:14px;align-items:center}.profrep{font-size:13.5px;font-weight:700;color:var(--acc);margin:1px 0 3px}.prof h2{margin:0 0 2px}
 .avatar{width:64px;height:64px;border-radius:50%;overflow:hidden;flex:none;background:var(--panel3);border:2px solid var(--acc);display:grid;place-items:center}.avatar img{width:150%;height:150%;object-fit:cover}.avatar span{font-size:28px;font-weight:700;color:var(--acc)}
@@ -211,16 +226,16 @@ textarea{width:100%;box-sizing:border-box;resize:vertical;font:inherit;backgroun
 .gear{display:inline-flex;align-items:center;gap:7px}.gear .gico{font-size:16px;line-height:1}.gear .gname{font-weight:600;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .settings section.set{border-top:1px solid var(--line);padding:12px 0 4px;margin-top:10px}.settings section.set:first-of-type{border-top:0;margin-top:0;padding-top:4px}
 .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:6px}.opt{position:relative;display:flex;align-items:center;gap:8px;text-align:left;padding:10px 12px}.opt.on{border-color:var(--acc);background:var(--accbg)}.opt .chk{margin-left:auto;color:var(--acc);font-weight:800}
-.opt.theme{flex-direction:column;align-items:flex-start;gap:4px}.opt.theme small{color:var(--mut);font-size:11.5px}.opt.theme .chk{position:absolute;top:8px;right:10px}.sw{display:flex;gap:4px}.sw i{width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.15);display:block}
+.opt.theme{flex-direction:column;align-items:flex-start;gap:4px}.opt.theme small{color:var(--mut);font-size:11.5px}.opt.theme .chk{position:absolute;top:8px;right:10px}.sw{display:flex;gap:4px}.sw i{width:22px;height:22px;border-radius:6px;border:1px solid var(--swline);display:block}
 @media (max-width:640px){.gear .gname{display:none}}
 .tcell select{width:auto;min-width:210px;padding:5px 8px}.tcell .odds{color:var(--mut);font-size:12.5px;margin-left:4px}.tcell .kbd{font-size:11.5px;margin-top:3px}
 .card.mk .meta{margin-bottom:8px}.sexsw{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-bottom:8px}.sexsw button{flex:1;border:0;border-radius:0;background:none;color:var(--mut);padding:6px}.sexsw button.on{background:var(--accbg);color:var(--text);font-weight:700}
 .card.pm .meta{margin-bottom:4px}.card.pm .val{margin:6px 0 8px}.card.pm.mine{border-color:var(--acc)}.pmhist .mini-row{border-bottom:1px solid var(--line);padding:6px 0}.pmhist .mini-row:last-child{border-bottom:0}
 .buyopt{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 0;border-top:1px dashed var(--line)}.buyopt>div{display:flex;flex-direction:column}.buyopt .kbd{font-size:11.5px}.buyopt button{white-space:nowrap;min-width:84px}
-.dzone{margin-top:18px;padding-top:12px;border-top:1px solid #4a2b26}.dzone .lbl{color:var(--bad)}.dzrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0}.dzrow p{margin:2px 0 0;font-size:12.5px;color:var(--mut)}.dzrow button{flex:none}
+.dzone{margin-top:18px;padding-top:12px;border-top:1px solid var(--dzline)}.dzone .lbl{color:var(--bad)}.dzrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0}.dzrow p{margin:2px 0 0;font-size:12.5px;color:var(--mut)}.dzrow button{flex:none}
 .tbid{font-size:11.5px;font-weight:700;color:var(--mut);letter-spacing:.02em}.okbox{border:1px solid var(--line);background:var(--panel2);border-radius:12px;padding:10px 14px;margin:10px 0}.okbox p{margin:6px 0;font-size:13.5px}
-.warnbox{border:1px solid #7a3d34;background:#2a1714;border-radius:12px;padding:10px 14px;margin:10px 0}.warnbox p{margin:6px 0;font-size:13.5px}
-button.danger{background:var(--bad);border-color:var(--bad);color:#1b0a07;font-weight:700}button.danger:hover:not(:disabled){background:#ec7d71}
+.warnbox{border:1px solid var(--warnline);background:var(--warnbg);border-radius:12px;padding:10px 14px;margin:10px 0}.warnbox p{margin:6px 0;font-size:13.5px}
+button.danger{background:var(--bad);border-color:var(--bad);color:var(--ondanger);font-weight:700}button.danger:hover:not(:disabled){background:var(--dangerh)}
 .empty{color:var(--mut);padding:30px;text-align:center;border:1px dashed var(--line);border-radius:14px}
 </style>
 </head>
@@ -503,7 +518,7 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  nolib_h:'Cloud save tidak tersedia',nolib_b:'Library Supabase gagal dimuat (koneksi internet atau pemblokir iklan). Game tetap jalan dan progres tersimpan di browser ini. Muat ulang halaman untuk mencoba lagi.',
  fg_need:'Isi email dulu, lalu klik "Lupa password?" lagi.',fg_sent:p=>`Link reset password dikirim ke <b>${p.e}</b>.`,
  set_about:'Tentang',pn_btn:'📜 Catatan pembaruan',pn_h:'Catatan pembaruan',pn_sub:'Perubahan game dari versi terbaru sampai rilis awal.',pn_new_h:'Yang baru di Morph Lab',pn_new_sub:'Ringkasan pembaruan sejak terakhir kamu bermain.',pn_all:'Lihat semua catatan',pn_ok:'Oke',pn_more:'+{n} versi lainnya di Catatan pembaruan.',ver_server:'Versi server game',ver_web:'Versi web',ver_ok:'Web & server sudah versi terbaru yang sama.',ver_old_web:'Halaman ini masih versi lama. Muat ulang (Ctrl+Shift+R) untuk memakai versi terbaru.',ver_old_server:'Server sedang diperbarui; versi web lebih baru dari server.',ver_reload:'Muat ulang halaman',
- set_title:'Pengaturan',set_lang:'Bahasa',set_theme:'Tema warna',th_terra:'Terrarium',th_terra_d:'Cokelat hangat & amber (bawaan)',th_forest:'Hutan Hujan',th_forest_d:'Hijau gelap & zamrud',th_ocean:'Samudra Malam',th_ocean_d:'Biru tua & biru langit',
+ set_title:'Pengaturan',set_lang:'Bahasa',set_theme:'Tema warna',th_terra:'Terrarium',th_terra_d:'Cokelat hangat & amber (bawaan)',th_forest:'Hutan Hujan',th_forest_d:'Hijau gelap & zamrud',th_ocean:'Samudra Malam',th_ocean_d:'Biru tua & biru langit',th_snow:'Salju',th_snow_d:'Putih bersih & amber (terang)',th_obsidian:'Obsidian',th_obsidian_d:'Hitam pekat & perak',th_lavender:'Lavender',th_lavender_d:'Ungu redup & lembut',
  pv_open:'Lihat perkiraan saldo bulan depan',pv_h:'Perkiraan saldo bulan depan',pv_sub:'Biaya ini dipotong otomatis saat kamu menekan “Lanjut bulan”.',pv_now:'Saldo sekarang',pv_food:p=>`Pakan · ${p.n} ekor`,pv_util:p=>`Listrik & rak · ${p.r} rak × $8`,pv_over:p=>`Space darurat · ${p.n} ekor di atas kapasitas (${p.c}) × $15`,pv_total:'Total pengeluaran',pv_after:'Perkiraan saldo',pv_formula:'Pakan per hewan: $2 (ball python) atau $1 (leopard gecko) + $1 per 250 g berat (dihitung dari berat setelah tumbuh bulan depan).',pv_debt:'⚠️ Saldo akan minus! Jual, iklankan, atau kirim hewan ke pesanan dulu.',pv_n_born:p=>`Termasuk ${p.n} bayi yang akan menetas (bisa kurang kalau ada telur yang mati).`,pv_n_lay:p=>`${p.n} betina akan bertelur, beratnya turun ±28% sehingga pakannya lebih murah.`,pv_n_foodx:'Harga pakan sedang naik +50% (event bulan ini).',pv_n_listed:p=>`Belum termasuk uang dari ${p.n} hewan yang diiklankan kalau terjual.`,pv_n_old:p=>`${p.n} hewan akan mati karena tua bulan depan, jadi tidak dihitung biaya pakannya.`,pv_n_random:'Ini perkiraan: pertumbuhan & event baru bersifat acak.',
  tab_teman:'Teman',tab_global:'Global',gc_sub:p=>`Ngobrol dengan semua pemain Morph Lab. Hanya ${p.n} pesan terakhir yang disimpan; pesan yang lebih lama terhapus otomatis.`,gc_ph:'Tulis pesan untuk semua pemain…',gc_empty:'Belum ada pesan. Jadilah yang pertama menyapa!',e_empty_message:'Pesan masih kosong.',e_message_too_long:'Pesan terlalu panjang.',busy:'Tunggu sebentar, sedang memproses…',
  tab_admin:'Admin',mod_sub:'Hanya terlihat oleh admin. Laporan chat global, pemain yang dibisukan, dan catatan semua tindakan moderasi.',mod_reload:'Muat ulang',
@@ -859,7 +874,7 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  nolib_h:'Cloud save unavailable',nolib_b:'The Supabase library failed to load (internet connection or an ad blocker). The game still works and progress is saved in this browser. Reload the page to try again.',
  fg_need:'Enter your email first, then click "Forgot password?" again.',fg_sent:p=>`A password reset link was sent to <b>${p.e}</b>.`,
  set_about:'About',pn_btn:'📜 Patch notes',pn_h:'Patch notes',pn_sub:'Game changes, from the latest version back to the first release.',pn_new_h:'What’s new in Morph Lab',pn_new_sub:'A summary of updates since you last played.',pn_all:'See all notes',pn_ok:'OK',pn_more:'+{n} more versions in Patch notes.',ver_server:'Game server version',ver_web:'Web version',ver_ok:'Web & server are on the same latest version.',ver_old_web:'This page is an older version. Reload (Ctrl+Shift+R) to get the latest.',ver_old_server:'The server is being updated; the web version is newer than the server.',ver_reload:'Reload page',
- set_title:'Settings',set_lang:'Language',set_theme:'Color theme',th_terra:'Terrarium',th_terra_d:'Warm brown & amber (default)',th_forest:'Rainforest',th_forest_d:'Deep green & emerald',th_ocean:'Night Ocean',th_ocean_d:'Navy & sky blue',
+ set_title:'Settings',set_lang:'Language',set_theme:'Color theme',th_terra:'Terrarium',th_terra_d:'Warm brown & amber (default)',th_forest:'Rainforest',th_forest_d:'Deep green & emerald',th_ocean:'Night Ocean',th_ocean_d:'Navy & sky blue',th_snow:'Snow',th_snow_d:'Clean white & amber (light)',th_obsidian:'Obsidian',th_obsidian_d:'Pure black & silver',th_lavender:'Lavender',th_lavender_d:'Soft muted purple',
  pv_open:'See next month’s balance forecast',pv_h:'Next month’s balance forecast',pv_sub:'These costs are deducted automatically when you press “Next month”.',pv_now:'Current balance',pv_food:p=>`Feeders · ${p.n} ${p.n===1?'animal':'animals'}`,pv_util:p=>`Power & racks · ${p.r} ${p.r===1?'rack':'racks'} × $8`,pv_over:p=>`Emergency space · ${p.n} over capacity (${p.c}) × $15`,pv_total:'Total costs',pv_after:'Expected balance',pv_formula:'Feeders per animal: $2 (ball python) or $1 (leopard gecko) + $1 per 250 g of body weight (using next month’s weight after growth).',pv_debt:'⚠️ Your balance will go negative! Sell, list, or ship animals to orders first.',pv_n_born:p=>`Includes ${p.n} ${p.n===1?'hatchling':'hatchlings'} due to hatch (could be fewer if an egg fails).`,pv_n_lay:p=>`${p.n} ${p.n===1?'female':'females'} will lay eggs and lose ~28% of their weight, so feeding them costs less.`,pv_n_foodx:'Feeder prices are up +50% (this month’s event).',pv_n_listed:p=>`Doesn’t include money from ${p.n} listed ${p.n===1?'animal':'animals'} if they sell.`,pv_n_old:p=>`${p.n} ${p.n===1?'animal':'animals'} will die of old age next month, so they aren’t counted in feeder costs.`,pv_n_random:'This is an estimate: growth and new events are random.',
  tab_teman:'Friends',tab_global:'Global',gc_sub:p=>`Chat with every Morph Lab player. Only the last ${p.n} messages are kept; older ones are deleted automatically.`,gc_ph:'Write a message to everyone…',gc_empty:'No messages yet. Be the first to say hi!',e_empty_message:'The message is empty.',e_message_too_long:'The message is too long.',busy:'One moment, still working…',
  tab_admin:'Admin',mod_sub:'Only visible to admins. Global chat reports, muted players, and a log of every moderation action.',mod_reload:'Reload',
@@ -2160,7 +2175,8 @@ function showUsername(msg){modal(`<h2>${t('un_h')}</h2><p class="sub">${t('un_su
  <form data-form="username" class="form" novalidate><label>Username<input name="username" maxlength="20" placeholder="${t('au_uname_ph')}"></label><div class="msg">${msg||''}</div><div class="actions"><button class="pri" type="submit">${t('un_save')}</button></div></form>`,true)}
 function showSetPassword(){modal(`<h2>${t('pw_h')}</h2><form data-form="setpw" class="form" novalidate>${pwField(t('pw_new'),'new-password',t('au_pw_ph'))}<div class="msg"></div><div class="actions"><button class="pri" type="submit">${t('pw_save')}</button></div></form>`,true)}
 // Tema warna: disimpan di browser ini
-const THEMES=[{k:'terra',sw:['#13120e','#26231c','#e3a63b','#8cc06a']},{k:'forest',sw:['#0d1511','#1a2a22','#4fc884','#a6dc7c']},{k:'ocean',sw:['#0c111d','#1a2338','#5fa4ff','#7fd6a0']}];
+const THEMES=[{k:'terra',sw:['#13120e','#26231c','#e3a63b','#8cc06a']},{k:'forest',sw:['#0d1511','#1a2a22','#4fc884','#a6dc7c']},{k:'ocean',sw:['#0c111d','#1a2338','#5fa4ff','#7fd6a0']},
+ {k:'snow',sw:['#f3f1ec','#ffffff','#a8691a','#3d7f37']},{k:'obsidian',sw:['#000000','#181818','#e8e8e8','#8fd18f']},{k:'lavender',sw:['#16131d','#282235','#b9a0f0','#f0a2c8']}];   // v61 (web): + Salju, Obsidian, Lavender
 let THEME='terra';try{THEME=localStorage.getItem('morphlab_theme')||'terra'}catch(e){}
 function applyTheme(k){if(!THEMES.some(x=>x.k===k))k='terra';THEME=k;try{localStorage.setItem('morphlab_theme',k)}catch(e){}
  if(typeof document!=='undefined'&&document.documentElement){if(k==='terra')delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=k}}
