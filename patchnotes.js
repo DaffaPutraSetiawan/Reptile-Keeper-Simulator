@@ -3,9 +3,9 @@
    Tambahkan entri baru di paling atas setiap kali versi game naik. */
 window.PATCH_NOTES=[
  {v:61.1,d:'2026-11-23',label:'v61 (web)',
-  id:['3 tema warna baru di <b>Pengaturan → Tema warna</b>: <b>Salju</b> (putih terang), <b>Obsidian</b> (hitam pekat), dan <b>Lavender</b> (ungu redup yang lembut di mata).',
+  id:['6 tema warna baru di <b>Pengaturan → Tema warna</b>: <b>Salju</b> (putih terang), <b>Obsidian</b> (hitam pekat), <b>Lavender</b> (ungu redup yang lembut di mata), serta tema terang <b>Daun Mint</b>, <b>Langit Pagi</b>, dan <b>Sakura</b>.',
    'Pasar Pemain: riwayat harga <b>ball python</b> dan <b>axolotl</b> sekarang dipisah per label sifat line-bred (mis. Fader, High Iridophore), seperti leopard gecko. Kalau kombinasi labelnya belum pernah terjual, riwayat morph umumnya dipakai dengan catatan.'],
-  en:['3 new color themes in <b>Settings → Color theme</b>: <b>Snow</b> (bright white), <b>Obsidian</b> (pure black), and <b>Lavender</b> (soft muted purple).',
+  en:['6 new color themes in <b>Settings → Color theme</b>: <b>Snow</b> (bright white), <b>Obsidian</b> (pure black), <b>Lavender</b> (soft muted purple), plus the light themes <b>Mint Leaf</b>, <b>Morning Sky</b> and <b>Sakura</b>.',
    'Player market: <b>ball python</b> and <b>axolotl</b> price history is now split by line-bred label (e.g. Fader, High Iridophore), like leopard geckos. If that label combination hasn’t sold yet, the general morph history is used with a note.']},
  {v:61,d:'2026-11-23',
   id:['Bayi <b>ball python</b> sekarang menetas sebagai satu kelompok seperti axolotl: pilih <b>sampai 3 ekor</b> di tab Inkubator, sisanya dijual otomatis (60% nilainya).',
