@@ -11,7 +11,8 @@ Catatan pembaruan untuk pemain (bahasa yang lebih sederhana, ID & EN) ada di `pa
 - Salju (`snow`, terang), Obsidian (`obsidian`, hitam pekat dengan aksen perak), Lavender (`lavender`, ungu redup).
 - Tema terang tambahan: Daun Mint (`mint`, aksen hijau daun), Langit Pagi (`sky`, aksen biru), Sakura (`sakura`, aksen pink). Total 9 tema (5 gelap, 4 terang).
 - Warna yang dulu tetap di CSS (warna catatan breeder, garis tag, teks panduan, kotak peringatan, latar jendela, dll.) dijadikan variabel CSS dengan nilai bawaan yang sama, jadi tema lama tidak berubah dan tema terang bisa mengaturnya sendiri.
-- Logo bertulisan krem digelapkan dengan filter di keempat tema terang supaya terbaca.
+- Tema terang memakai logo versi terang (`assets/logo-light.png`, `assets/logo-full-light.png`): tulisan coklat tua, ikon mata & "LAB" tetap amber. Dipasang otomatis oleh `applyTheme()` (logo header & halaman masuk); filter penggelap sebelumnya dihapus.
+- Halaman sambutan: jumlah spesies, nama spesies, dan jumlah gen sekarang dihitung dari `SPECIES` (sebelumnya tertulis "3 spesies, 31 gen" dan belum menyebut kura-kura brazil).
 - **Pasar Pemain: riwayat harga per label untuk ball python & axolotl.** `_market_list` sekarang menyimpan `lbl` (label line-bred yang terlihat, dihitung Edge Function) untuk leopard gecko, ball python, dan axolotl; sebelumnya hanya gecko, sehingga ball python & axolotl selalu `''`. Catatan "riwayat cadangan" di browser ikut tampil untuk ketiga spesies itu. Kura-kura brazil tetap `''`. Penjualan ball python/axolotl lama tetap di riwayat tanpa label (belum ada satu pun di database saat diubah).
 
 ## v61 — 23 Nov 2026

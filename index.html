@@ -44,8 +44,7 @@ body{margin:0;background:radial-gradient(1100px 520px at 15% -10%,var(--glow) 0,
 header{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:12px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--hdr);backdrop-filter:blur(6px);z-index:5}
 #hdr{display:contents}
 .brand{margin:0 auto 0 0;line-height:0}.brand img{height:52px;width:auto;display:block}
-/* logo bertulisan krem: di tema terang digelapkan supaya terbaca */
-html:is([data-theme=snow],[data-theme=mint],[data-theme=sky],[data-theme=sakura]) :is(.brand img,img.gate-logo){filter:brightness(.42) sepia(.35) saturate(1.6)}
+/* logo: tema terang memakai assets/logo-light.png & logo-full-light.png (tulisan coklat tua, ikon tetap amber), dipasang applyTheme() */
 @media(max-width:640px){.brand img{height:40px}}
 .stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:5px 12px;min-width:84px}
 .stat b{display:block;font-size:15px}.statbtn{text-align:left;font:inherit;color:inherit;cursor:pointer}.statbtn:hover{border-color:var(--acc)}.stat small{display:block;font-size:10.5px;color:var(--mut);margin-top:1px}.stat small.bad{color:var(--bad)}
@@ -615,8 +614,8 @@ guide_axo:`<h3>1. Resesif: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><p>
  e_order_gone:'Pesanan ini sudah tidak berlaku.',e_order_mismatch:'Hewan ini tidak cocok dengan pesanan.',e_bad_action:'Aksi tidak valid.',
  e_busy_retry:'Server sedang sibuk. Coba lagi.',e_network:'Tidak bisa terhubung ke server. Periksa internet lalu coba lagi.',
  e_db_error:'Server gagal menyimpan. Coba lagi.',e_server_error:'Terjadi kesalahan di server. Coba lagi.',
- gate_title:'Selamat datang di Morph Lab',gate_sub:'Simulasi breeding hewan eksotis (ball python, leopard gecko &amp; axolotl) dengan genetika morph seperti dunia nyata. Masuk atau buat akun gratis untuk mulai main.',
- gate_f1:'🧬 3 spesies, 31 gen asli: resesif, co-dominan, dominan, dan kompleks BEL',gate_f2:'🥚 Kawinkan kapan saja, ovulasi, inkubasi, dan het yang harus dibuktikan',
+ gate_title:'Selamat datang di Morph Lab',gate_sub:()=>{const n=SPECIES_LIST.map(k=>t('sp_'+k).toLowerCase());return `Simulasi breeding hewan eksotis (${n.slice(0,-1).join(', ')} &amp; ${n[n.length-1]}) dengan genetika morph seperti dunia nyata. Masuk atau buat akun gratis untuk mulai main.`},
+ gate_f1:()=>`🧬 ${SPECIES_LIST.length} spesies, ${SPECIES_LIST.reduce((a,k)=>a+SPECIES[k].loci.length,0)} gen asli (resesif, co-dominan, dominan, kompleks BEL) + sifat line-bred`,gate_f2:'🥚 Kawinkan kapan saja, ovulasi, inkubasi, dan het yang harus dibuktikan',
  gate_f3:'🤝 Tambah teman, chat, dan trading hewan dengan escrow',gate_f4:'🌐 Progres disimpan & dihitung di server, main dari perangkat mana pun',
  gate_login:'Masuk',gate_signup:'Daftar gratis',gate_loading:'Memuat game dari server…',gate_note:'Butuh email untuk mendaftar.',
  gate_down_h:'Server tidak bisa dihubungi',gate_down:'Game ini butuh koneksi ke server. Periksa internet atau matikan pemblokir iklan untuk situs ini, lalu muat ulang halaman.',
@@ -971,8 +970,8 @@ guide_axo:`<h3>1. Recessive: Leucistic, Albino, Melanoid, Axanthic, Copper</h3><
  e_order_gone:'This order is no longer available.',e_order_mismatch:'This animal doesn’t match the order.',e_bad_action:'Invalid action.',
  e_busy_retry:'The server is busy. Try again.',e_network:'Can’t reach the server. Check your internet and try again.',
  e_db_error:'The server couldn’t save. Try again.',e_server_error:'Something went wrong on the server. Try again.',
- gate_title:'Welcome to Morph Lab',gate_sub:'An exotic animal breeding sim (ball pythons, leopard geckos &amp; axolotls) with real-world morph genetics. Log in or create a free account to start playing.',
- gate_f1:'🧬 3 species, 31 real genes: recessive, co-dominant, dominant and the BEL complex',gate_f2:'🥚 Breed any time, ovulation, incubation, and hets you have to prove',
+ gate_title:'Welcome to Morph Lab',gate_sub:()=>{const n=SPECIES_LIST.map(k=>t('sp_'+k).toLowerCase()+'s');return `An exotic animal breeding sim (${n.slice(0,-1).join(', ')} &amp; ${n[n.length-1]}) with real-world morph genetics. Log in or create a free account to start playing.`},
+ gate_f1:()=>`🧬 ${SPECIES_LIST.length} species, ${SPECIES_LIST.reduce((a,k)=>a+SPECIES[k].loci.length,0)} real genes (recessive, co-dominant, dominant, BEL complex) + line-bred traits`,gate_f2:'🥚 Breed any time, ovulation, incubation, and hets you have to prove',
  gate_f3:'🤝 Add friends, chat, and trade animals with escrow',gate_f4:'🌐 Progress is saved & calculated on the server, play from any device',
  gate_login:'Log in',gate_signup:'Sign up free',gate_loading:'Loading your game from the server…',gate_note:'An email address is required to sign up.',
  gate_down_h:'Can’t reach the server',gate_down:'This game needs a connection to the server. Check your internet or turn off ad blockers for this site, then reload the page.',
@@ -1464,7 +1463,7 @@ function vGate(){
  if(st==='off'||st==='nolib')return `<div class="gate panel"><h2>${t('gate_down_h')}</h2><p class="sub">${t('gate_down')}</p><div class="actions"><button class="pri" data-act="gate_reload">${t('gate_reload')}</button></div></div>`;
  if(st==='checking'||(Cloud.user&&st==='sync'))return `<div class="gate panel"><p class="sub" style="margin:0">⏳ ${t('gate_loading')}</p></div>`;
  if(Cloud.user&&st==='error')return `<div class="gate panel"><h2>${t('gate_err_h')}</h2><p class="warn">${esc(errText(Cloud.err))}</p><div class="actions"><button class="pri" data-act="gate_retry">${t('gate_retry')}</button><button class="ghost" data-act="logout">${t('ac_logout')}</button></div></div>`;
- return `<div class="gate panel"><img class="gate-logo" src="assets/logo-full.png" width="968" height="704" alt="Morph Lab — Exotic Breeder Sim"><h2>${t('gate_title')}</h2><p class="sub">${t('gate_sub')}</p>
+ return `<div class="gate panel"><img class="gate-logo" src="${logoSrc(true)}" width="968" height="704" alt="Morph Lab — Exotic Breeder Sim"><h2>${t('gate_title')}</h2><p class="sub">${t('gate_sub')}</p>
  <ul class="gate-f">${[1,2,3,4].map(i=>`<li>${t('gate_f'+i)}</li>`).join('')}</ul>
  <div class="actions"><button class="pri" data-act="login">${t('gate_login')}</button><button data-act="signup">${t('gate_signup')}</button></div><p class="kbd">${t('gate_note')}</p></div>`}
 function renderGate(){
@@ -2189,8 +2188,13 @@ const THEMES=[{k:'terra',sw:['#13120e','#26231c','#e3a63b','#8cc06a']},{k:'fores
  {k:'snow',sw:['#f3f1ec','#ffffff','#a8691a','#3d7f37']},{k:'obsidian',sw:['#000000','#181818','#e8e8e8','#8fd18f']},{k:'lavender',sw:['#16131d','#282235','#b9a0f0','#f0a2c8']},
  {k:'mint',sw:['#eef5f0','#ffffff','#1f8a5b','#2f7d3a']},{k:'sky',sw:['#eef3f9','#ffffff','#2563c9','#2f7d3a']},{k:'sakura',sw:['#fbf1f3','#ffffff','#c4466f','#3a7d3a']}];   // v61 (web): + Salju, Obsidian, Lavender
 let THEME='terra';try{THEME=localStorage.getItem('morphlab_theme')||'terra'}catch(e){}
+// tema terang memakai logo versi terang (tulisan krem logo asli tidak terbaca di latar terang)
+const LIGHT_THEMES=new Set(['snow','mint','sky','sakura']);
+const logoSrc=full=>'assets/logo'+(full?'-full':'')+(LIGHT_THEMES.has(THEME)?'-light':'')+'.png';
 function applyTheme(k){if(!THEMES.some(x=>x.k===k))k='terra';THEME=k;try{localStorage.setItem('morphlab_theme',k)}catch(e){}
- if(typeof document!=='undefined'&&document.documentElement){if(k==='terra')delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=k}}
+ if(typeof document!=='undefined'&&document.documentElement){if(k==='terra')delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=k;
+  const b=document.querySelector('.brand img');if(b&&b.getAttribute('src')!==logoSrc(false))b.setAttribute('src',logoSrc(false));
+  const g=document.querySelector('img.gate-logo');if(g&&g.getAttribute('src')!==logoSrc(true))g.setAttribute('src',logoSrc(true))}}
 applyTheme(THEME);
 const settingsOpen=()=>!!document.querySelector('#modal .settings');
 function showSettings(){const c=Cloud;const tm=c.lastSaved?new Date(c.lastSaved).toLocaleTimeString(LANG==='id'?'id-ID':'en-GB',{hour:'2-digit',minute:'2-digit'}):'';
