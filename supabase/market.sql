@@ -40,7 +40,7 @@ alter table public.market_listings add constraint market_listings_status_check
   check (status in ('active', 'sold', 'cancelled', 'expired', 'removed'));
 -- kolom tambahan (v50): label sifat line-bred yang terlihat saat dipasang (mis. 'Tangerine · Jungle'; '' = tanpa label).
 -- null = dipasang sebelum v50 (labelnya tidak diketahui): hanya ikut ringkasan cadangan per morph.
--- Spesies tanpa sifat line-bred (ball python, axolotl) selalu ''.
+-- Sejak v61 (web) ball python & axolotl ikut menyimpan label (sebelumnya selalu ''); kura-kura brazil selalu ''.
 alter table public.market_listings add column if not exists lbl text;
 update public.market_listings set lbl = '' where lbl is null and sp <> 'leo';
 -- tindakan admin pasar ikut tercatat di admin_log (moderation.sql)
@@ -68,6 +68,7 @@ revoke all on public.market_listings, public.market_escrow from anon, authentica
 -- p_data = save baru (hewan sudah dikeluarkan, rev = p_old_rev + 1). Mengembalikan id jualan,
 -- atau null kalau save berubah di tengah jalan (Edge Function lalu mengulang aksinya).
 -- p_lbl (v50) = label sifat line-bred yang terlihat, dihitung Edge Function dengan logika game yang sama dengan browser.
+-- v61 (web): disimpan untuk semua spesies yang punya sifat line-bred (leopard gecko, ball python, axolotl); kura-kura selalu ''.
 drop function if exists public._market_list(uuid, jsonb, bigint, jsonb, jsonb, integer, integer, text, text);
 create or replace function public._market_list(p_user uuid, p_data jsonb, p_old_rev bigint, p_rank jsonb,
   p_snake jsonb, p_price integer, p_value integer, p_name text, p_code text, p_lbl text default null)
@@ -87,7 +88,7 @@ begin
   insert into public.market_listings (seller, seller_name, sp, name, sex, code, preview, price, value, lbl)
   values (p_user, v_name, coalesce(p_snake ->> 'sp', 'ball'), left(coalesce(p_name, ''), 80), p_snake ->> 'sex', left(coalesce(p_code, ''), 20),
           public._public_snake(p_snake), p_price, greatest(0, coalesce(p_value, 0)),
-          case when coalesce(p_snake ->> 'sp', 'ball') = 'leo' then left(p_lbl, 120) else '' end)
+          case when coalesce(p_snake ->> 'sp', 'ball') in ('leo', 'ball', 'axo') then left(p_lbl, 120) else '' end)
   returning id into v_id;
   insert into public.market_escrow (listing_id, snake) values (v_id, p_snake);
   return v_id;

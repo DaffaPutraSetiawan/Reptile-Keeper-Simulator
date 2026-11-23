@@ -1682,9 +1682,9 @@ var PM={view:'npc',list:null,mine:null,prices:null,loading:false,err:'',q:'',f:O
   if(TAB==='pasar'&&this.view!=='npc'&&!MODAL_LOCK&&!$('modal').innerHTML)render()},
  setPrices(arr){const m={};arr.forEach(p=>m[p.sp+'|'+p.name+'|'+p.sex+'|'+(p.all?'*':p.lbl)]=p);this.prices=m},
  // v50: riwayat per morph + kelamin + label sifat line-bred; kalau kombinasi itu belum pernah terjual, pakai riwayat
- // morph secara umum (fb = cadangan, belum memperhitungkan sifat line-bred; hanya ditandai untuk leopard gecko)
+ // morph secara umum (fb = cadangan, belum memperhitungkan sifat line-bred; ditandai untuk spesies yang punya sifat line-bred)
  price(sp,name,sex,lbl){if(!this.prices)return null;const b=sp+'|'+name+'|'+sex,e=this.prices[b+'|'+(lbl||'')];if(e)return{ph:e};
-  const a=this.prices[b+'|*'];return a?{ph:a,fb:sp==='leo'}:null},
+  const a=this.prices[b+'|*'];return a?{ph:a,fb:Core.hasLb(sp)}:null},
  async loadPrices(){if(this.prices||!Cloud.sb)return;try{const{data,error}=await Cloud.sb.rpc('get_market_prices',{p_sp:null});if(!error)this.setPrices(data||[])}catch(e){}},
  find(id){return (this.list||[]).concat(this.mine?this.mine.active:[]).find(x=>x.id===id)}
 };

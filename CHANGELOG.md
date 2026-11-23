@@ -11,6 +11,7 @@ Catatan pembaruan untuk pemain (bahasa yang lebih sederhana, ID & EN) ada di `pa
 - Salju (`snow`, satu-satunya tema terang), Obsidian (`obsidian`, hitam pekat dengan aksen perak), Lavender (`lavender`, ungu redup).
 - Warna yang dulu tetap di CSS (warna catatan breeder, garis tag, teks panduan, kotak peringatan, latar jendela, dll.) dijadikan variabel CSS dengan nilai bawaan yang sama, jadi tema lama tidak berubah dan tema terang bisa mengaturnya sendiri.
 - Logo bertulisan krem digelapkan dengan filter di tema Salju supaya terbaca.
+- **Pasar Pemain: riwayat harga per label untuk ball python & axolotl.** `_market_list` sekarang menyimpan `lbl` (label line-bred yang terlihat, dihitung Edge Function) untuk leopard gecko, ball python, dan axolotl; sebelumnya hanya gecko, sehingga ball python & axolotl selalu `''`. Catatan "riwayat cadangan" di browser ikut tampil untuk ketiga spesies itu. Kura-kura brazil tetap `''`. Penjualan ball python/axolotl lama tetap di riwayat tanpa label (belum ada satu pun di database saat diubah).
 
 ## v61 — 23 Nov 2026
 **Pilih bayi untuk ball python & kura-kura brazil**
