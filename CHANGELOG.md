@@ -12,6 +12,7 @@ Catatan pembaruan untuk pemain (bahasa yang lebih sederhana, ID & EN) ada di `pa
 - Tombol "Lanjut bulan" memakai `advFlow()`: kalau ada brood (juga dari tombol di jendela perkiraan saldo, yang tetap tanpa konfirmasi lain karena sudah menampilkan biaya space), muncul jendela "Pilih bayi dulu" dengan tombol ke tab Inkubator. Kalau `previewNext().overN > 0` (hewan bulan depan, termasuk bayi gecko yang menetas dan tanpa hewan yang mati karena tua, melebihi kapasitas), muncul konfirmasi dengan biaya space darurat + tombol beli rak / buka Koleksi, digabung dengan peringatan betina siap kawin yang sudah ada.
 - `SPECIES.leo.brood = 1`: bayi leopard gecko juga menetas sebagai brood, simpan 1 per clutch (clutch berisi 1–2 telur), sisanya dijual otomatis 60% nilainya. Sekarang semua spesies memakai brood.
 - Teks Inkubator, Kawinkan, dan Panduan spesies (semua spesies) diperbarui.
+- Gambar gecko Super Hypo: bintik ekor tinggal ±separuh (`st.hypoTail`), cincin ekor tetap. Nama singkat sifat gecko (`lbn_yellow` dst.) ditambahkan untuk daftar pilih bayi.
 ## v62 — 23 Nov 2026
 **Morph Dex: hanya gen tunggal & combo bernama; MAC**
 - `DEX_TARGETS` hanya berisi gen tunggal (termasuk bentuk super, Normal / Wild Type) dan kombinasi yang punya nama sendiri (keputusan pemilik game). Label line-bred tetap jadi target.
