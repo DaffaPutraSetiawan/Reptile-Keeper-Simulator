@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:62,date:'2026-11-23'};
+const VERSION={v:63,date:'2026-11-25'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -101,7 +101,7 @@ const SPECIES={
   orderBase:['pastel','spider','albino','enchi'],orderSkip:['bel','superbanana','supercinnamon']},
  leo:{name:'leopard gecko',orderBonus:30,code:'LG',loci:LEO_LOCI,maxAge:240,base:35,fAge:10,mAge:9,recover:3,ovul:.7,layIn:1,slug:.1,layLoss:.94,gravidLoss:1,clutches:[4,6],minLayW:40,slugStep:.04,
   K:{F:65,M:75,H:70},r:{F:.4,M:.4,H:.4},hatchW:[3,5],wBonus:[4,40],foodBase:1,inc:2,
-  temp:{min:26,max:34,mid:30,step:.5},
+  temp:{min:26,max:34,mid:30,step:.5},brood:1,   // v63: simpan 1 bayi per clutch, sisanya dijual otomatis
   eggs:()=>R()<.1?1:2,
   mk:{baby:{a:[1,3],w:[6,15]},F:{a:[10,14],w:[50,62]},M:{a:[9,13],w:[55,70]}},
   // tiket undian toko (v39): Normal 8 · umum 10 · sedang 5–6 · agak langka 4 · langka 2 (3 slot, semua lewat undian)
@@ -768,8 +768,9 @@ function previewNext(){
 
 /* ========= BROOD (PILIH BAYI) ========= */
 // Bayi menetas sebagai satu kelompok (brood) untuk spesies dengan SPECIES[sp].brood: axolotl maks. 3, ball python maks. 3 (v61),
-// kura-kura brazil 1 per clutch (v61). Pemain memilih bayi yang disimpan; sisanya otomatis dijual cepat (60% nilai).
-// Brood yang belum dipilih saat "Lanjut bulan" diproses otomatis: bayi yang paling bernilai disimpan.
+// kura-kura brazil 1 per clutch (v61), leopard gecko 1 per clutch (v63). Sejak v63 semua spesies memakai brood. Pemain memilih bayi yang disimpan; sisanya otomatis dijual cepat (60% nilai).
+// v63: brood WAJIB dipilih pemain sebelum "Lanjut bulan" (advance ditolak dengan brood_pending). autoBrood tetap ada
+// untuk skrip simulasi & pengujian, tapi tidak dipakai lagi oleh game.
 // v61: tiap bayi menyimpan seed & berat sendiri (it.seed, it.w), supaya tebakan sifat line-bred ball python yang belum jelas
 // tidak berubah-ubah di layar pilih bayi dan hewan yang disimpan sama dengan yang dilihat. Brood lama tanpa itu: seed acak, berat minimum.
 function broodSnake(b,it){const P=SPECIES[b.sp],o={sp:b.sp,sex:it.sex,age:0,w:it.w||P.hatchW[0],g:it.g,hp:{...b.hp},sire:b.sireLabel,dam:b.damLabel,gen:b.gen,src:{t:'bred',turn:b.turn}};
@@ -789,8 +790,8 @@ function autoBrood(b){const P=SPECIES[b.sp];return b.items.map((_,i)=>[i,broodVa
 function advance(){
  const ev=S.event||{};const head=[];ps();
  if(!Array.isArray(S.broods))S.broods=[];
- // 0. brood (axolotl, ball python, kura-kura) yang belum dipilih bulan lalu: simpan yang paling bernilai, sisanya dijual
- for(const b of S.broods.slice())resolveBrood(b,autoBrood(b),true);
+ // 0. v63: bayi dari clutch yang menetas (axolotl, ball python, kura-kura) wajib dipilih dulu, tidak ada lagi pilihan otomatis
+ if(S.broods.length)fail('brood_pending');
  S.turn++;
  // 1. inkubator
  for(const c of S.clutches.slice()){
