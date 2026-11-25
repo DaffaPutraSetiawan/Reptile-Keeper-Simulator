@@ -2,6 +2,9 @@
    Terbaru di atas. v = versi game (core.js VERSION). Riwayat teknis lengkap ada di CHANGELOG.md.
    Tambahkan entri baru di paling atas setiap kali versi game naik. */
 window.PATCH_NOTES=[
+ {v:63.1,d:'2026-11-25',label:'v63 (web)',
+  id:['Breeding planner: pilihan jenis kelamin (Semua / ♀ / ♂) dihapus. Pilihan itu hanya membagi dua semua peluang tanpa mengubah urutan pasangan terbaik, karena jenis kelamin bayi diatur lewat suhu inkubator.'],
+  en:['Breeding planner: the sex filter (Any / ♀ / ♂) was removed. It only halved every chance without changing which pairs rank best, since babies’ sex is set by incubation temperature.']},
  {v:63,d:'2026-11-25',
   id:['Bayi yang baru menetas (ball python, axolotl, kura-kura brazil) sekarang <b>wajib dipilih</b> sebelum “Lanjut bulan”. Tidak ada lagi pilihan otomatis: kalau masih ada kelompok bayi yang belum dipilih, tombol Lanjut bulan mengarahkanmu ke tab Inkubator.',
    'Bayi <b>leopard gecko</b> sekarang juga dipilih per clutch: simpan <b>1 ekor</b> dari tiap clutch di tab Inkubator, sisanya dijual otomatis (60% nilainya). Sifat line-bred bayi masih berupa tebakan sampai umur 6 bulan.',

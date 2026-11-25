@@ -7,6 +7,9 @@ Catatan pembaruan untuk pemain (bahasa yang lebih sederhana, ID & EN) ada di `pa
 ---
 
 
+
+## v63 (web) (2026-11-25)
+- Breeding planner: filter jenis kelamin (`PLAN.sex`, aksi `pl_sex`, teks `pl_sex*`, `pl_f`, `pl_m`) dihapus. Peluangnya selalu 50:50 (suhu inkubator belum diketahui), jadi hanya membagi dua semua angka tanpa mengubah urutan pasangan.
 ## v63 (2026-11-25)
 - `advance()` menolak dengan `brood_pending` kalau masih ada brood yang belum dipilih; brood tidak lagi diproses otomatis (`autoBrood` tetap diekspor untuk skrip simulasi & pengujian). Brood boleh dipilih dengan 0 bayi disimpan ("Jual semua").
 - Tombol "Lanjut bulan" memakai `advFlow()`: kalau ada brood (juga dari tombol di jendela perkiraan saldo, yang tetap tanpa konfirmasi lain karena sudah menampilkan biaya space), muncul jendela "Pilih bayi dulu" dengan tombol ke tab Inkubator. Kalau `previewNext().overN > 0` (hewan bulan depan, termasuk bayi gecko yang menetas dan tanpa hewan yang mati karena tua, melebihi kapasitas), muncul konfirmasi dengan biaya space darurat + tombol beli rak / buka Koleksi, digabung dengan peringatan betina siap kawin yang sudah ada.
