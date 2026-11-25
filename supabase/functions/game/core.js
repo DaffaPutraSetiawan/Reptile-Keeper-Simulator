@@ -8,7 +8,7 @@
 'use strict';
 let S=null;               // state game yang sedang diproses
 // Versi logika game. Naikkan setiap kali Edge Function "game" di-deploy ulang (sama dengan nomor versi di Supabase).
-const VERSION={v:63,date:'2026-11-25'};
+const VERSION={v:64,date:'2026-11-25'};
 const BUYER_COUNT=60;     // jumlah nama pembeli di kamus bahasa (30 orang + 30 toko/komunitas)
 
 /* ========= DATA GENETIKA ========= */
@@ -444,7 +444,24 @@ const lifeLeft=s=>Math.max(0,maxAge(s)-s.age);
 function femaleReady(s){const sp=spOf(s),P=SPECIES[sp];if(s.gravid)return 'r_gravid';if(s.age<P.fAge)return sp==='ball'?'r_fage':'r_fage_'+sp;if(S.turn-s.lastLaid<P.recover)return 'r_recover';if(s.listed)return 'r_listed';return ''}
 function maleReady(s){const sp=spOf(s);if(s.age<SPECIES[sp].mAge)return sp==='ball'?'r_mage':'r_mage_'+sp;if(s.pairs>=4)return 'r_mpairs';if(s.listed)return 'r_listed';return ''}
 const readyMsg=s=>s.sex==='M'?maleReady(s):femaleReady(s);
-function snap(s){return{id:s.id,g:JSON.parse(JSON.stringify(s.g)),hp:{...s.hp},label:code(s)+' '+displayName(s),gen:s.gen,pn:pedNode(s),ar:ancRec(s),lb:lbOf(s)?lbOf(s).slice():undefined}}
+function snap(s){return{id:s.id,g:JSON.parse(JSON.stringify(s.g)),hp:{...s.hp},label:code(s)+' '+displayName(s),gen:s.gen,pn:pedNode(s),ar:ancRec(s),lb:lbOf(s)?lbOf(s).slice():undefined,pj:Array.isArray(s.pj)&&s.pj.length?s.pj.slice():undefined}}
+/* ========= PROJECT (v64) =========
+   Penanda pribadi pemain. S.projects = [{pid, n: nama (maks. PROJ_NAME huruf), c: warna 0..PROJ_COLORS-1}], maks. PROJ_MAX.
+   Hewan menyimpan s.pj = [pid, ...] (boleh lebih dari satu project). Anak mewarisi SEMUA project kedua induknya:
+   dicatat di clutch saat bertelur (induk betina + snapshot jantan), lalu dilengkapi saat menetas dari induk yang masih dimiliki
+   (jadi induk yang ditandai setelah bertelur tetap menurunkan tandanya). Pejantan sewaan tidak membawa project.
+   Project bersifat pribadi: dibuang saat hewan dipasang di Pasar Pemain / ditawarkan sebagai pejantan, dan pid yang tidak
+   dikenal (mis. hewan hasil trade dari pemain lain) dibuang otomatis di setiap aksi (syncProjects). */
+const PROJ_MAX=10,PROJ_COLORS=8,PROJ_NAME=24;
+const projIds=()=>new Set((Array.isArray(S.projects)?S.projects:[]).map(p=>p.pid));
+// gabungan project yang masih ada dari beberapa daftar; null kalau kosong
+function pjUnion(...xs){const ids=projIds(),o=[];for(const a of xs)if(Array.isArray(a))for(const x of a)if(ids.has(x)&&!o.includes(x))o.push(x);return o.length?o:null}
+function syncProjects(){if(!Array.isArray(S.projects))S.projects=[];
+ for(const s of S.snakes)if(s.pj!==undefined){const c=pjUnion(s.pj);if(c)s.pj=c;else delete s.pj}}
+function pjName(x){const n=String(x==null?'':x).replace(/[\u0000-\u001f\u007f]/g,'').replace(/\s+/g,' ').trim().slice(0,PROJ_NAME);if(!n)fail('project_name');return n}
+function pjColor(x){const c=Number(x);return Number.isInteger(c)&&c>=0&&c<PROJ_COLORS?c:0}
+function mustProject(pid){const p=(S.projects||[]).find(x=>x.pid===toId(pid));if(!p)fail('project_gone');return p}
+
 /* ========= SILSILAH ========= */
 // Setiap anak menyimpan ringkasan induknya di s.ped = {s: induk jantan, d: induk betina}, dan tiap induk membawa
 // ringkasan orang tuanya sendiri. Jadi pohon 3 generasi (hewan, induk, kakek-nenek) tetap utuh walaupun induknya
@@ -777,6 +794,7 @@ function broodSnake(b,it){const P=SPECIES[b.sp],o={sp:b.sp,sex:it.sex,age:0,w:it
  if(typeof it.seed==='number')o.seed=it.seed;
  if(b.sp==='ball')delete o.sp;   // ball python tanpa sp (format lama)
  if(hasLb(b.sp)){if(!lbOf({lb:it.lb,g:it.g}))it.lb=lbInit(b.sp);o.lb=it.lb.slice()}   // brood lama tanpa nilai: diberi sekali (tetap sama setelahnya)
+ {const pj=pjUnion(b.pj);if(pj)o.pj=pj}   // v64: project dari kedua induk
  if(b.ped)o.ped=b.ped;if(b.ca)Object.assign(o,b.ca);const tr=traitsOf(it.g);for(const l of P.loci)if(l.t==='rec'&&tr.includes(l.k))o.hp[l.k]=1;return newSnake(o)}
 const broodValue=(b,i)=>value(broodSnake(b,b.items[i]));
 function resolveBrood(b,keep,auto){const P=SPECIES[b.sp];let total=0,sold=0;const sat=new Set();
@@ -800,13 +818,14 @@ function advance(){
   let born=0,dead=0,nm=0,nf=0;const vis=new Set();const newNames=[];
   const brood=P.brood?{bid:Math.floor(R()*1e9),sp,damLabel:c.damLabel,sireLabel:c.sireLabel,gen:c.gen,hp:{...c.hp},items:[],turn:S.turn}:null;if(brood&&c.ped)brood.ped=c.ped;if(brood&&c.ca)brood.ca=c.ca;
   const deadP=HATCH_DEAD+INB_DEAD*(c.inb||0);
+  const pj=pjUnion(c.pj,(byId(c.damId)||{}).pj,c.sireId!=null?(byId(c.sireId)||{}).pj:null);if(brood&&pj)brood.pj=pj;   // v64
   for(let ei=0;ei<c.eggs.length;ei++){const g=c.eggs[ei];if(R()<deadP){dead++;continue}
    const sex=R()<femaleChance(c.temp,sp)?'F':'M';
    const lbv=hasLb(sp)?((c.lb&&lbOf({lb:c.lb[ei],g}))?c.lb[ei]:lbInit(sp)):null;
    // sifat line-bred axolotl langsung terlihat: labelnya tercatat di Morph Dex saat menetas
    if(lbv)for(const L of lbVisibleLabels({g,lb:lbv,age:0}))if(dexAddLb(L,sp))newNames.push('\u2728 '+L);
    if(brood){const it={g,sex,w:rint(P.hatchW),seed:Math.floor(R()*1e9)};if(lbv)it.lb=lbv;brood.items.push(it)}
-   else{const o={sex,w:rint(P.hatchW),g,hp:{...c.hp},sire:c.sireLabel,dam:c.damLabel,gen:c.gen,src:{t:'bred',turn:S.turn}};if(sp!=='ball')o.sp=sp;if(c.ped)o.ped=c.ped;if(c.ca)Object.assign(o,c.ca);if(lbv)o.lb=lbv;
+   else{const o={sex,w:rint(P.hatchW),g,hp:{...c.hp},sire:c.sireLabel,dam:c.damLabel,gen:c.gen,src:{t:'bred',turn:S.turn}};if(sp!=='ball')o.sp=sp;if(c.ped)o.ped=c.ped;if(c.ca)Object.assign(o,c.ca);if(lbv)o.lb=lbv;if(pj)o.pj=pj.slice();
     const s=addSnake(newSnake(o));const tr=traitsOf(g);for(const l of P.loci)if(l.t==='rec'&&tr.includes(l.k))s.hp[l.k]=1}
    const tr=traitsOf(g);tr.forEach(t=>{if(isRec(t))vis.add(t)});
    if(sex==='F')nf++;else nm++;
@@ -825,7 +844,7 @@ function advance(){
   const m=f.gravid.sire,F=f.gravid.inb||0;const n=P.eggs(f),slugP=Math.min(.95,P.slug+P.slugStep*(no-1)+INB_SLUG*F);
   const eggs=[],lbs=hasLb(sp)?[]:null;let slugs=0;for(let i=0;i<n;i++){if(R()>=slugP){eggs.push(breedGeno(m,f));if(lbs)lbs.push(lbChild(m,f))}else slugs++}
   const c={cid:Math.floor(R()*1e9),damId:f.id,sireId:m.id,damLabel:code(f)+' '+displayName(f),sireLabel:m.label,eggs,slugs,hatchIn:P.inc,incTotal:P.inc,temp:P.temp?P.temp.mid:null,hp:childHp(m,f),gen:Math.max(f.gen,m.gen)+1,ped:{s:m.pn||labelNode(m.label,'M'),d:pedNode(f)},inb:F,ca:m.ar?childAnc(m.ar,ancRec(f),F):null};
-  if(sp!=='ball')c.sp=sp;if(lbs)c.lb=lbs;S.clutches.push(c);
+  if(sp!=='ball')c.sp=sp;if(lbs)c.lb=lbs;{const pj=pjUnion(f.pj,m.pj);if(pj)c.pj=pj}S.clutches.push(c);
   S.stats.clutches++;{const p=ps();p.cl++;p.laid+=n;p.slug+=slugs}
   log('l_laid',tot>1?{c:code(f),n,good:eggs.length,slug:slugs,m:P.inc,no,tot}:{c:code(f),n,good:eggs.length,slug:slugs,m:P.inc},'good');head.push(['h_laid',{c:code(f),n:eggs.length}]);
   f.lastLaid=S.turn;f.w=Math.round(f.w*P.layLoss);
@@ -915,7 +934,8 @@ const ACTIONS={
   const fee=Number(a.fee);if(!Number.isInteger(fee))fail('bad_price');
   const v=value(s),min=Math.max(1,Math.ceil(v*MKT_MIN));if(fee<min)fail('price_too_low');if(fee>MKT_MAX)fail('price_too_high');
   log('l_stud_listed',{c:code(s),n:displayName(s),p:fee,k:STUD_MAX},'info');
-  return{toast:'t_stud_listed',stud:{snake:JSON.parse(JSON.stringify(s)),fee,value:v,name:fullName(s),code:code(s)}}},
+  const sc=JSON.parse(JSON.stringify(s));delete sc.pj;   // v64: project pribadi tidak ikut
+  return{toast:'t_stud_listed',stud:{snake:sc,fee,value:v,name:fullName(s),code:code(s)}}},
  // stud_book: penyewa memasangkan betinanya dengan pejantan sewaan. a.studData diisi Edge Function dari save pemilik
  // (data dari browser dibuang). Uang sewa langsung terpotong dan tidak kembali kalau betina gagal ovulasi.
  stud_book(a){const pk=a.studData;if(!pk||typeof pk!=='object'||!pk.snake||typeof pk.snake!=='object')fail('bad_action');
@@ -924,7 +944,7 @@ const ACTIONS={
   if(m.sex!=='M'||m.age<SPECIES[spOf(m)].mAge||m.listed)fail('stud_closed');
   if(femaleReady(f))fail('not_ready');if(f.pairedWith)fail('already_paired');
   if(!Number.isInteger(fee)||fee<1)fail('bad_action');if(S.money<fee)fail('not_enough_money');
-  const owner=String(pk.owner||'').slice(0,40),sm=snap(m);sm.id=null;sm.label=code(m)+' '+displayName(m)+' ('+owner+')';
+  const owner=String(pk.owner||'').slice(0,40),sm=snap(m);sm.id=null;delete sm.pj;sm.label=code(m)+' '+displayName(m)+' ('+owner+')';
   S.money-=fee;psEx('stud',fee);
   f.pairedWith=-Math.abs(Number(pk.id)||1);f.stud={sire:sm,o:owner,c:code(m),n:displayName(m),p:fee,lid:Number(pk.id)||0};
   log('l_stud_booked',{f:code(f),m:code(m),n:displayName(m),u:owner,p:money(fee)},'info');
@@ -935,7 +955,7 @@ const ACTIONS={
  market_list(a){const s=mustSnake(a.id);if(s.gravid)fail('gravid_locked');if(s.listed)fail('snake_listed');if(s.pairedWith||s.pairs)fail('snake_paired');
   const price=Number(a.price);if(!Number.isInteger(price))fail('bad_price');
   const v=value(s),min=Math.max(1,Math.ceil(v*MKT_MIN));if(price<min)fail('price_too_low');if(price>MKT_MAX)fail('price_too_high');
-  const snakeCopy=JSON.parse(JSON.stringify(s));snakeCopy.xferAgo=Math.max(0,S.turn-(typeof s.lastLaid==='number'?s.lastLaid:-99));
+  const snakeCopy=JSON.parse(JSON.stringify(s));delete snakeCopy.pj;snakeCopy.xferAgo=Math.max(0,S.turn-(typeof s.lastLaid==='number'?s.lastLaid:-99));
   const info={c:code(s),n:fullName(s),l:lbKey(s),d:displayName(s)};removeSnake(s);log('l_mkt_list',{c:info.c,n:info.d,p:price},'info');   // n = nama gen (riwayat harga)
   return{toast:'t_mkt_listed',market:{snake:snakeCopy,price,value:v,name:info.n,code:info.c,lbl:info.l}}},
  nick(a){const s=mustSnake(a.id);s.nick=String(a.name==null?'':a.name).replace(/[\u0000-\u001f\u007f]/g,'').trim().slice(0,24);return{}},
@@ -945,6 +965,19 @@ const ACTIONS={
   S.money-=price;psEx('buy',price);const s=addSnake(makeMarketSnake(L,a.age,a.sex));s.src={t:'market',turn:S.turn};const nw=dexAdd(traitsOf(s.g),spOf(s));   // listing tetap ada: bisa dibeli lagi
   log('l_buy',{c:code(s),n:displayName(s),h:hetText(s),v:money(price)});if(nw)log('l_newmorph',{n:nameOf(traitsOf(s.g),null,spOf(s))},'star');return{}},
  clearlog(){S.log=[];return{toast:'t_logcleared'}},
+ // v64 Project: buat / ubah / hapus project dan tandai hewan (sekaligus, maks. 200 per aksi).
+ project_new(a){if(S.projects.length>=PROJ_MAX)fail('project_max');const n=pjName(a.name);
+  if(S.projects.some(p=>p.n.toLowerCase()===n.toLowerCase()))fail('project_dup');
+  const ids=Array.isArray(a.ids)?a.ids.map(toId):[];if(ids.length>200||new Set(ids).size!==ids.length)fail('bad_action');const list=ids.map(mustSnake);
+  let pid;do pid=1+Math.floor(R()*1e9);while(S.projects.some(p=>p.pid===pid));
+  S.projects.push({pid,n,c:pjColor(a.c)});for(const s of list)s.pj=(s.pj||[]).concat(pid);return{toast:'t_proj_new'}},
+ project_edit(a){const p=mustProject(a.pid),n=pjName(a.name);
+  if(S.projects.some(x=>x!==p&&x.n.toLowerCase()===n.toLowerCase()))fail('project_dup');p.n=n;p.c=pjColor(a.c);return{toast:'t_proj_saved'}},
+ project_del(a){const p=mustProject(a.pid);S.projects=S.projects.filter(x=>x!==p);syncProjects();return{toast:'t_proj_del'}},
+ project_tag(a){const p=mustProject(a.pid);if(!Array.isArray(a.ids)||!a.ids.length||a.ids.length>200)fail('bad_action');
+  const ids=a.ids.map(toId);if(new Set(ids).size!==ids.length)fail('bad_action');const list=ids.map(mustSnake),on=!!a.on;
+  for(const s of list){const has=(s.pj||[]).includes(p.pid);if(on&&!has)s.pj=(s.pj||[]).concat(p.pid);else if(!on&&has){s.pj=s.pj.filter(x=>x!==p.pid);if(!s.pj.length)delete s.pj}}
+  return{toast:on?'t_proj_tag':'t_proj_untag'}},
  quest_hide(){if(!S.quest)S.quest={d:[]};S.quest.hide=1;return{}},
  brood(a){const b=S.broods.find(x=>x.bid===toId(a.bid));if(!b)fail('brood_gone');
   if(!Array.isArray(a.keep)||a.keep.length>SPECIES[b.sp].brood)fail('bad_action');
@@ -976,7 +1009,7 @@ function bigFulfill(o,a){const ids=Array.isArray(a.sids)?a.sids:[];if(ids.length
 function applyAction(state,a){
  if(!a||typeof a!=='object'||typeof a.type!=='string'||!Object.prototype.hasOwnProperty.call(ACTIONS,a.type))fail('bad_action');
  S=state;if(!Array.isArray(S.broods))S.broods=[];if(typeof S.rep!=='number')S.rep=(S.stats&&S.stats.orders)||0;   // save lama: reputasi = pesanan yang sudah dipenuhi
- syncDex();trimLog();ensureMarket();ps();addLb();
+ syncDex();syncProjects();trimLog();ensureMarket();ps();addLb();
  if(!S.fx||!S.fx.inb){repairInb();S.fx=Object.assign(S.fx||{},{inb:1})}
  const res=ACTIONS[a.type](a)||{};
  const q=checkQuests();if(q.length)res.quests=q;
@@ -998,6 +1031,7 @@ root.MorphCore={
  MARKET_SIZE,MARKET_EVERY,BUY_MULT,MARKET_POOL,listingTraits,marketBase,marketPrice,marketLeft,refreshMarket,ensureMarket,marketOk,makeMarketSnake,
  INC_MONTHS,TEMP_MIN,TEMP_MAX,TEMP_MID,TEMP_STEP,tempRange,femaleChance,incTotal,tempOpen,tempMonthsLeft,validTemp,
  LB_KEYS,AX_KEYS,BALL_KEYS,BALL_COLOR,BALL_PRICE,ballCover,ballLabels,LB_REVEAL_SP,lbRevealAge,LB_KEYS_SP,lbKeysOf,hasLb,lbSpOf,AX_LIGHT,AX_DARK,AX_PRICE,axCover,axLabels,axBurst,LB_COLORS,LB_SD,LB_INIT,LB_LABEL,LB_SUPER,LB_REVERSE,LB_BOLD,LB_REVEAL,LB_TIERS,LB_PRICE,lbOf,lbInit,lbChild,lbTier,lbRevealed,lbShownTier,lbVisibleLabels,lbKey,lbGrade,lbDark,LB_MASK,lbMaskGene,lbCover,lbShownCover,lbSunglow,lbStripe,lbLabels,lbBonus,lbOk,addLb,
+ PROJ_MAX,PROJ_COLORS,PROJ_NAME,pjUnion,syncProjects,
  QUESTS,checkQuests,rankStats,HIST_MAX,MP_MAX,ps,netWorth,psKey,
  newGame,advance,applyAction,syncDex,isState,ACTION_TYPES:Object.keys(ACTIONS)
 };

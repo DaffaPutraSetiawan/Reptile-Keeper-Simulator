@@ -8,6 +8,12 @@ Catatan pembaruan untuk pemain (bahasa yang lebih sederhana, ID & EN) ada di `pa
 
 
 
+
+## v64 (2026-11-25)
+- Project: `S.projects = [{pid, n, c}]` (maks. 10, nama maks. 24 huruf & tidak kembar, 8 warna), hewan menyimpan `s.pj = [pid, ...]`. Aksi baru `project_new` (boleh langsung dengan `ids`), `project_edit`, `project_del`, `project_tag` (`ids`, `on`; maks. 200).
+- Pewarisan: clutch menyimpan gabungan project induk betina + snapshot jantan saat bertelur (`c.pj`); saat menetas digabung lagi dengan project induk yang masih dimiliki (`brood.pj`), lalu bayi yang disimpan mendapat `pj` lewat `broodSnake`. Pejantan sewaan tidak membawa project.
+- Pribadi: `market_list` dan `stud_list` membuang `pj` dari salinan hewan; `syncProjects()` di setiap aksi membuang pid yang tidak dikenal (hewan hasil trade). Catatan: hewan yang kembali dari Pasar Pemain (batal/kedaluwarsa) juga tanpa tanda.
+- Tampilan: tombol 🏷️ Project & filter project di Koleksi, label berwarna di kartu/daftar, bagian Project di detail hewan, tombol Project di aksi sekaligus, label di clutch Inkubator dan layar pilih bayi.
 ## v63 (web) (2026-11-25)
 - Breeding planner: filter jenis kelamin (`PLAN.sex`, aksi `pl_sex`, teks `pl_sex*`, `pl_f`, `pl_m`) dihapus. Peluangnya selalu 50:50 (suhu inkubator belum diketahui), jadi hanya membagi dua semua angka tanpa mengubah urutan pasangan.
 ## v63 (2026-11-25)

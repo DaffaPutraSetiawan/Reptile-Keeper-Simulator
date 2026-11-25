@@ -2,6 +2,13 @@
    Terbaru di atas. v = versi game (core.js VERSION). Riwayat teknis lengkap ada di CHANGELOG.md.
    Tambahkan entri baru di paling atas setiap kali versi game naik. */
 window.PATCH_NOTES=[
+ {v:64,d:'2026-11-25',
+  id:['Baru: <b>Project</b>. Buat project dengan nama & warna sendiri (maks. 10) lewat tombol 🏷️ Project di Koleksi, lalu tandai hewan dari detail hewan atau sekaligus di tampilan daftar. Satu hewan boleh masuk beberapa project.',
+   'Bayi otomatis masuk <b>semua project milik kedua induknya</b>, juga kalau induknya baru ditandai setelah bertelur. Label project tampil di Koleksi, Inkubator, dan layar pilih bayi, dan Koleksi bisa difilter per project.',
+   'Project bersifat pribadi: tandanya hilang kalau hewan dipasang di Pasar Pemain, ditawarkan sebagai pejantan, atau di-trade.'],
+  en:['New: <b>Projects</b>. Create projects with your own name & color (up to 10) with the 🏷️ Projects button in your Collection, then tag animals from the animal details or several at once in list view. An animal can be in several projects.',
+   'Babies automatically join <b>every project of both parents</b>, even if a parent was tagged after laying. Project tags show in your Collection, Incubator and baby picker, and you can filter your Collection by project.',
+   'Projects are private: the tag is removed when the animal is listed on the Player Market, offered as a stud, or traded.']},
  {v:63.1,d:'2026-11-25',label:'v63 (web)',
   id:['Breeding planner: pilihan jenis kelamin (Semua / ♀ / ♂) dihapus. Pilihan itu hanya membagi dua semua peluang tanpa mengubah urutan pasangan terbaik, karena jenis kelamin bayi diatur lewat suhu inkubator.'],
   en:['Breeding planner: the sex filter (Any / ♀ / ♂) was removed. It only halved every chance without changing which pairs rank best, since babies’ sex is set by incubation temperature.']},
