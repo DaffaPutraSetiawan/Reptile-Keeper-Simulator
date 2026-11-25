@@ -9,6 +9,9 @@ Catatan pembaruan untuk pemain (bahasa yang lebih sederhana, ID & EN) ada di `pa
 
 
 
+
+## v64 (web) (2026-11-25)
+- Tab Kawinkan: baris filter project (`BRPJ`, disimpan di `localStorage` `ml_brpj`, aksi `brpj`). Dropdown ♂/♀ dan breeding planner hanya memakai hewan di project terpilih (`brIn`). Filter dibuang otomatis kalau project-nya dihapus, dan dikembalikan ke Semua saat "Rencanakan kawin" dibuka untuk hewan di luar project.
 ## v64 (2026-11-25)
 - Project: `S.projects = [{pid, n, c}]` (maks. 10, nama maks. 24 huruf & tidak kembar, 8 warna), hewan menyimpan `s.pj = [pid, ...]`. Aksi baru `project_new` (boleh langsung dengan `ids`), `project_edit`, `project_del`, `project_tag` (`ids`, `on`; maks. 200).
 - Pewarisan: clutch menyimpan gabungan project induk betina + snapshot jantan saat bertelur (`c.pj`); saat menetas digabung lagi dengan project induk yang masih dimiliki (`brood.pj`), lalu bayi yang disimpan mendapat `pj` lewat `broodSnake`. Pejantan sewaan tidak membawa project.
