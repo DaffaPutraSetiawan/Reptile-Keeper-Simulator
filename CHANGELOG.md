@@ -11,6 +11,7 @@ Catatan pembaruan untuk pemain (bahasa yang lebih sederhana, ID & EN) ada di `pa
 
 
 ## v64 (web) (2026-11-25)
+- Dropdown ♂/♀ di tab Kawinkan dikelompokkan dengan `<optgroup>` (`snakeOpts`): siap kawin di atas, belum siap (termasuk betina yang sudah dipasangkan, sekarang bertanda ⏳) di bawah. Tiap pilihan menyebut project hewannya (`· 🏷️ nama`).
 - Tab Kawinkan: baris filter project (`BRPJ`, disimpan di `localStorage` `ml_brpj`, aksi `brpj`). Dropdown ♂/♀ dan breeding planner hanya memakai hewan di project terpilih (`brIn`). Filter dibuang otomatis kalau project-nya dihapus, dan dikembalikan ke Semua saat "Rencanakan kawin" dibuka untuk hewan di luar project.
 ## v64 (2026-11-25)
 - Project: `S.projects = [{pid, n, c}]` (maks. 10, nama maks. 24 huruf & tidak kembar, 8 warna), hewan menyimpan `s.pj = [pid, ...]`. Aksi baru `project_new` (boleh langsung dengan `ids`), `project_edit`, `project_del`, `project_tag` (`ids`, `on`; maks. 200).

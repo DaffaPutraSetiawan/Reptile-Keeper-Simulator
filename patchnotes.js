@@ -3,8 +3,10 @@
    Tambahkan entri baru di paling atas setiap kali versi game naik. */
 window.PATCH_NOTES=[
  {v:64.1,d:'2026-11-25',label:'v64 (web)',
-  id:['Tab Kawinkan: filter <b>Project</b>. Pilih satu project, lalu pilihan ♂/♀ dan breeding planner hanya berisi hewan dari project itu. Pilihan filter diingat di perangkat.'],
-  en:['Breeding tab: <b>Project</b> filter. Pick a project and the ♂/♀ lists and the breeding planner only show animals from that project. The choice is remembered on this device.']},
+  id:['Tab Kawinkan: pilihan ♂/♀ sekarang dikelompokkan <b>Siap kawin</b> dan <b>Belum siap</b>, dan tiap pilihan menampilkan label project hewannya.',
+   'Tab Kawinkan: filter <b>Project</b>. Pilih satu project, lalu pilihan ♂/♀ dan breeding planner hanya berisi hewan dari project itu. Pilihan filter diingat di perangkat.'],
+  en:['Breeding tab: the ♂/♀ lists are now grouped into <b>Ready to breed</b> and <b>Not ready</b>, and each option shows the animal’s project tags.',
+   'Breeding tab: <b>Project</b> filter. Pick a project and the ♂/♀ lists and the breeding planner only show animals from that project. The choice is remembered on this device.']},
  {v:64,d:'2026-11-25',
   id:['Baru: <b>Project</b>. Buat project dengan nama & warna sendiri (maks. 10) lewat tombol 🏷️ Project di Koleksi, lalu tandai hewan dari detail hewan atau sekaligus di tampilan daftar. Satu hewan boleh masuk beberapa project.',
    'Bayi otomatis masuk <b>semua project milik kedua induknya</b>, juga kalau induknya baru ditandai setelah bertelur. Label project tampil di Koleksi, Inkubator, dan layar pilih bayi, dan Koleksi bisa difilter per project.',
